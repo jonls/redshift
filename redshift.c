@@ -29,9 +29,11 @@
 #define DEFAULT_GAMMA        1.0
 
 /* Angular elevation of the sun at which the color temperature
-   transition period starts and ends. */
+   transition period starts and ends (in degress).
+   Transition during twilight, and while the sun is lower than
+   3.0 degrees above the horizon. */
 #define TRANSITION_LOW     SOLAR_CIVIL_TWILIGHT_ELEV
-#define TRANSITION_HIGH    6.0
+#define TRANSITION_HIGH    3.0
 
 
 #define USAGE  \
