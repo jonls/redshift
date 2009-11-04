@@ -41,10 +41,10 @@
 #define HELP \
 	USAGE \
 	" Set color temperature of display according to time of day.\n" \
-	"  -g GAMMA\tAdditional gamma correction to apply\n" \
+	"  -g R:G:B\tAdditional gamma correction to apply\n" \
 	"  -h\t\tDisplay this help message\n" \
 	"  -l LAT:LON\tYour current location\n" \
-	"  -t DAY:NIGHT\tColor temperature to set at night/day\n" \
+	"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n" \
 	"  -v\t\tVerbose output\n"
 
 /* DEGREE SIGN is Unicode U+00b0 */
@@ -74,7 +74,7 @@ main(int argc, char *argv[])
 	float lon = NAN;
 	int temp_day = DEFAULT_DAY_TEMP;
 	int temp_night = DEFAULT_NIGHT_TEMP;
-	float gamma = DEFAULT_GAMMA;
+	float gamma[3] = { DEFAULT_GAMMA, DEFAULT_GAMMA, DEFAULT_GAMMA };
 	int verbose = 0;
 	char *s;
 
@@ -82,7 +82,26 @@ main(int argc, char *argv[])
 	while ((opt = getopt(argc, argv, "g:hl:t:v")) != -1) {
 		switch (opt) {
 		case 'g':
-			gamma = atof(optarg);
+			s = strchr(optarg, ':');
+			if (s == NULL) {
+				/* Use value for all channels */
+				float g = atof(optarg);
+				gamma[0] = gamma[1] = gamma[2] = g;
+			} else {
+				/* Parse separate value for each channel */
+				*(s++) = '\0';
+				gamma[0] = atof(optarg); /* Red */
+				char *g_s = s;
+				s = strchr(s, ':');
+				if (s == NULL) {
+					fprintf(stderr, USAGE, argv[0]);
+					exit(EXIT_FAILURE);
+				}
+
+				*(s++) = '\0';
+				gamma[1] = atof(g_s); /* Blue */
+				gamma[2] = atof(s); /* Green */
+			}
 			break;
 		case 'h':
 			printf(HELP, argv[0]);
@@ -160,7 +179,9 @@ main(int argc, char *argv[])
 	}
 
 	/* Gamma */
-	if (gamma < MIN_GAMMA || gamma > MAX_GAMMA) {
+	if (gamma[0] < MIN_GAMMA || gamma[0] > MAX_GAMMA ||
+	    gamma[1] < MIN_GAMMA || gamma[1] > MAX_GAMMA ||
+	    gamma[2] < MIN_GAMMA || gamma[2] > MAX_GAMMA) {
 		fprintf(stderr, "Gamma value must be between %.1f and %.1f.\n",
 			MIN_GAMMA, MAX_GAMMA);
 		exit(EXIT_FAILURE);
@@ -194,6 +215,8 @@ main(int argc, char *argv[])
 
 	if (verbose) {
 		printf("Color temperature: %uK\n", temp);
+		printf("Gamma: %.3f, %.3f, %.3f\n",
+		       gamma[0], gamma[1], gamma[2]);
 	}
 
 	/* Set color temperature */

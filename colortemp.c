@@ -153,7 +153,7 @@ colortemp_check_extension()
 }
 
 int
-colortemp_set_temperature(int temp, float gamma)
+colortemp_set_temperature(int temp, float gamma[3])
 {
 	xcb_generic_error_t *error;
 
@@ -226,11 +226,11 @@ colortemp_set_temperature(int temp, float gamma)
 	uint16_t *gamma_b = &gamma_ramps[2*gamma_ramp_size];
 
 	for (int i = 0; i < gamma_ramp_size; i++) {
-		gamma_r[i] = pow((float)i/gamma_ramp_size, 1.0/gamma) *
+		gamma_r[i] = pow((float)i/gamma_ramp_size, 1.0/gamma[0]) *
 			UINT16_MAX * white_point[0];
-		gamma_g[i] = pow((float)i/gamma_ramp_size, 1.0/gamma) *
+		gamma_g[i] = pow((float)i/gamma_ramp_size, 1.0/gamma[1]) *
 			UINT16_MAX * white_point[1];
-		gamma_b[i] = pow((float)i/gamma_ramp_size, 1.0/gamma) *
+		gamma_b[i] = pow((float)i/gamma_ramp_size, 1.0/gamma[2]) *
 			UINT16_MAX * white_point[2];
 	}
 

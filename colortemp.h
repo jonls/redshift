@@ -4,6 +4,6 @@
 #define _COLORTEMP_H
 
 int colortemp_check_extension();
-int colortemp_set_temperature(int temp, float gamma);
+int colortemp_set_temperature(int temp, float gamma[3]);
 
 #endif /* ! _COLORTEMP_H */
