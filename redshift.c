@@ -12,15 +12,27 @@
 #include "solar.h"
 #include "colortemp.h"
 
+
+/* Bounds for parameters. */
 #define MIN_LAT   -90.0
 #define MAX_LAT    90.0
 #define MIN_LON  -180.0
 #define MAX_LON   180.0
 #define MIN_TEMP   1000
 #define MAX_TEMP  10000
+#define MIN_GAMMA   0.1
+#define MAX_GAMMA  10.0
 
+/* Default values for parameters. */
 #define DEFAULT_DAY_TEMP    5500
 #define DEFAULT_NIGHT_TEMP  3700
+#define DEFAULT_GAMMA        1.0
+
+/* Angular elevation of the sun at which the color temperature
+   transition period starts and ends. */
+#define TRANSITION_LOW     SOLAR_CIVIL_TWILIGHT_ELEV
+#define TRANSITION_HIGH    6.0
+
 
 #define USAGE  \
 	"Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
@@ -33,6 +45,7 @@
 	"  -t DAY:NIGHT\tColor temperature to set at night/day\n" \
 	"  -v\t\tVerbose output\n"
 
+/* DEGREE SIGN is Unicode U+00b0 */
 #define DEG_CHAR  0xb0
 
 
@@ -47,21 +60,22 @@ main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	/* Init locale for special (degree) symbol */
-	char *loc = setlocale(LC_ALL, "");
+	/* Init locale for degree symbol. */
+	char *loc = setlocale(LC_CTYPE, "");
 	if (loc == NULL) {
 		fprintf(stderr, "Unable to set locale.\n");
 		exit(EXIT_FAILURE);
 	}
 
+	/* Parse arguments. */
 	float lat = NAN;
 	float lon = NAN;
 	int temp_day = DEFAULT_DAY_TEMP;
 	int temp_night = DEFAULT_NIGHT_TEMP;
-	float gamma = 1.0;
+	float gamma = DEFAULT_GAMMA;
 	int verbose = 0;
 	char *s;
-	
+
 	int opt;
 	while ((opt = getopt(argc, argv, "g:hl:t:v")) != -1) {
 		switch (opt) {
@@ -143,29 +157,41 @@ main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
+	/* Gamma */
+	if (gamma < MIN_GAMMA || gamma > MAX_GAMMA) {
+		fprintf(stderr, "Gamma value must be between %.1f and %.1f.\n",
+			MIN_GAMMA, MAX_GAMMA);
+		exit(EXIT_FAILURE);
+	}
+
 	/* Current angular elevation of the sun */
 	time_t now = time(NULL);
 	double elevation = solar_elevation(now, lat, lon);
 
 	if (verbose) {
-		printf("Solar elevation is %f%lc.\n", elevation, DEG_CHAR);
+		printf("Solar elevation: %f%lc\n", elevation, DEG_CHAR);
 	}
 
 	/* Use elevation of sun to set color temperature */
 	int temp = 0;
-	if (elevation < SOLAR_CIVIL_TWILIGHT_ELEV) {
+	if (elevation < TRANSITION_LOW) {
 		temp = temp_night;
-	} else if (elevation < SOLAR_DAYTIME_ELEV) {
-		/* Interpolate */
-		float a = (SOLAR_DAYTIME_ELEV - elevation) /
-			(SOLAR_DAYTIME_ELEV - SOLAR_CIVIL_TWILIGHT_ELEV);
-		temp = (1.0-a)*temp_day + a*temp_night;
+		if (verbose) printf("Period: Night\n");
+	} else if (elevation < TRANSITION_HIGH) {
+		/* Transition period: interpolate */
+		float a = (TRANSITION_LOW - elevation) /
+			(TRANSITION_LOW - TRANSITION_HIGH);
+		temp = (1.0-a)*temp_night + a*temp_day;
+		if (verbose) {
+			printf("Period: Transition (%.2f%% day)\n", a*100);
+		}
 	} else {
 		temp = temp_day;
+		if (verbose) printf("Period: Daytime\n");
 	}
 
 	if (verbose) {
-		printf("Set color temperature to %uK.\n", temp_day);
+		printf("Color temperature: %uK\n", temp);
 	}
 
 	/* Set color temperature */
