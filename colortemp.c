@@ -217,9 +217,6 @@ colortemp_set_temperature(int temp, float gamma)
 	interpolate_color(alpha, &blackbody_color[temp_index],
 			  &blackbody_color[temp_index+3], white_point);
 
-	printf("White point: %f, %f, %f\n",
-	       white_point[0], white_point[1], white_point[2]);
-
 	/* Create new gamma ramps */
 	uint16_t *gamma_ramps = malloc(3*gamma_ramp_size*sizeof(uint16_t));
 	if (gamma_ramps == NULL) abort();
