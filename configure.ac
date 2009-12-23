@@ -11,6 +11,8 @@ AM_INIT_AUTOMAKE([dist-bzip2])
 AC_PROG_CC_C99
 
 # Checks for libraries.
+PKG_CHECK_MODULES([X11], [x11])
+PKG_CHECK_MODULES([XF86VM], [xxf86vm])
 PKG_CHECK_MODULES([XCB], [xcb xcb-randr])
 
 # Checks for header files.

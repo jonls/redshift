@@ -27,6 +27,7 @@
 
 #include "solar.h"
 #include "randr.h"
+#include "vidmode.h"
 
 
 /* Bounds for parameters. */
@@ -60,6 +61,7 @@
 	"  -g R:G:B\tAdditional gamma correction to apply\n" \
 	"  -h\t\tDisplay this help message\n" \
 	"  -l LAT:LON\tYour current location\n" \
+	"  -m METHOD\tMethod to use to set color temperature (randr or vidmode)\n" \
 	"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n" \
 	"  -v\t\tVerbose output\n"
 
@@ -70,13 +72,7 @@
 int
 main(int argc, char *argv[])
 {
-	/* Check extensions needed for color temperature adjustment. */
-	int r = randr_check_extension();
-	if (r < 0) {
-		fprintf(stderr, "Unable to set color temperature:"
-			" Needed extension is missing.\n");
-		exit(EXIT_FAILURE);
-	}
+	int r;
 
 	/* Init locale for degree symbol. */
 	char *loc = setlocale(LC_CTYPE, "");
@@ -91,11 +87,12 @@ main(int argc, char *argv[])
 	int temp_day = DEFAULT_DAY_TEMP;
 	int temp_night = DEFAULT_NIGHT_TEMP;
 	float gamma[3] = { DEFAULT_GAMMA, DEFAULT_GAMMA, DEFAULT_GAMMA };
+	int use_randr = 1;
 	int verbose = 0;
 	char *s;
 
 	int opt;
-	while ((opt = getopt(argc, argv, "g:hl:t:v")) != -1) {
+	while ((opt = getopt(argc, argv, "g:hl:m:t:v")) != -1) {
 		switch (opt) {
 		case 'g':
 			s = strchr(optarg, ':');
@@ -132,6 +129,16 @@ main(int argc, char *argv[])
 			*(s++) = '\0';
 			lat = atof(optarg);
 			lon = atof(s);
+			break;
+		case 'm':
+			if (strcmp(optarg, "randr") == 0) {
+				use_randr = 1;
+			} else if (strcmp(optarg, "vidmode") == 0) {
+				use_randr = 0;
+			} else {
+				fprintf(stderr, "Unknown method `%s'.\n", optarg);
+				exit(EXIT_FAILURE);
+			}
 			break;
 		case 't':
 			s = strchr(optarg, ':');
@@ -236,10 +243,35 @@ main(int argc, char *argv[])
 	}
 
 	/* Set color temperature */
-	r = randr_set_temperature(temp, gamma);
-	if (r < 0) {
-		fprintf(stderr, "Unable to set color temperature.\n");
-		exit(EXIT_FAILURE);
+	if (use_randr) {
+		/* Check RANDR extension. */
+		int r = randr_check_extension();
+		if (r < 0) {
+			use_randr = 0;
+		} else {
+			r = randr_set_temperature(temp, gamma);
+			if (r < 0) {
+				fprintf(stderr, "Unable to set color temperature with RANDR,"
+					" trying VidMode...\n");
+				use_randr = 0;
+			}
+		}
+	}
+
+	if (!use_randr) {
+		/* Check VidMode extension */
+		r = vidmode_check_extension();
+		if (r < 0) {
+			fprintf(stderr, "Missing needed extension to set gamma ramp"
+				"(RANDR or VidMode).\n");
+			exit(EXIT_FAILURE);
+		}
+
+		r = vidmode_set_temperature(temp, gamma);
+		if (r < 0) {
+			fprintf(stderr, "Unable to set color temperature with VidMode.\n");
+			exit(EXIT_FAILURE);
+		}
 	}
 
 	return EXIT_SUCCESS;

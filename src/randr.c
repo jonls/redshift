@@ -115,7 +115,7 @@ randr_set_temperature(int temp, float gamma[3])
 	free(gamma_size_reply);
 
 	if (gamma_ramp_size == 0) {
-		fprintf(stderr, "Error: Gamma ramp size too small, %i\n",
+		fprintf(stderr, "Error: Gamma ramp size too small: %i\n",
 			gamma_ramp_size);
 		xcb_disconnect(conn);
 		return -1;
