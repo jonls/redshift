@@ -1,3 +1,7 @@
 
+v0.2 (2009-12-23)
+* Add a different method for setting the gamma ramps. It uses the
+  VidMode extension.
+
 v0.1 (2009-11-04)
-Initial release.
+* Initial release.

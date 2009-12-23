@@ -1,0 +1,54 @@
+2009-12-23  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Add setting gamma ramps with the VidMode extension.
+	Allow selection of gamma setting method with program parameter (-m).
+	Fallback to VidMode if RANDR doesn't work.
+
+2009-12-23  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Move source and headers to src dir.
+
+2009-12-23  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Move RandR code to separate file.
+
+2009-12-23  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Rescale blackbody values above 6500K to be in [0,1].
+
+2009-12-23  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Update NEWS
+
+2009-11-04  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Add autotools support.
+
+2009-11-04  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Add COPYING file (GPLv3).
+	Add copyright and license in file headers.
+
+2009-11-04  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Allow individual adjustment of each gamma channel.
+
+2009-11-04  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Make transition period a bit shorter.
+
+2009-11-04  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Have color temperature transition period be DEFINEd at the top.
+	Print current period (day, night, transition) when verbose.
+	Call setlocale() with LC_CTYPE instead of LC_ALL otherwise parameter parsing
+	is locale dependant which is confusing.
+
+2009-11-04  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Use getopt() to parse arguments.
+
+2009-11-04  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Initial import.
+
