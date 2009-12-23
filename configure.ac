@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.64])
 AC_INIT([redshift], [0.1], [jonlst@gmail.com])
-AC_CONFIG_SRCDIR([redshift.c])
+AC_CONFIG_SRCDIR([src/redshift.c])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([dist-bzip2])
 
