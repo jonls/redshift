@@ -4,7 +4,8 @@ bin_PROGRAMS = redshift
 
 redshift_SOURCES = \
 	redshift.c \
-	colortemp.c colortemp.h \
+	colorramp.c colorramp.h \
+	randr.c randr.h \
 	solar.c solar.h
 
 AM_CFLAGS = $(XCB_CFLAGS)

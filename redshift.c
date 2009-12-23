@@ -26,7 +26,7 @@
 #include <locale.h>
 
 #include "solar.h"
-#include "colortemp.h"
+#include "randr.h"
 
 
 /* Bounds for parameters. */
@@ -71,7 +71,7 @@ int
 main(int argc, char *argv[])
 {
 	/* Check extensions needed for color temperature adjustment. */
-	int r = colortemp_check_extension();
+	int r = randr_check_extension();
 	if (r < 0) {
 		fprintf(stderr, "Unable to set color temperature:"
 			" Needed extension is missing.\n");
@@ -236,7 +236,7 @@ main(int argc, char *argv[])
 	}
 
 	/* Set color temperature */
-	r = colortemp_set_temperature(temp, gamma);
+	r = randr_set_temperature(temp, gamma);
 	if (r < 0) {
 		fprintf(stderr, "Unable to set color temperature.\n");
 		exit(EXIT_FAILURE);

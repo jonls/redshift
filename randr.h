@@ -1,4 +1,4 @@
-/* colortemp.h -- X color temperature adjustment header
+/* randr.h -- X RandR gamma adjustment header
    This file is part of Redshift.
 
    Redshift is free software: you can redistribute it and/or modify
@@ -17,10 +17,10 @@
    Copyright (c) 2009  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
-#ifndef _COLORTEMP_H
-#define _COLORTEMP_H
+#ifndef _REDSHIFT_RANDR_H
+#define _REDSHIFT_RANDR_H
 
-int colortemp_check_extension();
-int colortemp_set_temperature(int temp, float gamma[3]);
+int randr_check_extension();
+int randr_set_temperature(int temp, float gamma[3]);
 
-#endif /* ! _COLORTEMP_H */
+#endif /* ! _REDSHIFT_RANDR_H */

@@ -1,4 +1,4 @@
-/* colortemp.c -- X color temperature adjustment source
+/* colorramp.c -- color temperature calculation source
    This file is part of Redshift.
 
    Redshift is free software: you can redistribute it and/or modify
@@ -21,9 +21,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <math.h>
-
-#include <xcb/xcb.h>
-#include <xcb/randr.h>
 
 
 /* Source: http://www.vendian.org/mncharity/dir3/blackbody/
@@ -131,101 +128,10 @@ interpolate_color(float a, const float *c1, const float *c2, float *c)
 	c[2] = (1.0-a)*c1[2] + a*c2[2];
 }
 
-int
-colortemp_check_extension()
+void
+colorramp_fill(uint16_t *gamma_r, uint16_t *gamma_g, uint16_t *gamma_b,
+	       int size, int temp, float gamma[3])
 {
-	xcb_generic_error_t *error;
-
-	/* Open X server connection */
-	xcb_connection_t *conn = xcb_connect(NULL, NULL);
-
-	/* Query RandR version */
-	xcb_randr_query_version_cookie_t ver_cookie =
-		xcb_randr_query_version(conn, 1, 3);
-	xcb_randr_query_version_reply_t *ver_reply =
-		xcb_randr_query_version_reply(conn, ver_cookie, &error);
-
-	if (error) {
-		fprintf(stderr, "RANDR Query Version, error: %d\n",
-			error->error_code);
-		xcb_disconnect(conn);
-		return -1;
-	}
-
-	if (ver_reply->major_version < 1 || ver_reply->minor_version < 3) {
-		fprintf(stderr, "Unsupported RANDR version (%u.%u)\n",
-			ver_reply->major_version, ver_reply->minor_version);
-		free(ver_reply);
-		xcb_disconnect(conn);
-		return -1;
-	}
-
-	free(ver_reply);
-
-	/* Close connection */
-	xcb_disconnect(conn);
-
-	return 0;
-}
-
-int
-colortemp_set_temperature(int temp, float gamma[3])
-{
-	xcb_generic_error_t *error;
-
-	/* Open X server connection */
-	xcb_connection_t *conn = xcb_connect(NULL, NULL);
-
-	/* Get first screen */
-	const xcb_setup_t *setup = xcb_get_setup(conn);
-	xcb_screen_iterator_t iter = xcb_setup_roots_iterator(setup);
-	xcb_screen_t *screen = iter.data;
-
-	/* Get list of CRTCs for the screen */
-	xcb_randr_get_screen_resources_current_cookie_t res_cookie =
-		xcb_randr_get_screen_resources_current(conn, screen->root);
-	xcb_randr_get_screen_resources_current_reply_t *res_reply =
-		xcb_randr_get_screen_resources_current_reply(conn, res_cookie,
-							     &error);
-
-	if (error) {
-		fprintf(stderr, "RANDR Get Screen Resources Current,"
-			" error: %d\n", error->error_code);
-		xcb_disconnect(conn);
-		return -1;
-	}
-
-	xcb_randr_crtc_t *crtcs =
-		xcb_randr_get_screen_resources_current_crtcs(res_reply);
-	xcb_randr_crtc_t crtc = crtcs[0];
-
-	free(res_reply);
-
-	/* Request size of gamma ramps */
-	xcb_randr_get_crtc_gamma_size_cookie_t gamma_size_cookie =
-		xcb_randr_get_crtc_gamma_size(conn, crtc);
-	xcb_randr_get_crtc_gamma_size_reply_t *gamma_size_reply =
-		xcb_randr_get_crtc_gamma_size_reply(conn, gamma_size_cookie,
-						    &error);
-
-	if (error) {
-		fprintf(stderr, "RANDR Get CRTC Gamma Size, error: %d\n",
-			error->error_code);
-		xcb_disconnect(conn);
-		return -1;
-	}
-
-	int gamma_ramp_size = gamma_size_reply->size;
-
-	free(gamma_size_reply);
-
-	if (gamma_ramp_size == 0) {
-		fprintf(stderr, "Error: Gamma ramp size too small, %i\n",
-			gamma_ramp_size);
-		xcb_disconnect(conn);
-		return -1;
-	}
-
 	/* Calculate white point */
 	float white_point[3];
 	float alpha = (temp % 100) / 100.0;
@@ -233,41 +139,12 @@ colortemp_set_temperature(int temp, float gamma[3])
 	interpolate_color(alpha, &blackbody_color[temp_index],
 			  &blackbody_color[temp_index+3], white_point);
 
-	/* Create new gamma ramps */
-	uint16_t *gamma_ramps = malloc(3*gamma_ramp_size*sizeof(uint16_t));
-	if (gamma_ramps == NULL) abort();
-
-	uint16_t *gamma_r = &gamma_ramps[0*gamma_ramp_size];
-	uint16_t *gamma_g = &gamma_ramps[1*gamma_ramp_size];
-	uint16_t *gamma_b = &gamma_ramps[2*gamma_ramp_size];
-
-	for (int i = 0; i < gamma_ramp_size; i++) {
-		gamma_r[i] = pow((float)i/gamma_ramp_size, 1.0/gamma[0]) *
+	for (int i = 0; i < size; i++) {
+		gamma_r[i] = pow((float)i/size, 1.0/gamma[0]) *
 			UINT16_MAX * white_point[0];
-		gamma_g[i] = pow((float)i/gamma_ramp_size, 1.0/gamma[1]) *
+		gamma_g[i] = pow((float)i/size, 1.0/gamma[1]) *
 			UINT16_MAX * white_point[1];
-		gamma_b[i] = pow((float)i/gamma_ramp_size, 1.0/gamma[2]) *
+		gamma_b[i] = pow((float)i/size, 1.0/gamma[2]) *
 			UINT16_MAX * white_point[2];
 	}
-
-	/* Set new gamma ramps */
-	xcb_void_cookie_t gamma_set_cookie =
-		xcb_randr_set_crtc_gamma_checked(conn, crtc, gamma_ramp_size,
-						 gamma_r, gamma_g, gamma_b);
-	error = xcb_request_check(conn, gamma_set_cookie);
-
-	if (error) {
-		fprintf(stderr, "RANDR Set CRTC Gamma, error: %d\n",
-			error->error_code);
-		free(gamma_ramps);
-		xcb_disconnect(conn);
-		return -1;
-	}
-
-	free(gamma_ramps);
-
-	/* Close connection */
-	xcb_disconnect(conn);
-
-	return 0;
 }
