@@ -63,6 +63,64 @@ randr_check_extension()
 	return 0;
 }
 
+static int
+randr_crtc_set_temperature(xcb_connection_t *conn, xcb_randr_crtc_t crtc,
+			   int temp, float gamma[3])
+{
+	xcb_generic_error_t *error;
+
+	/* Request size of gamma ramps */
+	xcb_randr_get_crtc_gamma_size_cookie_t gamma_size_cookie =
+		xcb_randr_get_crtc_gamma_size(conn, crtc);
+	xcb_randr_get_crtc_gamma_size_reply_t *gamma_size_reply =
+		xcb_randr_get_crtc_gamma_size_reply(conn, gamma_size_cookie,
+						    &error);
+
+	if (error) {
+		fprintf(stderr, "RANDR Get CRTC Gamma Size, error: %d\n",
+			error->error_code);
+		return -1;
+	}
+
+	int gamma_ramp_size = gamma_size_reply->size;
+
+	free(gamma_size_reply);
+
+	if (gamma_ramp_size == 0) {
+		fprintf(stderr, "Gamma ramp size too small: %i\n",
+			gamma_ramp_size);
+		return -1;
+	}
+
+	/* Create new gamma ramps */
+	uint16_t *gamma_ramps = malloc(3*gamma_ramp_size*sizeof(uint16_t));
+	if (gamma_ramps == NULL) abort();
+
+	uint16_t *gamma_r = &gamma_ramps[0*gamma_ramp_size];
+	uint16_t *gamma_g = &gamma_ramps[1*gamma_ramp_size];
+	uint16_t *gamma_b = &gamma_ramps[2*gamma_ramp_size];
+
+	colorramp_fill(gamma_r, gamma_g, gamma_b, gamma_ramp_size,
+		       temp, gamma);
+
+	/* Set new gamma ramps */
+	xcb_void_cookie_t gamma_set_cookie =
+		xcb_randr_set_crtc_gamma_checked(conn, crtc, gamma_ramp_size,
+						 gamma_r, gamma_g, gamma_b);
+	error = xcb_request_check(conn, gamma_set_cookie);
+
+	if (error) {
+		fprintf(stderr, "RANDR Set CRTC Gamma, error: %d\n",
+			error->error_code);
+		free(gamma_ramps);
+		return -1;
+	}
+
+	free(gamma_ramps);
+
+	return 0;
+}
+
 int
 randr_set_temperature(int temp, float gamma[3])
 {
@@ -92,61 +150,17 @@ randr_set_temperature(int temp, float gamma[3])
 
 	xcb_randr_crtc_t *crtcs =
 		xcb_randr_get_screen_resources_current_crtcs(res_reply);
-	xcb_randr_crtc_t crtc = crtcs[0];
+
+	for (int i = 0; i < res_reply->num_crtcs; i++) {
+		int r = randr_crtc_set_temperature(conn, crtcs[i],
+						   temp, gamma);
+		if (r < 0) {
+			fprintf(stderr, "WARNING: Unable to adjust"
+				" CRTC %i.\n", i);
+		}
+	}
 
 	free(res_reply);
-
-	/* Request size of gamma ramps */
-	xcb_randr_get_crtc_gamma_size_cookie_t gamma_size_cookie =
-		xcb_randr_get_crtc_gamma_size(conn, crtc);
-	xcb_randr_get_crtc_gamma_size_reply_t *gamma_size_reply =
-		xcb_randr_get_crtc_gamma_size_reply(conn, gamma_size_cookie,
-						    &error);
-
-	if (error) {
-		fprintf(stderr, "RANDR Get CRTC Gamma Size, error: %d\n",
-			error->error_code);
-		xcb_disconnect(conn);
-		return -1;
-	}
-
-	int gamma_ramp_size = gamma_size_reply->size;
-
-	free(gamma_size_reply);
-
-	if (gamma_ramp_size == 0) {
-		fprintf(stderr, "Error: Gamma ramp size too small: %i\n",
-			gamma_ramp_size);
-		xcb_disconnect(conn);
-		return -1;
-	}
-
-	/* Create new gamma ramps */
-	uint16_t *gamma_ramps = malloc(3*gamma_ramp_size*sizeof(uint16_t));
-	if (gamma_ramps == NULL) abort();
-
-	uint16_t *gamma_r = &gamma_ramps[0*gamma_ramp_size];
-	uint16_t *gamma_g = &gamma_ramps[1*gamma_ramp_size];
-	uint16_t *gamma_b = &gamma_ramps[2*gamma_ramp_size];
-
-	colorramp_fill(gamma_r, gamma_g, gamma_b, gamma_ramp_size,
-		       temp, gamma);
-
-	/* Set new gamma ramps */
-	xcb_void_cookie_t gamma_set_cookie =
-		xcb_randr_set_crtc_gamma_checked(conn, crtc, gamma_ramp_size,
-						 gamma_r, gamma_g, gamma_b);
-	error = xcb_request_check(conn, gamma_set_cookie);
-
-	if (error) {
-		fprintf(stderr, "RANDR Set CRTC Gamma, error: %d\n",
-			error->error_code);
-		free(gamma_ramps);
-		xcb_disconnect(conn);
-		return -1;
-	}
-
-	free(gamma_ramps);
 
 	/* Close connection */
 	xcb_disconnect(conn);
