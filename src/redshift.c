@@ -61,7 +61,8 @@
 	"  -g R:G:B\tAdditional gamma correction to apply\n" \
 	"  -h\t\tDisplay this help message\n" \
 	"  -l LAT:LON\tYour current location\n" \
-	"  -m METHOD\tMethod to use to set color temperature (randr or vidmode)\n" \
+	"  -m METHOD\tMethod to use to set color temperature" \
+	" (randr or vidmode)\n"				      \
 	"  -s SCREEN\tX screen to apply adjustments to\n" \
 	"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n" \
 	"  -v\t\tVerbose output\n"
@@ -109,7 +110,7 @@ main(int argc, char *argv[])
 				char *g_s = s;
 				s = strchr(s, ':');
 				if (s == NULL) {
-					fprintf(stderr, USAGE, argv[0]);
+  					fprintf(stderr, USAGE, argv[0]);
 					exit(EXIT_FAILURE);
 				}
 
@@ -133,12 +134,15 @@ main(int argc, char *argv[])
 			lon = atof(s);
 			break;
 		case 'm':
-			if (strcmp(optarg, "randr") == 0) {
+			if (strcmp(optarg, "randr") == 0 ||
+			    strcmp(optarg, "RANDR") == 0) {
 				use_randr = 1;
-			} else if (strcmp(optarg, "vidmode") == 0) {
+			} else if (strcmp(optarg, "vidmode") == 0 ||
+				   strcmp(optarg, "VidMode") == 0) {
 				use_randr = 0;
 			} else {
-				fprintf(stderr, "Unknown method `%s'.\n", optarg);
+				fprintf(stderr, "Unknown method `%s'.\n",
+					optarg);
 				exit(EXIT_FAILURE);
 			}
 			break;
@@ -161,6 +165,7 @@ main(int argc, char *argv[])
 		default:
 			fprintf(stderr, USAGE, argv[0]);
 			exit(EXIT_FAILURE);
+			break;
 		}
 	}
 
