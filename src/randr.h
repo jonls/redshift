@@ -21,6 +21,6 @@
 #define _REDSHIFT_RANDR_H
 
 int randr_check_extension();
-int randr_set_temperature(int temp, float gamma[3]);
+int randr_set_temperature(int screen_num, int temp, float gamma[3]);
 
 #endif /* ! _REDSHIFT_RANDR_H */

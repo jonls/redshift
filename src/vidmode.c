@@ -56,7 +56,7 @@ vidmode_check_extension()
 }
 
 int
-vidmode_set_temperature(int temp, float gamma[3])
+vidmode_set_temperature(int screen_num, int temp, float gamma[3])
 {
 	int r;
 
@@ -67,9 +67,11 @@ vidmode_set_temperature(int temp, float gamma[3])
 		return -1;
 	}
 
-	/* Request size of gamma ramps for screen 0 */
+	if (screen_num < 0) screen_num = DefaultScreen(dpy);
+
+	/* Request size of gamma ramps */
 	int gamma_ramp_size;
-	r = XF86VidModeGetGammaRampSize(dpy, 0, &gamma_ramp_size);
+	r = XF86VidModeGetGammaRampSize(dpy, screen_num, &gamma_ramp_size);
 	if (!r) {
 		fprintf(stderr, "XF86VidModeGetGammaRampSize failed.\n");
 		XCloseDisplay(dpy);
@@ -95,7 +97,8 @@ vidmode_set_temperature(int temp, float gamma[3])
 		       temp, gamma);
 
 	/* Set new gamma ramps */
-	r = XF86VidModeSetGammaRamp(dpy, 0, gamma_ramp_size, gamma_r, gamma_g, gamma_b);
+	r = XF86VidModeSetGammaRamp(dpy, screen_num, gamma_ramp_size,
+				    gamma_r, gamma_g, gamma_b);
 	if (!r) {
 		fprintf(stderr, "XF86VidModeSetGammaRamp failed.\n");
 		XCloseDisplay(dpy);

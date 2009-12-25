@@ -62,6 +62,7 @@
 	"  -h\t\tDisplay this help message\n" \
 	"  -l LAT:LON\tYour current location\n" \
 	"  -m METHOD\tMethod to use to set color temperature (randr or vidmode)\n" \
+	"  -s SCREEN\tX screen to apply adjustments to\n" \
 	"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n" \
 	"  -v\t\tVerbose output\n"
 
@@ -88,11 +89,12 @@ main(int argc, char *argv[])
 	int temp_night = DEFAULT_NIGHT_TEMP;
 	float gamma[3] = { DEFAULT_GAMMA, DEFAULT_GAMMA, DEFAULT_GAMMA };
 	int use_randr = 1;
+	int screen_num = -1;
 	int verbose = 0;
 	char *s;
 
 	int opt;
-	while ((opt = getopt(argc, argv, "g:hl:m:t:v")) != -1) {
+	while ((opt = getopt(argc, argv, "g:hl:m:s:t:v")) != -1) {
 		switch (opt) {
 		case 'g':
 			s = strchr(optarg, ':');
@@ -139,6 +141,9 @@ main(int argc, char *argv[])
 				fprintf(stderr, "Unknown method `%s'.\n", optarg);
 				exit(EXIT_FAILURE);
 			}
+			break;
+		case 's':
+			screen_num = atoi(optarg);
 			break;
 		case 't':
 			s = strchr(optarg, ':');
@@ -249,9 +254,10 @@ main(int argc, char *argv[])
 		if (r < 0) {
 			use_randr = 0;
 		} else {
-			r = randr_set_temperature(temp, gamma);
+			r = randr_set_temperature(screen_num, temp, gamma);
 			if (r < 0) {
-				fprintf(stderr, "Unable to set color temperature with RANDR,"
+				fprintf(stderr, "Unable to set color"
+					" temperature with RANDR,"
 					" trying VidMode...\n");
 				use_randr = 0;
 			}
@@ -262,14 +268,15 @@ main(int argc, char *argv[])
 		/* Check VidMode extension */
 		r = vidmode_check_extension();
 		if (r < 0) {
-			fprintf(stderr, "Missing needed extension to set gamma ramp"
-				"(RANDR or VidMode).\n");
+			fprintf(stderr, "Missing needed extension"
+				" to set gamma ramp (RANDR or VidMode).\n");
 			exit(EXIT_FAILURE);
 		}
 
-		r = vidmode_set_temperature(temp, gamma);
+		r = vidmode_set_temperature(screen_num, temp, gamma);
 		if (r < 0) {
-			fprintf(stderr, "Unable to set color temperature with VidMode.\n");
+			fprintf(stderr, "Unable to set color temperature"
+				" with VidMode.\n");
 			exit(EXIT_FAILURE);
 		}
 	}

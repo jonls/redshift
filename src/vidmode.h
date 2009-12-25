@@ -21,6 +21,6 @@
 #define _REDSHIFT_VIDMODE_H
 
 int vidmode_check_extension();
-int vidmode_set_temperature(int temp, float gamma[3]);
+int vidmode_set_temperature(int screen_num, int temp, float gamma[3]);
 
 #endif /* ! _REDSHIFT_VIDMODE_H */

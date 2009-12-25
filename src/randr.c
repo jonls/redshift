@@ -122,17 +122,35 @@ randr_crtc_set_temperature(xcb_connection_t *conn, xcb_randr_crtc_t crtc,
 }
 
 int
-randr_set_temperature(int temp, float gamma[3])
+randr_set_temperature(int screen_num, int temp, float gamma[3])
 {
 	xcb_generic_error_t *error;
 
 	/* Open X server connection */
-	xcb_connection_t *conn = xcb_connect(NULL, NULL);
+	int preferred_screen;
+	xcb_connection_t *conn = xcb_connect(NULL, &preferred_screen);
 
-	/* Get first screen */
+	if (screen_num < 0) screen_num = preferred_screen;
+
+	/* Get screen */
 	const xcb_setup_t *setup = xcb_get_setup(conn);
 	xcb_screen_iterator_t iter = xcb_setup_roots_iterator(setup);
-	xcb_screen_t *screen = iter.data;
+	xcb_screen_t *screen = NULL;
+
+	for (int i = 0; iter.rem > 0; i++) {
+		if (i == screen_num) {
+			screen = iter.data;
+			break;
+		}
+		xcb_screen_next(&iter);
+	}
+
+	if (screen == NULL) {
+		fprintf(stderr, "Screen %i could not be found.\n",
+			screen_num);
+		xcb_disconnect(conn);
+		return -1;
+	}
 
 	/* Get list of CRTCs for the screen */
 	xcb_randr_get_screen_resources_current_cookie_t res_cookie =

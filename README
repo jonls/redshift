@@ -42,6 +42,7 @@ have reasonable defaults.
      		vidmode). Default is randr. In some cases one of the
      		methods will not work. In that case you may be able to
      		use the other method.
+  -s SCREEN	X screen to apply adjustments to.
   -t DAY:NIGHT	Color temperature to set at daytime/night.
   -v		Verbose output.
 
