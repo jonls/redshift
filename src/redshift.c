@@ -77,12 +77,90 @@
 	"  -l LAT:LON\tYour current location\n" \
 	"  -m METHOD\tMethod to use to set color temperature" \
 	" (randr or vidmode)\n"				      \
+	"  -o\t\tOne shot mode (do not continously adjust" \
+	" color temperature)"					   \
+	"  -r\t\tDisable initial temperature transition" \
 	"  -s SCREEN\tX screen to apply adjustments to\n" \
 	"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n" \
 	"  -v\t\tVerbose output\n"
 
 /* DEGREE SIGN is Unicode U+00b0 */
 #define DEG_CHAR  0xb0
+
+
+static int
+calculate_temp(double elevation, int temp_day, int temp_night,
+	       int verbose)
+{
+	int temp = 0;
+	if (elevation < TRANSITION_LOW) {
+		temp = temp_night;
+		if (verbose) printf("Period: Night\n");
+	} else if (elevation < TRANSITION_HIGH) {
+		/* Transition period: interpolate */
+		float a = (TRANSITION_LOW - elevation) /
+			(TRANSITION_LOW - TRANSITION_HIGH);
+		temp = (1.0-a)*temp_night + a*temp_day;
+		if (verbose) {
+			printf("Period: Transition (%.2f%% day)\n", a*100);
+		}
+	} else {
+		temp = temp_day;
+		if (verbose) printf("Period: Daytime\n");
+	}
+
+	return temp;
+}
+
+static int
+adjust_temperature(int screen_num, int use_randr, int temp, float gamma[3])
+{
+	/* Set color temperature */
+	int failed = 0;
+#ifdef ENABLE_RANDR
+	if (use_randr) {
+		/* Check RANDR extension. */
+		int r = randr_check_extension();
+		if (r < 0) {
+			fprintf(stderr, "RANDR 1.3 extension is"
+				" not available.\n");
+			failed = 1;
+		} else {
+			r = randr_set_temperature(screen_num, temp, gamma);
+			if (r < 0) {
+				fprintf(stderr, "Unable to set color"
+					" temperature with RANDR.\n");
+				failed = 1;
+			}
+		}
+	}
+#endif
+
+#ifdef ENABLE_VIDMODE
+	if (!use_randr || failed) {
+		failed = 0;
+		/* Check VidMode extension */
+		r = vidmode_check_extension();
+		if (r < 0) {
+			fprintf(stderr, "VidMode extension is"
+				" not available.\n");
+			failed = 1;
+		} else {
+			r = vidmode_set_temperature(screen_num, temp, gamma);
+			if (r < 0) {
+				fprintf(stderr, "Unable to set color"
+					" temperature with VidMode.\n");
+				failed = 1;
+			}
+		}
+	}
+#endif
+
+	if (failed) {
+		fprintf(stderr, "Color temperature adjustment failed.\n");
+		exit(EXIT_FAILURE);
+	}
+}
 
 
 int
@@ -105,6 +183,8 @@ main(int argc, char *argv[])
 	float gamma[3] = { DEFAULT_GAMMA, DEFAULT_GAMMA, DEFAULT_GAMMA };
 	int use_randr = 1;
 	int screen_num = -1;
+	int init_trans = 1;
+	int one_shot = 0;
 	int verbose = 0;
 	char *s;
 
@@ -115,7 +195,7 @@ main(int argc, char *argv[])
 
 	/* Parse arguments. */
 	int opt;
-	while ((opt = getopt(argc, argv, "g:hl:m:s:t:v")) != -1) {
+	while ((opt = getopt(argc, argv, "g:hl:m:ors:t:v")) != -1) {
 		switch (opt) {
 		case 'g':
 			s = strchr(optarg, ':');
@@ -177,6 +257,12 @@ main(int argc, char *argv[])
 					optarg);
 				exit(EXIT_FAILURE);
 			}
+			break;
+		case 'o':
+			one_shot = 1;
+			break;
+		case 'r':
+			init_trans = 0;
 			break;
 		case 's':
 			screen_num = atoi(optarg);
@@ -252,82 +338,56 @@ main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	/* Current angular elevation of the sun */
-	time_t now = time(NULL);
-	double elevation = solar_elevation(now, lat, lon);
-
 	if (verbose) {
-		printf("Solar elevation: %f%lc\n", elevation, DEG_CHAR);
-	}
-
-	/* Use elevation of sun to set color temperature */
-	int temp = 0;
-	if (elevation < TRANSITION_LOW) {
-		temp = temp_night;
-		if (verbose) printf("Period: Night\n");
-	} else if (elevation < TRANSITION_HIGH) {
-		/* Transition period: interpolate */
-		float a = (TRANSITION_LOW - elevation) /
-			(TRANSITION_LOW - TRANSITION_HIGH);
-		temp = (1.0-a)*temp_night + a*temp_day;
-		if (verbose) {
-			printf("Period: Transition (%.2f%% day)\n", a*100);
-		}
-	} else {
-		temp = temp_day;
-		if (verbose) printf("Period: Daytime\n");
-	}
-
-	if (verbose) {
-		printf("Color temperature: %uK\n", temp);
 		printf("Gamma: %.3f, %.3f, %.3f\n",
 		       gamma[0], gamma[1], gamma[2]);
 	}
 
-	/* Set color temperature */
-	int failed = 0;
-#ifdef ENABLE_RANDR
-	if (use_randr) {
-		/* Check RANDR extension. */
-		int r = randr_check_extension();
-		if (r < 0) {
-			fprintf(stderr, "RANDR 1.3 extension is"
-				" not available.\n");
-			failed = 1;
-		} else {
-			r = randr_set_temperature(screen_num, temp, gamma);
-			if (r < 0) {
-				fprintf(stderr, "Unable to set color"
-					" temperature with RANDR.\n");
-				failed = 1;
-			}
-		}
-	}
-#endif
+	if (one_shot) {
+		/* Current angular elevation of the sun */
+		time_t now = time(NULL);
+		double elevation = solar_elevation(now, lat, lon);
 
-#ifdef ENABLE_VIDMODE
-	if (!use_randr || failed) {
-		failed = 0;
-		/* Check VidMode extension */
-		r = vidmode_check_extension();
-		if (r < 0) {
-			fprintf(stderr, "VidMode extension is"
-				" not available.\n");
-			failed = 1;
-		} else {
-			r = vidmode_set_temperature(screen_num, temp, gamma);
-			if (r < 0) {
-				fprintf(stderr, "Unable to set color"
-					" temperature with VidMode.\n");
-				failed = 1;
-			}
+		if (verbose) {
+			printf("Solar elevation: %f%lc\n", elevation,
+			       DEG_CHAR);
 		}
-	}
-#endif
 
-	if (failed) {
-		fprintf(stderr, "Color temperature adjustment failed.\n");
-		exit(EXIT_FAILURE);
+		/* Use elevation of sun to set color temperature */
+		int temp = calculate_temp(elevation, temp_day, temp_night,
+					  verbose);
+
+		if (verbose) printf("Color temperature: %uK\n", temp);
+
+		/* Adjust temperature */
+		adjust_temperature(screen_num, use_randr, temp, gamma);
+	} else {
+		/* Make a 10 second initial transition */
+		int short_trans_len = 10;
+		time_t short_trans_end = time(NULL) + short_trans_len;
+
+		while (1) {
+			/* Current angular elevation of the sun */
+			time_t now = time(NULL);
+			double elevation = solar_elevation(now, lat, lon);
+
+			/* Use elevation of sun to set color temperature */
+			int temp = calculate_temp(elevation, temp_day,
+						  temp_night, verbose);
+
+			if (init_trans) {
+				float alpha = (short_trans_end - now) /
+					(float)short_trans_len;
+				if (alpha < 0) init_trans = 0; /* Done */
+				else temp = alpha*6500 + (1.0-alpha)*temp;
+			}
+
+			/* Adjust temperature */
+			adjust_temperature(screen_num, use_randr, temp, gamma);
+
+			if (init_trans) sleep(1);
+			else sleep(5);
+		}
 	}
 
 	return EXIT_SUCCESS;
