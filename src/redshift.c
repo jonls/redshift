@@ -17,6 +17,10 @@
    Copyright (c) 2009  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -26,8 +30,18 @@
 #include <locale.h>
 
 #include "solar.h"
-#include "randr.h"
-#include "vidmode.h"
+
+#ifdef ENABLE_RANDR
+# include "randr.h"
+#endif
+
+#ifdef ENABLE_VIDMODE
+# include "vidmode.h"
+#endif
+
+#if !(defined(ENABLE_RANDR) || defined(ENABLE_VIDMODE))
+# error "Either RANDR or VidMode must be enabled."
+#endif
 
 
 /* Bounds for parameters. */
@@ -83,7 +97,7 @@ main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	/* Parse arguments. */
+	/* Initialize to defaults */
 	float lat = NAN;
 	float lon = NAN;
 	int temp_day = DEFAULT_DAY_TEMP;
@@ -94,6 +108,12 @@ main(int argc, char *argv[])
 	int verbose = 0;
 	char *s;
 
+#ifndef ENABLE_RANDR
+	/* Don't use RANDR if it has been disabled. */
+	use_randr = 0;
+#endif
+
+	/* Parse arguments. */
 	int opt;
 	while ((opt = getopt(argc, argv, "g:hl:m:s:t:v")) != -1) {
 		switch (opt) {
@@ -136,10 +156,22 @@ main(int argc, char *argv[])
 		case 'm':
 			if (strcmp(optarg, "randr") == 0 ||
 			    strcmp(optarg, "RANDR") == 0) {
+#ifdef ENABLE_RANDR
 				use_randr = 1;
+#else
+				fprintf(stderr, "RANDR method was not"
+					" enabled at compile time.\n");
+				exit(EXIT_FAILURE);
+#endif
 			} else if (strcmp(optarg, "vidmode") == 0 ||
 				   strcmp(optarg, "VidMode") == 0) {
+#ifdef ENABLE_VIDMODE
 				use_randr = 0;
+#else
+				fprintf(stderr, "VidMode method was not"
+					" enabled at compile time.\n");
+				exit(EXIT_FAILURE);
+#endif
 			} else {
 				fprintf(stderr, "Unknown method `%s'.\n",
 					optarg);
@@ -253,37 +285,49 @@ main(int argc, char *argv[])
 	}
 
 	/* Set color temperature */
+	int failed = 0;
+#ifdef ENABLE_RANDR
 	if (use_randr) {
 		/* Check RANDR extension. */
 		int r = randr_check_extension();
 		if (r < 0) {
-			use_randr = 0;
+			fprintf(stderr, "RANDR 1.3 extension is"
+				" not available.\n");
+			failed = 1;
 		} else {
 			r = randr_set_temperature(screen_num, temp, gamma);
 			if (r < 0) {
 				fprintf(stderr, "Unable to set color"
-					" temperature with RANDR,"
-					" trying VidMode...\n");
-				use_randr = 0;
+					" temperature with RANDR.\n");
+				failed = 1;
 			}
 		}
 	}
+#endif
 
-	if (!use_randr) {
+#ifdef ENABLE_VIDMODE
+	if (!use_randr || failed) {
+		failed = 0;
 		/* Check VidMode extension */
 		r = vidmode_check_extension();
 		if (r < 0) {
-			fprintf(stderr, "Missing needed extension"
-				" to set gamma ramp (RANDR or VidMode).\n");
-			exit(EXIT_FAILURE);
+			fprintf(stderr, "VidMode extension is"
+				" not available.\n");
+			failed = 1;
+		} else {
+			r = vidmode_set_temperature(screen_num, temp, gamma);
+			if (r < 0) {
+				fprintf(stderr, "Unable to set color"
+					" temperature with VidMode.\n");
+				failed = 1;
+			}
 		}
+	}
+#endif
 
-		r = vidmode_set_temperature(screen_num, temp, gamma);
-		if (r < 0) {
-			fprintf(stderr, "Unable to set color temperature"
-				" with VidMode.\n");
-			exit(EXIT_FAILURE);
-		}
+	if (failed) {
+		fprintf(stderr, "Color temperature adjustment failed.\n");
+		exit(EXIT_FAILURE);
 	}
 
 	return EXIT_SUCCESS;
