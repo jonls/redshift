@@ -79,7 +79,7 @@ vidmode_set_temperature(int screen_num, int temp, float gamma[3])
 	}
 
 	if (gamma_ramp_size == 0) {
-		fprintf(stderr, "Error: Gamma ramp size too small: %i\n",
+		fprintf(stderr, "Gamma ramp size too small: %i\n",
 			gamma_ramp_size);
 		XCloseDisplay(dpy);
 		return -1;
@@ -104,6 +104,8 @@ vidmode_set_temperature(int screen_num, int temp, float gamma[3])
 		XCloseDisplay(dpy);
 		return -1;
 	}
+
+	free(gamma_ramps);
 
 	/* Close display */
 	XCloseDisplay(dpy);
