@@ -44,7 +44,8 @@ typedef enum {
 	SOLAR_TIME_MAX
 } solar_time_t;
 
-double solar_elevation(time_t t, double lat, double lon);
-void solar_table_fill(time_t date, double lat, double lon, time_t *table);
+double solar_elevation(struct timespec date, double lat, double lon);
+void solar_table_fill(struct timespec date, double lat, double lon,
+		      time_t *table);
 
 #endif /* ! _SOLAR_H */

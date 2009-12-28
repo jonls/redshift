@@ -47,17 +47,22 @@ static const double time_angle[] = {
 
 
 /* Unix time from Julian day */
-static time_t
-unix_time_from_jd(double jd)
+static struct timespec
+timespec_from_jd(double jd)
 {
-	return 86400.0*(jd - 2440587.5);
+	struct timespec t;
+	double secs = 86400.0*(jd - 2440587.5);
+	t.tv_sec = floor(secs);
+	t.tv_nsec = (secs - t.tv_sec) * 1000000000.0;
+	return t;
 }
 
 /* Julian day from unix time */
 static double
-jd_from_unix_time(time_t t)
+jd_from_timespec(struct timespec t)
 {
-	return (t / 86400.0) + 2440587.5;
+	return (t.tv_sec / 86400.0) +
+		(t.tv_nsec / 86400000000000.0) + 2440587.5;
 }
 
 /* Julian centuries since J2000.0 from Julian day */
@@ -283,17 +288,17 @@ solar_elevation_from_time(double t, double lat, double lon)
 }
 
 double
-solar_elevation(time_t date, double lat, double lon)
+solar_elevation(struct timespec date, double lat, double lon)
 {
-	double jd = jd_from_unix_time(date);
+	double jd = jd_from_timespec(date);
 	return DEG(solar_elevation_from_time(jcent_from_jd(jd), lat, lon));
 }
 
 void
-solar_table_fill(time_t date, double lat, double lon, time_t *table)
+solar_table_fill(struct timespec date, double lat, double lon, time_t *table)
 {
 	/* Calculate Julian day */
-	double jd = jd_from_unix_time(date);
+	double jd = jd_from_timespec(date);
 
 	/* Calculate Julian day number */
 	double jdn = round(jd);
@@ -303,16 +308,16 @@ solar_table_fill(time_t date, double lat, double lon, time_t *table)
 	double sol_noon = time_of_solar_noon(t, lon);
 	double j_noon = jdn - 0.5 + sol_noon/1440.0;
 	double t_noon = jcent_from_jd(j_noon);
-	table[SOLAR_TIME_NOON] = unix_time_from_jd(j_noon);
+	table[SOLAR_TIME_NOON] = timespec_from_jd(j_noon).tv_sec;
 
 	/* Calculate solar midnight */
-	table[SOLAR_TIME_MIDNIGHT] = unix_time_from_jd(j_noon + 0.5);
+	table[SOLAR_TIME_MIDNIGHT] = timespec_from_jd(j_noon + 0.5).tv_sec;
 
 	/* Calulate absoute time of other phenomena */
 	for (int i = 2; i < SOLAR_TIME_MAX; i++) {
 		double angle = time_angle[i];
 		double offset =
 			time_of_solar_elevation(t, t_noon, lat, lon, angle);
-		table[i] = unix_time_from_jd(jdn - 0.5 + offset/1440.0);
+		table[i] = timespec_from_jd(jdn - 0.5 + offset/1440.0).tv_sec;
 	}
 }
