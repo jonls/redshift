@@ -140,7 +140,7 @@ adjust_temperature(int screen_num, int use_randr, int temp, float gamma[3])
 	if (!use_randr || failed) {
 		failed = 0;
 		/* Check VidMode extension */
-		r = vidmode_check_extension();
+		int r = vidmode_check_extension();
 		if (r < 0) {
 			fprintf(stderr, "VidMode extension is"
 				" not available.\n");
@@ -158,8 +158,10 @@ adjust_temperature(int screen_num, int use_randr, int temp, float gamma[3])
 
 	if (failed) {
 		fprintf(stderr, "Color temperature adjustment failed.\n");
-		exit(EXIT_FAILURE);
+		return -1;
 	}
+
+	return 0;
 }
 
 
@@ -345,7 +347,13 @@ main(int argc, char *argv[])
 
 	if (one_shot) {
 		/* Current angular elevation of the sun */
-		time_t now = time(NULL);
+		struct timespec now;
+		r = clock_gettime(CLOCK_REALTIME, &now);
+		if (r < 0) {
+			perror("clock_gettime");
+			exit(EXIT_FAILURE);
+		}
+
 		double elevation = solar_elevation(now, lat, lon);
 
 		if (verbose) {
@@ -360,15 +368,32 @@ main(int argc, char *argv[])
 		if (verbose) printf("Color temperature: %uK\n", temp);
 
 		/* Adjust temperature */
-		adjust_temperature(screen_num, use_randr, temp, gamma);
+		r = adjust_temperature(screen_num, use_randr, temp, gamma);
+		if (r < 0) {
+			fprintf(stderr, "Temperature adjustment failed.\n");
+			exit(EXIT_FAILURE);
+		}
 	} else {
 		/* Make a 10 second initial transition */
+		struct timespec short_trans_end;
+		r = clock_gettime(CLOCK_REALTIME, &short_trans_end);
+		if (r < 0) {
+			perror("clock_gettime");
+			exit(EXIT_FAILURE);
+		}
+
 		int short_trans_len = 10;
-		time_t short_trans_end = time(NULL) + short_trans_len;
+		short_trans_end.tv_sec += short_trans_len;
 
 		while (1) {
 			/* Current angular elevation of the sun */
-			time_t now = time(NULL);
+			struct timespec now;
+			r = clock_gettime(CLOCK_REALTIME, &now);
+			if (r < 0) {
+				perror("clock_gettime");
+				exit(EXIT_FAILURE);
+			}
+
 			double elevation = solar_elevation(now, lat, lon);
 
 			/* Use elevation of sun to set color temperature */
@@ -376,17 +401,32 @@ main(int argc, char *argv[])
 						  temp_night, verbose);
 
 			if (init_trans) {
-				float alpha = (short_trans_end - now) /
+				double start = now.tv_sec +
+					now.tv_nsec / 1000000000.0;
+				double end = short_trans_end.tv_sec +
+					short_trans_end.tv_nsec /
+					1000000000.0;
+				double alpha = (end - start) /
 					(float)short_trans_len;
 				if (alpha < 0) init_trans = 0; /* Done */
 				else temp = alpha*6500 + (1.0-alpha)*temp;
 			}
 
-			/* Adjust temperature */
-			adjust_temperature(screen_num, use_randr, temp, gamma);
+			if (verbose) {
+				printf("Temperature: %iK\n", temp);
+			}
 
-			if (init_trans) sleep(1);
-			else sleep(5);
+			/* Adjust temperature */
+			r = adjust_temperature(screen_num, use_randr,
+					       temp, gamma);
+			if (r < 0) {
+				fprintf(stderr, "Temperature adjustment"
+					" failed.\n");
+				exit(EXIT_FAILURE);
+			}
+
+			if (init_trans) usleep(100000);
+			else usleep(5000000);
 		}
 	}
 

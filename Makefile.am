@@ -12,7 +12,7 @@ EXTRA_redshift_SOURCES = \
 	src/vidmode.c src/vidmode.h
 
 AM_CFLAGS =
-redshift_LDADD = -lm
+redshift_LDADD = -lm -lrt
 
 if ENABLE_RANDR
 redshift_SOURCES += src/randr.c src/randr.h
