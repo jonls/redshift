@@ -1,4 +1,9 @@
 
+v0.3 (2009-12-28)
+* Continously adjust color temperature. One shot mode can be selected
+  with a command line switch.
+* Allow selection of X screen to apply adjustments to.
+
 v0.2 (2009-12-23)
 * Add a different method for setting the gamma ramps. It uses the
   VidMode extension.

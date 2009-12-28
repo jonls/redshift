@@ -1,3 +1,49 @@
+2009-12-28  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Add autoconf check for clock_gettime() and floor().
+
+2009-12-28  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Use clock_gettime() to read current time.
+
+2009-12-28  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Use struct timespec instead of time_t for increased time precision.
+
+2009-12-26  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Continously change color temperature (Add -o for one shot mode).
+	In continous mode, make a short transition from 6500K to the target
+	temperature when the program starts.
+
+2009-12-25  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Allow compile time selection of which method to compile in.
+
+2009-12-25  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Accept method names with different case.
+
+2009-12-25  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	VidMode: Fix memory leak.
+
+2009-12-25  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Allow selection of X screen to apply adjustments to.
+
+2009-12-25  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	RANDR: Adjust color temperature fro all CRTCs.
+
+2009-12-23  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Increment version to 0.2
+
+2009-12-23  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Update ChangeLog, README and NEWS
+
 2009-12-23  Jon Lund Steffensen  <jonlst@gmail.com>
 
 	Add setting gamma ramps with the VidMode extension.
