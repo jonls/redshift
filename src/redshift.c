@@ -32,6 +32,11 @@
 
 #include "solar.h"
 
+
+#define MIN(x,y)  ((x) < (y) ? (x) : (y))
+#define MAX(x,y)  ((x) > (y) ? (x) : (y))
+
+
 #if !(defined(ENABLE_RANDR) || defined(ENABLE_VIDMODE))
 # error "At least one of RANDR or VidMode must be enabled."
 #endif
@@ -199,7 +204,7 @@ main(int argc, char *argv[])
 	float gamma[3] = { DEFAULT_GAMMA, DEFAULT_GAMMA, DEFAULT_GAMMA };
 	int use_randr = -1;
 	int screen_num = -1;
-	int init_trans = 1;
+	int transition = 1;
 	int one_shot = 0;
 	int verbose = 0;
 	char *s;
@@ -273,7 +278,7 @@ main(int argc, char *argv[])
 			one_shot = 1;
 			break;
 		case 'r':
-			init_trans = 0;
+			transition = 0;
 			break;
 		case 's':
 			screen_num = atoi(optarg);
@@ -419,17 +424,15 @@ main(int argc, char *argv[])
 			exit(EXIT_FAILURE);
 		}
 	} else {
-		/* Make a 10 second initial transition */
 		struct timespec short_trans_end;
-		r = clock_gettime(CLOCK_REALTIME, &short_trans_end);
-		if (r < 0) {
-			perror("clock_gettime");
-			gamma_state_free(&state, use_randr);
-			exit(EXIT_FAILURE);
-		}
+		int short_trans = 0;
 
+		/* Make an initial transition from 6500K */
+		int short_trans_create = 1;
+		int short_trans_begin = 1;
 		int short_trans_len = 10;
-		short_trans_end.tv_sec += short_trans_len;
+
+		float adjustment_alpha = 0.0;
 
 		/* Install signal handler for SIGINT */
 		struct sigaction sigact;
@@ -442,8 +445,28 @@ main(int argc, char *argv[])
 		sigaction(SIGINT, &sigact, NULL);
 
 		/* Continously adjust color temperature */
-		while (!exiting) {
-			/* Current angular elevation of the sun */
+		int done = 0;
+		while (1) {
+			/* Check to see if exit signal was caught */
+			if (exiting) {
+				if (done) {
+					/* On second signal stop the
+					   ongoing transition */
+					short_trans = 0;
+				}
+
+				/* Make a short transition back to
+				   6500K */
+				short_trans_create = 1;
+				short_trans_begin = 0;
+				short_trans_len = 2;
+				adjustment_alpha = 1.0;
+
+				exiting = 0;
+				done = 1;
+			}
+
+			/* Read timestamp */
 			struct timespec now;
 			r = clock_gettime(CLOCK_REALTIME, &now);
 			if (r < 0) {
@@ -452,23 +475,56 @@ main(int argc, char *argv[])
 				exit(EXIT_FAILURE);
 			}
 
+			/* Set up a new transition */
+			if (transition && short_trans_create) {
+				memcpy(&short_trans_end, &now,
+				       sizeof(struct timespec));
+				short_trans_end.tv_sec += short_trans_len;
+
+				short_trans = 1;
+				short_trans_create = 0;
+			}
+
+			/* Current angular elevation of the sun */
 			double elevation = solar_elevation(now, lat, lon);
 
 			/* Use elevation of sun to set color temperature */
 			int temp = calculate_temp(elevation, temp_day,
 						  temp_night, verbose);
 
-			if (init_trans) {
+			/* Ongoing short transition */
+			if (short_trans) {
 				double start = now.tv_sec +
 					now.tv_nsec / 1000000000.0;
 				double end = short_trans_end.tv_sec +
 					short_trans_end.tv_nsec /
 					1000000000.0;
-				double alpha = (end - start) /
+
+				if (start > end) {
+					/* Transisiton done */
+					short_trans = 0;
+				}
+
+				/* Calculate alpha */
+				adjustment_alpha = (end - start) /
 					(float)short_trans_len;
-				if (alpha < 0) init_trans = 0; /* Done */
-				else temp = alpha*6500 + (1.0-alpha)*temp;
+				if (!short_trans_begin) {
+					adjustment_alpha =
+						1.0 - adjustment_alpha;
+				}
+
+				/* Clamp alpha value */
+				adjustment_alpha =
+					MAX(0.0, MIN(adjustment_alpha, 1.0));
 			}
+
+			/* Interpolate between 6500K and calculated
+			   temperature */
+			temp = adjustment_alpha*6500 +
+				(1.0-adjustment_alpha)*temp;
+
+			/* Quit loop when done */
+			if (done && !short_trans) break;
 
 			if (verbose) {
 				printf("Temperature: %iK\n", temp);
@@ -484,13 +540,16 @@ main(int argc, char *argv[])
 				exit(EXIT_FAILURE);
 			}
 
-			if (init_trans) usleep(100000);
+			/* Sleep for a while */
+			if (short_trans) usleep(100000);
 			else usleep(5000000);
 		}
 
+		/* Restore saved gamma ramps */
 		gamma_state_restore(&state, use_randr);
 	}
 
+	/* Clean up gamma adjustment state */
 	gamma_state_free(&state, use_randr);
 
 	return EXIT_SUCCESS;
