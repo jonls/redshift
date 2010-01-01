@@ -20,7 +20,16 @@
 #ifndef _REDSHIFT_VIDMODE_H
 #define _REDSHIFT_VIDMODE_H
 
-int vidmode_check_extension();
-int vidmode_set_temperature(int screen_num, int temp, float gamma[3]);
+#include <X11/Xlib.h>
+
+typedef struct {
+	Display *display;
+	int screen_num;
+} vidmode_state_t;
+
+int vidmode_init(vidmode_state_t *state, int screen_num);
+void vidmode_free(vidmode_state_t *state);
+void vidmode_restore(vidmode_state_t *state);
+int vidmode_set_temperature(vidmode_state_t *state, int temp, float gamma[3]);
 
 #endif /* ! _REDSHIFT_VIDMODE_H */

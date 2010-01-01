@@ -19,169 +19,270 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <xcb/xcb.h>
 #include <xcb/randr.h>
 
+#include "randr.h"
 #include "colorramp.h"
 
 
-int
-randr_check_extension()
-{
-	xcb_generic_error_t *error;
+#define RANDR_VERSION_MAJOR  1
+#define RANDR_VERSION_MINOR  3
 
-	/* Open X server connection */
-	xcb_connection_t *conn = xcb_connect(NULL, NULL);
-
-	/* Query RandR version */
-	xcb_randr_query_version_cookie_t ver_cookie =
-		xcb_randr_query_version(conn, 1, 3);
-	xcb_randr_query_version_reply_t *ver_reply =
-		xcb_randr_query_version_reply(conn, ver_cookie, &error);
-
-	if (error) {
-		fprintf(stderr, "RANDR Query Version, error: %d\n",
-			error->error_code);
-		xcb_disconnect(conn);
-		return -1;
-	}
-
-	if (ver_reply->major_version < 1 || ver_reply->minor_version < 3) {
-		fprintf(stderr, "Unsupported RANDR version (%u.%u)\n",
-			ver_reply->major_version, ver_reply->minor_version);
-		free(ver_reply);
-		xcb_disconnect(conn);
-		return -1;
-	}
-
-	free(ver_reply);
-
-	/* Close connection */
-	xcb_disconnect(conn);
-
-	return 0;
-}
-
-static int
-randr_crtc_set_temperature(xcb_connection_t *conn, xcb_randr_crtc_t crtc,
-			   int temp, float gamma[3])
-{
-	xcb_generic_error_t *error;
-
-	/* Request size of gamma ramps */
-	xcb_randr_get_crtc_gamma_size_cookie_t gamma_size_cookie =
-		xcb_randr_get_crtc_gamma_size(conn, crtc);
-	xcb_randr_get_crtc_gamma_size_reply_t *gamma_size_reply =
-		xcb_randr_get_crtc_gamma_size_reply(conn, gamma_size_cookie,
-						    &error);
-
-	if (error) {
-		fprintf(stderr, "RANDR Get CRTC Gamma Size, error: %d\n",
-			error->error_code);
-		return -1;
-	}
-
-	int gamma_ramp_size = gamma_size_reply->size;
-
-	free(gamma_size_reply);
-
-	if (gamma_ramp_size == 0) {
-		fprintf(stderr, "Gamma ramp size too small: %i\n",
-			gamma_ramp_size);
-		return -1;
-	}
-
-	/* Create new gamma ramps */
-	uint16_t *gamma_ramps = malloc(3*gamma_ramp_size*sizeof(uint16_t));
-	if (gamma_ramps == NULL) abort();
-
-	uint16_t *gamma_r = &gamma_ramps[0*gamma_ramp_size];
-	uint16_t *gamma_g = &gamma_ramps[1*gamma_ramp_size];
-	uint16_t *gamma_b = &gamma_ramps[2*gamma_ramp_size];
-
-	colorramp_fill(gamma_r, gamma_g, gamma_b, gamma_ramp_size,
-		       temp, gamma);
-
-	/* Set new gamma ramps */
-	xcb_void_cookie_t gamma_set_cookie =
-		xcb_randr_set_crtc_gamma_checked(conn, crtc, gamma_ramp_size,
-						 gamma_r, gamma_g, gamma_b);
-	error = xcb_request_check(conn, gamma_set_cookie);
-
-	if (error) {
-		fprintf(stderr, "RANDR Set CRTC Gamma, error: %d\n",
-			error->error_code);
-		free(gamma_ramps);
-		return -1;
-	}
-
-	free(gamma_ramps);
-
-	return 0;
-}
 
 int
-randr_set_temperature(int screen_num, int temp, float gamma[3])
+randr_init(randr_state_t *state, int screen_num)
 {
 	xcb_generic_error_t *error;
 
 	/* Open X server connection */
 	int preferred_screen;
-	xcb_connection_t *conn = xcb_connect(NULL, &preferred_screen);
+	state->conn = xcb_connect(NULL, &preferred_screen);
 
 	if (screen_num < 0) screen_num = preferred_screen;
 
+	/* Query RandR version */
+	xcb_randr_query_version_cookie_t ver_cookie =
+		xcb_randr_query_version(state->conn, RANDR_VERSION_MAJOR,
+					RANDR_VERSION_MINOR);
+	xcb_randr_query_version_reply_t *ver_reply =
+		xcb_randr_query_version_reply(state->conn, ver_cookie, &error);
+
+	if (error) {
+		fprintf(stderr, "RANDR Query Version, error: %d\n",
+			error->error_code);
+		xcb_disconnect(state->conn);
+		return -1;
+	}
+
+	if (ver_reply->major_version < RANDR_VERSION_MAJOR ||
+	    ver_reply->minor_version < RANDR_VERSION_MINOR) {
+		fprintf(stderr, "Unsupported RANDR version (%u.%u)\n",
+			ver_reply->major_version, ver_reply->minor_version);
+		free(ver_reply);
+		xcb_disconnect(state->conn);
+		return -1;
+	}
+
+	free(ver_reply);
+
 	/* Get screen */
-	const xcb_setup_t *setup = xcb_get_setup(conn);
+	const xcb_setup_t *setup = xcb_get_setup(state->conn);
 	xcb_screen_iterator_t iter = xcb_setup_roots_iterator(setup);
-	xcb_screen_t *screen = NULL;
+	state->screen = NULL;
 
 	for (int i = 0; iter.rem > 0; i++) {
 		if (i == screen_num) {
-			screen = iter.data;
+			state->screen = iter.data;
 			break;
 		}
 		xcb_screen_next(&iter);
 	}
 
-	if (screen == NULL) {
+	if (state->screen == NULL) {
 		fprintf(stderr, "Screen %i could not be found.\n",
 			screen_num);
-		xcb_disconnect(conn);
+		xcb_disconnect(state->conn);
 		return -1;
 	}
 
 	/* Get list of CRTCs for the screen */
 	xcb_randr_get_screen_resources_current_cookie_t res_cookie =
-		xcb_randr_get_screen_resources_current(conn, screen->root);
+		xcb_randr_get_screen_resources_current(state->conn,
+						       state->screen->root);
 	xcb_randr_get_screen_resources_current_reply_t *res_reply =
-		xcb_randr_get_screen_resources_current_reply(conn, res_cookie,
+		xcb_randr_get_screen_resources_current_reply(state->conn,
+							     res_cookie,
 							     &error);
 
 	if (error) {
 		fprintf(stderr, "RANDR Get Screen Resources Current,"
 			" error: %d\n", error->error_code);
-		xcb_disconnect(conn);
+		xcb_disconnect(state->conn);
+		return -1;
+	}
+
+	state->crtc_count = res_reply->num_crtcs;
+	state->crtcs = malloc(state->crtc_count * sizeof(randr_crtc_state_t));
+	if (state->crtcs == NULL) {
+		perror("malloc");
+		xcb_disconnect(state->conn);
 		return -1;
 	}
 
 	xcb_randr_crtc_t *crtcs =
 		xcb_randr_get_screen_resources_current_crtcs(res_reply);
 
-	for (int i = 0; i < res_reply->num_crtcs; i++) {
-		int r = randr_crtc_set_temperature(conn, crtcs[i],
-						   temp, gamma);
-		if (r < 0) {
-			fprintf(stderr, "WARNING: Unable to adjust"
-				" CRTC %i.\n", i);
-		}
+	/* Save CRTC identifier in state */
+	for (int i = 0; i < state->crtc_count; i++) {
+		state->crtcs[i].crtc = crtcs[i];
 	}
 
 	free(res_reply);
 
+	/* Save size and gamma ramps of all CRTCs.
+	   Current gamma ramps are saved so we can restore them
+	   at program exit. */
+	for (int i = 0; i < state->crtc_count; i++) {
+		xcb_randr_crtc_t crtc = state->crtcs[i].crtc;
+
+		/* Request size of gamma ramps */
+		xcb_randr_get_crtc_gamma_size_cookie_t gamma_size_cookie =
+			xcb_randr_get_crtc_gamma_size(state->conn, crtc);
+		xcb_randr_get_crtc_gamma_size_reply_t *gamma_size_reply =
+			xcb_randr_get_crtc_gamma_size_reply(state->conn,
+							    gamma_size_cookie,
+							    &error);
+
+		if (error) {
+			fprintf(stderr, "RANDR Get CRTC Gamma Size,"
+				" error: %d\n", error->error_code);
+			xcb_disconnect(state->conn);
+			return -1;
+		}
+
+		unsigned int ramp_size = gamma_size_reply->size;
+		state->crtcs[i].ramp_size = ramp_size;
+
+		free(gamma_size_reply);
+
+		if (ramp_size == 0) {
+			fprintf(stderr, "Gamma ramp size too small: %i\n",
+				ramp_size);
+			xcb_disconnect(state->conn);
+			return -1;
+		}
+
+		/* Request current gamma ramps */
+		xcb_randr_get_crtc_gamma_cookie_t gamma_get_cookie =
+			xcb_randr_get_crtc_gamma(state->conn, crtc);
+		xcb_randr_get_crtc_gamma_reply_t *gamma_get_reply =
+			xcb_randr_get_crtc_gamma_reply(state->conn,
+						       gamma_get_cookie,
+						       &error);
+
+		if (error) {
+			fprintf(stderr, "RANDR Get CRTC Gamma, error: %d\n",
+				error->error_code);
+			xcb_disconnect(state->conn);
+			return -1;
+		}
+
+		uint16_t *gamma_r =
+			xcb_randr_get_crtc_gamma_red(gamma_get_reply);
+		uint16_t *gamma_g =
+			xcb_randr_get_crtc_gamma_green(gamma_get_reply);
+		uint16_t *gamma_b =
+			xcb_randr_get_crtc_gamma_blue(gamma_get_reply);
+
+		/* Allocate space for saved gamma ramps */
+		state->crtcs[i].saved_ramps =
+			malloc(3*ramp_size*sizeof(uint16_t));
+		if (state->crtcs[i].saved_ramps == NULL) {
+			perror("malloc");
+			free(gamma_get_reply);
+			xcb_disconnect(state->conn);
+			return -1;
+		}
+
+		/* Copy gamma ramps into CRTC state */
+		memcpy(&state->crtcs[i].saved_ramps[0*ramp_size], gamma_r,
+		       ramp_size*sizeof(uint16_t));
+		memcpy(&state->crtcs[i].saved_ramps[1*ramp_size], gamma_g,
+		       ramp_size*sizeof(uint16_t));
+		memcpy(&state->crtcs[i].saved_ramps[2*ramp_size], gamma_b,
+		       ramp_size*sizeof(uint16_t));
+
+		free(gamma_get_reply);
+	}
+
+	return 0;
+}
+
+void
+randr_restore(randr_state_t *state)
+{
+	xcb_generic_error_t *error;
+
+	/* Restore CRTC gamma ramps */
+	for (int i = 0; i < state->crtc_count; i++) {
+		xcb_randr_crtc_t crtc = state->crtcs[i].crtc;
+
+		unsigned int ramp_size = state->crtcs[i].ramp_size;
+		uint16_t *gamma_r = &state->crtcs[i].saved_ramps[0*ramp_size];
+		uint16_t *gamma_g = &state->crtcs[i].saved_ramps[1*ramp_size];
+		uint16_t *gamma_b = &state->crtcs[i].saved_ramps[2*ramp_size];
+
+		/* Set gamma ramps */
+		xcb_void_cookie_t gamma_set_cookie =
+			xcb_randr_set_crtc_gamma_checked(state->conn, crtc,
+							 ramp_size, gamma_r,
+							 gamma_g, gamma_b);
+		error = xcb_request_check(state->conn, gamma_set_cookie);
+
+		if (error) {
+			fprintf(stderr, "RANDR Set CRTC Gamma, error: %d\n"
+				"Unable to restore CRTC %i\n",
+				error->error_code, i);
+		}
+	}
+}
+
+void
+randr_free(randr_state_t *state)
+{
+	/* Free CRTC state */
+	for (int i = 0; i < state->crtc_count; i++) {
+		free(state->crtcs[i].saved_ramps);
+	}
+	free(state->crtcs);
+
 	/* Close connection */
-	xcb_disconnect(conn);
+	xcb_disconnect(state->conn);
+}
+
+int
+randr_set_temperature(randr_state_t *state, int temp, float gamma[3])
+{
+	xcb_generic_error_t *error;
+
+	/* Set temperature on all CRTCs */
+	for (int i = 0; i < state->crtc_count; i++) {
+		xcb_randr_crtc_t crtc = state->crtcs[i].crtc;
+		unsigned int ramp_size = state->crtcs[i].ramp_size;
+
+		/* Create new gamma ramps */
+		uint16_t *gamma_ramps = malloc(3*ramp_size*sizeof(uint16_t));
+		if (gamma_ramps == NULL) {
+			perror("malloc");
+			return -1;
+		}
+
+		uint16_t *gamma_r = &gamma_ramps[0*ramp_size];
+		uint16_t *gamma_g = &gamma_ramps[1*ramp_size];
+		uint16_t *gamma_b = &gamma_ramps[2*ramp_size];
+
+		colorramp_fill(gamma_r, gamma_g, gamma_b, ramp_size,
+			       temp, gamma);
+
+		/* Set new gamma ramps */
+		xcb_void_cookie_t gamma_set_cookie =
+			xcb_randr_set_crtc_gamma_checked(state->conn, crtc,
+							 ramp_size, gamma_r,
+							 gamma_g, gamma_b);
+		error = xcb_request_check(state->conn, gamma_set_cookie);
+
+		if (error) {
+			fprintf(stderr, "RANDR Set CRTC Gamma, error: %d\n",
+				error->error_code);
+			free(gamma_ramps);
+			return -1;
+		}
+
+		free(gamma_ramps);
+	}
 
 	return 0;
 }

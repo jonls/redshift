@@ -28,8 +28,13 @@
 #include <time.h>
 #include <math.h>
 #include <locale.h>
+#include <sys/signal.h>
 
 #include "solar.h"
+
+#if !(defined(ENABLE_RANDR) || defined(ENABLE_VIDMODE))
+# error "At least one of RANDR or VidMode must be enabled."
+#endif
 
 #ifdef ENABLE_RANDR
 # include "randr.h"
@@ -39,9 +44,16 @@
 # include "vidmode.h"
 #endif
 
-#if !(defined(ENABLE_RANDR) || defined(ENABLE_VIDMODE))
-# error "Either RANDR or VidMode must be enabled."
+
+/* Union of state data for gamma adjustment methods */
+typedef union {
+#ifdef ENABLE_RANDR
+	randr_state_t randr;
 #endif
+#ifdef ENABLE_VIDMODE
+	vidmode_state_t vidmode;
+#endif
+} gamma_state_t;
 
 
 /* Bounds for parameters. */
@@ -88,6 +100,60 @@
 #define DEG_CHAR  0xb0
 
 
+static volatile sig_atomic_t exiting = 0;
+
+/* Signal handler for exit signals */
+static void
+sigexit(int signo)
+{
+	exiting = 1;
+}
+
+static void
+gamma_state_restore(gamma_state_t *state, int use_randr)
+{
+#ifdef ENABLE_RANDR
+	if (use_randr == 1) randr_restore(&state->randr);
+#endif
+
+#ifdef ENABLE_VIDMODE
+	if (use_randr == 0) vidmode_restore(&state->vidmode);
+#endif
+}
+
+static void
+gamma_state_free(gamma_state_t *state, int use_randr)
+{
+#ifdef ENABLE_RANDR
+	if (use_randr == 1) randr_free(&state->randr);
+#endif
+
+#ifdef ENABLE_VIDMODE
+	if (use_randr == 0) vidmode_free(&state->vidmode);
+#endif
+}
+
+static int
+gamma_state_set_temperature(gamma_state_t *state, int use_randr,
+			    int temp, float gamma[3])
+{
+#ifdef ENABLE_RANDR
+	if (use_randr == 1) {
+		return randr_set_temperature(&state->randr, temp, gamma);
+	}
+#endif
+
+#ifdef ENABLE_VIDMODE
+	if (use_randr == 0) {
+		return vidmode_set_temperature(&state->vidmode, temp, gamma);
+	}
+#endif
+
+	return -1;
+}
+
+
+/* Calculate color temperature for the specified solar elevation. */
 static int
 calculate_temp(double elevation, int temp_day, int temp_night,
 	       int verbose)
@@ -112,58 +178,6 @@ calculate_temp(double elevation, int temp_day, int temp_night,
 	return temp;
 }
 
-static int
-adjust_temperature(int screen_num, int use_randr, int temp, float gamma[3])
-{
-	/* Set color temperature */
-	int failed = 0;
-#ifdef ENABLE_RANDR
-	if (use_randr) {
-		/* Check RANDR extension. */
-		int r = randr_check_extension();
-		if (r < 0) {
-			fprintf(stderr, "RANDR 1.3 extension is"
-				" not available.\n");
-			failed = 1;
-		} else {
-			r = randr_set_temperature(screen_num, temp, gamma);
-			if (r < 0) {
-				fprintf(stderr, "Unable to set color"
-					" temperature with RANDR.\n");
-				failed = 1;
-			}
-		}
-	}
-#endif
-
-#ifdef ENABLE_VIDMODE
-	if (!use_randr || failed) {
-		failed = 0;
-		/* Check VidMode extension */
-		int r = vidmode_check_extension();
-		if (r < 0) {
-			fprintf(stderr, "VidMode extension is"
-				" not available.\n");
-			failed = 1;
-		} else {
-			r = vidmode_set_temperature(screen_num, temp, gamma);
-			if (r < 0) {
-				fprintf(stderr, "Unable to set color"
-					" temperature with VidMode.\n");
-				failed = 1;
-			}
-		}
-	}
-#endif
-
-	if (failed) {
-		fprintf(stderr, "Color temperature adjustment failed.\n");
-		return -1;
-	}
-
-	return 0;
-}
-
 
 int
 main(int argc, char *argv[])
@@ -183,17 +197,12 @@ main(int argc, char *argv[])
 	int temp_day = DEFAULT_DAY_TEMP;
 	int temp_night = DEFAULT_NIGHT_TEMP;
 	float gamma[3] = { DEFAULT_GAMMA, DEFAULT_GAMMA, DEFAULT_GAMMA };
-	int use_randr = 1;
+	int use_randr = -1;
 	int screen_num = -1;
 	int init_trans = 1;
 	int one_shot = 0;
 	int verbose = 0;
 	char *s;
-
-#ifndef ENABLE_RANDR
-	/* Don't use RANDR if it has been disabled. */
-	use_randr = 0;
-#endif
 
 	/* Parse arguments. */
 	int opt;
@@ -345,12 +354,46 @@ main(int argc, char *argv[])
 		       gamma[0], gamma[1], gamma[2]);
 	}
 
+	/* Initialize gamma adjustment method. If use_randr is negative
+	   try all methods until one that works is found. */
+	gamma_state_t state;
+#ifdef ENABLE_RANDR
+	if (use_randr < 0 || use_randr == 1) {
+		/* Initialize RANDR state */
+		r = randr_init(&state.randr, screen_num);
+		if (r < 0) {
+			fprintf(stderr, "Initialization of RANDR failed.\n");
+			if (use_randr < 0) {
+				fprintf(stderr, "Trying other method...\n");
+			} else {
+				exit(EXIT_FAILURE);
+			}
+		} else {
+			use_randr = 1;
+		}
+	}
+#endif
+
+#ifdef ENABLE_VIDMODE
+	if (use_randr < 0 || use_randr == 0) {
+		/* Initialize VidMode state */
+		r = vidmode_init(&state.vidmode, screen_num);
+		if (r < 0) {
+			fprintf(stderr, "Initialization of VidMode failed.\n");
+			exit(EXIT_FAILURE);
+		} else {
+			use_randr = 0;
+		}
+	}
+#endif
+
 	if (one_shot) {
 		/* Current angular elevation of the sun */
 		struct timespec now;
 		r = clock_gettime(CLOCK_REALTIME, &now);
 		if (r < 0) {
 			perror("clock_gettime");
+			gamma_state_free(&state, use_randr);
 			exit(EXIT_FAILURE);
 		}
 
@@ -368,9 +411,11 @@ main(int argc, char *argv[])
 		if (verbose) printf("Color temperature: %uK\n", temp);
 
 		/* Adjust temperature */
-		r = adjust_temperature(screen_num, use_randr, temp, gamma);
+		r = gamma_state_set_temperature(&state, use_randr,
+						temp, gamma);
 		if (r < 0) {
 			fprintf(stderr, "Temperature adjustment failed.\n");
+			gamma_state_free(&state, use_randr);
 			exit(EXIT_FAILURE);
 		}
 	} else {
@@ -379,18 +424,31 @@ main(int argc, char *argv[])
 		r = clock_gettime(CLOCK_REALTIME, &short_trans_end);
 		if (r < 0) {
 			perror("clock_gettime");
+			gamma_state_free(&state, use_randr);
 			exit(EXIT_FAILURE);
 		}
 
 		int short_trans_len = 10;
 		short_trans_end.tv_sec += short_trans_len;
 
-		while (1) {
+		/* Install signal handler for SIGINT */
+		struct sigaction sigact;
+		sigset_t sigset;
+
+		sigemptyset(&sigset);
+		sigact.sa_handler = sigexit;
+		sigact.sa_mask = sigset;
+		sigact.sa_flags = 0;
+		sigaction(SIGINT, &sigact, NULL);
+
+		/* Continously adjust color temperature */
+		while (!exiting) {
 			/* Current angular elevation of the sun */
 			struct timespec now;
 			r = clock_gettime(CLOCK_REALTIME, &now);
 			if (r < 0) {
 				perror("clock_gettime");
+				gamma_state_free(&state, use_randr);
 				exit(EXIT_FAILURE);
 			}
 
@@ -417,18 +475,23 @@ main(int argc, char *argv[])
 			}
 
 			/* Adjust temperature */
-			r = adjust_temperature(screen_num, use_randr,
-					       temp, gamma);
+			r = gamma_state_set_temperature(&state, use_randr,
+							temp, gamma);
 			if (r < 0) {
 				fprintf(stderr, "Temperature adjustment"
 					" failed.\n");
+				gamma_state_free(&state, use_randr);
 				exit(EXIT_FAILURE);
 			}
 
 			if (init_trans) usleep(100000);
 			else usleep(5000000);
 		}
+
+		gamma_state_restore(&state, use_randr);
 	}
+
+	gamma_state_free(&state, use_randr);
 
 	return EXIT_SUCCESS;
 }
