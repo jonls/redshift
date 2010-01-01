@@ -52,12 +52,53 @@ vidmode_init(vidmode_state_t *state, int screen_num)
 		return -1;
 	}
 
+	/* Request size of gamma ramps */
+	r = XF86VidModeGetGammaRampSize(state->display, state->screen_num,
+					&state->ramp_size);
+	if (!r) {
+		fprintf(stderr, "XF86VidModeGetGammaRampSize failed.\n");
+		XCloseDisplay(state->display);
+		return -1;
+	}
+
+	if (state->ramp_size == 0) {
+		fprintf(stderr, "Gamma ramp size too small: %i\n",
+			state->ramp_size);
+		XCloseDisplay(state->display);
+		return -1;
+	}
+
+	/* Allocate space for saved gamma ramps */
+	state->saved_ramps = malloc(3*state->ramp_size*sizeof(uint16_t));
+	if (state->saved_ramps == NULL) {
+		perror("malloc");
+		XCloseDisplay(state->display);
+		return -1;
+	}
+
+	uint16_t *gamma_r = &state->saved_ramps[0*state->ramp_size];
+	uint16_t *gamma_g = &state->saved_ramps[1*state->ramp_size];
+	uint16_t *gamma_b = &state->saved_ramps[2*state->ramp_size];
+
+	/* Save current gamma ramps so we can restore them at program exit. */
+	r = XF86VidModeGetGammaRamp(state->display, state->screen_num,
+				    state->ramp_size, gamma_r, gamma_g,
+				    gamma_b);
+	if (!r) {
+		fprintf(stderr, "XF86VidModeGetGammaRamp failed.\n");
+		XCloseDisplay(state->display);
+		return -1;
+	}
+
 	return 0;
 }
 
 void
 vidmode_free(vidmode_state_t *state)
 {
+	/* Free saved ramps */
+	free(state->saved_ramps);
+
 	/* Close display connection */
 	XCloseDisplay(state->display);
 }
@@ -65,6 +106,17 @@ vidmode_free(vidmode_state_t *state)
 void
 vidmode_restore(vidmode_state_t *state)
 {
+	uint16_t *gamma_r = &state->saved_ramps[0*state->ramp_size];
+	uint16_t *gamma_g = &state->saved_ramps[1*state->ramp_size];
+	uint16_t *gamma_b = &state->saved_ramps[2*state->ramp_size];
+
+	/* Restore gamma ramps */
+	int r = XF86VidModeSetGammaRamp(state->display, state->screen_num,
+					state->ramp_size, gamma_r, gamma_g,
+					gamma_b);
+	if (!r) {
+		fprintf(stderr, "XF86VidModeSetGammaRamp failed.\n");
+	}	
 }
 
 int
@@ -72,37 +124,24 @@ vidmode_set_temperature(vidmode_state_t *state, int temp, float gamma[3])
 {
 	int r;
 
-	/* Request size of gamma ramps */
-	int ramp_size;
-	r = XF86VidModeGetGammaRampSize(state->display, state->screen_num,
-					&ramp_size);
-	if (!r) {
-		fprintf(stderr, "XF86VidModeGetGammaRampSize failed.\n");
-		return -1;
-	}
-
-	if (ramp_size == 0) {
-		fprintf(stderr, "Gamma ramp size too small: %i\n",
-			ramp_size);
-		return -1;
-	}
-
 	/* Create new gamma ramps */
-	uint16_t *gamma_ramps = malloc(3*ramp_size*sizeof(uint16_t));
+	uint16_t *gamma_ramps = malloc(3*state->ramp_size*sizeof(uint16_t));
 	if (gamma_ramps == NULL) {
 		perror("malloc");
 		return -1;
 	}
 
-	uint16_t *gamma_r = &gamma_ramps[0*ramp_size];
-	uint16_t *gamma_g = &gamma_ramps[1*ramp_size];
-	uint16_t *gamma_b = &gamma_ramps[2*ramp_size];
+	uint16_t *gamma_r = &gamma_ramps[0*state->ramp_size];
+	uint16_t *gamma_g = &gamma_ramps[1*state->ramp_size];
+	uint16_t *gamma_b = &gamma_ramps[2*state->ramp_size];
 
-	colorramp_fill(gamma_r, gamma_g, gamma_b, ramp_size, temp, gamma);
+	colorramp_fill(gamma_r, gamma_g, gamma_b, state->ramp_size,
+		       temp, gamma);
 
 	/* Set new gamma ramps */
 	r = XF86VidModeSetGammaRamp(state->display, state->screen_num,
-				    ramp_size, gamma_r, gamma_g, gamma_b);
+				    state->ramp_size, gamma_r, gamma_g,
+				    gamma_b);
 	if (!r) {
 		fprintf(stderr, "XF86VidModeSetGammaRamp failed.\n");
 		free(gamma_ramps);

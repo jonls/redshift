@@ -25,6 +25,8 @@
 typedef struct {
 	Display *display;
 	int screen_num;
+	int ramp_size;
+	uint16_t *saved_ramps;
 } vidmode_state_t;
 
 int vidmode_init(vidmode_state_t *state, int screen_num);
