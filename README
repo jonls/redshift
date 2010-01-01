@@ -18,9 +18,9 @@ different color temperature is set during night and daytime. During
 twilight and early morning, the color temperature transitions smoothly
 from night to daytime temperature to allow your eyes to slowly
 adapt. At night the color temperature should be set to match the lamps in your
-room. This is typically a low temperature at around 3000K-4000K
+room. This is typically a low temperature at around 3000K--4000K
 (default is 3700K). During the day, the color temperature should match
-the light from outside, typically around 5500K-6500K (default is
+the light from outside, typically around 5500K--6500K (default is
 5500K). The light has a higher temperature on an overcast day.
 
 The program will continously update the color temperature at regular
@@ -42,13 +42,13 @@ have reasonable defaults.
      		use the other method.
   -o		One shot mode. Do not continously adjust color
      		temperature.
-  -r		Disable initial temperature transition. By default the
-     		program will make a smooth transition to the desired
-     		color temperature when the program is started.
+  -r		Disable temperature transition. By default the program
+     		will make a smooth transition to the desired color
+     		temperature when the program is started and stopped.
   -s SCREEN	X screen to apply adjustments to.
   -t DAY:NIGHT	Color temperature to set at daytime/night.
   -v		Verbose output.
 
 Example (location is Copenhagen, Denmark):
 
- $ redshift -l 55.7:12.6 -t 6800:3500 -g 0.8 -m vidmode -v
+ $ redshift -l 55.7:12.6 -t 5700:3600 -g 0.8 -m vidmode -v
