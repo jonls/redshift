@@ -20,6 +20,8 @@
 #ifndef _REDSHIFT_VIDMODE_H
 #define _REDSHIFT_VIDMODE_H
 
+#include <stdint.h>
+
 #include <X11/Xlib.h>
 
 typedef struct {

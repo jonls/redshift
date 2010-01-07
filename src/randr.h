@@ -20,6 +20,8 @@
 #ifndef _REDSHIFT_RANDR_H
 #define _REDSHIFT_RANDR_H
 
+#include <stdint.h>
+
 #include <xcb/xcb.h>
 #include <xcb/randr.h>
 
