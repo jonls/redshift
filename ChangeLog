@@ -1,3 +1,39 @@
+2010-01-07  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Add include of stdint.h in header files.
+
+2010-01-07  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Fix: Terminate loop immediately on second exit signal.
+
+2010-01-07  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Handle both INT and TERM signals as exit signals.
+
+2010-01-01  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Update README
+
+2010-01-01  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Make a short transition back to 6500K on program exit.
+
+2010-01-01  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Save and restore ramps with VidMode.
+
+2010-01-01  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Reuse X connection when adjusting gamma ramps.
+	Save gamma ramps when program starts and restore them on exit (only RANDR).
+	Try both RANDR and VidMode if nothing was specified, otherwise try only the
+	specified method.
+
+2009-12-28  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Update README, NEWS and ChangeLog for 0.3 release.
+	Increment version in configure.ac.
+
 2009-12-28  Jon Lund Steffensen  <jonlst@gmail.com>
 
 	Add autoconf check for clock_gettime() and floor().

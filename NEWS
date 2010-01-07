@@ -1,4 +1,7 @@
 
+v0.4 (2010-01-07)
+* Restore gamma ramps on program exit.
+
 v0.3 (2009-12-28)
 * Continously adjust color temperature. One shot mode can be selected
   with a command line switch.
