@@ -434,7 +434,7 @@ main(int argc, char *argv[])
 
 		float adjustment_alpha = 0.0;
 
-		/* Install signal handler for SIGINT */
+		/* Install signal handler for INT and TERM signals */
 		struct sigaction sigact;
 		sigset_t sigset;
 
@@ -443,6 +443,7 @@ main(int argc, char *argv[])
 		sigact.sa_mask = sigset;
 		sigact.sa_flags = 0;
 		sigaction(SIGINT, &sigact, NULL);
+		sigaction(SIGTERM, &sigact, NULL);
 
 		/* Continously adjust color temperature */
 		int done = 0;
