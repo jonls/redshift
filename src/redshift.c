@@ -454,17 +454,17 @@ main(int argc, char *argv[])
 					/* On second signal stop the
 					   ongoing transition */
 					short_trans = 0;
+				} else {
+					/* Make a short transition back to
+					   6500K */
+					short_trans_create = 1;
+					short_trans_begin = 0;
+					short_trans_len = 2;
+					adjustment_alpha = 1.0;
+
+					exiting = 0;
+					done = 1;
 				}
-
-				/* Make a short transition back to
-				   6500K */
-				short_trans_create = 1;
-				short_trans_begin = 0;
-				short_trans_len = 2;
-				adjustment_alpha = 1.0;
-
-				exiting = 0;
-				done = 1;
 			}
 
 			/* Read timestamp */
