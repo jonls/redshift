@@ -106,6 +106,7 @@ typedef union {
 
 
 static volatile sig_atomic_t exiting = 0;
+static volatile sig_atomic_t disable = 0;
 
 /* Signal handler for exit signals */
 static void
@@ -114,45 +115,62 @@ sigexit(int signo)
 	exiting = 1;
 }
 
+/* Signal handler for disable signal */
+static void
+sigdisable(int signo)
+{
+	disable = 1;
+}
+
+
 static void
 gamma_state_restore(gamma_state_t *state, int use_randr)
 {
-#ifdef ENABLE_RANDR
-	if (use_randr == 1) randr_restore(&state->randr);
-#endif
-
+	switch (use_randr) {
 #ifdef ENABLE_VIDMODE
-	if (use_randr == 0) vidmode_restore(&state->vidmode);
+	case 0:
+		vidmode_restore(&state->vidmode);
+		break;
 #endif
+#ifdef ENABLE_RANDR
+	case 1:
+		randr_restore(&state->randr);
+		break;
+#endif
+	}
 }
 
 static void
 gamma_state_free(gamma_state_t *state, int use_randr)
 {
-#ifdef ENABLE_RANDR
-	if (use_randr == 1) randr_free(&state->randr);
-#endif
-
+	switch (use_randr) {
 #ifdef ENABLE_VIDMODE
-	if (use_randr == 0) vidmode_free(&state->vidmode);
+	case 0:
+		vidmode_free(&state->vidmode);
+		break;
 #endif
+#ifdef ENABLE_RANDR
+	case 1:
+		randr_free(&state->randr);
+		break;
+#endif
+	}
 }
 
 static int
 gamma_state_set_temperature(gamma_state_t *state, int use_randr,
 			    int temp, float gamma[3])
 {
-#ifdef ENABLE_RANDR
-	if (use_randr == 1) {
-		return randr_set_temperature(&state->randr, temp, gamma);
-	}
-#endif
-
+	switch (use_randr) {
 #ifdef ENABLE_VIDMODE
-	if (use_randr == 0) {
+	case 0:
 		return vidmode_set_temperature(&state->vidmode, temp, gamma);
-	}
 #endif
+#ifdef ENABLE_RANDR
+	case 1:
+		return randr_set_temperature(&state->randr, temp, gamma);
+#endif
+	}
 
 	return -1;
 }
@@ -426,6 +444,7 @@ main(int argc, char *argv[])
 	} else {
 		struct timespec short_trans_end;
 		int short_trans = 0;
+		int short_trans_done = 0;
 
 		/* Make an initial transition from 6500K */
 		int short_trans_create = 1;
@@ -434,20 +453,45 @@ main(int argc, char *argv[])
 
 		float adjustment_alpha = 0.0;
 
-		/* Install signal handler for INT and TERM signals */
 		struct sigaction sigact;
 		sigset_t sigset;
-
 		sigemptyset(&sigset);
+
+		/* Install signal handler for INT and TERM signals */
 		sigact.sa_handler = sigexit;
 		sigact.sa_mask = sigset;
 		sigact.sa_flags = 0;
 		sigaction(SIGINT, &sigact, NULL);
 		sigaction(SIGTERM, &sigact, NULL);
 
+		/* Install signal handler for USR1 singal */
+		sigact.sa_handler = sigdisable;
+		sigact.sa_mask = sigset;
+		sigact.sa_flags = 0;
+		sigaction(SIGUSR1, &sigact, NULL);
+
 		/* Continously adjust color temperature */
 		int done = 0;
+		int disabled = 0;
 		while (1) {
+			/* Check to see if disable signal was caught */
+			if (disable) {
+				short_trans_create = 1;
+				short_trans_len = 2;
+				if (!disabled) {
+					/* Transition to disabled state */
+					short_trans_begin = 0;
+					adjustment_alpha = 1.0;
+					disabled = 1;
+				} else {
+					/* Transition back to enabled */
+					short_trans_begin = 1;
+					adjustment_alpha = 0.0;
+					disabled = 0;
+				}
+				disable = 0;
+			}
+
 			/* Check to see if exit signal was caught */
 			if (exiting) {
 				if (done) {
@@ -455,16 +499,18 @@ main(int argc, char *argv[])
 					   ongoing transition */
 					short_trans = 0;
 				} else {
-					/* Make a short transition back to
-					   6500K */
-					short_trans_create = 1;
-					short_trans_begin = 0;
-					short_trans_len = 2;
-					adjustment_alpha = 1.0;
+					if (!disabled) {
+						/* Make a short transition
+						   back to 6500K */
+						short_trans_create = 1;
+						short_trans_begin = 0;
+						short_trans_len = 2;
+						adjustment_alpha = 1.0;
+					}
 
-					exiting = 0;
 					done = 1;
 				}
+				exiting = 0;
 			}
 
 			/* Read timestamp */
@@ -477,13 +523,18 @@ main(int argc, char *argv[])
 			}
 
 			/* Set up a new transition */
-			if (transition && short_trans_create) {
-				memcpy(&short_trans_end, &now,
-				       sizeof(struct timespec));
-				short_trans_end.tv_sec += short_trans_len;
+			if (short_trans_create) {
+				if (transition) {
+					memcpy(&short_trans_end, &now,
+					       sizeof(struct timespec));
+					short_trans_end.tv_sec +=
+						short_trans_len;
 
-				short_trans = 1;
-				short_trans_create = 0;
+					short_trans = 1;
+					short_trans_create = 0;
+				} else {
+					short_trans_done = 1;
+				}
 			}
 
 			/* Current angular elevation of the sun */
@@ -504,6 +555,7 @@ main(int argc, char *argv[])
 				if (start > end) {
 					/* Transisiton done */
 					short_trans = 0;
+					short_trans_done = 1;
 				}
 
 				/* Calculate alpha */
@@ -519,6 +571,14 @@ main(int argc, char *argv[])
 					MAX(0.0, MIN(adjustment_alpha, 1.0));
 			}
 
+			if (short_trans_done) {
+				if (disabled) {
+					/* Restore saved gamma ramps */
+					gamma_state_restore(&state, use_randr);
+				}
+				short_trans_done = 0;
+			}
+
 			/* Interpolate between 6500K and calculated
 			   temperature */
 			temp = adjustment_alpha*6500 +
@@ -532,13 +592,16 @@ main(int argc, char *argv[])
 			}
 
 			/* Adjust temperature */
-			r = gamma_state_set_temperature(&state, use_randr,
-							temp, gamma);
-			if (r < 0) {
-				fprintf(stderr, "Temperature adjustment"
-					" failed.\n");
-				gamma_state_free(&state, use_randr);
-				exit(EXIT_FAILURE);
+			if (!disabled || short_trans) {
+				r = gamma_state_set_temperature(&state,
+								use_randr,
+								temp, gamma);
+				if (r < 0) {
+					fprintf(stderr, "Temperature"
+						" adjustment failed.\n");
+					gamma_state_free(&state, use_randr);
+					exit(EXIT_FAILURE);
+				}
 			}
 
 			/* Sleep for a while */
