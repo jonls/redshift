@@ -88,6 +88,7 @@ typedef union {
 	"Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
 #define HELP \
 	USAGE \
+	" " PACKAGE_STRING "\n" \
 	" Set color temperature of display according to time of day.\n" \
 	"  -g R:G:B\tAdditional gamma correction to apply\n" \
 	"  -h\t\tDisplay this help message\n" \
@@ -95,11 +96,12 @@ typedef union {
 	"  -m METHOD\tMethod to use to set color temperature" \
 	" (randr or vidmode)\n"				      \
 	"  -o\t\tOne shot mode (do not continously adjust" \
-	" color temperature)"					   \
-	"  -r\t\tDisable initial temperature transition" \
+	" color temperature)\n"					   \
+	"  -r\t\tDisable initial temperature transition\n" \
 	"  -s SCREEN\tX screen to apply adjustments to\n" \
 	"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n" \
-	"  -v\t\tVerbose output\n"
+	"  -v\t\tVerbose output\n" \
+	"Please report bugs to <" PACKAGE_BUGREPORT ">\n"
 
 /* DEGREE SIGN is Unicode U+00b0 */
 #define DEG_CHAR  0xb0
