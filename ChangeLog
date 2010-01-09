@@ -1,3 +1,21 @@
+2010-01-09  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Add some comments in the redshift.c.
+
+2010-01-09  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Fix formating of help message.
+
+2010-01-09  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Switch between enabled and disabled on USR1 signal.
+	Transition between the two states.
+
+2010-01-07  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Update ChangeLog, NEWS and README for 0.4 release.
+	Increment version in configure.ac.
+
 2010-01-07  Jon Lund Steffensen  <jonlst@gmail.com>
 
 	Add include of stdint.h in header files.

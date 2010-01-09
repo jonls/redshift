@@ -1,4 +1,7 @@
 
+v1.0 (2010-01-09)
+* Temporarily disable/enable when USR1 signal is received.
+
 v0.4 (2010-01-07)
 * Restore gamma ramps on program exit.
 
