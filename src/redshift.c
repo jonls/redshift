@@ -84,6 +84,7 @@ typedef union {
 #define TRANSITION_HIGH    3.0
 
 
+/* Help and usage messages */
 #define USAGE  \
 	"Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
 #define HELP \
@@ -125,6 +126,7 @@ sigdisable(int signo)
 }
 
 
+/* Restore saved gamma ramps with the appropriate adjustment method. */
 static void
 gamma_state_restore(gamma_state_t *state, int use_randr)
 {
@@ -142,6 +144,7 @@ gamma_state_restore(gamma_state_t *state, int use_randr)
 	}
 }
 
+/* Free the state associated with the appropriate adjustment method. */
 static void
 gamma_state_free(gamma_state_t *state, int use_randr)
 {
@@ -159,6 +162,7 @@ gamma_state_free(gamma_state_t *state, int use_randr)
 	}
 }
 
+/* Set temperature with the appropriate adjustment method. */
 static int
 gamma_state_set_temperature(gamma_state_t *state, int use_randr,
 			    int temp, float gamma[3])
@@ -444,6 +448,7 @@ main(int argc, char *argv[])
 			exit(EXIT_FAILURE);
 		}
 	} else {
+		/* Transition state */
 		struct timespec short_trans_end;
 		int short_trans = 0;
 		int short_trans_done = 0;
@@ -453,6 +458,9 @@ main(int argc, char *argv[])
 		int short_trans_begin = 1;
 		int short_trans_len = 10;
 
+		/* Amount of adjustment to apply. At zero the color
+		   temperature will be exactly as calculated, and at one it
+		   will be exactly 6500K. */
 		float adjustment_alpha = 0.0;
 
 		struct sigaction sigact;
@@ -573,6 +581,7 @@ main(int argc, char *argv[])
 					MAX(0.0, MIN(adjustment_alpha, 1.0));
 			}
 
+			/* Handle end of transition */
 			if (short_trans_done) {
 				if (disabled) {
 					/* Restore saved gamma ramps */
