@@ -1,5 +1,5 @@
 
-# redshift
+# redshift Program
 bin_PROGRAMS = redshift
 
 redshift_SOURCES = \
@@ -29,3 +29,9 @@ redshift_LDADD += \
 	$(X11_LIBS) $(X11_CFLAGS) \
 	$(XF86VM_LIBS) $(XF86VM_CFLAGS)
 endif
+
+# Icons
+icondir = @datadir@/icons/hicolor/scalable/apps
+icon_DATA = data/icons/hicolor/scalable/apps/redshift.svg
+
+EXTRA_DIST = $(icon_DATA)
