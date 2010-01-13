@@ -71,7 +71,7 @@ if __name__ == '__main__':
         def child_cb(pid, cond, data=None):
             sys.exit(-1)
 
-        # Add awtch on child process
+        # Add watch on child process
         glib.child_watch_add(process.pid, child_cb)
 
         # Run main loop
