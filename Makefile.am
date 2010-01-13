@@ -30,6 +30,9 @@ redshift_LDADD += \
 	$(XF86VM_LIBS) $(XF86VM_CFLAGS)
 endif
 
+# gtk-redshift Script
+dist_bin_SCRIPTS = src/gtk-redshift/gtk-redshift
+
 # Icons
 icondir = @datadir@/icons/hicolor/scalable/apps
 icon_DATA = data/icons/hicolor/scalable/apps/redshift.svg
