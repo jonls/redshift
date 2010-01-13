@@ -31,7 +31,9 @@ redshift_LDADD += \
 endif
 
 # gtk-redshift Script
+if ENABLE_GTK
 dist_bin_SCRIPTS = src/gtk-redshift/gtk-redshift
+endif
 
 # Icons
 icondir = @datadir@/icons/hicolor/scalable/apps

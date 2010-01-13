@@ -17,6 +17,9 @@ PKG_CHECK_MODULES([XCB], [xcb], [have_xcb=yes], [have_xcb=no])
 PKG_CHECK_MODULES([XCB_RANDR], [xcb-randr],
 	[have_xcb_randr=yes], [have_xcb_randr=no])
 
+# Check for Python
+AM_PATH_PYTHON([2.0], [have_python=yes], [have_python=no])
+
 # Check RANDR method
 AC_MSG_CHECKING([whether to enable RANDR method])
 AC_ARG_ENABLE([randr], [AC_HELP_STRING([--enable-randr],
@@ -59,6 +62,23 @@ AM_CONDITIONAL([ENABLE_VIDMODE], [test "x$enable_vidmode" != xno])
 AS_IF([test "x$enable_randr" = xno -a "x$enable_vidmode" = xno], [
 	AC_MSG_ERROR([Either RANDR or VidMode must be enabled])
 ])
+
+# Check for GTK+ status icon
+AC_MSG_CHECKING([whether to enable GTK status icon])
+AC_ARG_ENABLE([gtk], [AC_HELP_STRING([--enable-gtk],
+	[enable GTK status icon])],
+	[enable_gtk=$enableval],[enable_gtk=yes])
+AS_IF([test "x$enable_gtk" != xno], [
+	AS_IF([test $have_python != yes], [
+		AC_MSG_WARN([The status icon script requires Python and PyGTK])
+	])
+	AC_DEFINE([ENABLE_GTK], 1,
+		[Define to 1 to enable GTK+ status icon])
+	AC_MSG_RESULT([yes])
+], [
+	AC_MSG_RESULT([no])
+])
+AM_CONDITIONAL([ENABLE_GTK], [test "x$enable_gtk" != xno])
 
 # Checks for header files.
 AC_CHECK_HEADERS([locale.h stdint.h stdlib.h string.h unistd.h])
