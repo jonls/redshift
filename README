@@ -1,5 +1,5 @@
 
-Redshift 1.0
+Redshift 1.1
 ============
 
 Adjust color temperature of your screen according to your
@@ -27,7 +27,7 @@ The program will continously update the color temperature at regular
 intervals. One shot mode can be selected if you only want to do one
 adjustment.
 
-The command line options are explained in the following paragrphs. The
+The command line options are explained in the following paragraphs. The
 only required parameter is your current location, all other options
 have reasonable defaults.
 

@@ -1,3 +1,29 @@
+2010-01-14  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	configure.ac: Fail if explicitly enabled features are missing
+	dependencies to build.
+
+2010-01-14  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Allow install of gtk-redshift script to be disabled in configure script.
+
+2010-01-14  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Fix: Typo in comment
+
+2010-01-14  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Add python script to control redshift through a status icon (tray icon).
+
+2010-01-12  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Add scalable application icon.
+
+2010-01-09  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Update ChangeLog, NEWS and README for 1.0 release.
+	Increment version in configure.ac.
+
 2010-01-09  Jon Lund Steffensen  <jonlst@gmail.com>
 
 	Add some comments in the redshift.c.
