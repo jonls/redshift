@@ -24,15 +24,18 @@ AM_PATH_PYTHON([2.0], [have_python=yes], [have_python=no])
 AC_MSG_CHECKING([whether to enable RANDR method])
 AC_ARG_ENABLE([randr], [AC_HELP_STRING([--enable-randr],
 	[enable RANDR method])],
-	[enable_randr=$enableval],[enable_randr=yes])
+	[enable_randr=$enableval],[enable_randr=maybe])
 AS_IF([test "x$enable_randr" != xno], [
 	AS_IF([test $have_xcb = yes -a $have_xcb_randr = yes], [
 		AC_DEFINE([ENABLE_RANDR], 1,
 			[Define to 1 to enable RANDR method])
 		AC_MSG_RESULT([yes])
 	], [
-		enable_randr=no
 		AC_MSG_RESULT([missing dependencies])
+		AS_IF([test "x$enable_randr" = xyes], [
+			AC_MSG_ERROR([missing dependencies for RANDR method])
+		])
+		enable_randr=no
 	])
 ], [
 	AC_MSG_RESULT([no])
@@ -43,15 +46,18 @@ AM_CONDITIONAL([ENABLE_RANDR], [test "x$enable_randr" != xno])
 AC_MSG_CHECKING([whether to enable VidMode method])
 AC_ARG_ENABLE([vidmode], [AC_HELP_STRING([--enable-vidmode],
 	[enable VidMode method])],
-	[enable_vidmode=$enableval],[enable_vidmode=yes])
+	[enable_vidmode=$enableval],[enable_vidmode=maybe])
 AS_IF([test "x$enable_vidmode" != xno], [
 	AS_IF([test $have_x11 = yes -a $have_xf86vm = yes], [
 		AC_DEFINE([ENABLE_VIDMODE], 1,
 			[Define to 1 to enable VidMode method])
 		AC_MSG_RESULT([yes])
 	], [
-		enable_vidmode=no
 		AC_MSG_RESULT([missing dependencies])
+		AS_IF([test "x$enable_vidmode" = xyes], [
+			AC_MSG_ERROR([missing dependencies for VidMode method])
+		])
+		enable_vidmode=no
 	])
 ], [
 	AC_MSG_RESULT([no])
@@ -60,20 +66,18 @@ AM_CONDITIONAL([ENABLE_VIDMODE], [test "x$enable_vidmode" != xno])
 
 # Check that at least one method is enabled
 AS_IF([test "x$enable_randr" = xno -a "x$enable_vidmode" = xno], [
-	AC_MSG_ERROR([Either RANDR or VidMode must be enabled])
+	AC_MSG_ERROR([either RANDR or VidMode must be enabled])
 ])
 
 # Check for GTK+ status icon
 AC_MSG_CHECKING([whether to enable GTK status icon])
 AC_ARG_ENABLE([gtk], [AC_HELP_STRING([--enable-gtk],
 	[enable GTK status icon])],
-	[enable_gtk=$enableval],[enable_gtk=yes])
+	[enable_gtk=$enableval],[enable_gtk=maybe])
 AS_IF([test "x$enable_gtk" != xno], [
 	AS_IF([test $have_python != yes], [
-		AC_MSG_WARN([The status icon script requires Python and PyGTK])
+		AC_MSG_WARN([status icon script requires Python and PyGTK])
 	])
-	AC_DEFINE([ENABLE_GTK], 1,
-		[Define to 1 to enable GTK+ status icon])
 	AC_MSG_RESULT([yes])
 ], [
 	AC_MSG_RESULT([no])
