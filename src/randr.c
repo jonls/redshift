@@ -14,12 +14,15 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2009  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <libintl.h>
+#define _(s) gettext(s)
 
 #include <xcb/xcb.h>
 #include <xcb/randr.h>
@@ -51,15 +54,15 @@ randr_init(randr_state_t *state, int screen_num)
 		xcb_randr_query_version_reply(state->conn, ver_cookie, &error);
 
 	if (error) {
-		fprintf(stderr, "RANDR Query Version, error: %d\n",
-			error->error_code);
+		fprintf(stderr, _("`%s' returned error %d\n"),
+			"RANDR Query Version", error->error_code);
 		xcb_disconnect(state->conn);
 		return -1;
 	}
 
 	if (ver_reply->major_version < RANDR_VERSION_MAJOR ||
 	    ver_reply->minor_version < RANDR_VERSION_MINOR) {
-		fprintf(stderr, "Unsupported RANDR version (%u.%u)\n",
+		fprintf(stderr, _("Unsupported RANDR version (%u.%u)\n"),
 			ver_reply->major_version, ver_reply->minor_version);
 		free(ver_reply);
 		xcb_disconnect(state->conn);
@@ -82,7 +85,7 @@ randr_init(randr_state_t *state, int screen_num)
 	}
 
 	if (state->screen == NULL) {
-		fprintf(stderr, "Screen %i could not be found.\n",
+		fprintf(stderr, _("Screen %i could not be found.\n"),
 			screen_num);
 		xcb_disconnect(state->conn);
 		return -1;
@@ -98,8 +101,9 @@ randr_init(randr_state_t *state, int screen_num)
 							     &error);
 
 	if (error) {
-		fprintf(stderr, "RANDR Get Screen Resources Current,"
-			" error: %d\n", error->error_code);
+		fprintf(stderr, _("`%s' returned error %d\n"),
+			"RANDR Get Screen Resources Current",
+			error->error_code);
 		xcb_disconnect(state->conn);
 		return -1;
 	}
@@ -137,8 +141,9 @@ randr_init(randr_state_t *state, int screen_num)
 							    &error);
 
 		if (error) {
-			fprintf(stderr, "RANDR Get CRTC Gamma Size,"
-				" error: %d\n", error->error_code);
+			fprintf(stderr, _("`%s' returned error %d\n"),
+				"RANDR Get CRTC Gamma Size",
+				error->error_code);
 			xcb_disconnect(state->conn);
 			return -1;
 		}
@@ -149,7 +154,7 @@ randr_init(randr_state_t *state, int screen_num)
 		free(gamma_size_reply);
 
 		if (ramp_size == 0) {
-			fprintf(stderr, "Gamma ramp size too small: %i\n",
+			fprintf(stderr, _("Gamma ramp size too small: %i\n"),
 				ramp_size);
 			xcb_disconnect(state->conn);
 			return -1;
@@ -164,8 +169,8 @@ randr_init(randr_state_t *state, int screen_num)
 						       &error);
 
 		if (error) {
-			fprintf(stderr, "RANDR Get CRTC Gamma, error: %d\n",
-				error->error_code);
+			fprintf(stderr, _("`%s' returned error %d\n"),
+				"RANDR Get CRTC Gamma", error->error_code);
 			xcb_disconnect(state->conn);
 			return -1;
 		}
@@ -223,9 +228,9 @@ randr_restore(randr_state_t *state)
 		error = xcb_request_check(state->conn, gamma_set_cookie);
 
 		if (error) {
-			fprintf(stderr, "RANDR Set CRTC Gamma, error: %d\n"
-				"Unable to restore CRTC %i\n",
-				error->error_code, i);
+			fprintf(stderr, _("`%s' returned error %d\n"),
+				"RANDR Set CRTC Gamma", error->error_code);
+			fprintf(stderr, _("Unable to restore CRTC %i\n"), i);
 		}
 	}
 }
@@ -275,8 +280,8 @@ randr_set_temperature(randr_state_t *state, int temp, float gamma[3])
 		error = xcb_request_check(state->conn, gamma_set_cookie);
 
 		if (error) {
-			fprintf(stderr, "RANDR Set CRTC Gamma, error: %d\n",
-				error->error_code);
+			fprintf(stderr, _("`%s' returned error %d\n"),
+				"RANDR Set CRTC Gamma", error->error_code);
 			free(gamma_ramps);
 			return -1;
 		}

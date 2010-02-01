@@ -14,12 +14,15 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2009  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+
+#include <libintl.h>
+#define _(s) gettext(s)
 
 #include <X11/Xlib.h>
 #include <X11/extensions/xf86vmode.h>
@@ -36,7 +39,8 @@ vidmode_init(vidmode_state_t *state, int screen_num)
 	/* Open display */
 	state->display = XOpenDisplay(NULL);
 	if (state->display == NULL) {
-		fprintf(stderr, "XOpenDisplay failed.\n");
+		fprintf(stderr, _("X request failed: %s\n"),
+			"XOpenDisplay");
 		return -1;
 	}
 
@@ -47,7 +51,8 @@ vidmode_init(vidmode_state_t *state, int screen_num)
 	int major, minor;
 	r = XF86VidModeQueryVersion(state->display, &major, &minor);
 	if (!r) {
-		fprintf(stderr, "XF86VidModeQueryVersion failed.\n");
+		fprintf(stderr, _("X request failed: %s\n"),
+			"XF86VidModeQueryVersion");
 		XCloseDisplay(state->display);
 		return -1;
 	}
@@ -56,13 +61,14 @@ vidmode_init(vidmode_state_t *state, int screen_num)
 	r = XF86VidModeGetGammaRampSize(state->display, state->screen_num,
 					&state->ramp_size);
 	if (!r) {
-		fprintf(stderr, "XF86VidModeGetGammaRampSize failed.\n");
+		fprintf(stderr, _("X request failed: %s\n"),
+			"XF86VidModeGetGammaRampSize");
 		XCloseDisplay(state->display);
 		return -1;
 	}
 
 	if (state->ramp_size == 0) {
-		fprintf(stderr, "Gamma ramp size too small: %i\n",
+		fprintf(stderr, _("Gamma ramp size too small: %i\n"),
 			state->ramp_size);
 		XCloseDisplay(state->display);
 		return -1;
@@ -85,7 +91,8 @@ vidmode_init(vidmode_state_t *state, int screen_num)
 				    state->ramp_size, gamma_r, gamma_g,
 				    gamma_b);
 	if (!r) {
-		fprintf(stderr, "XF86VidModeGetGammaRamp failed.\n");
+		fprintf(stderr, _("X request failed: %s\n"),
+			"XF86VidModeGetGammaRamp");
 		XCloseDisplay(state->display);
 		return -1;
 	}
@@ -115,7 +122,8 @@ vidmode_restore(vidmode_state_t *state)
 					state->ramp_size, gamma_r, gamma_g,
 					gamma_b);
 	if (!r) {
-		fprintf(stderr, "XF86VidModeSetGammaRamp failed.\n");
+		fprintf(stderr, _("X request failed: %s\n"),
+			"XF86VidModeSetGammaRamp");
 	}	
 }
 
@@ -143,7 +151,8 @@ vidmode_set_temperature(vidmode_state_t *state, int temp, float gamma[3])
 				    state->ramp_size, gamma_r, gamma_g,
 				    gamma_b);
 	if (!r) {
-		fprintf(stderr, "XF86VidModeSetGammaRamp failed.\n");
+		fprintf(stderr, _("X request failed: %s\n"),
+			"XF86VidModeSetGammaRamp");
 		free(gamma_ramps);
 		return -1;
 	}

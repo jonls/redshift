@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2009  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #ifdef HAVE_CONFIG_H
@@ -29,6 +29,9 @@
 #include <math.h>
 #include <locale.h>
 #include <sys/signal.h>
+
+#include <libintl.h>
+#define _(s) gettext(s)
 
 #include "solar.h"
 
@@ -82,30 +85,6 @@ typedef union {
    3.0 degrees above the horizon. */
 #define TRANSITION_LOW     SOLAR_CIVIL_TWILIGHT_ELEV
 #define TRANSITION_HIGH    3.0
-
-
-/* Help and usage messages */
-#define USAGE  \
-	"Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
-#define HELP \
-	USAGE \
-	" " PACKAGE_STRING "\n" \
-	" Set color temperature of display according to time of day.\n" \
-	"  -g R:G:B\tAdditional gamma correction to apply\n" \
-	"  -h\t\tDisplay this help message\n" \
-	"  -l LAT:LON\tYour current location\n" \
-	"  -m METHOD\tMethod to use to set color temperature" \
-	" (randr or vidmode)\n"				      \
-	"  -o\t\tOne shot mode (do not continously adjust" \
-	" color temperature)\n"					   \
-	"  -r\t\tDisable initial temperature transition\n" \
-	"  -s SCREEN\tX screen to apply adjustments to\n" \
-	"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n" \
-	"  -v\t\tVerbose output\n" \
-	"Please report bugs to <" PACKAGE_BUGREPORT ">\n"
-
-/* DEGREE SIGN is Unicode U+00b0 */
-#define DEG_CHAR  0xb0
 
 
 static volatile sig_atomic_t exiting = 0;
@@ -190,21 +169,64 @@ calculate_temp(double elevation, int temp_day, int temp_night,
 	int temp = 0;
 	if (elevation < TRANSITION_LOW) {
 		temp = temp_night;
-		if (verbose) printf("Period: Night\n");
+		if (verbose) printf(_("Period: Night\n"));
 	} else if (elevation < TRANSITION_HIGH) {
 		/* Transition period: interpolate */
 		float a = (TRANSITION_LOW - elevation) /
 			(TRANSITION_LOW - TRANSITION_HIGH);
 		temp = (1.0-a)*temp_night + a*temp_day;
 		if (verbose) {
-			printf("Period: Transition (%.2f%% day)\n", a*100);
+			printf(_("Period: Transition (%.2f%% day)\n"), a*100);
 		}
 	} else {
 		temp = temp_day;
-		if (verbose) printf("Period: Daytime\n");
+		if (verbose) printf(_("Period: Daytime\n"));
 	}
 
 	return temp;
+}
+
+
+static void
+print_help(const char *program_name)
+{
+	/* TRANSLATORS: --help output 1
+	   LAT is latitude, LON is longitude,
+	   DAY is temperature at daytime,
+	   NIGHT is temperature at night
+	   no-wrap */
+	printf(_("Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"),
+		program_name);
+	fputs("\n", stdout);
+
+	/* TRANSLATORS: --help output 2
+	   no-wrap */
+	fputs(_("Set color temperature of display"
+		" according to time of day.\n"), stdout);
+	fputs("\n", stdout);
+
+	/* TRANSLATORS: --help output 3
+	   no-wrap */
+	fputs(_("  -h\t\tDisplay this help message\n"
+		"  -v\t\tVerbose output\n"), stdout);
+	fputs("\n", stdout);	
+
+	/* TRANSLATORS: --help output 4
+	   no-wrap */
+	fputs(_("  -g R:G:B\tAdditional gamma correction to apply\n"
+		"  -l LAT:LON\tYour current location\n"
+		"  -m METHOD\tMethod to use to set color temperature"
+		" (randr or vidmode)\n"
+		"  -o\t\tOne shot mode (do not continously adjust"
+		" color temperature)\n"
+		"  -r\t\tDisable initial temperature transition\n"
+		"  -s SCREEN\tX screen to apply adjustments to\n"
+		"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"),
+	      stdout);
+	fputs("\n", stdout);
+
+	/* TRANSLATORS: --help output 5 */
+	printf("Please report bugs to <%s>\n", PACKAGE_BUGREPORT);
 }
 
 
@@ -213,12 +235,15 @@ main(int argc, char *argv[])
 {
 	int r;
 
-	/* Init locale for degree symbol. */
-	char *loc = setlocale(LC_CTYPE, "");
-	if (loc == NULL) {
-		fprintf(stderr, "Unable to set locale.\n");
-		exit(EXIT_FAILURE);
-	}
+	/* Init locale */
+	setlocale(LC_CTYPE, "");
+	setlocale(LC_MESSAGES, "");
+
+#ifdef ENABLE_NLS
+	/* Internationalisation */
+	bindtextdomain("redshift", "/usr/share/locale");
+	textdomain("redshift");
+#endif
 
 	/* Initialize to defaults */
 	float lat = NAN;
@@ -250,7 +275,10 @@ main(int argc, char *argv[])
 				char *g_s = s;
 				s = strchr(s, ':');
 				if (s == NULL) {
-  					fprintf(stderr, USAGE, argv[0]);
+  					fputs(_("Malformed gamma argument.\n"),
+					      stderr);
+					fputs(_("Try `--help' for more"
+						" information.\n"), stderr);
 					exit(EXIT_FAILURE);
 				}
 
@@ -260,13 +288,16 @@ main(int argc, char *argv[])
 			}
 			break;
 		case 'h':
-			printf(HELP, argv[0]);
+			print_help(argv[0]);
 			exit(EXIT_SUCCESS);
 			break;
 		case 'l':
 			s = strchr(optarg, ':');
 			if (s == NULL) {
-				fprintf(stderr, USAGE, argv[0]);
+				fputs(_("Malformed location argument.\n"),
+				      stderr);
+				fputs(_("Try `--help' for more"
+					" information.\n"), stderr);
 				exit(EXIT_FAILURE);
 			}
 			*(s++) = '\0';
@@ -279,8 +310,9 @@ main(int argc, char *argv[])
 #ifdef ENABLE_RANDR
 				use_randr = 1;
 #else
-				fprintf(stderr, "RANDR method was not"
-					" enabled at compile time.\n");
+				fputs(_("RANDR method was not"
+					" enabled at compile time.\n"),
+				      stderr);
 				exit(EXIT_FAILURE);
 #endif
 			} else if (strcmp(optarg, "vidmode") == 0 ||
@@ -288,12 +320,15 @@ main(int argc, char *argv[])
 #ifdef ENABLE_VIDMODE
 				use_randr = 0;
 #else
-				fprintf(stderr, "VidMode method was not"
-					" enabled at compile time.\n");
+				fputs(_("VidMode method was not"
+					" enabled at compile time.\n"),
+				      stderr);
 				exit(EXIT_FAILURE);
 #endif
 			} else {
-				fprintf(stderr, "Unknown method `%s'.\n",
+				/* TRANSLATORS: This refers to the method
+				   used to adjust colors e.g VidMode */
+				fprintf(stderr, _("Unknown method `%s'.\n"),
 					optarg);
 				exit(EXIT_FAILURE);
 			}
@@ -310,7 +345,10 @@ main(int argc, char *argv[])
 		case 't':
 			s = strchr(optarg, ':');
 			if (s == NULL) {
-				fprintf(stderr, USAGE, argv[0]);
+				fputs(_("Malformed temperature argument.\n"),
+				      stderr);
+				fputs(_("Try `--help' for more"
+					" information.\n"), stderr);
 				exit(EXIT_FAILURE);
 			}
 			*(s++) = '\0';
@@ -321,7 +359,9 @@ main(int argc, char *argv[])
 			verbose = 1;
 			break;
 		default:
-			fprintf(stderr, USAGE, argv[0]);
+			fprintf(stderr, _("Unknown parameter `%c'.\n"), opt);
+			fputs(_("Try `--help' for more"
+				" information.\n"), stderr);
 			exit(EXIT_FAILURE);
 			break;
 		}
@@ -329,42 +369,47 @@ main(int argc, char *argv[])
 
 	/* Latitude and longitude must be set */
 	if (isnan(lat) || isnan(lon)) {
-		fprintf(stderr, USAGE, argv[0]);
-		fprintf(stderr, "Latitude and longitude must be set.\n");
+		fputs(_("Latitude and longitude must be set.\n"), stderr);
+		fputs(_("Try `--help' for more"
+			" information.\n"), stderr);
 		exit(EXIT_FAILURE);
 	}
 
 	if (verbose) {
-		printf("Location: %f%lc, %f%lc\n",
-		       lat, DEG_CHAR, lon, DEG_CHAR);
+		/* TRANSLATORS: Append degree symbols if possible. */
+		printf(_("Location: %f, %f\n"), lat, lon);
 	}
 
 	/* Latitude */
 	if (lat < MIN_LAT || lat > MAX_LAT) {
+		/* TRANSLATORS: Append degree symbols if possible. */
 		fprintf(stderr,
-			"Latitude must be between %.1f%lc and %.1f%lc.\n",
-			MIN_LAT, DEG_CHAR, MAX_LAT, DEG_CHAR);
+			_("Latitude must be between %.1f and %.1f.\n"),
+			MIN_LAT, MAX_LAT);
 		exit(EXIT_FAILURE);
 	}
 
 	/* Longitude */
 	if (lon < MIN_LON || lon > MAX_LON) {
+		/* TRANSLATORS: Append degree symbols if possible. */
 		fprintf(stderr,
-			"Longitude must be between %.1f%lc and %.1f%lc.\n",
-			MIN_LON, DEG_CHAR, MAX_LON, DEG_CHAR);
+			_("Longitude must be between %.1f and %.1f.\n"),
+			MIN_LON, MAX_LON);
 		exit(EXIT_FAILURE);
 	}
 
 	/* Color temperature at daytime */
 	if (temp_day < MIN_TEMP || temp_day >= MAX_TEMP) {
-		fprintf(stderr, "Temperature must be between %uK and %uK.\n",
+		fprintf(stderr,
+			_("Temperature must be between %uK and %uK.\n"),
 			MIN_TEMP, MAX_TEMP);
 		exit(EXIT_FAILURE);
 	}
 
 	/* Color temperature at night */
 	if (temp_night < MIN_TEMP || temp_night >= MAX_TEMP) {
-		fprintf(stderr, "Temperature must be between %uK and %uK.\n",
+		fprintf(stderr,
+			_("Temperature must be between %uK and %uK.\n"),
 			MIN_TEMP, MAX_TEMP);
 		exit(EXIT_FAILURE);
 	}
@@ -373,13 +418,14 @@ main(int argc, char *argv[])
 	if (gamma[0] < MIN_GAMMA || gamma[0] > MAX_GAMMA ||
 	    gamma[1] < MIN_GAMMA || gamma[1] > MAX_GAMMA ||
 	    gamma[2] < MIN_GAMMA || gamma[2] > MAX_GAMMA) {
-		fprintf(stderr, "Gamma value must be between %.1f and %.1f.\n",
+		fprintf(stderr,
+			_("Gamma value must be between %.1f and %.1f.\n"),
 			MIN_GAMMA, MAX_GAMMA);
 		exit(EXIT_FAILURE);
 	}
 
 	if (verbose) {
-		printf("Gamma: %.3f, %.3f, %.3f\n",
+		printf(_("Gamma: %.3f, %.3f, %.3f\n"),
 		       gamma[0], gamma[1], gamma[2]);
 	}
 
@@ -391,9 +437,9 @@ main(int argc, char *argv[])
 		/* Initialize RANDR state */
 		r = randr_init(&state.randr, screen_num);
 		if (r < 0) {
-			fprintf(stderr, "Initialization of RANDR failed.\n");
+			fputs(_("Initialization of RANDR failed.\n"), stderr);
 			if (use_randr < 0) {
-				fprintf(stderr, "Trying other method...\n");
+				fputs(_("Trying other method...\n"), stderr);
 			} else {
 				exit(EXIT_FAILURE);
 			}
@@ -408,7 +454,8 @@ main(int argc, char *argv[])
 		/* Initialize VidMode state */
 		r = vidmode_init(&state.vidmode, screen_num);
 		if (r < 0) {
-			fprintf(stderr, "Initialization of VidMode failed.\n");
+			fputs(_("Initialization of VidMode failed.\n"),
+			      stderr);
 			exit(EXIT_FAILURE);
 		} else {
 			use_randr = 0;
@@ -429,21 +476,21 @@ main(int argc, char *argv[])
 		double elevation = solar_elevation(now, lat, lon);
 
 		if (verbose) {
-			printf("Solar elevation: %f%lc\n", elevation,
-			       DEG_CHAR);
+			/* TRANSLATORS: Append degree symbol if possible. */
+			printf(_("Solar elevation: %f\n"), elevation);
 		}
 
 		/* Use elevation of sun to set color temperature */
 		int temp = calculate_temp(elevation, temp_day, temp_night,
 					  verbose);
 
-		if (verbose) printf("Color temperature: %uK\n", temp);
+		if (verbose) printf(_("Color temperature: %uK\n"), temp);
 
 		/* Adjust temperature */
 		r = gamma_state_set_temperature(&state, use_randr,
 						temp, gamma);
 		if (r < 0) {
-			fprintf(stderr, "Temperature adjustment failed.\n");
+			fputs(_("Temperature adjustment failed.\n"), stderr);
 			gamma_state_free(&state, use_randr);
 			exit(EXIT_FAILURE);
 		}
@@ -599,7 +646,7 @@ main(int argc, char *argv[])
 			if (done && !short_trans) break;
 
 			if (verbose) {
-				printf("Temperature: %iK\n", temp);
+				printf(_("Color temperature: %uK\n"), temp);
 			}
 
 			/* Adjust temperature */
@@ -608,8 +655,8 @@ main(int argc, char *argv[])
 								use_randr,
 								temp, gamma);
 				if (r < 0) {
-					fprintf(stderr, "Temperature"
-						" adjustment failed.\n");
+					fputs(_("Temperature adjustment"
+						" failed.\n"), stderr);
 					gamma_state_free(&state, use_randr);
 					exit(EXIT_FAILURE);
 				}
