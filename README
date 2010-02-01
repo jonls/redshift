@@ -52,3 +52,10 @@ have reasonable defaults.
 Example (location is Copenhagen, Denmark):
 
  $ redshift -l 55.7:12.6 -t 5700:3600 -g 0.8 -m vidmode -v
+
+To create a status icon for Redshift in the system tray, start the
+program gtk-redshift instead of redshift, with the same arguments as
+you would pass to redshift. This will create an icon for Redshift in
+the system tray. The icon will allow you to toggle Redshift on and
+off. Thanks goes to the Tango Desktop Project for the
+icon. gtk-redshift requires at least Python 2.4 and PyGTK 2.12.
