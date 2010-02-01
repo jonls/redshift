@@ -18,7 +18,7 @@ PKG_CHECK_MODULES([XCB_RANDR], [xcb-randr],
 	[have_xcb_randr=yes], [have_xcb_randr=no])
 
 # Check for Python
-AM_PATH_PYTHON([2.0], [have_python=yes], [have_python=no])
+AM_PATH_PYTHON([2.4], [have_python=yes], [have_python=no])
 
 # Check RANDR method
 AC_MSG_CHECKING([whether to enable RANDR method])
