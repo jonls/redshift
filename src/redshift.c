@@ -190,7 +190,7 @@ calculate_temp(double elevation, int temp_day, int temp_night,
 static void
 print_help(const char *program_name)
 {
-	/* TRANSLATORS: --help output 1
+	/* TRANSLATORS: help output 1
 	   LAT is latitude, LON is longitude,
 	   DAY is temperature at daytime,
 	   NIGHT is temperature at night
@@ -199,19 +199,19 @@ print_help(const char *program_name)
 		program_name);
 	fputs("\n", stdout);
 
-	/* TRANSLATORS: --help output 2
+	/* TRANSLATORS: help output 2
 	   no-wrap */
 	fputs(_("Set color temperature of display"
 		" according to time of day.\n"), stdout);
 	fputs("\n", stdout);
 
-	/* TRANSLATORS: --help output 3
+	/* TRANSLATORS: help output 3
 	   no-wrap */
 	fputs(_("  -h\t\tDisplay this help message\n"
 		"  -v\t\tVerbose output\n"), stdout);
 	fputs("\n", stdout);	
 
-	/* TRANSLATORS: --help output 4
+	/* TRANSLATORS: help output 4
 	   no-wrap */
 	fputs(_("  -g R:G:B\tAdditional gamma correction to apply\n"
 		"  -l LAT:LON\tYour current location\n"
@@ -225,7 +225,7 @@ print_help(const char *program_name)
 	      stdout);
 	fputs("\n", stdout);
 
-	/* TRANSLATORS: --help output 5 */
+	/* TRANSLATORS: help output 5 */
 	printf("Please report bugs to <%s>\n", PACKAGE_BUGREPORT);
 }
 
@@ -277,7 +277,7 @@ main(int argc, char *argv[])
 				if (s == NULL) {
   					fputs(_("Malformed gamma argument.\n"),
 					      stderr);
-					fputs(_("Try `--help' for more"
+					fputs(_("Try `-h' for more"
 						" information.\n"), stderr);
 					exit(EXIT_FAILURE);
 				}
@@ -296,7 +296,7 @@ main(int argc, char *argv[])
 			if (s == NULL) {
 				fputs(_("Malformed location argument.\n"),
 				      stderr);
-				fputs(_("Try `--help' for more"
+				fputs(_("Try `-h' for more"
 					" information.\n"), stderr);
 				exit(EXIT_FAILURE);
 			}
@@ -347,7 +347,7 @@ main(int argc, char *argv[])
 			if (s == NULL) {
 				fputs(_("Malformed temperature argument.\n"),
 				      stderr);
-				fputs(_("Try `--help' for more"
+				fputs(_("Try `-h' for more"
 					" information.\n"), stderr);
 				exit(EXIT_FAILURE);
 			}
@@ -360,7 +360,7 @@ main(int argc, char *argv[])
 			break;
 		default:
 			fprintf(stderr, _("Unknown parameter `%c'.\n"), opt);
-			fputs(_("Try `--help' for more"
+			fputs(_("Try `-h' for more"
 				" information.\n"), stderr);
 			exit(EXIT_FAILURE);
 			break;
@@ -370,7 +370,7 @@ main(int argc, char *argv[])
 	/* Latitude and longitude must be set */
 	if (isnan(lat) || isnan(lon)) {
 		fputs(_("Latitude and longitude must be set.\n"), stderr);
-		fputs(_("Try `--help' for more"
+		fputs(_("Try `-h' for more"
 			" information.\n"), stderr);
 		exit(EXIT_FAILURE);
 	}

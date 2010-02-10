@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-02-10 21:19+0100\n"
+"POT-Creation-Date: 2010-02-10 22:03+0100\n"
 "PO-Revision-Date: 2010-02-02 11:34+0000\n"
 "Last-Translator: Jon Lund Steffensen <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
@@ -37,7 +37,7 @@ msgstr "Periode: Overgang (%.2f%% dag)\n"
 msgid "Period: Daytime\n"
 msgstr "Periode: Dag\n"
 
-#. TRANSLATORS: --help output 1
+#. TRANSLATORS: help output 1
 #. LAT is latitude, LON is longitude,
 #. DAY is temperature at daytime,
 #. NIGHT is temperature at night
@@ -47,13 +47,13 @@ msgstr "Periode: Dag\n"
 msgid "Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
 msgstr "Brug: %s -l BRED:LÆNG -t DAG:NAT [TILVALG...]\n"
 
-#. TRANSLATORS: --help output 2
+#. TRANSLATORS: help output 2
 #. no-wrap
 #: src/redshift.c:204
 msgid "Set color temperature of display according to time of day.\n"
 msgstr "Indstil skærmens farvetemperatur ud fra klokkeslæt.\n"
 
-#. TRANSLATORS: --help output 3
+#. TRANSLATORS: help output 3
 #. no-wrap
 #: src/redshift.c:210
 msgid ""
@@ -63,7 +63,7 @@ msgstr ""
 "  -h\t\tVis denne hjælpebesked\n"
 "  -v\t\tUddybende udskrift\n"
 
-#. TRANSLATORS: --help output 4
+#. TRANSLATORS: help output 4
 #. no-wrap
 #: src/redshift.c:216
 msgid ""
@@ -90,7 +90,8 @@ msgstr "Fejl i gamma-argument.\n"
 
 #: src/redshift.c:280 src/redshift.c:299 src/redshift.c:350 src/redshift.c:363
 #: src/redshift.c:373
-msgid "Try `--help' for more information.\n"
+#, fuzzy
+msgid "Try `-h' for more information.\n"
 msgstr "Prøv `--help' for mere information.\n"
 
 #: src/redshift.c:297

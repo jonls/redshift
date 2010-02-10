@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift 1.1\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-02-10 21:19+0100\n"
+"POT-Creation-Date: 2010-02-10 22:03+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,7 +31,7 @@ msgstr ""
 msgid "Period: Daytime\n"
 msgstr ""
 
-#. TRANSLATORS: --help output 1
+#. TRANSLATORS: help output 1
 #. LAT is latitude, LON is longitude,
 #. DAY is temperature at daytime,
 #. NIGHT is temperature at night
@@ -41,13 +41,13 @@ msgstr ""
 msgid "Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
 msgstr ""
 
-#. TRANSLATORS: --help output 2
+#. TRANSLATORS: help output 2
 #. no-wrap
 #: src/redshift.c:204
 msgid "Set color temperature of display according to time of day.\n"
 msgstr ""
 
-#. TRANSLATORS: --help output 3
+#. TRANSLATORS: help output 3
 #. no-wrap
 #: src/redshift.c:210
 msgid ""
@@ -55,7 +55,7 @@ msgid ""
 "  -v\t\tVerbose output\n"
 msgstr ""
 
-#. TRANSLATORS: --help output 4
+#. TRANSLATORS: help output 4
 #. no-wrap
 #: src/redshift.c:216
 msgid ""
@@ -74,7 +74,7 @@ msgstr ""
 
 #: src/redshift.c:280 src/redshift.c:299 src/redshift.c:350 src/redshift.c:363
 #: src/redshift.c:373
-msgid "Try `--help' for more information.\n"
+msgid "Try `-h' for more information.\n"
 msgstr ""
 
 #: src/redshift.c:297
