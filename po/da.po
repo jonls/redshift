@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-02-10 22:03+0100\n"
+"POT-Creation-Date: 2010-02-10 22:50+0100\n"
 "PO-Revision-Date: 2010-02-02 11:34+0000\n"
 "Last-Translator: Jon Lund Steffensen <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
@@ -88,8 +88,8 @@ msgstr ""
 msgid "Malformed gamma argument.\n"
 msgstr "Fejl i gamma-argument.\n"
 
-#: src/redshift.c:280 src/redshift.c:299 src/redshift.c:350 src/redshift.c:363
-#: src/redshift.c:373
+#: src/redshift.c:280 src/redshift.c:299 src/redshift.c:350 src/redshift.c:362
+#: src/redshift.c:371
 #, fuzzy
 msgid "Try `-h' for more information.\n"
 msgstr "Prøv `--help' for mere information.\n"
@@ -117,70 +117,65 @@ msgstr "Ukendt metode `%s'.\n"
 msgid "Malformed temperature argument.\n"
 msgstr "Fejl i temperaturargument.\n"
 
-#: src/redshift.c:362
-#, c-format
-msgid "Unknown parameter `%c'.\n"
-msgstr "Ukendt parameter `%c'.\n"
-
-#: src/redshift.c:372
+#: src/redshift.c:370
 msgid "Latitude and longitude must be set.\n"
 msgstr "Breddegrad og længdegrad skal angives.\n"
 
 #. TRANSLATORS: Append degree symbols if possible.
-#: src/redshift.c:380
+#: src/redshift.c:377
 #, c-format
 msgid "Location: %f, %f\n"
 msgstr "Placering: %f°, %f°\n"
 
-#: src/redshift.c:387
+#: src/redshift.c:384
 #, c-format
 msgid "Latitude must be between %.1f and %.1f.\n"
 msgstr "Breddegrad skal være mellem %.1f° og %.1f°.\n"
 
-#: src/redshift.c:396
+#: src/redshift.c:393
 #, c-format
 msgid "Longitude must be between %.1f and %.1f.\n"
 msgstr "Længdegrad skal være mellem %.1f° og %.1f°.\n"
 
-#: src/redshift.c:404 src/redshift.c:412
+#: src/redshift.c:401 src/redshift.c:409
 #, c-format
 msgid "Temperature must be between %uK and %uK.\n"
 msgstr "Temperatur skal være mellem %uK og %uK.\n"
 
-#: src/redshift.c:422
+#: src/redshift.c:419
 #, c-format
 msgid "Gamma value must be between %.1f and %.1f.\n"
 msgstr "Gamma-værdi skal være mellem %.1f og %.1f.\n"
 
-#: src/redshift.c:428
+#: src/redshift.c:425
 #, c-format
 msgid "Gamma: %.3f, %.3f, %.3f\n"
 msgstr "Gamma: %.3f, %.3f, %.3f\n"
 
-#: src/redshift.c:440
+#: src/redshift.c:437
 msgid "Initialization of RANDR failed.\n"
 msgstr "Fejl under klargøring af RANDR.\n"
 
-#: src/redshift.c:442
+#: src/redshift.c:439
 msgid "Trying other method...\n"
 msgstr "Prøver anden metode...\n"
 
-#: src/redshift.c:457
+#: src/redshift.c:454
 msgid "Initialization of VidMode failed.\n"
 msgstr "Fejl under klargøring af VidMode.\n"
 
 #. TRANSLATORS: Append degree symbol if possible.
-#: src/redshift.c:480
+#: src/redshift.c:477
 #, c-format
 msgid "Solar elevation: %f\n"
 msgstr "Solhøjde: %f°\n"
 
-#: src/redshift.c:487 src/redshift.c:649
+#: src/redshift.c:484 src/redshift.c:646
 #, c-format
 msgid "Color temperature: %uK\n"
 msgstr "Farvetemperatur: %uK\n"
 
-#: src/redshift.c:493 src/redshift.c:658
+#: src/redshift.c:490 src/redshift.c:655
 msgid "Temperature adjustment failed.\n"
 msgstr "Fejl ved justering af temperatur.\n"
 
@@ -219,3 +214,6 @@ msgstr "Fejl ved X forespørgsel: %s\n"
 #: src/gtk-redshift/gtk-redshift.py:59
 msgid "Toggle"
 msgstr "Slå til/fra"
+
+#~ msgid "Unknown parameter `%c'.\n"
+#~ msgstr "Ukendt parameter `%c'.\n"

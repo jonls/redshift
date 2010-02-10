@@ -296,8 +296,8 @@ main(int argc, char *argv[])
 			if (s == NULL) {
 				fputs(_("Malformed location argument.\n"),
 				      stderr);
-				fputs(_("Try `-h' for more"
-					" information.\n"), stderr);
+				fputs(_("Try `-h' for more information.\n"),
+				      stderr);
 				exit(EXIT_FAILURE);
 			}
 			*(s++) = '\0';
@@ -347,8 +347,8 @@ main(int argc, char *argv[])
 			if (s == NULL) {
 				fputs(_("Malformed temperature argument.\n"),
 				      stderr);
-				fputs(_("Try `-h' for more"
-					" information.\n"), stderr);
+				fputs(_("Try `-h' for more information.\n"),
+				      stderr);
 				exit(EXIT_FAILURE);
 			}
 			*(s++) = '\0';
@@ -358,10 +358,8 @@ main(int argc, char *argv[])
 		case 'v':
 			verbose = 1;
 			break;
-		default:
-			fprintf(stderr, _("Unknown parameter `%c'.\n"), opt);
-			fputs(_("Try `-h' for more"
-				" information.\n"), stderr);
+		case '?':
+			fputs(_("Try `-h' for more information.\n"), stderr);
 			exit(EXIT_FAILURE);
 			break;
 		}
@@ -370,8 +368,7 @@ main(int argc, char *argv[])
 	/* Latitude and longitude must be set */
 	if (isnan(lat) || isnan(lon)) {
 		fputs(_("Latitude and longitude must be set.\n"), stderr);
-		fputs(_("Try `-h' for more"
-			" information.\n"), stderr);
+		fputs(_("Try `-h' for more information.\n"), stderr);
 		exit(EXIT_FAILURE);
 	}
 
