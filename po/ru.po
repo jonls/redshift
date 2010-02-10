@@ -89,9 +89,8 @@ msgstr "Некорректная величина гаммы.\n"
 
 #: src/redshift.c:280 src/redshift.c:299 src/redshift.c:350 src/redshift.c:362
 #: src/redshift.c:371
-#, fuzzy
 msgid "Try `-h' for more information.\n"
-msgstr "Воспользуйтесь «--help» для получения дополнительной информации.\n"
+msgstr "Воспользуйтесь «-h» для получения дополнительной информации.\n"
 
 #: src/redshift.c:297
 msgid "Malformed location argument.\n"

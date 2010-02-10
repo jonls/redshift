@@ -90,9 +90,8 @@ msgstr "Fejl i gamma-argument.\n"
 
 #: src/redshift.c:280 src/redshift.c:299 src/redshift.c:350 src/redshift.c:362
 #: src/redshift.c:371
-#, fuzzy
 msgid "Try `-h' for more information.\n"
-msgstr "Prøv `--help' for mere information.\n"
+msgstr "Prøv `-h' for mere information.\n"
 
 #: src/redshift.c:297
 msgid "Malformed location argument.\n"
