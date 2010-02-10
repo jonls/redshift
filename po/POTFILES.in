@@ -1,0 +1,7 @@
+# List of source files containing translatable strings
+
+src/redshift.c
+src/randr.c
+src/vidmode.c
+
+src/gtk-redshift/gtk-redshift.py
