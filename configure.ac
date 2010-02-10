@@ -11,6 +11,9 @@ AM_INIT_AUTOMAKE([dist-bzip2])
 AC_PROG_CC_C99
 
 # Checks for libraries.
+AM_GNU_GETTEXT_VERSION([0.17])
+AM_GNU_GETTEXT([external])
+
 PKG_CHECK_MODULES([X11], [x11], [have_x11=yes], [have_x11=no])
 PKG_CHECK_MODULES([XF86VM], [xxf86vm], [have_xf86vm=yes], [have_xf86vm=no])
 PKG_CHECK_MODULES([XCB], [xcb], [have_xcb=yes], [have_xcb=no])
@@ -98,6 +101,7 @@ AC_CHECK_FUNCS([setlocale strchr floor pow clock_gettime])
 
 AC_CONFIG_FILES([
 	Makefile
+	po/Makefile.in
 ])
 AC_OUTPUT
 
