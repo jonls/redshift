@@ -30,8 +30,8 @@ import gtk, glib
 
 if __name__ == '__main__':
     # Internationalisation
-    gettext.bindtextdomain('gtk-redshift')
-    gettext.textdomain('gtk-redshift')
+    gettext.bindtextdomain('redshift')
+    gettext.textdomain('redshift')
     _ = gettext.gettext
 
     # Start redshift with arguments from the command line
