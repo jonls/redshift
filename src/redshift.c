@@ -241,8 +241,8 @@ main(int argc, char *argv[])
 
 #ifdef ENABLE_NLS
 	/* Internationalisation */
-	bindtextdomain("redshift", "/usr/share/locale");
-	textdomain("redshift");
+	bindtextdomain(PACKAGE, LOCALEDIR);
+	textdomain(PACKAGE);
 #endif
 
 	/* Initialize to defaults */
