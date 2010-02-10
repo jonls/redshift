@@ -3,8 +3,4 @@
 # change to root directory
 cd $(dirname "$0")
 
-# run auto.* tools
-aclocal --force && \
-    autoheader --force && \
-    automake --gnu --add-missing --force-missing --copy && \
-    autoconf --force
+autoreconf --force --install
