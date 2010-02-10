@@ -1,4 +1,11 @@
 
+SUBDIRS = po
+ACLOCAL_AMFLAGS = -I m4
+
+# I18n
+localedir = $(datadir)/locale
+INCLUDES = -DLOCALEDIR=\"$(localedir)\"
+
 # redshift Program
 bin_PROGRAMS = redshift
 
@@ -12,7 +19,7 @@ EXTRA_redshift_SOURCES = \
 	src/vidmode.c src/vidmode.h
 
 AM_CFLAGS =
-redshift_LDADD =
+redshift_LDADD = @LIBINTL@
 
 if ENABLE_RANDR
 redshift_SOURCES += src/randr.c src/randr.h
@@ -32,7 +39,7 @@ endif
 
 # gtk-redshift Script
 if ENABLE_GTK
-dist_bin_SCRIPTS = src/gtk-redshift/gtk-redshift
+dist_bin_SCRIPTS = src/gtk-redshift/gtk-redshift.py
 endif
 
 # Icons
