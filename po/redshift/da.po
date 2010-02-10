@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-02-02 00:50+0100\n"
-"PO-Revision-Date: 2010-02-02 11:53+0000\n"
+"PO-Revision-Date: 2010-02-09 20:35+0000\n"
 "Last-Translator: Jon Lund Steffensen <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-02-03 04:52+0000\n"
+"X-Launchpad-Export-Date: 2010-02-10 04:50+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: src/redshift.c:172
@@ -40,7 +40,7 @@ msgstr "Periode: Dag\n"
 #: src/redshift.c:198
 #, c-format
 msgid "Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
-msgstr ""
+msgstr "Brug: %s -l BRED:LÆNG -t DAG:NAT [TILVALG...]\n"
 
 #. TRANSLATORS: --help output 2
 #. no-wrap
@@ -55,6 +55,8 @@ msgid ""
 "  -h\t\tDisplay this help message\n"
 "  -v\t\tVerbose output\n"
 msgstr ""
+"  -h\t\tVis denne hjælpebesked\n"
+"  -v\t\tUddybende udskrift\n"
 
 #. TRANSLATORS: --help output 4
 #. no-wrap
@@ -68,6 +70,14 @@ msgid ""
 "  -s SCREEN\tX screen to apply adjustments to\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
+"  -g R:G:B\tYderligere gamma-korrektion som skal anvendes\n"
+"  -l BRED:LÆNG\tKoordinater for din placering\n"
+"  -m METODE\tMetode som benyttes til at sætte farvetemperatur (randr eller "
+"vidmode)\n"
+"  -o\t\tEngangsmodus (bliver ikke ved med at justere farvetemperatur)\n"
+"  -r\t\tSlå indledende temperaturovergang fra\n"
+"  -s SKÆRM\tX-skærm som skal justeres\n"
+"  -t DAG:NAT\tFarvetemperatur som sættes hhv. dag og nat\n"
 
 #: src/redshift.c:278
 msgid "Malformed gamma argument.\n"
