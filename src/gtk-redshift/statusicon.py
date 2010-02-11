@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# gtk-redshift -- GTK+ status icon source
+# statusicon.py -- GTK+ status icon source
 # This file is part of Redshift.
 
 # Redshift is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 # Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
 
 
-import sys
+import sys, os
 import subprocess, signal
 import gettext
 
@@ -30,7 +30,7 @@ import gtk, glib
 import defs
 
 
-if __name__ == '__main__':
+def run_statusicon():
     # Internationalisation
     gettext.bindtextdomain('redshift', defs.LOCALEDIR)
     gettext.textdomain('redshift')

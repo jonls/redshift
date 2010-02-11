@@ -40,8 +40,13 @@ endif
 
 # gtk-redshift Script
 if ENABLE_GTK
-dist_bin_SCRIPTS = src/gtk-redshift/gtk-redshift.py
-bin_SCRIPTS = src/gtk-redshift/defs.py
+gtk_redshift_PYTHON = \
+	src/gtk-redshift/__init__.py \
+	src/gtk-redshift/statusicon.py \
+	src/gtk-redshift/defs.py
+gtk_redshiftdir = $(pythondir)/gtk_redshift
+
+dist_bin_SCRIPTS = src/gtk-redshift/gtk-redshift
 EXTRA_DIST += src/gtk-redshift/defs.py.in
 endif
 

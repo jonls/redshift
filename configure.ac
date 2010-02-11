@@ -78,10 +78,15 @@ AC_ARG_ENABLE([gtk], [AC_HELP_STRING([--enable-gtk],
 	[enable GTK status icon])],
 	[enable_gtk=$enableval],[enable_gtk=maybe])
 AS_IF([test "x$enable_gtk" != xno], [
-	AS_IF([test $have_python != yes], [
-		AC_MSG_WARN([status icon script requires Python and PyGTK])
+	AS_IF([test $have_python = yes], [
+		AC_MSG_RESULT([yes])
+	], [
+		AC_MSG_RESULT([missing dependencies])
+		AS_IF([test "x$enable_gtk" = xyes], [
+			AC_MSG_ERROR([status icon script requires Python 2.4])
+		])
+		enable_gtk=no
 	])
-	AC_MSG_RESULT([yes])
 ], [
 	AC_MSG_RESULT([no])
 ])

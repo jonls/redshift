@@ -4,4 +4,4 @@ src/redshift.c
 src/randr.c
 src/vidmode.c
 
-src/gtk-redshift/gtk-redshift.py
+src/gtk-redshift/statusicon.py
