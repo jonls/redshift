@@ -20,6 +20,7 @@ EXTRA_redshift_SOURCES = \
 
 AM_CFLAGS =
 redshift_LDADD = @LIBINTL@
+EXTRA_DIST =
 
 if ENABLE_RANDR
 redshift_SOURCES += src/randr.c src/randr.h
@@ -40,14 +41,22 @@ endif
 # gtk-redshift Script
 if ENABLE_GTK
 dist_bin_SCRIPTS = src/gtk-redshift/gtk-redshift.py
+bin_SCRIPTS = src/gtk-redshift/defs.py
+EXTRA_DIST += src/gtk-redshift/defs.py.in
 endif
 
 # Icons
 icondir = @datadir@/icons/hicolor/scalable/apps
 icon_DATA = data/icons/hicolor/scalable/apps/redshift.svg
 
-EXTRA_DIST = $(icon_DATA)
+EXTRA_DIST += $(icon_DATA)
 
+
+CLEANFILES = src/gtk-redshift/defs.py
+
+# Local python definitions
+src/gtk-redshift/defs.py: src/gtk-redshift/defs.py.in
+	sed -e "s|\@localedir\@|$(localedir)|g" $< > $@
 
 # Update PO translations
 .PHONY: update-po
