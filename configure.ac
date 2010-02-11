@@ -107,6 +107,8 @@ AC_CHECK_FUNCS([setlocale strchr floor pow clock_gettime])
 AC_CONFIG_FILES([
 	Makefile
 	po/Makefile.in
+	src/Makefile
+	src/gtk-redshift/Makefile
 ])
 AC_OUTPUT
 
