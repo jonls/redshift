@@ -1,4 +1,9 @@
 
+v1.2 (2010-02-12)
+* Native language support: Danish and russian translations included in
+ this release. Thanks goes to Gregory Petrosyan for the russian
+ translation.
+
 v1.1 (2010-01-14)
 * Provide a GTK status icon (tray icon) for redshift with the
   gtk-redshift program.

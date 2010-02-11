@@ -1,3 +1,132 @@
+2010-02-11  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Update translations.
+
+2010-02-11  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Switch to heirarchial makefiles. Seems to be the only way to make
+	distcheck happy :(
+
+2010-02-11  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	gtk-redshift: Use absolute path when launching redshift process.
+
+2010-02-11  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Turn gtk-redshift into a python module. A launcher script is installed
+	in bindir.
+
+2010-02-11  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Update translations.
+
+2010-02-11  Launchpad Code Hosting  <codehost@crowberry>
+
+	Launchpad automatic translations update.
+
+2010-02-11  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Update po translations.
+
+2010-02-11  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	gtk-redshift: Use local definitions for locale path.
+
+2010-02-11  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Add templete for python source file with local definitions.
+
+2010-02-10  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Fix --help -> -h in po translations.
+
+2010-02-10  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	redshift.c: Handle -? parameter. This is also used when a parameter is
+	not recognized.
+	Update translations.
+
+2010-02-10  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Update help strings: --help does not actually work, change to -h.
+	Update po files.
+
+2010-02-10  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Add update-po rule in top-level Makefile
+
+2010-02-10  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	redshift.c: Use LOCALEDIR define.
+
+2010-02-10  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	gtk-redshift.py: Use 'redshift' gettext catalog
+
+2010-02-10  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Define path to locale directory.
+	Name of gtk-redshift changed, update file reference (add .py).
+
+2010-02-10  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Multiple catalogs is a major pain. Gettext will not cooperate. Merge.
+
+2010-02-10  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Add po support files.
+	Add extension to gtk-redshift to satisfy update-po rules.
+
+2010-02-10  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	configure.ac: Look for gettext
+
+2010-02-10  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Use autoreconf to bootstrap package
+
+2010-02-10  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Merge translations from translation-import branch.
+	Add list of translators to AUTHORS.
+
+2010-02-10  Launchpad Code Hosting  <codehost@crowberry>
+
+	Launchpad automatic translations update.
+
+2010-02-03  Launchpad Code Hosting  <codehost@crowberry>
+
+	Launchpad automatic translations update.
+
+2010-02-09  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Fix typo in README.
+
+2010-02-02  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Add gettext support in redshift.
+
+2010-02-02  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Change bug report address to launchpad bugs url.
+
+2010-02-01  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Add i18n support in gtk-redshift
+
+2010-02-01  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	README: Add note about status icon and gtk-redshift dependencies.
+
+2010-02-01  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Check for python 2.4
+
+2010-01-14  Jon Lund Steffensen  <jonlst@gmail.com>
+
+	Update AUTHORS, ChangeLog, NEWS, README for release.
+	Increment version in configure.ac.
+
 2010-01-14  Jon Lund Steffensen  <jonlst@gmail.com>
 
 	configure.ac: Fail if explicitly enabled features are missing
