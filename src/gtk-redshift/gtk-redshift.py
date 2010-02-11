@@ -27,10 +27,12 @@ pygtk.require("2.0")
 
 import gtk, glib
 
+import defs
+
 
 if __name__ == '__main__':
     # Internationalisation
-    gettext.bindtextdomain('redshift')
+    gettext.bindtextdomain('redshift', defs.LOCALEDIR)
     gettext.textdomain('redshift')
     _ = gettext.gettext
 
