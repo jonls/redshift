@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-02-10 22:50+0100\n"
+"POT-Creation-Date: 2010-02-10 23:46+0100\n"
 "PO-Revision-Date: 2010-02-02 09:20+0000\n"
 "Last-Translator: Gregory Petrosyan <gregory.petrosyan@gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
@@ -209,7 +209,7 @@ msgstr "Не удается восстановить CRTC %i\n"
 msgid "X request failed: %s\n"
 msgstr "Запрос X не удался: %s\n"
 
-#: src/gtk-redshift/gtk-redshift.py:59
+#: src/gtk-redshift/gtk-redshift.py:61
 msgid "Toggle"
 msgstr "Включить / Выключить"
 
