@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift 1.1\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-02-10 23:46+0100\n"
+"POT-Creation-Date: 2010-02-11 23:17+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -194,6 +194,6 @@ msgstr ""
 msgid "X request failed: %s\n"
 msgstr ""
 
-#: src/gtk-redshift/gtk-redshift.py:61
+#: src/gtk-redshift/statusicon.py:61
 msgid "Toggle"
 msgstr ""

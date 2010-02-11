@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-02-10 23:46+0100\n"
+"POT-Creation-Date: 2010-02-11 23:17+0100\n"
 "PO-Revision-Date: 2010-02-10 21:21+0000\n"
 "Last-Translator: Jon Lund Steffensen <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
@@ -205,6 +205,6 @@ msgstr "Kan ikke genskabe CRTC %i\n"
 msgid "X request failed: %s\n"
 msgstr "Fejl ved X forespørgsel: %s\n"
 
-#: src/gtk-redshift/gtk-redshift.py:61
+#: src/gtk-redshift/statusicon.py:61
 msgid "Toggle"
 msgstr "Slå til/fra"
