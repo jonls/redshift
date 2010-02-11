@@ -61,7 +61,8 @@ CLEANFILES = src/gtk-redshift/defs.py
 
 # Local python definitions
 src/gtk-redshift/defs.py: src/gtk-redshift/defs.py.in
-	sed -e "s|\@localedir\@|$(localedir)|g" $< > $@
+	sed -e "s|\@bindir\@|$(bindir)|g" \
+		-e "s|\@localedir\@|$(localedir)|g" $< > $@
 
 # Update PO translations
 .PHONY: update-po

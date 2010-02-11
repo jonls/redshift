@@ -19,3 +19,4 @@
 
 
 LOCALEDIR = '@localedir@'
+BINDIR = '@bindir@'

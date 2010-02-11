@@ -38,7 +38,7 @@ def run_statusicon():
 
     # Start redshift with arguments from the command line
     args = sys.argv[1:]
-    args.insert(0, 'redshift')
+    args.insert(0, os.path.join(defs.BINDIR, 'redshift'))
     process = subprocess.Popen(args)
 
     try:
