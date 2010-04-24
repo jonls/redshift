@@ -36,7 +36,7 @@
 
 
 int
-randr_init(randr_state_t *state, int screen_num)
+randr_init(randr_state_t *state, int screen_num, int crtc_num)
 {
 	xcb_generic_error_t *error;
 
@@ -108,6 +108,7 @@ randr_init(randr_state_t *state, int screen_num)
 		return -1;
 	}
 
+	state->crtc_num = crtc_num;
 	state->crtc_count = res_reply->num_crtcs;
 	state->crtcs = malloc(state->crtc_count * sizeof(randr_crtc_state_t));
 	if (state->crtcs == NULL) {
@@ -248,46 +249,67 @@ randr_free(randr_state_t *state)
 	xcb_disconnect(state->conn);
 }
 
+static int
+randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num, int temp,
+		float gamma[3])
+{
+	xcb_generic_error_t *error;
+	
+	if (crtc_num >= state->crtc_count || crtc_num < 0) {
+		fprintf(stderr, _("CRTC %d does not exist (Valid CRTCs are [0-%d])\n"),
+				state->crtc_num, state->crtc_count - 1);
+		return -1;
+	}
+
+	xcb_randr_crtc_t crtc = state->crtcs[crtc_num].crtc;
+	unsigned int ramp_size = state->crtcs[crtc_num].ramp_size;
+
+	/* Create new gamma ramps */
+	uint16_t *gamma_ramps = malloc(3*ramp_size*sizeof(uint16_t));
+	if (gamma_ramps == NULL) {
+		perror("malloc");
+		return -1;
+	}
+
+	uint16_t *gamma_r = &gamma_ramps[0*ramp_size];
+	uint16_t *gamma_g = &gamma_ramps[1*ramp_size];
+	uint16_t *gamma_b = &gamma_ramps[2*ramp_size];
+
+	colorramp_fill(gamma_r, gamma_g, gamma_b, ramp_size,
+			temp, gamma);
+
+	/* Set new gamma ramps */
+	xcb_void_cookie_t gamma_set_cookie =
+		xcb_randr_set_crtc_gamma_checked(state->conn, crtc,
+				ramp_size, gamma_r,
+				gamma_g, gamma_b);
+	error = xcb_request_check(state->conn, gamma_set_cookie);
+
+	if (error) {
+		fprintf(stderr, _("`%s' returned error %d\n"),
+				"RANDR Set CRTC Gamma", error->error_code);
+		free(gamma_ramps);
+		return -1;
+	}
+
+	free(gamma_ramps);
+
+	return 0;
+}
+
 int
 randr_set_temperature(randr_state_t *state, int temp, float gamma[3])
 {
-	xcb_generic_error_t *error;
-
-	/* Set temperature on all CRTCs */
-	for (int i = 0; i < state->crtc_count; i++) {
-		xcb_randr_crtc_t crtc = state->crtcs[i].crtc;
-		unsigned int ramp_size = state->crtcs[i].ramp_size;
-
-		/* Create new gamma ramps */
-		uint16_t *gamma_ramps = malloc(3*ramp_size*sizeof(uint16_t));
-		if (gamma_ramps == NULL) {
-			perror("malloc");
-			return -1;
+	/* If no CRTC number has been specified, set temperature on all CRTCs */
+	if (state->crtc_num < 0) {
+		for (int i = 0; i < state->crtc_count; i++) {
+			if (randr_set_temperature_for_crtc(state, i, temp, gamma))
+				return -1;
 		}
-
-		uint16_t *gamma_r = &gamma_ramps[0*ramp_size];
-		uint16_t *gamma_g = &gamma_ramps[1*ramp_size];
-		uint16_t *gamma_b = &gamma_ramps[2*ramp_size];
-
-		colorramp_fill(gamma_r, gamma_g, gamma_b, ramp_size,
-			       temp, gamma);
-
-		/* Set new gamma ramps */
-		xcb_void_cookie_t gamma_set_cookie =
-			xcb_randr_set_crtc_gamma_checked(state->conn, crtc,
-							 ramp_size, gamma_r,
-							 gamma_g, gamma_b);
-		error = xcb_request_check(state->conn, gamma_set_cookie);
-
-		if (error) {
-			fprintf(stderr, _("`%s' returned error %d\n"),
-				"RANDR Set CRTC Gamma", error->error_code);
-			free(gamma_ramps);
-			return -1;
-		}
-
-		free(gamma_ramps);
 	}
-
+	else
+		return randr_set_temperature_for_crtc(state, state->crtc_num, temp,
+				gamma);
+	
 	return 0;
 }
