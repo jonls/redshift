@@ -216,11 +216,12 @@ print_help(const char *program_name)
 	fputs(_("  -g R:G:B\tAdditional gamma correction to apply\n"
 		"  -l LAT:LON\tYour current location\n"
 		"  -m METHOD\tMethod to use to set color temperature"
-		" (randr or vidmode)\n"
+		" (RANDR or VidMode)\n"
 		"  -o\t\tOne shot mode (do not continously adjust"
 		" color temperature)\n"
 		"  -r\t\tDisable initial temperature transition\n"
 		"  -s SCREEN\tX screen to apply adjustments to\n"
+		"  -c CRTC\tCRTC to apply adjustments to (RANDR only)\n"
 		"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"),
 	      stdout);
 	fputs("\n", stdout);
@@ -253,6 +254,7 @@ main(int argc, char *argv[])
 	float gamma[3] = { DEFAULT_GAMMA, DEFAULT_GAMMA, DEFAULT_GAMMA };
 	int use_randr = -1;
 	int screen_num = -1;
+	int crtc_num = -1;
 	int transition = 1;
 	int one_shot = 0;
 	int verbose = 0;
@@ -260,8 +262,11 @@ main(int argc, char *argv[])
 
 	/* Parse arguments. */
 	int opt;
-	while ((opt = getopt(argc, argv, "g:hl:m:ors:t:v")) != -1) {
+	while ((opt = getopt(argc, argv, "c:g:hl:m:ors:t:v")) != -1) {
 		switch (opt) {
+		case 'c':
+			crtc_num = atoi(optarg);
+			break;
 		case 'g':
 			s = strchr(optarg, ':');
 			if (s == NULL) {
@@ -426,13 +431,20 @@ main(int argc, char *argv[])
 		       gamma[0], gamma[1], gamma[2]);
 	}
 
+	/* CRTC can only be selected for RANDR */
+	if (crtc_num > -1 && !use_randr) {
+		fprintf(stderr, _("CRTC can only be selected"
+				  " with the RANDR method.\n"));
+		exit(EXIT_FAILURE);
+	}
+
 	/* Initialize gamma adjustment method. If use_randr is negative
 	   try all methods until one that works is found. */
 	gamma_state_t state;
 #ifdef ENABLE_RANDR
 	if (use_randr < 0 || use_randr == 1) {
 		/* Initialize RANDR state */
-		r = randr_init(&state.randr, screen_num);
+		r = randr_init(&state.randr, screen_num, crtc_num);
 		if (r < 0) {
 			fputs(_("Initialization of RANDR failed.\n"), stderr);
 			if (use_randr < 0) {
