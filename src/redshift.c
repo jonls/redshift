@@ -219,22 +219,22 @@ print_help(const char *program_name)
 		" (RANDR or VidMode)\n"
 		"  -o\t\tOne shot mode (do not continously adjust"
 		" color temperature)\n"
-		"  -r\t\tDisable initial temperature transition\n"
+		"  -r\t\tDisable temperature transitions\n"
 		"  -s SCREEN\tX screen to apply adjustments to\n"
 		"  -c CRTC\tCRTC to apply adjustments to (RANDR only)\n"
 		"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"),
 	      stdout);
 	fputs("\n", stdout);
 
-	/* TRANSLATORS: help output 5
-	   no-wrap */
-	fputs(_("Default values:\n"), stdout);
-	fputs("\n", stdout);
-	printf(_("  Daytime temperature: %uK\n"), DEFAULT_DAY_TEMP);
-	printf(_("  Night temperature: %uK\n"), DEFAULT_NIGHT_TEMP);
+	/* TRANSLATORS: help output 5 */
+	printf(_("Default values:\n\n"
+		 "  Daytime temperature: %uK\n"
+		 "  Night temperature: %uK\n"),
+	       DEFAULT_DAY_TEMP, DEFAULT_NIGHT_TEMP);
+
 	fputs("\n", stdout);
 
-	/* TRANSLATORS: help output 5 */
+	/* TRANSLATORS: help output 6 */
 	printf("Please report bugs to <%s>\n", PACKAGE_BUGREPORT);
 }
 
