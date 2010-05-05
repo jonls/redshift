@@ -21,7 +21,7 @@ PKG_CHECK_MODULES([XCB_RANDR], [xcb-randr],
 	[have_xcb_randr=yes], [have_xcb_randr=no])
 
 # Check for Python
-AM_PATH_PYTHON([2.4], [have_python=yes], [have_python=no])
+AM_PATH_PYTHON([2.6], [have_python=yes], [have_python=no])
 
 # Check RANDR method
 AC_MSG_CHECKING([whether to enable RANDR method])
@@ -83,7 +83,7 @@ AS_IF([test "x$enable_gtk" != xno], [
 	], [
 		AC_MSG_RESULT([missing dependencies])
 		AS_IF([test "x$enable_gtk" = xyes], [
-			AC_MSG_ERROR([status icon script requires Python 2.4])
+			AC_MSG_ERROR([status icon script requires Python 2.6])
 		])
 		enable_gtk=no
 	])
