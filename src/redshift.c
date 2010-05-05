@@ -226,6 +226,14 @@ print_help(const char *program_name)
 	      stdout);
 	fputs("\n", stdout);
 
+	/* TRANSLATORS: help output 5
+	   no-wrap */
+	fputs(_("Default values:\n"), stdout);
+	fputs("\n", stdout);
+	printf(_("  Daytime temperature: %uK\n"), DEFAULT_DAY_TEMP);
+	printf(_("  Night temperature: %uK\n"), DEFAULT_NIGHT_TEMP);
+	fputs("\n", stdout);
+
 	/* TRANSLATORS: help output 5 */
 	printf("Please report bugs to <%s>\n", PACKAGE_BUGREPORT);
 }
