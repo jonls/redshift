@@ -253,11 +253,11 @@ main(int argc, char *argv[])
 {
 	int r;
 
+#ifdef ENABLE_NLS
 	/* Init locale */
 	setlocale(LC_CTYPE, "");
 	setlocale(LC_MESSAGES, "");
 
-#ifdef ENABLE_NLS
 	/* Internationalisation */
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
