@@ -87,6 +87,8 @@ typedef union {
 #define TRANSITION_HIGH    3.0
 
 
+#ifdef HAVE_SYS_SIGNAL_H
+
 static volatile sig_atomic_t exiting = 0;
 static volatile sig_atomic_t disable = 0;
 
@@ -103,6 +105,13 @@ sigdisable(int signo)
 {
 	disable = 1;
 }
+
+#else /* ! HAVE_SYS_SIGNAL_H */
+
+static int exiting = 0;
+static int disable = 0;
+
+#endif /* ! HAVE_SYS_SIGNAL_H */
 
 
 /* Restore saved gamma ramps with the appropriate adjustment method. */
@@ -527,6 +536,7 @@ main(int argc, char *argv[])
 		   will be exactly 6500K. */
 		float adjustment_alpha = 0.0;
 
+#ifdef HAVE_SYS_SIGNAL_H
 		struct sigaction sigact;
 		sigset_t sigset;
 		sigemptyset(&sigset);
@@ -543,6 +553,7 @@ main(int argc, char *argv[])
 		sigact.sa_mask = sigset;
 		sigact.sa_flags = 0;
 		sigaction(SIGUSR1, &sigact, NULL);
+#endif /* HAVE_SYS_SIGNAL_H */
 
 		/* Continously adjust color temperature */
 		int done = 0;
