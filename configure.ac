@@ -20,6 +20,8 @@ PKG_CHECK_MODULES([XCB], [xcb], [have_xcb=yes], [have_xcb=no])
 PKG_CHECK_MODULES([XCB_RANDR], [xcb-randr],
 	[have_xcb_randr=yes], [have_xcb_randr=no])
 
+AC_CHECK_HEADER([windows.h], [have_windows_h=yes], [have_windows_h=no])
+
 # Check for Python
 AM_PATH_PYTHON([2.6], [have_python=yes], [have_python=no])
 
@@ -67,9 +69,31 @@ AS_IF([test "x$enable_vidmode" != xno], [
 ])
 AM_CONDITIONAL([ENABLE_VIDMODE], [test "x$enable_vidmode" != xno])
 
+# Check Windows GDI method 
+AC_MSG_CHECKING([whether to enable WinGDI method])
+AC_ARG_ENABLE([wingdi], [AC_HELP_STRING([--enable-wingdi],
+	[enable WinGDI method])],
+	[enable_wingdi=$enableval],[enable_wingdi=maybe])
+AS_IF([test "x$enable_wingdi" != xno], [
+	AS_IF([test $have_windows_h = yes], [
+		AC_DEFINE([ENABLE_WINGDI], 1,
+			[Define to 1 to enable WinGDI method])
+		AC_MSG_RESULT([yes])
+	], [
+		AC_MSG_RESULT([missing dependencies])
+		AS_IF([test "x$enable_wingdi" = xyes], [
+			AC_MSG_ERROR([missing Windows API headers for WinGDI method])
+		])
+		enable_wingdi=no
+	])
+], [
+	AC_MSG_RESULT([no])
+])
+AM_CONDITIONAL([ENABLE_WINGDI], [test "x$enable_wingdi" != xno])
+
 # Check that at least one method is enabled
-AS_IF([test "x$enable_randr" = xno -a "x$enable_vidmode" = xno], [
-	AC_MSG_ERROR([either RANDR or VidMode must be enabled])
+AS_IF([test "x$enable_randr" = xno -a "x$enable_vidmode" = xno -a "x$enable_wingdi" = xno], [
+	AC_MSG_ERROR([either RANDR, VidMode or WinGDI must be enabled])
 ])
 
 # Check for GTK+ status icon

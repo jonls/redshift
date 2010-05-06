@@ -20,7 +20,7 @@
 #ifndef _SOLAR_H
 #define _SOLAR_H
 
-#include <time.h>
+#include "time.h"
 
 /* Model of atmospheric refraction near horizon (in degrees). */
 #define SOLAR_ATM_REFRAC  0.833
@@ -44,8 +44,8 @@ typedef enum {
 	SOLAR_TIME_MAX
 } solar_time_t;
 
-double solar_elevation(struct timespec date, double lat, double lon);
-void solar_table_fill(struct timespec date, double lat, double lon,
-		      time_t *table);
+
+double solar_elevation(double date, double lat, double lon);
+void solar_table_fill(double date, double lat, double lon, double *table);
 
 #endif /* ! _SOLAR_H */

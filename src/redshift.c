@@ -28,20 +28,30 @@
 #include <time.h>
 #include <math.h>
 #include <locale.h>
-#include <sys/signal.h>
 
-#include <libintl.h>
-#define _(s) gettext(s)
+#ifdef HAVE_SYS_SIGNAL_H
+# include <sys/signal.h>
+#endif
+
+#ifdef ENABLE_NLS
+# include <libintl.h>
+# define _(s) gettext(s)
+#else
+# define _(s) s
+#endif
 
 #include "solar.h"
+#include "systemtime.h"
 
 
 #define MIN(x,y)  ((x) < (y) ? (x) : (y))
 #define MAX(x,y)  ((x) > (y) ? (x) : (y))
 
 
-#if !(defined(ENABLE_RANDR) || defined(ENABLE_VIDMODE))
-# error "At least one of RANDR or VidMode must be enabled."
+#if !(defined(ENABLE_RANDR) ||			\
+      defined(ENABLE_VIDMODE) ||		\
+      defined(ENABLE_WINGDI))
+# error "At least one of RANDR, VidMode or WinGDI must be enabled."
 #endif
 
 #ifdef ENABLE_RANDR
@@ -52,6 +62,10 @@
 # include "vidmode.h"
 #endif
 
+#ifdef ENABLE_WINGDI
+# include "w32gdi.h"
+#endif
+
 
 /* Union of state data for gamma adjustment methods */
 typedef union {
@@ -60,6 +74,9 @@ typedef union {
 #endif
 #ifdef ENABLE_VIDMODE
 	vidmode_state_t vidmode;
+#endif
+#ifdef ENABLE_WINGDI
+	w32gdi_state_t w32gdi;
 #endif
 } gamma_state_t;
 
@@ -129,6 +146,11 @@ gamma_state_restore(gamma_state_t *state, int use_randr)
 		randr_restore(&state->randr);
 		break;
 #endif
+#ifdef ENABLE_WINGDI
+	case 2:
+		w32gdi_restore(&state->w32gdi);
+		break;
+#endif
 	}
 }
 
@@ -147,6 +169,11 @@ gamma_state_free(gamma_state_t *state, int use_randr)
 		randr_free(&state->randr);
 		break;
 #endif
+#ifdef ENABLE_WINGDI
+	case 2:
+		w32gdi_free(&state->w32gdi);
+		break;
+#endif
 	}
 }
 
@@ -163,6 +190,10 @@ gamma_state_set_temperature(gamma_state_t *state, int use_randr,
 #ifdef ENABLE_RANDR
 	case 1:
 		return randr_set_temperature(&state->randr, temp, gamma);
+#endif
+#ifdef ENABLE_WINGDI
+	case 2:
+		return w32gdi_set_temperature(&state->w32gdi, temp, gamma);
 #endif
 	}
 
@@ -225,7 +256,7 @@ print_help(const char *program_name)
 	fputs(_("  -g R:G:B\tAdditional gamma correction to apply\n"
 		"  -l LAT:LON\tYour current location\n"
 		"  -m METHOD\tMethod to use to set color temperature"
-		" (RANDR or VidMode)\n"
+		" (RANDR, VidMode or WinGDI)\n"
 		"  -o\t\tOne shot mode (do not continously adjust"
 		" color temperature)\n"
 		"  -r\t\tDisable temperature transitions\n"
@@ -343,6 +374,16 @@ main(int argc, char *argv[])
 				use_randr = 0;
 #else
 				fputs(_("VidMode method was not"
+					" enabled at compile time.\n"),
+				      stderr);
+				exit(EXIT_FAILURE);
+#endif
+			} else if (strcmp(optarg, "wingdi") == 0 ||
+				   strcmp(optarg, "WinGDI") == 0) {
+#ifdef ENABLE_WINGDI
+				use_randr = 2;
+#else
+				fputs(_("WinGDI method was not"
 					" enabled at compile time.\n"),
 				      stderr);
 				exit(EXIT_FAILURE);
@@ -482,19 +523,47 @@ main(int argc, char *argv[])
 		if (r < 0) {
 			fputs(_("Initialization of VidMode failed.\n"),
 			      stderr);
-			exit(EXIT_FAILURE);
+			if (use_randr < 0) {
+				fputs(_("Trying other method...\n"), stderr);
+			} else {
+				exit(EXIT_FAILURE);
+			}
 		} else {
 			use_randr = 0;
 		}
 	}
 #endif
 
+#ifdef ENABLE_WINGDI
+	if (use_randr < 0 || use_randr == 2) {
+		/* Initialize WinGDI state */
+		r = w32gdi_init(&state.w32gdi);
+		if (r < 0) {
+			fputs(_("Initialization of WinGDI failed.\n"),
+			      stderr);
+			if (use_randr < 0) {
+				fputs(_("Trying other method...\n"), stderr);
+			} else {
+				exit(EXIT_FAILURE);
+			}
+		} else {
+			use_randr = 2;
+		}
+	}
+#endif
+
+	/* Failure if no methods were successful at this point. */
+	if (use_randr < 0) {
+		fputs(_("No more methods to try.\n"), stderr);
+		exit(EXIT_FAILURE);
+	}
+
 	if (one_shot) {
 		/* Current angular elevation of the sun */
-		struct timespec now;
-		r = clock_gettime(CLOCK_REALTIME, &now);
+		double now;
+		r = systemtime_get_time(&now);
 		if (r < 0) {
-			perror("clock_gettime");
+			fputs(_("Unable to read system time.\n"), stderr);
 			gamma_state_free(&state, use_randr);
 			exit(EXIT_FAILURE);
 		}
@@ -522,7 +591,7 @@ main(int argc, char *argv[])
 		}
 	} else {
 		/* Transition state */
-		struct timespec short_trans_end;
+		double short_trans_end = 0;
 		int short_trans = 0;
 		int short_trans_done = 0;
 
@@ -599,10 +668,11 @@ main(int argc, char *argv[])
 			}
 
 			/* Read timestamp */
-			struct timespec now;
-			r = clock_gettime(CLOCK_REALTIME, &now);
+			double now;
+			r = systemtime_get_time(&now);
 			if (r < 0) {
-				perror("clock_gettime");
+				fputs(_("Unable to read system time.\n"),
+				      stderr);
 				gamma_state_free(&state, use_randr);
 				exit(EXIT_FAILURE);
 			}
@@ -610,11 +680,8 @@ main(int argc, char *argv[])
 			/* Set up a new transition */
 			if (short_trans_create) {
 				if (transition) {
-					memcpy(&short_trans_end, &now,
-					       sizeof(struct timespec));
-					short_trans_end.tv_sec +=
-						short_trans_len;
-
+					short_trans_end = now;
+					short_trans_end += short_trans_len;
 					short_trans = 1;
 					short_trans_create = 0;
 				} else {
@@ -631,11 +698,8 @@ main(int argc, char *argv[])
 
 			/* Ongoing short transition */
 			if (short_trans) {
-				double start = now.tv_sec +
-					now.tv_nsec / 1000000000.0;
-				double end = short_trans_end.tv_sec +
-					short_trans_end.tv_nsec /
-					1000000000.0;
+				double start = now;
+				double end = short_trans_end;
 
 				if (start > end) {
 					/* Transisiton done */
@@ -691,8 +755,13 @@ main(int argc, char *argv[])
 			}
 
 			/* Sleep for a while */
+#ifndef _WIN32
 			if (short_trans) usleep(100000);
 			else usleep(5000000);
+#else /* ! _WIN32 */
+			if (short_trans) Sleep(100);
+			else Sleep(5000);
+#endif /* ! _WIN32 */
 		}
 
 		/* Restore saved gamma ramps */

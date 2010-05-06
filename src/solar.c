@@ -24,9 +24,9 @@
    Jean Meeus. */
 
 #include <math.h>
-#include <time.h>
 
 #include "solar.h"
+#include "time.h"
 
 #define RAD(x)  ((x)*(M_PI/180))
 #define DEG(x)  ((x)*(180/M_PI))
@@ -46,23 +46,20 @@ static const double time_angle[] = {
 };
 
 
-/* Unix time from Julian day */
-static struct timespec
-timespec_from_jd(double jd)
+/* Unix epoch from Julian day */
+static double
+epoch_from_jd(double jd)
 {
-	struct timespec t;
-	double secs = 86400.0*(jd - 2440587.5);
-	t.tv_sec = floor(secs);
-	t.tv_nsec = (secs - t.tv_sec) * 1000000000.0;
-	return t;
+	return 86400.0*(jd - 2440587.5);
 }
 
-/* Julian day from unix time */
+
+
+/* Julian day from unix epoch */
 static double
-jd_from_timespec(struct timespec t)
+jd_from_epoch(double t)
 {
-	return (t.tv_sec / 86400.0) +
-		(t.tv_nsec / 86400000000000.0) + 2440587.5;
+	return (t / 86400.0) + 2440587.5;
 }
 
 /* Julian centuries since J2000.0 from Julian day */
@@ -287,18 +284,23 @@ solar_elevation_from_time(double t, double lat, double lon)
 	return elevation_from_hour_angle(lat, decl, ha);
 }
 
+/* Solar angular elevation at the given location and time.
+   date: Seconds since unix epoch
+   lat: Latitude of location
+   lon: Longitude of location
+   Return: Solar angular elevation in degrees */
 double
-solar_elevation(struct timespec date, double lat, double lon)
+solar_elevation(double date, double lat, double lon)
 {
-	double jd = jd_from_timespec(date);
+	double jd = jd_from_epoch(date);
 	return DEG(solar_elevation_from_time(jcent_from_jd(jd), lat, lon));
 }
 
 void
-solar_table_fill(struct timespec date, double lat, double lon, time_t *table)
+solar_table_fill(double date, double lat, double lon, double *table)
 {
 	/* Calculate Julian day */
-	double jd = jd_from_timespec(date);
+	double jd = jd_from_epoch(date);
 
 	/* Calculate Julian day number */
 	double jdn = round(jd);
@@ -308,16 +310,16 @@ solar_table_fill(struct timespec date, double lat, double lon, time_t *table)
 	double sol_noon = time_of_solar_noon(t, lon);
 	double j_noon = jdn - 0.5 + sol_noon/1440.0;
 	double t_noon = jcent_from_jd(j_noon);
-	table[SOLAR_TIME_NOON] = timespec_from_jd(j_noon).tv_sec;
+	table[SOLAR_TIME_NOON] = epoch_from_jd(j_noon);
 
 	/* Calculate solar midnight */
-	table[SOLAR_TIME_MIDNIGHT] = timespec_from_jd(j_noon + 0.5).tv_sec;
+	table[SOLAR_TIME_MIDNIGHT] = epoch_from_jd(j_noon + 0.5);
 
 	/* Calulate absoute time of other phenomena */
 	for (int i = 2; i < SOLAR_TIME_MAX; i++) {
 		double angle = time_angle[i];
 		double offset =
 			time_of_solar_elevation(t, t_noon, lat, lon, angle);
-		table[i] = timespec_from_jd(jdn - 0.5 + offset/1440.0).tv_sec;
+		table[i] = epoch_from_jd(jdn - 0.5 + offset/1440.0);
 	}
 }

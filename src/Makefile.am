@@ -11,11 +11,13 @@ bin_PROGRAMS = redshift
 redshift_SOURCES = \
 	redshift.c \
 	colorramp.c colorramp.h \
-	solar.c solar.h
+	solar.c solar.h \
+	systemtime.c systemtime.h
 
 EXTRA_redshift_SOURCES = \
 	randr.c randr.h \
-	vidmode.c vidmode.h
+	vidmode.c vidmode.h \
+	w32gdi.c w32gdi.h
 
 AM_CFLAGS =
 redshift_LDADD = @LIBINTL@
@@ -35,4 +37,9 @@ AM_CFLAGS += $(X11_CFLAGS) $(XF86VM_CFLAGS)
 redshift_LDADD += \
 	$(X11_LIBS) $(X11_CFLAGS) \
 	$(XF86VM_LIBS) $(XF86VM_CFLAGS)
+endif
+
+if ENABLE_WINGDI
+redshift_SOURCES += w32gdi.c w32gdi.h
+redshift_LDADD += -lgdi32
 endif
