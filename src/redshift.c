@@ -80,6 +80,14 @@ typedef union {
 #endif
 } gamma_state_t;
 
+/* Enum of gamma adjustment methods */
+typedef enum {
+	GAMMA_METHOD_RANDR,
+	GAMMA_METHOD_VIDMODE,
+	GAMMA_METHOD_WINGDI,
+	GAMMA_METHOD_MAX
+} gamma_method_t;
+
 
 /* Bounds for parameters. */
 #define MIN_LAT   -90.0
@@ -133,68 +141,74 @@ static int disable = 0;
 
 /* Restore saved gamma ramps with the appropriate adjustment method. */
 static void
-gamma_state_restore(gamma_state_t *state, int use_randr)
+gamma_state_restore(gamma_state_t *state, gamma_method_t method)
 {
-	switch (use_randr) {
-#ifdef ENABLE_VIDMODE
-	case 0:
-		vidmode_restore(&state->vidmode);
-		break;
-#endif
+	switch (method) {
 #ifdef ENABLE_RANDR
-	case 1:
+	case GAMMA_METHOD_RANDR:
 		randr_restore(&state->randr);
 		break;
 #endif
+#ifdef ENABLE_VIDMODE
+	case GAMMA_METHOD_VIDMODE:
+		vidmode_restore(&state->vidmode);
+		break;
+#endif
 #ifdef ENABLE_WINGDI
-	case 2:
+	case GAMMA_METHOD_WINGDI:
 		w32gdi_restore(&state->w32gdi);
 		break;
 #endif
+	default:
+		break;
 	}
 }
 
 /* Free the state associated with the appropriate adjustment method. */
 static void
-gamma_state_free(gamma_state_t *state, int use_randr)
+gamma_state_free(gamma_state_t *state, gamma_method_t method)
 {
-	switch (use_randr) {
-#ifdef ENABLE_VIDMODE
-	case 0:
-		vidmode_free(&state->vidmode);
-		break;
-#endif
+	switch (method) {
 #ifdef ENABLE_RANDR
-	case 1:
+	case GAMMA_METHOD_RANDR:
 		randr_free(&state->randr);
 		break;
 #endif
+#ifdef ENABLE_VIDMODE
+	case GAMMA_METHOD_VIDMODE:
+		vidmode_free(&state->vidmode);
+		break;
+#endif
 #ifdef ENABLE_WINGDI
-	case 2:
+	case GAMMA_METHOD_WINGDI:
 		w32gdi_free(&state->w32gdi);
 		break;
 #endif
+	default:
+		break;
 	}
 }
 
 /* Set temperature with the appropriate adjustment method. */
 static int
-gamma_state_set_temperature(gamma_state_t *state, int use_randr,
+gamma_state_set_temperature(gamma_state_t *state, gamma_method_t method,
 			    int temp, float gamma[3])
 {
-	switch (use_randr) {
-#ifdef ENABLE_VIDMODE
-	case 0:
-		return vidmode_set_temperature(&state->vidmode, temp, gamma);
-#endif
+	switch (method) {
 #ifdef ENABLE_RANDR
-	case 1:
+	case GAMMA_METHOD_RANDR:
 		return randr_set_temperature(&state->randr, temp, gamma);
 #endif
+#ifdef ENABLE_VIDMODE
+	case GAMMA_METHOD_VIDMODE:
+		return vidmode_set_temperature(&state->vidmode, temp, gamma);
+#endif
 #ifdef ENABLE_WINGDI
-	case 2:
+	case GAMMA_METHOD_WINGDI:
 		return w32gdi_set_temperature(&state->w32gdi, temp, gamma);
 #endif
+	default:
+		break;
 	}
 
 	return -1;
@@ -300,7 +314,7 @@ main(int argc, char *argv[])
 	int temp_day = DEFAULT_DAY_TEMP;
 	int temp_night = DEFAULT_NIGHT_TEMP;
 	float gamma[3] = { DEFAULT_GAMMA, DEFAULT_GAMMA, DEFAULT_GAMMA };
-	int use_randr = -1;
+	int method = -1;
 	int screen_num = -1;
 	int crtc_num = -1;
 	int transition = 1;
@@ -361,7 +375,7 @@ main(int argc, char *argv[])
 			if (strcmp(optarg, "randr") == 0 ||
 			    strcmp(optarg, "RANDR") == 0) {
 #ifdef ENABLE_RANDR
-				use_randr = 1;
+				method = GAMMA_METHOD_RANDR;
 #else
 				fputs(_("RANDR method was not"
 					" enabled at compile time.\n"),
@@ -371,7 +385,7 @@ main(int argc, char *argv[])
 			} else if (strcmp(optarg, "vidmode") == 0 ||
 				   strcmp(optarg, "VidMode") == 0) {
 #ifdef ENABLE_VIDMODE
-				use_randr = 0;
+			        method = GAMMA_METHOD_VIDMODE;
 #else
 				fputs(_("VidMode method was not"
 					" enabled at compile time.\n"),
@@ -381,7 +395,7 @@ main(int argc, char *argv[])
 			} else if (strcmp(optarg, "wingdi") == 0 ||
 				   strcmp(optarg, "WinGDI") == 0) {
 #ifdef ENABLE_WINGDI
-				use_randr = 2;
+				method = GAMMA_METHOD_WINGDI;
 #else
 				fputs(_("WinGDI method was not"
 					" enabled at compile time.\n"),
@@ -490,70 +504,70 @@ main(int argc, char *argv[])
 	}
 
 	/* CRTC can only be selected for RANDR */
-	if (crtc_num > -1 && !use_randr) {
+	if (crtc_num > -1 && method != GAMMA_METHOD_RANDR) {
 		fprintf(stderr, _("CRTC can only be selected"
 				  " with the RANDR method.\n"));
 		exit(EXIT_FAILURE);
 	}
 
-	/* Initialize gamma adjustment method. If use_randr is negative
+	/* Initialize gamma adjustment method. If method is negative
 	   try all methods until one that works is found. */
 	gamma_state_t state;
 #ifdef ENABLE_RANDR
-	if (use_randr < 0 || use_randr == 1) {
+	if (method < 0 || method == GAMMA_METHOD_RANDR) {
 		/* Initialize RANDR state */
 		r = randr_init(&state.randr, screen_num, crtc_num);
 		if (r < 0) {
 			fputs(_("Initialization of RANDR failed.\n"), stderr);
-			if (use_randr < 0) {
+			if (method < 0) {
 				fputs(_("Trying other method...\n"), stderr);
 			} else {
 				exit(EXIT_FAILURE);
 			}
 		} else {
-			use_randr = 1;
+			method = GAMMA_METHOD_RANDR;
 		}
 	}
 #endif
 
 #ifdef ENABLE_VIDMODE
-	if (use_randr < 0 || use_randr == 0) {
+	if (method < 0 || method == GAMMA_METHOD_VIDMODE) {
 		/* Initialize VidMode state */
 		r = vidmode_init(&state.vidmode, screen_num);
 		if (r < 0) {
 			fputs(_("Initialization of VidMode failed.\n"),
 			      stderr);
-			if (use_randr < 0) {
+			if (method < 0) {
 				fputs(_("Trying other method...\n"), stderr);
 			} else {
 				exit(EXIT_FAILURE);
 			}
 		} else {
-			use_randr = 0;
+			method = GAMMA_METHOD_VIDMODE;
 		}
 	}
 #endif
 
 #ifdef ENABLE_WINGDI
-	if (use_randr < 0 || use_randr == 2) {
+	if (method < 0 || method == GAMMA_METHOD_WINGDI) {
 		/* Initialize WinGDI state */
 		r = w32gdi_init(&state.w32gdi);
 		if (r < 0) {
 			fputs(_("Initialization of WinGDI failed.\n"),
 			      stderr);
-			if (use_randr < 0) {
+			if (method < 0) {
 				fputs(_("Trying other method...\n"), stderr);
 			} else {
 				exit(EXIT_FAILURE);
 			}
 		} else {
-			use_randr = 2;
+			method = GAMMA_METHOD_WINGDI;
 		}
 	}
 #endif
 
 	/* Failure if no methods were successful at this point. */
-	if (use_randr < 0) {
+	if (method < 0) {
 		fputs(_("No more methods to try.\n"), stderr);
 		exit(EXIT_FAILURE);
 	}
@@ -564,7 +578,7 @@ main(int argc, char *argv[])
 		r = systemtime_get_time(&now);
 		if (r < 0) {
 			fputs(_("Unable to read system time.\n"), stderr);
-			gamma_state_free(&state, use_randr);
+			gamma_state_free(&state, method);
 			exit(EXIT_FAILURE);
 		}
 
@@ -582,11 +596,10 @@ main(int argc, char *argv[])
 		if (verbose) printf(_("Color temperature: %uK\n"), temp);
 
 		/* Adjust temperature */
-		r = gamma_state_set_temperature(&state, use_randr,
-						temp, gamma);
+		r = gamma_state_set_temperature(&state, method, temp, gamma);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
-			gamma_state_free(&state, use_randr);
+			gamma_state_free(&state, method);
 			exit(EXIT_FAILURE);
 		}
 	} else {
@@ -673,7 +686,7 @@ main(int argc, char *argv[])
 			if (r < 0) {
 				fputs(_("Unable to read system time.\n"),
 				      stderr);
-				gamma_state_free(&state, use_randr);
+				gamma_state_free(&state, method);
 				exit(EXIT_FAILURE);
 			}
 
@@ -724,7 +737,7 @@ main(int argc, char *argv[])
 			if (short_trans_done) {
 				if (disabled) {
 					/* Restore saved gamma ramps */
-					gamma_state_restore(&state, use_randr);
+					gamma_state_restore(&state, method);
 				}
 				short_trans_done = 0;
 			}
@@ -744,12 +757,12 @@ main(int argc, char *argv[])
 			/* Adjust temperature */
 			if (!disabled || short_trans) {
 				r = gamma_state_set_temperature(&state,
-								use_randr,
+								method,
 								temp, gamma);
 				if (r < 0) {
 					fputs(_("Temperature adjustment"
 						" failed.\n"), stderr);
-					gamma_state_free(&state, use_randr);
+					gamma_state_free(&state, method);
 					exit(EXIT_FAILURE);
 				}
 			}
@@ -765,11 +778,11 @@ main(int argc, char *argv[])
 		}
 
 		/* Restore saved gamma ramps */
-		gamma_state_restore(&state, use_randr);
+		gamma_state_restore(&state, method);
 	}
 
 	/* Clean up gamma adjustment state */
-	gamma_state_free(&state, use_randr);
+	gamma_state_free(&state, method);
 
 	return EXIT_SUCCESS;
 }
