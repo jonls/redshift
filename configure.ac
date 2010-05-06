@@ -93,13 +93,12 @@ AS_IF([test "x$enable_gtk" != xno], [
 AM_CONDITIONAL([ENABLE_GTK], [test "x$enable_gtk" != xno])
 
 # Checks for header files.
-AC_CHECK_HEADERS([locale.h stdint.h stdlib.h string.h unistd.h])
+AC_CHECK_HEADERS([locale.h stdint.h stdlib.h string.h unistd.h sys/signal.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_UINT16_T
 
 # Checks for library functions.
-AC_FUNC_MALLOC
 AC_SEARCH_LIBS([clock_gettime], [rt])
 AC_SEARCH_LIBS([floor], [m])
 AC_CHECK_FUNCS([setlocale strchr floor pow clock_gettime])
