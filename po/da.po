@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
 "POT-Creation-Date: 2010-05-05 23:28+0200\n"
-"PO-Revision-Date: 2010-02-10 21:21+0000\n"
+"PO-Revision-Date: 2010-05-05 22:20+0000\n"
 "Last-Translator: Jon Lund Steffensen <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-02-11 05:07+0000\n"
+"X-Launchpad-Export-Date: 2010-05-06 04:09+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: src/redshift.c:172
@@ -74,11 +74,12 @@ msgid ""
 msgstr ""
 "  -g R:G:B\tYderligere gamma-korrektion som skal anvendes\n"
 "  -l BRED:LÆNG\tKoordinater for din placering\n"
-"  -m METODE\tMetode som benyttes til at sætte farvetemperatur (randr eller "
-"vidmode)\n"
+"  -m METODE\tMetode som benyttes til at sætte farvetemperatur (RANDR eller "
+"VidMode)\n"
 "  -o\t\tEngangsmodus (bliver ikke ved med at justere farvetemperatur)\n"
-"  -r\t\tSlå indledende temperaturovergang fra\n"
+"  -r\t\tSlå temperaturovergange fra\n"
 "  -s SKÆRM\tX-skærm som skal justeres\n"
+"  -c CRTC\tCRTC (fysisk skærm) som skal justeres (kun RANDR)\n"
 "  -t DAG:NAT\tFarvetemperatur som sættes hhv. dag og nat\n"
 
 #. TRANSLATORS: help output 5
@@ -90,6 +91,10 @@ msgid ""
 "  Daytime temperature: %uK\n"
 "  Night temperature: %uK\n"
 msgstr ""
+"Standardværdier:\n"
+"\n"
+"  Dagtemperatur: %uK\n"
+"  Nattemperatur: %uK\n"
 
 #: src/redshift.c:291
 msgid "Malformed gamma argument.\n"
@@ -161,7 +166,7 @@ msgstr "Gamma: %.3f, %.3f, %.3f\n"
 #: src/redshift.c:444
 #, c-format
 msgid "CRTC can only be selected with the RANDR method.\n"
-msgstr ""
+msgstr "CRTC kan kun vælges med RANDR metoden.\n"
 
 #: src/redshift.c:457
 msgid "Initialization of RANDR failed.\n"
@@ -219,17 +224,17 @@ msgstr "Kan ikke genskabe CRTC %i\n"
 #: src/randr.c:259
 #, c-format
 msgid "CRTC %d does not exist. "
-msgstr ""
+msgstr "CRTC %d eksisterer ikke. "
 
 #: src/randr.c:262
 #, c-format
 msgid "Valid CRTCs are [0-%d].\n"
-msgstr ""
+msgstr "Gyldige CRTCer er [0-%d].\n"
 
 #: src/randr.c:265
 #, c-format
 msgid "Only CRTC 0 exists.\n"
-msgstr ""
+msgstr "Kun CRTC 0 eksisterer.\n"
 
 #: src/vidmode.c:42 src/vidmode.c:54 src/vidmode.c:64 src/vidmode.c:94
 #: src/vidmode.c:125 src/vidmode.c:154

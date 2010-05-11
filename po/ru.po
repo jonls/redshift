@@ -3,7 +3,6 @@
 # This file is distributed under the same license as the redshift package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
@@ -15,11 +14,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  ru.po (redshift)  #-#-#-#-#\n"
-"X-Launchpad-Export-Date: 2010-02-03 04:52+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
-"#-#-#-#-#  ru.po (redshift)  #-#-#-#-#\n"
-"X-Launchpad-Export-Date: 2010-02-03 04:51+0000\n"
+"X-Launchpad-Export-Date: 2010-02-13 05:02+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: src/redshift.c:172
@@ -244,6 +239,3 @@ msgstr "Запрос X не удался: %s\n"
 #: src/gtk-redshift/statusicon.py:61
 msgid "Toggle"
 msgstr "Включить / Выключить"
-
-#~ msgid "Unknown parameter `%c'.\n"
-#~ msgstr "Неизвестный параметр «%c».\n"
