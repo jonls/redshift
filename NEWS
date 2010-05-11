@@ -1,6 +1,8 @@
 v1.3 (2010-05-12)
 * Allow adjusting individual CRTCs when using RANDR. Contributed by
   Alexandros Frantzis.
+* Add WinGDI method for gamma adjustments on Windows platform.
+* Compile with mingw (tested with cross compiler on ubuntu build system).
 
 v1.2 (2010-02-12)
 * Native language support: Danish and russian translations included in
