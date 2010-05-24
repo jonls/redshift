@@ -17,8 +17,6 @@
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <stdint.h>
 #include <math.h>
 

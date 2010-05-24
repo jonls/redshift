@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-05-24 18:10+0200\n"
+"POT-Creation-Date: 2010-05-24 18:24+0200\n"
 "PO-Revision-Date: 2010-02-02 09:20+0000\n"
 "Last-Translator: Gregory Petrosyan <gregory.petrosyan@gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
@@ -89,6 +89,12 @@ msgid ""
 "\n"
 "  Daytime temperature: %uK\n"
 "  Night temperature: %uK\n"
+msgstr ""
+
+#. TRANSLATORS: help output 6
+#: src/redshift.c:263
+#, c-format
+msgid "Please report bugs to <%s>\n"
 msgstr ""
 
 #: src/redshift.c:269
@@ -192,49 +198,49 @@ msgstr "Цветовая температура: %uK\n"
 msgid "Temperature adjustment failed.\n"
 msgstr "Корректировка цветовой температуры не удалась.\n"
 
-#: src/randr.c:57 src/randr.c:104 src/randr.c:145 src/randr.c:173
-#: src/randr.c:232 src/randr.c:296
+#: src/randr.c:61 src/randr.c:108 src/randr.c:149 src/randr.c:177
+#: src/randr.c:236 src/randr.c:300
 #, c-format
 msgid "`%s' returned error %d\n"
 msgstr "«%s» завершилось с ошибкой %d\n"
 
-#: src/randr.c:65
+#: src/randr.c:69
 #, c-format
 msgid "Unsupported RANDR version (%u.%u)\n"
 msgstr "Неподдерживаемая версия RANDR (%u.%u)\n"
 
-#: src/randr.c:88
+#: src/randr.c:92
 #, c-format
 msgid "Screen %i could not be found.\n"
 msgstr "Экран %i не может быть найден.\n"
 
-#: src/randr.c:158 src/vidmode.c:71
+#: src/randr.c:162 src/vidmode.c:75
 #, c-format
 msgid "Gamma ramp size too small: %i\n"
 msgstr "Размер кривой гаммы слишком мал: %i\n"
 
-#: src/randr.c:234
+#: src/randr.c:238
 #, c-format
 msgid "Unable to restore CRTC %i\n"
 msgstr "Не удается восстановить CRTC %i\n"
 
-#: src/randr.c:259
+#: src/randr.c:263
 #, c-format
 msgid "CRTC %d does not exist. "
 msgstr ""
 
-#: src/randr.c:262
+#: src/randr.c:266
 #, c-format
 msgid "Valid CRTCs are [0-%d].\n"
 msgstr ""
 
-#: src/randr.c:265
+#: src/randr.c:269
 #, c-format
 msgid "Only CRTC 0 exists.\n"
 msgstr ""
 
-#: src/vidmode.c:42 src/vidmode.c:54 src/vidmode.c:64 src/vidmode.c:94
-#: src/vidmode.c:125 src/vidmode.c:154
+#: src/vidmode.c:46 src/vidmode.c:58 src/vidmode.c:68 src/vidmode.c:98
+#: src/vidmode.c:129 src/vidmode.c:158
 #, c-format
 msgid "X request failed: %s\n"
 msgstr "Запрос X не удался: %s\n"

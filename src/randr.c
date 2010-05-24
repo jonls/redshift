@@ -21,8 +21,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <libintl.h>
-#define _(s) gettext(s)
+#ifdef ENABLE_NLS
+# include <libintl.h>
+# define _(s) gettext(s)
+#else
+# define _(s) s
+#endif
 
 #include <xcb/xcb.h>
 #include <xcb/randr.h>

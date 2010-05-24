@@ -260,7 +260,7 @@ print_help(const char *program_name)
 	fputs("\n", stdout);
 
 	/* TRANSLATORS: help output 6 */
-	printf("Please report bugs to <%s>\n", PACKAGE_BUGREPORT);
+	printf(_("Please report bugs to <%s>\n"), PACKAGE_BUGREPORT);
 }
 
 static void

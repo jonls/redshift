@@ -21,8 +21,12 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include <libintl.h>
-#define _(s) gettext(s)
+#ifdef ENABLE_NLS
+# include <libintl.h>
+# define _(s) gettext(s)
+#else
+# define _(s) s
+#endif
 
 #include <X11/Xlib.h>
 #include <X11/extensions/xf86vmode.h>
