@@ -12,7 +12,8 @@ redshift_SOURCES = \
 	redshift.c \
 	colorramp.c colorramp.h \
 	solar.c solar.h \
-	systemtime.c systemtime.h
+	systemtime.c systemtime.h \
+	location-manual.c location-manual.h
 
 EXTRA_redshift_SOURCES = \
 	gamma-randr.c gamma-randr.h \

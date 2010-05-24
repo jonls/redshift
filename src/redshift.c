@@ -28,6 +28,7 @@
 #include <time.h>
 #include <math.h>
 #include <locale.h>
+#include <errno.h>
 
 #ifdef HAVE_SYS_SIGNAL_H
 # include <sys/signal.h>
@@ -65,6 +66,9 @@
 #ifdef ENABLE_WINGDI
 # include "gamma-w32gdi.h"
 #endif
+
+
+#include "location-manual.h"
 
 
 /* Union of state data for gamma adjustment methods */
@@ -113,6 +117,24 @@ static const gamma_method_t gamma_methods[] = {
 	{ NULL, NULL, NULL, NULL, NULL }
 };
 
+
+/* Union of state data for location providers */
+typedef union {
+	location_manual_state_t manual;
+} location_state_t;
+
+
+/* Location provider method structs */
+static const location_provider_t location_providers[] = {
+	{
+		"Manual",
+		(location_provider_init_func *)location_manual_init,
+		(location_provider_free_func *)location_manual_free,
+		(location_provider_get_location_func *)
+		location_manual_get_location
+	},
+	{ NULL, NULL, NULL, NULL }
+};
 
 /* Bounds for parameters. */
 #define MIN_LAT   -90.0
@@ -218,6 +240,9 @@ print_help(const char *program_name)
 	   no-wrap */
 	fputs(_("  -g R:G:B\tAdditional gamma correction to apply\n"
 		"  -l LAT:LON\tYour current location\n"
+		"  -l PROVIDER\tSelect provider for automatic"
+		" location updates\n"
+		"  \t\t(Type `list' to see available providers)\n"
 		"  -m METHOD\tMethod to use to set color temperature\n"
 		"  \t\t(Type `list' to see available methods)\n"
 		"  -o\t\tOne shot mode (do not continously adjust"
@@ -250,6 +275,15 @@ print_method_list()
 	}
 }
 
+static void
+print_provider_list()
+{
+	fputs(_("Available location providers:\n"), stdout);
+	for (int i = 0; location_providers[i].name != NULL; i++) {
+		printf("  %s\n", location_providers[i].name);
+	}
+}
+
 
 int
 main(int argc, char *argv[])
@@ -267,14 +301,15 @@ main(int argc, char *argv[])
 #endif
 
 	/* Initialize to defaults */
-	float lat = NAN;
-	float lon = NAN;
 	int temp_day = DEFAULT_DAY_TEMP;
 	int temp_night = DEFAULT_NIGHT_TEMP;
 	float gamma[3] = { DEFAULT_GAMMA, DEFAULT_GAMMA, DEFAULT_GAMMA };
 
 	const gamma_method_t *method = NULL;
 	char *method_args = NULL;
+
+	const location_provider_t *provider = NULL;
+	char *provider_args = NULL;
 
 	int transition = 1;
 	int one_shot = 0;
@@ -315,30 +350,53 @@ main(int argc, char *argv[])
 			exit(EXIT_SUCCESS);
 			break;
 		case 'l':
-			s = strchr(optarg, ':');
-			if (s == NULL) {
-				fputs(_("Malformed location argument.\n"),
-				      stderr);
-				fputs(_("Try `-h' for more information.\n"),
-				      stderr);
+			/* Print list of providers if argument is `list' */
+			if (strcasecmp(optarg, "list") == 0) {
+				print_provider_list();
+				exit(EXIT_SUCCESS);
+			}
+
+			char *provider_name = NULL;
+
+			/* Try to parse provider name as float */
+			errno = 0;
+			char *end;
+			float lat = strtof(optarg, &end);
+			if (errno == 0 && *end == ':') {
+				provider_name = "Manual";
+				provider_args = optarg;
+			} else {
+				/* Split off provider arguments. */
+				s = strchr(optarg, ':');
+				if (s != NULL) {
+					*(s++) = '\0';
+					provider_args = s;
+				}
+
+				provider_name = optarg;
+			}
+
+			/* Lookup argument in location provider table */
+			for (int i = 0; location_providers[i].name != NULL;
+			     i++) {
+				const location_provider_t *p =
+					&location_providers[i];
+				if (strcasecmp(provider_name, p->name) == 0) {
+					provider = p;
+				}
+			}
+
+			if (provider == NULL) {
+				fprintf(stderr, _("Unknown location provider"
+						  " `%s'.\n"), provider_name);
 				exit(EXIT_FAILURE);
 			}
-			*(s++) = '\0';
-			lat = atof(optarg);
-			lon = atof(s);
 			break;
 		case 'm':
 			/* Print list of methods if argument is `list' */
 			if (strcasecmp(optarg, "list") == 0) {
 				print_method_list();
 				exit(EXIT_SUCCESS);
-			}
-
-			/* Split off method arguments. */
-			s = strchr(optarg, ':');
-			if (s != NULL) {
-				*(s++) = '\0';
-				method_args = s;
 			}
 
 			/* Lookup argument in gamma methods table */
@@ -387,12 +445,52 @@ main(int argc, char *argv[])
 		}
 	}
 
-	/* Latitude and longitude must be set */
-	if (isnan(lat) || isnan(lon)) {
-		fputs(_("Latitude and longitude must be set.\n"), stderr);
-		fputs(_("Try `-h' for more information.\n"), stderr);
+	/* Initialize location provider. If provider is NULL
+	   try all providers until one that works is found. */
+	location_state_t location_state;
+
+	if (provider != NULL) {
+		/* Use provider specified on command line. */
+		r = provider->init(&location_state, provider_args);
+		if (r < 0) {
+			fprintf(stderr, _("Initialization of %s failed.\n"),
+				provider->name);
+			exit(EXIT_FAILURE);
+		}
+	} else {
+		/* Try all providers, use the first that works. */
+		for (int i = 0; location_providers[i].name != NULL; i++) {
+			const location_provider_t *p = &location_providers[i];
+			r = p->init(&location_state, provider_args);
+			if (r < 0) {
+				fprintf(stderr, _("Initialization of %s"
+						  " failed.\n"), p->name);
+				fputs(_("Trying other provider...\n"), stderr);
+			} else {
+				provider = p;
+				break;
+			}
+		}
+
+		/* Failure if no providers were successful at this point. */
+		if (provider == NULL) {
+			fputs(_("No more location providers to try.\n"),
+			      stderr);
+			exit(EXIT_FAILURE);
+		}
+	}
+
+	float lat = NAN;
+	float lon = NAN;
+
+	/* Get current location. */
+	r = provider->get_location(&location_state, &lat, &lon);
+	if (r < 0) {
+		fputs(_("Unable to get location from provider.\n"), stderr);
 		exit(EXIT_FAILURE);
 	}
+
+	provider->free(&location_state);
 
 	if (verbose) {
 		/* TRANSLATORS: Append degree symbols if possible. */
