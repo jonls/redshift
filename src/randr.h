@@ -25,6 +25,9 @@
 #include <xcb/xcb.h>
 #include <xcb/randr.h>
 
+#include "redshift.h"
+
+
 typedef struct {
 	xcb_randr_crtc_t crtc;
 	unsigned int ramp_size;
@@ -44,5 +47,6 @@ int randr_init(randr_state_t *state, int screen_num, int crtc_num);
 void randr_free(randr_state_t *state);
 void randr_restore(randr_state_t *state);
 int randr_set_temperature(randr_state_t *state, int temp, float gamma[3]);
+
 
 #endif /* ! _REDSHIFT_RANDR_H */

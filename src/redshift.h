@@ -1,4 +1,4 @@
-/* vidmode.h -- X VidMode gamma adjustment header
+/* redshift.h -- Main program header
    This file is part of Redshift.
 
    Redshift is free software: you can redistribute it and/or modify
@@ -17,24 +17,23 @@
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
-#ifndef _REDSHIFT_VIDMODE_H
-#define _REDSHIFT_VIDMODE_H
+#ifndef _REDSHIFT_REDSHIFT_H
+#define _REDSHIFT_REDSHIFT_H
 
-#include <stdint.h>
 
-#include <X11/Xlib.h>
+typedef int gamma_method_init_func(void *state, int screen_num, int crtc_num);
+typedef void gamma_method_free_func(void *state);
+typedef void gamma_method_restore_func(void *state);
+typedef int gamma_method_set_temperature_func(void *state, int temp,
+					      float gamma[3]);
 
 typedef struct {
-	Display *display;
-	int screen_num;
-	int ramp_size;
-	uint16_t *saved_ramps;
-} vidmode_state_t;
-
-int vidmode_init(vidmode_state_t *state, int screen_num, int crtc_num);
-void vidmode_free(vidmode_state_t *state);
-void vidmode_restore(vidmode_state_t *state);
-int vidmode_set_temperature(vidmode_state_t *state, int temp, float gamma[3]);
+	char *name;
+	gamma_method_init_func *init;
+	gamma_method_free_func *free;
+	gamma_method_restore_func *restore;
+	gamma_method_set_temperature_func *set_temperature;
+} gamma_method_spec_t;
 
 
-#endif /* ! _REDSHIFT_VIDMODE_H */
+#endif /* ! _REDSHIFT_REDSHIFT_H */

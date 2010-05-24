@@ -34,4 +34,5 @@ void w32gdi_free(w32gdi_state_t *state);
 void w32gdi_restore(w32gdi_state_t *state);
 int w32gdi_set_temperature(w32gdi_state_t *state, int temp, float gamma[3]);
 
+
 #endif /* ! _REDSHIFT_W32GDI_H */

@@ -80,6 +80,7 @@ typedef union {
 #endif
 } gamma_state_t;
 
+
 /* Enum of gamma adjustment methods */
 typedef enum {
 	GAMMA_METHOD_RANDR,
@@ -87,20 +88,6 @@ typedef enum {
 	GAMMA_METHOD_WINGDI,
 	GAMMA_METHOD_MAX
 } gamma_method_t;
-
-typedef int gamma_method_init_func(void *state, int screen_num, int crtc_num);
-typedef void gamma_method_free_func(void *state);
-typedef void gamma_method_restore_func(void *state);
-typedef int gamma_method_set_temperature_func(void *state, int temp,
-					      float gamma[3]);
-
-typedef struct {
-	char *name;
-	gamma_method_init_func *init;
-	gamma_method_free_func *free;
-	gamma_method_restore_func *restore;
-	gamma_method_set_temperature_func *set_temperature;
-} gamma_method_spec_t;
 
 
 /* Gamma adjustment method structs */
