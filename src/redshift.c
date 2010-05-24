@@ -55,15 +55,15 @@
 #endif
 
 #ifdef ENABLE_RANDR
-# include "randr.h"
+# include "gamma-randr.h"
 #endif
 
 #ifdef ENABLE_VIDMODE
-# include "vidmode.h"
+# include "gamma-vidmode.h"
 #endif
 
 #ifdef ENABLE_WINGDI
-# include "w32gdi.h"
+# include "gamma-w32gdi.h"
 #endif
 
 
@@ -82,7 +82,7 @@ typedef union {
 
 
 /* Gamma adjustment method structs */
-static const gamma_method_spec_t gamma_methods[] = {
+static const gamma_method_t gamma_methods[] = {
 #ifdef ENABLE_RANDR
 	{
 		"RANDR",
@@ -273,7 +273,7 @@ main(int argc, char *argv[])
 	int temp_night = DEFAULT_NIGHT_TEMP;
 	float gamma[3] = { DEFAULT_GAMMA, DEFAULT_GAMMA, DEFAULT_GAMMA };
 
-	const gamma_method_spec_t *method = NULL;
+	const gamma_method_t *method = NULL;
 	char *method_args = NULL;
 
 	int transition = 1;
@@ -343,7 +343,7 @@ main(int argc, char *argv[])
 
 			/* Lookup argument in gamma methods table */
 			for (int i = 0; gamma_methods[i].name != NULL; i++) {
-				const gamma_method_spec_t *m =
+				const gamma_method_t *m =
 					&gamma_methods[i];
 				if (strcasecmp(optarg, m->name) == 0) {
 					method = m;
@@ -463,7 +463,7 @@ main(int argc, char *argv[])
 	} else {
 		/* Try all methods, use the first that works. */
 		for (int i = 0; gamma_methods[i].name != NULL; i++) {
-			const gamma_method_spec_t *m = &gamma_methods[i];
+			const gamma_method_t *m = &gamma_methods[i];
 			r = m->init(&state, method_args);
 			if (r < 0) {
 				fprintf(stderr, _("Initialization of %s"

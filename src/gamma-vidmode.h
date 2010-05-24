@@ -1,4 +1,4 @@
-/* w32gdi.h -- Windows GDI gamma adjustment header
+/* gamma-vidmode.h -- X VidMode gamma adjustment header
    This file is part of Redshift.
 
    Redshift is free software: you can redistribute it and/or modify
@@ -17,22 +17,24 @@
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
-#ifndef _REDSHIFT_W32GDI_H
-#define _REDSHIFT_W32GDI_H
+#ifndef _REDSHIFT_GAMMA_VIDMODE_H
+#define _REDSHIFT_GAMMA_VIDMODE_H
 
-#include <windows.h>
-#include <wingdi.h>
+#include <stdint.h>
 
+#include <X11/Xlib.h>
 
 typedef struct {
-	HDC hDC;
-	WORD *saved_ramps;
-} w32gdi_state_t;
+	Display *display;
+	int screen_num;
+	int ramp_size;
+	uint16_t *saved_ramps;
+} vidmode_state_t;
 
-int w32gdi_init(w32gdi_state_t *state, char *args);
-void w32gdi_free(w32gdi_state_t *state);
-void w32gdi_restore(w32gdi_state_t *state);
-int w32gdi_set_temperature(w32gdi_state_t *state, int temp, float gamma[3]);
+int vidmode_init(vidmode_state_t *state, char *args);
+void vidmode_free(vidmode_state_t *state);
+void vidmode_restore(vidmode_state_t *state);
+int vidmode_set_temperature(vidmode_state_t *state, int temp, float gamma[3]);
 
 
-#endif /* ! _REDSHIFT_W32GDI_H */
+#endif /* ! _REDSHIFT_GAMMA_VIDMODE_H */

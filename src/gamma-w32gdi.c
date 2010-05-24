@@ -1,4 +1,4 @@
-/* w32gdi.c -- Windows GDI gamma adjustment source
+/* gamma-w32gdi.c -- Windows GDI gamma adjustment source
    This file is part of Redshift.
 
    Redshift is free software: you can redistribute it and/or modify

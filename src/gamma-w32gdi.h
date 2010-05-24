@@ -1,4 +1,4 @@
-/* randr.h -- X RandR gamma adjustment header
+/* gamma-w32gdi.h -- Windows GDI gamma adjustment header
    This file is part of Redshift.
 
    Redshift is free software: you can redistribute it and/or modify
@@ -17,36 +17,22 @@
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
-#ifndef _REDSHIFT_RANDR_H
-#define _REDSHIFT_RANDR_H
+#ifndef _REDSHIFT_GAMMA_W32GDI_H
+#define _REDSHIFT_GAMMA_W32GDI_H
 
-#include <stdint.h>
-
-#include <xcb/xcb.h>
-#include <xcb/randr.h>
-
-#include "redshift.h"
+#include <windows.h>
+#include <wingdi.h>
 
 
 typedef struct {
-	xcb_randr_crtc_t crtc;
-	unsigned int ramp_size;
-	uint16_t *saved_ramps;
-} randr_crtc_state_t;
+	HDC hDC;
+	WORD *saved_ramps;
+} w32gdi_state_t;
 
-typedef struct {
-	xcb_connection_t *conn;
-	xcb_screen_t *screen;
-	int crtc_num;
-	unsigned int crtc_count;
-	randr_crtc_state_t *crtcs;
-} randr_state_t;
+int w32gdi_init(w32gdi_state_t *state, char *args);
+void w32gdi_free(w32gdi_state_t *state);
+void w32gdi_restore(w32gdi_state_t *state);
+int w32gdi_set_temperature(w32gdi_state_t *state, int temp, float gamma[3]);
 
 
-int randr_init(randr_state_t *state, char *args);
-void randr_free(randr_state_t *state);
-void randr_restore(randr_state_t *state);
-int randr_set_temperature(randr_state_t *state, int temp, float gamma[3]);
-
-
-#endif /* ! _REDSHIFT_RANDR_H */
+#endif /* ! _REDSHIFT_GAMMA_W32GDI_H */

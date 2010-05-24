@@ -33,7 +33,7 @@ typedef struct {
 	gamma_method_free_func *free;
 	gamma_method_restore_func *restore;
 	gamma_method_set_temperature_func *set_temperature;
-} gamma_method_spec_t;
+} gamma_method_t;
 
 
 #endif /* ! _REDSHIFT_REDSHIFT_H */

@@ -1,4 +1,4 @@
-/* vidmode.c -- X VidMode gamma adjustment source
+/* gamma-vidmode.c -- X VidMode gamma adjustment source
    This file is part of Redshift.
 
    Redshift is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@
 #include <X11/Xlib.h>
 #include <X11/extensions/xf86vmode.h>
 
-#include "vidmode.h"
+#include "gamma-vidmode.h"
 #include "colorramp.h"
 
 

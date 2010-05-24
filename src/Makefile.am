@@ -15,16 +15,16 @@ redshift_SOURCES = \
 	systemtime.c systemtime.h
 
 EXTRA_redshift_SOURCES = \
-	randr.c randr.h \
-	vidmode.c vidmode.h \
-	w32gdi.c w32gdi.h
+	gamma-randr.c gamma-randr.h \
+	gamma-vidmode.c gamma-vidmode.h \
+	gamma-w32gdi.c gamma-w32gdi.h
 
 AM_CFLAGS =
 redshift_LDADD = @LIBINTL@
 EXTRA_DIST =
 
 if ENABLE_RANDR
-redshift_SOURCES += randr.c randr.h
+redshift_SOURCES += gamma-randr.c gamma-randr.h
 AM_CFLAGS += $(XCB_CFLAGS) $(XCB_RANDR_CFLAGS)
 redshift_LDADD += \
 	$(XCB_LIBS) $(XCB_CFLAGS) \
@@ -32,7 +32,7 @@ redshift_LDADD += \
 endif
 
 if ENABLE_VIDMODE
-redshift_SOURCES += vidmode.c vidmode.h
+redshift_SOURCES += gamma-vidmode.c gamma-vidmode.h
 AM_CFLAGS += $(X11_CFLAGS) $(XF86VM_CFLAGS)
 redshift_LDADD += \
 	$(X11_LIBS) $(X11_CFLAGS) \
@@ -40,6 +40,6 @@ redshift_LDADD += \
 endif
 
 if ENABLE_WINGDI
-redshift_SOURCES += w32gdi.c w32gdi.h
+redshift_SOURCES += gamma-w32gdi.c gamma-w32gdi.h
 redshift_LDADD += -lgdi32
 endif

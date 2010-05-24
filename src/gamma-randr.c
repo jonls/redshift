@@ -1,4 +1,4 @@
-/* randr.c -- X RandR gamma adjustment source
+/* gamma-randr.c -- X RANDR gamma adjustment source
    This file is part of Redshift.
 
    Redshift is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@
 #include <xcb/xcb.h>
 #include <xcb/randr.h>
 
-#include "randr.h"
+#include "gamma-randr.h"
 #include "colorramp.h"
 
 

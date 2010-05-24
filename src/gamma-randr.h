@@ -1,4 +1,4 @@
-/* vidmode.h -- X VidMode gamma adjustment header
+/* gamma-randr.h -- X RANDR gamma adjustment header
    This file is part of Redshift.
 
    Redshift is free software: you can redistribute it and/or modify
@@ -17,24 +17,36 @@
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
-#ifndef _REDSHIFT_VIDMODE_H
-#define _REDSHIFT_VIDMODE_H
+#ifndef _REDSHIFT_GAMMA_RANDR_H
+#define _REDSHIFT_GAMMA_RANDR_H
 
 #include <stdint.h>
 
-#include <X11/Xlib.h>
+#include <xcb/xcb.h>
+#include <xcb/randr.h>
+
+#include "redshift.h"
+
 
 typedef struct {
-	Display *display;
-	int screen_num;
-	int ramp_size;
+	xcb_randr_crtc_t crtc;
+	unsigned int ramp_size;
 	uint16_t *saved_ramps;
-} vidmode_state_t;
+} randr_crtc_state_t;
 
-int vidmode_init(vidmode_state_t *state, char *args);
-void vidmode_free(vidmode_state_t *state);
-void vidmode_restore(vidmode_state_t *state);
-int vidmode_set_temperature(vidmode_state_t *state, int temp, float gamma[3]);
+typedef struct {
+	xcb_connection_t *conn;
+	xcb_screen_t *screen;
+	int crtc_num;
+	unsigned int crtc_count;
+	randr_crtc_state_t *crtcs;
+} randr_state_t;
 
 
-#endif /* ! _REDSHIFT_VIDMODE_H */
+int randr_init(randr_state_t *state, char *args);
+void randr_free(randr_state_t *state);
+void randr_restore(randr_state_t *state);
+int randr_set_temperature(randr_state_t *state, int temp, float gamma[3]);
+
+
+#endif /* ! _REDSHIFT_GAMMA_RANDR_H */
