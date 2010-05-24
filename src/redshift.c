@@ -81,15 +81,6 @@ typedef union {
 } gamma_state_t;
 
 
-/* Enum of gamma adjustment methods */
-typedef enum {
-	GAMMA_METHOD_RANDR,
-	GAMMA_METHOD_VIDMODE,
-	GAMMA_METHOD_WINGDI,
-	GAMMA_METHOD_MAX
-} gamma_method_t;
-
-
 /* Gamma adjustment method structs */
 static const gamma_method_spec_t gamma_methods[] = {
 #ifdef ENABLE_RANDR
@@ -283,9 +274,8 @@ main(int argc, char *argv[])
 	float gamma[3] = { DEFAULT_GAMMA, DEFAULT_GAMMA, DEFAULT_GAMMA };
 
 	const gamma_method_spec_t *method = NULL;
+	char *method_args = NULL;
 
-	int screen_num = -1;
-	int crtc_num = -1;
 	int transition = 1;
 	int one_shot = 0;
 	int verbose = 0;
@@ -293,11 +283,8 @@ main(int argc, char *argv[])
 
 	/* Parse arguments. */
 	int opt;
-	while ((opt = getopt(argc, argv, "c:g:hl:m:ors:t:v")) != -1) {
+	while ((opt = getopt(argc, argv, "g:hl:m:ort:v")) != -1) {
 		switch (opt) {
-		case 'c':
-			crtc_num = atoi(optarg);
-			break;
 		case 'g':
 			s = strchr(optarg, ':');
 			if (s == NULL) {
@@ -347,6 +334,13 @@ main(int argc, char *argv[])
 				exit(EXIT_SUCCESS);
 			}
 
+			/* Split off method arguments. */
+			s = strchr(optarg, ':');
+			if (s != NULL) {
+				*(s++) = '\0';
+				method_args = s;
+			}
+
 			/* Lookup argument in gamma methods table */
 			for (int i = 0; gamma_methods[i].name != NULL; i++) {
 				const gamma_method_spec_t *m =
@@ -369,9 +363,6 @@ main(int argc, char *argv[])
 			break;
 		case 'r':
 			transition = 0;
-			break;
-		case 's':
-			screen_num = atoi(optarg);
 			break;
 		case 't':
 			s = strchr(optarg, ':');
@@ -457,30 +448,23 @@ main(int argc, char *argv[])
 		       gamma[0], gamma[1], gamma[2]);
 	}
 
-	/* CRTC can only be selected for RANDR */
-	if (crtc_num > -1 && method != GAMMA_METHOD_RANDR) {
-		fprintf(stderr, _("CRTC can only be selected"
-				  " with the RANDR method.\n"));
-		exit(EXIT_FAILURE);
-	}
-
-	/* Initialize gamma adjustment method. If method is negative
+	/* Initialize gamma adjustment method. If method is NULL
 	   try all methods until one that works is found. */
 	gamma_state_t state;
 
 	if (method != NULL) {
-		/* Use method specified on command line */
-		r = method->init(&state, screen_num, crtc_num);
+		/* Use method specified on command line. */
+		r = method->init(&state, method_args);
 		if (r < 0) {
 			fprintf(stderr, _("Initialization of %s failed.\n"),
 				method->name);
 			exit(EXIT_FAILURE);
 		}
 	} else {
-		/* Try all methods, use the first that works */
+		/* Try all methods, use the first that works. */
 		for (int i = 0; gamma_methods[i].name != NULL; i++) {
 			const gamma_method_spec_t *m = &gamma_methods[i];
-			r = m->init(&state, screen_num, crtc_num);
+			r = m->init(&state, method_args);
 			if (r < 0) {
 				fprintf(stderr, _("Initialization of %s"
 						  " failed.\n"), m->name);

@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 
 #ifdef ENABLE_NLS
 # include <libintl.h>
@@ -36,8 +37,35 @@
 
 
 int
-vidmode_init(vidmode_state_t *state, int screen_num, int crtc_num)
+vidmode_init(vidmode_state_t *state, char *args)
 {
+	int screen_num = -1;
+
+	/* Parse arguments. */
+	while (args != NULL) {
+		char *next_arg = strchr(args, ':');
+		if (next_arg != NULL) *(next_arg++) = '\0';
+
+		char *value = strchr(args, '=');
+		if (value != NULL) *(value++) = '\0';
+
+		if (strcasecmp(args, "screen") == 0) {
+			if (value == NULL) {
+				fprintf(stderr, _("Missing value for"
+						  " parameter: `%s'.\n"),
+					args);
+				return -1;
+			}
+			screen_num = atoi(value);
+		} else {
+			fprintf(stderr, _("Unknown method parameter: `%s'.\n"),
+				args);
+			return -1;
+		}
+
+		args = next_arg;
+	}
+
 	int r;
 
 	/* Open display */

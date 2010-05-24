@@ -43,7 +43,7 @@ typedef struct {
 } randr_state_t;
 
 
-int randr_init(randr_state_t *state, int screen_num, int crtc_num);
+int randr_init(randr_state_t *state, char *args);
 void randr_free(randr_state_t *state);
 void randr_restore(randr_state_t *state);
 int randr_set_temperature(randr_state_t *state, int temp, float gamma[3]);

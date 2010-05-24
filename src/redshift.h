@@ -21,7 +21,7 @@
 #define _REDSHIFT_REDSHIFT_H
 
 
-typedef int gamma_method_init_func(void *state, int screen_num, int crtc_num);
+typedef int gamma_method_init_func(void *state, char *args);
 typedef void gamma_method_free_func(void *state);
 typedef void gamma_method_restore_func(void *state);
 typedef int gamma_method_set_temperature_func(void *state, int temp,
