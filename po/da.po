@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-05-25 00:49+0200\n"
+"POT-Creation-Date: 2010-05-25 01:34+0200\n"
 "PO-Revision-Date: 2010-05-05 22:20+0000\n"
 "Last-Translator: Jon Lund Steffensen <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
@@ -17,17 +17,17 @@ msgstr ""
 "X-Launchpad-Export-Date: 2010-05-06 04:09+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: src/redshift.c:197
+#: src/redshift.c:214
 #, c-format
 msgid "Period: Night\n"
 msgstr "Periode: Nat\n"
 
-#: src/redshift.c:204
+#: src/redshift.c:221
 #, c-format
 msgid "Period: Transition (%.2f%% day)\n"
 msgstr "Periode: Overgang (%.2f%% dag)\n"
 
-#: src/redshift.c:208
+#: src/redshift.c:225
 #, c-format
 msgid "Period: Daytime\n"
 msgstr "Periode: Dag\n"
@@ -37,20 +37,20 @@ msgstr "Periode: Dag\n"
 #. DAY is temperature at daytime,
 #. NIGHT is temperature at night
 #. no-wrap
-#: src/redshift.c:223
+#: src/redshift.c:240
 #, c-format
 msgid "Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
 msgstr "Brug: %s -l BRED:LÆNG -t DAG:NAT [TILVALG...]\n"
 
 #. TRANSLATORS: help output 2
 #. no-wrap
-#: src/redshift.c:229
+#: src/redshift.c:246
 msgid "Set color temperature of display according to time of day.\n"
 msgstr "Indstil skærmens farvetemperatur ud fra klokkeslæt.\n"
 
 #. TRANSLATORS: help output 3
 #. no-wrap
-#: src/redshift.c:235
+#: src/redshift.c:252
 msgid ""
 "  -h\t\tDisplay this help message\n"
 "  -v\t\tVerbose output\n"
@@ -60,7 +60,7 @@ msgstr ""
 
 #. TRANSLATORS: help output 4
 #. no-wrap
-#: src/redshift.c:241
+#: src/redshift.c:258
 #, fuzzy
 msgid ""
 "  -g R:G:B\tAdditional gamma correction to apply\n"
@@ -71,8 +71,6 @@ msgid ""
 "  \t\t(Type `list' to see available methods)\n"
 "  -o\t\tOne shot mode (do not continously adjust color temperature)\n"
 "  -r\t\tDisable temperature transitions\n"
-"  -s SCREEN\tX screen to apply adjustments to\n"
-"  -c CRTC\tCRTC to apply adjustments to (RANDR only)\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
 "  -g R:G:B\tYderligere gamma-korrektion som skal anvendes\n"
@@ -86,7 +84,7 @@ msgstr ""
 "  -t DAG:NAT\tFarvetemperatur som sættes hhv. dag og nat\n"
 
 #. TRANSLATORS: help output 5
-#: src/redshift.c:258
+#: src/redshift.c:273
 #, c-format
 msgid ""
 "Default values:\n"
@@ -100,117 +98,117 @@ msgstr ""
 "  Nattemperatur: %uK\n"
 
 #. TRANSLATORS: help output 6
-#: src/redshift.c:266
+#: src/redshift.c:281
 #, c-format
 msgid "Please report bugs to <%s>\n"
 msgstr ""
 
-#: src/redshift.c:272
+#: src/redshift.c:287
 msgid "Available adjustment methods:\n"
 msgstr ""
 
-#: src/redshift.c:281
+#: src/redshift.c:296
 msgid "Available location providers:\n"
 msgstr ""
 
-#: src/redshift.c:336
+#: src/redshift.c:351
 msgid "Malformed gamma argument.\n"
 msgstr "Fejl i gamma-argument.\n"
 
-#: src/redshift.c:338 src/redshift.c:430 src/redshift.c:442
+#: src/redshift.c:353 src/redshift.c:445 src/redshift.c:457
 msgid "Try `-h' for more information.\n"
 msgstr "Prøv `-h' for mere information.\n"
 
-#: src/redshift.c:390
+#: src/redshift.c:405
 #, fuzzy, c-format
 msgid "Unknown location provider `%s'.\n"
 msgstr "Ukendt metode `%s'.\n"
 
 #. TRANSLATORS: This refers to the method
 #. used to adjust colors e.g VidMode
-#: src/redshift.c:414
+#: src/redshift.c:429
 #, c-format
 msgid "Unknown method `%s'.\n"
 msgstr "Ukendt metode `%s'.\n"
 
-#: src/redshift.c:428
+#: src/redshift.c:443
 msgid "Malformed temperature argument.\n"
 msgstr "Fejl i temperaturargument.\n"
 
-#: src/redshift.c:456 src/redshift.c:466 src/redshift.c:557 src/redshift.c:567
+#: src/redshift.c:471 src/redshift.c:481 src/redshift.c:572 src/redshift.c:582
 #, fuzzy, c-format
 msgid "Initialization of %s failed.\n"
 msgstr "Fejl under klargøring af RANDR.\n"
 
-#: src/redshift.c:468
+#: src/redshift.c:483
 #, fuzzy
 msgid "Trying other provider...\n"
 msgstr "Prøver anden metode...\n"
 
-#: src/redshift.c:477
+#: src/redshift.c:492
 msgid "No more location providers to try.\n"
 msgstr ""
 
-#: src/redshift.c:489
+#: src/redshift.c:504
 msgid "Unable to get location from provider.\n"
 msgstr ""
 
 #. TRANSLATORS: Append degree symbols if possible.
-#: src/redshift.c:497
+#: src/redshift.c:512
 #, c-format
 msgid "Location: %f, %f\n"
 msgstr "Placering: %f°, %f°\n"
 
-#: src/redshift.c:504
+#: src/redshift.c:519
 #, c-format
 msgid "Latitude must be between %.1f and %.1f.\n"
 msgstr "Breddegrad skal være mellem %.1f° og %.1f°.\n"
 
-#: src/redshift.c:513
+#: src/redshift.c:528
 #, c-format
 msgid "Longitude must be between %.1f and %.1f.\n"
 msgstr "Længdegrad skal være mellem %.1f° og %.1f°.\n"
 
-#: src/redshift.c:521 src/redshift.c:529
+#: src/redshift.c:536 src/redshift.c:544
 #, c-format
 msgid "Temperature must be between %uK and %uK.\n"
 msgstr "Temperatur skal være mellem %uK og %uK.\n"
 
-#: src/redshift.c:539
+#: src/redshift.c:554
 #, c-format
 msgid "Gamma value must be between %.1f and %.1f.\n"
 msgstr "Gamma-værdi skal være mellem %.1f og %.1f.\n"
 
-#: src/redshift.c:545
+#: src/redshift.c:560
 #, c-format
 msgid "Gamma: %.3f, %.3f, %.3f\n"
 msgstr "Gamma: %.3f, %.3f, %.3f\n"
 
-#: src/redshift.c:569
+#: src/redshift.c:584
 msgid "Trying other method...\n"
 msgstr "Prøver anden metode...\n"
 
-#: src/redshift.c:578
+#: src/redshift.c:593
 msgid "No more methods to try.\n"
 msgstr ""
 
-#: src/redshift.c:588 src/redshift.c:695
+#: src/redshift.c:603 src/redshift.c:710
 #, fuzzy
 msgid "Unable to read system time.\n"
 msgstr "Kan ikke genskabe CRTC %i\n"
 
 #. TRANSLATORS: Append degree symbol if possible.
-#: src/redshift.c:597
+#: src/redshift.c:612
 #, c-format
 msgid "Solar elevation: %f\n"
 msgstr "Solhøjde: %f°\n"
 
-#: src/redshift.c:604 src/redshift.c:762
+#: src/redshift.c:619 src/redshift.c:777
 #, c-format
 msgid "Color temperature: %uK\n"
 msgstr "Farvetemperatur: %uK\n"
 
-#: src/redshift.c:609 src/redshift.c:770
+#: src/redshift.c:624 src/redshift.c:785
 msgid "Temperature adjustment failed.\n"
 msgstr "Fejl ved justering af temperatur.\n"
 
@@ -293,6 +291,27 @@ msgstr "Kan ikke genskabe CRTC %i\n"
 #, fuzzy
 msgid "Unable to set gamma ramps.\n"
 msgstr "Kan ikke genskabe CRTC %i\n"
+
+#: src/location-gnome-clock.c:46
+msgid "Cannot list dirs in `/apps/panel/applets'.\n"
+msgstr ""
+
+#: src/location-gnome-clock.c:78
+msgid "No clock applet was found.\n"
+msgstr ""
+
+#: src/location-gnome-clock.c:86
+#, c-format
+msgid "Error reading city list: `%s'.\n"
+msgstr ""
+
+#: src/location-gnome-clock.c:106
+msgid "No city selected as current city.\n"
+msgstr ""
+
+#: src/location-gnome-clock.c:113
+msgid "Location not specified for city.\n"
+msgstr ""
 
 #: src/location-manual.c:46
 #, fuzzy

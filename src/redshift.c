@@ -265,8 +265,6 @@ print_help(const char *program_name)
 		"  -o\t\tOne shot mode (do not continously adjust"
 		" color temperature)\n"
 		"  -r\t\tDisable temperature transitions\n"
-		"  -s SCREEN\tX screen to apply adjustments to\n"
-		"  -c CRTC\tCRTC to apply adjustments to (RANDR only)\n"
 		"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"),
 	      stdout);
 	fputs("\n", stdout);
