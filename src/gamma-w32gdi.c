@@ -31,7 +31,7 @@
 # define _(s) s
 #endif
 
-#include "w32gdi.h"
+#include "gamma-w32gdi.h"
 #include "colorramp.h"
 
 #define GAMMA_RAMP_SIZE  256

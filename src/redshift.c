@@ -41,6 +41,7 @@
 # define _(s) s
 #endif
 
+#include "redshift.h"
 #include "solar.h"
 #include "systemtime.h"
 
