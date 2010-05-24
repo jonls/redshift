@@ -70,6 +70,10 @@
 
 #include "location-manual.h"
 
+#ifdef ENABLE_GNOME_CLOCK
+# include "location-gnome-clock.h"
+#endif
+
 
 /* Union of state data for gamma adjustment methods */
 typedef union {
@@ -121,11 +125,23 @@ static const gamma_method_t gamma_methods[] = {
 /* Union of state data for location providers */
 typedef union {
 	location_manual_state_t manual;
+#ifdef ENABLE_GNOME_CLOCK
+	location_gnome_clock_state_t gnome_clock;
+#endif
 } location_state_t;
 
 
 /* Location provider method structs */
 static const location_provider_t location_providers[] = {
+#ifdef ENABLE_GNOME_CLOCK
+	{
+		"GNOME-Clock",
+		(location_provider_init_func *)location_gnome_clock_init,
+		(location_provider_free_func *)location_gnome_clock_free,
+		(location_provider_get_location_func *)
+		location_gnome_clock_get_location
+	},
+#endif
 	{
 		"Manual",
 		(location_provider_init_func *)location_manual_init,
@@ -361,7 +377,7 @@ main(int argc, char *argv[])
 			/* Try to parse provider name as float */
 			errno = 0;
 			char *end;
-			float lat = strtof(optarg, &end);
+			float v = strtof(optarg, &end);
 			if (errno == 0 && *end == ':') {
 				provider_name = "Manual";
 				provider_args = optarg;

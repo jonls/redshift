@@ -20,6 +20,9 @@ PKG_CHECK_MODULES([XCB], [xcb], [have_xcb=yes], [have_xcb=no])
 PKG_CHECK_MODULES([XCB_RANDR], [xcb-randr],
 	[have_xcb_randr=yes], [have_xcb_randr=no])
 
+PKG_CHECK_MODULES([GLIB], [glib-2.0], [have_glib=yes], [have_glib=no])
+PKG_CHECK_MODULES([GCONF], [gconf-2.0], [have_gconf=yes], [have_gconf=no])
+
 AC_CHECK_HEADER([windows.h], [have_windows_h=yes], [have_windows_h=no])
 
 # Check for Python
@@ -95,6 +98,28 @@ AM_CONDITIONAL([ENABLE_WINGDI], [test "x$enable_wingdi" != xno])
 AS_IF([test "x$enable_randr" = xno -a "x$enable_vidmode" = xno -a "x$enable_wingdi" = xno], [
 	AC_MSG_ERROR([either RANDR, VidMode or WinGDI must be enabled])
 ])
+
+# Check GNOME Clock location provider
+AC_MSG_CHECKING([whether to enable GNOME Clock location provider])
+AC_ARG_ENABLE([gnome-clock], [AC_HELP_STRING([--enable-gnome-clock],
+	[enable GNOME Clock location provider])],
+	[enable_gnome_clock=$enableval],[enable_gnome_clock=maybe])
+AS_IF([test "x$enable_gnome_clock" != xno], [
+	AS_IF([test $have_glib = yes -a $have_gconf = yes], [
+		AC_DEFINE([ENABLE_GNOME_CLOCK], 1,
+			[Define to 1 to enable GNOME Clock location provider])
+		AC_MSG_RESULT([yes])
+	], [
+		AC_MSG_RESULT([missing dependencies])
+		AS_IF([test "x$enable_gnome_clock" = xyes], [
+			AC_MSG_ERROR([missing dependencies for GNOME Clock location provider])
+		])
+		enable_gnome_clock=no
+	])
+], [
+	AC_MSG_RESULT([no])
+])
+AM_CONDITIONAL([ENABLE_GNOME_CLOCK], [test "x$enable_gnome_clock" != xno])
 
 # Check for GTK+ status icon
 AC_MSG_CHECKING([whether to enable GTK status icon])
