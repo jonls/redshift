@@ -1,7 +1,11 @@
 # List of source files containing translatable strings
 
 src/redshift.c
-src/randr.c
-src/vidmode.c
+
+src/gamma-randr.c
+src/gamma-vidmode.c
+src/gamma-w32gdi.c
+
+src/location-manual.c
 
 src/gtk-redshift/statusicon.py
