@@ -88,6 +88,53 @@ typedef enum {
 	GAMMA_METHOD_MAX
 } gamma_method_t;
 
+typedef int gamma_method_init_func(void *state, int screen_num, int crtc_num);
+typedef void gamma_method_free_func(void *state);
+typedef void gamma_method_restore_func(void *state);
+typedef int gamma_method_set_temperature_func(void *state, int temp,
+					      float gamma[3]);
+
+typedef struct {
+	char *name;
+	gamma_method_init_func *init;
+	gamma_method_free_func *free;
+	gamma_method_restore_func *restore;
+	gamma_method_set_temperature_func *set_temperature;
+} gamma_method_spec_t;
+
+
+/* Gamma adjustment method structs */
+static const gamma_method_spec_t gamma_methods[] = {
+#ifdef ENABLE_RANDR
+	{
+		"RANDR",
+		(gamma_method_init_func *)randr_init,
+		(gamma_method_free_func *)randr_free,
+		(gamma_method_restore_func *)randr_restore,
+		(gamma_method_set_temperature_func *)randr_set_temperature
+	},
+#endif
+#ifdef ENABLE_VIDMODE
+	{
+		"VidMode",
+		(gamma_method_init_func *)vidmode_init,
+		(gamma_method_free_func *)vidmode_free,
+		(gamma_method_restore_func *)vidmode_restore,
+		(gamma_method_set_temperature_func *)vidmode_set_temperature
+	},
+#endif
+#ifdef ENABLE_WINGDI
+	{
+		"WinGDI",
+		(gamma_method_init_func *)w32gdi_init,
+		(gamma_method_free_func *)w32gdi_free,
+		(gamma_method_restore_func *)w32gdi_restore,
+		(gamma_method_set_temperature_func *)w32gdi_set_temperature
+	},
+#endif
+	{ NULL, NULL, NULL, NULL, NULL }
+};
+
 
 /* Bounds for parameters. */
 #define MIN_LAT   -90.0
@@ -137,82 +184,6 @@ static int exiting = 0;
 static int disable = 0;
 
 #endif /* ! HAVE_SYS_SIGNAL_H */
-
-
-/* Restore saved gamma ramps with the appropriate adjustment method. */
-static void
-gamma_state_restore(gamma_state_t *state, gamma_method_t method)
-{
-	switch (method) {
-#ifdef ENABLE_RANDR
-	case GAMMA_METHOD_RANDR:
-		randr_restore(&state->randr);
-		break;
-#endif
-#ifdef ENABLE_VIDMODE
-	case GAMMA_METHOD_VIDMODE:
-		vidmode_restore(&state->vidmode);
-		break;
-#endif
-#ifdef ENABLE_WINGDI
-	case GAMMA_METHOD_WINGDI:
-		w32gdi_restore(&state->w32gdi);
-		break;
-#endif
-	default:
-		break;
-	}
-}
-
-/* Free the state associated with the appropriate adjustment method. */
-static void
-gamma_state_free(gamma_state_t *state, gamma_method_t method)
-{
-	switch (method) {
-#ifdef ENABLE_RANDR
-	case GAMMA_METHOD_RANDR:
-		randr_free(&state->randr);
-		break;
-#endif
-#ifdef ENABLE_VIDMODE
-	case GAMMA_METHOD_VIDMODE:
-		vidmode_free(&state->vidmode);
-		break;
-#endif
-#ifdef ENABLE_WINGDI
-	case GAMMA_METHOD_WINGDI:
-		w32gdi_free(&state->w32gdi);
-		break;
-#endif
-	default:
-		break;
-	}
-}
-
-/* Set temperature with the appropriate adjustment method. */
-static int
-gamma_state_set_temperature(gamma_state_t *state, gamma_method_t method,
-			    int temp, float gamma[3])
-{
-	switch (method) {
-#ifdef ENABLE_RANDR
-	case GAMMA_METHOD_RANDR:
-		return randr_set_temperature(&state->randr, temp, gamma);
-#endif
-#ifdef ENABLE_VIDMODE
-	case GAMMA_METHOD_VIDMODE:
-		return vidmode_set_temperature(&state->vidmode, temp, gamma);
-#endif
-#ifdef ENABLE_WINGDI
-	case GAMMA_METHOD_WINGDI:
-		return w32gdi_set_temperature(&state->w32gdi, temp, gamma);
-#endif
-	default:
-		break;
-	}
-
-	return -1;
-}
 
 
 /* Calculate color temperature for the specified solar elevation. */
@@ -269,8 +240,8 @@ print_help(const char *program_name)
 	   no-wrap */
 	fputs(_("  -g R:G:B\tAdditional gamma correction to apply\n"
 		"  -l LAT:LON\tYour current location\n"
-		"  -m METHOD\tMethod to use to set color temperature"
-		" (RANDR, VidMode or WinGDI)\n"
+		"  -m METHOD\tMethod to use to set color temperature\n"
+		"  \t\t(Type `list' to see available methods)\n"
 		"  -o\t\tOne shot mode (do not continously adjust"
 		" color temperature)\n"
 		"  -r\t\tDisable temperature transitions\n"
@@ -290,6 +261,15 @@ print_help(const char *program_name)
 
 	/* TRANSLATORS: help output 6 */
 	printf("Please report bugs to <%s>\n", PACKAGE_BUGREPORT);
+}
+
+static void
+print_method_list()
+{
+	fputs(_("Available adjustment methods:\n"), stdout);
+	for (int i = 0; gamma_methods[i].name != NULL; i++) {
+		printf("  %s\n", gamma_methods[i].name);
+	}
 }
 
 
@@ -314,7 +294,9 @@ main(int argc, char *argv[])
 	int temp_day = DEFAULT_DAY_TEMP;
 	int temp_night = DEFAULT_NIGHT_TEMP;
 	float gamma[3] = { DEFAULT_GAMMA, DEFAULT_GAMMA, DEFAULT_GAMMA };
-	int method = -1;
+
+	const gamma_method_spec_t *method = NULL;
+
 	int screen_num = -1;
 	int crtc_num = -1;
 	int transition = 1;
@@ -372,37 +354,22 @@ main(int argc, char *argv[])
 			lon = atof(s);
 			break;
 		case 'm':
-			if (strcmp(optarg, "randr") == 0 ||
-			    strcmp(optarg, "RANDR") == 0) {
-#ifdef ENABLE_RANDR
-				method = GAMMA_METHOD_RANDR;
-#else
-				fputs(_("RANDR method was not"
-					" enabled at compile time.\n"),
-				      stderr);
-				exit(EXIT_FAILURE);
-#endif
-			} else if (strcmp(optarg, "vidmode") == 0 ||
-				   strcmp(optarg, "VidMode") == 0) {
-#ifdef ENABLE_VIDMODE
-			        method = GAMMA_METHOD_VIDMODE;
-#else
-				fputs(_("VidMode method was not"
-					" enabled at compile time.\n"),
-				      stderr);
-				exit(EXIT_FAILURE);
-#endif
-			} else if (strcmp(optarg, "wingdi") == 0 ||
-				   strcmp(optarg, "WinGDI") == 0) {
-#ifdef ENABLE_WINGDI
-				method = GAMMA_METHOD_WINGDI;
-#else
-				fputs(_("WinGDI method was not"
-					" enabled at compile time.\n"),
-				      stderr);
-				exit(EXIT_FAILURE);
-#endif
-			} else {
+			/* Print list of methods if argument is `list' */
+			if (strcasecmp(optarg, "list") == 0) {
+				print_method_list();
+				exit(EXIT_SUCCESS);
+			}
+
+			/* Lookup argument in gamma methods table */
+			for (int i = 0; gamma_methods[i].name != NULL; i++) {
+				const gamma_method_spec_t *m =
+					&gamma_methods[i];
+				if (strcasecmp(optarg, m->name) == 0) {
+					method = m;
+				}
+			}
+
+			if (method == NULL) {
 				/* TRANSLATORS: This refers to the method
 				   used to adjust colors e.g VidMode */
 				fprintf(stderr, _("Unknown method `%s'.\n"),
@@ -513,63 +480,35 @@ main(int argc, char *argv[])
 	/* Initialize gamma adjustment method. If method is negative
 	   try all methods until one that works is found. */
 	gamma_state_t state;
-#ifdef ENABLE_RANDR
-	if (method < 0 || method == GAMMA_METHOD_RANDR) {
-		/* Initialize RANDR state */
-		r = randr_init(&state.randr, screen_num, crtc_num);
+
+	if (method != NULL) {
+		/* Use method specified on command line */
+		r = method->init(&state, screen_num, crtc_num);
 		if (r < 0) {
-			fputs(_("Initialization of RANDR failed.\n"), stderr);
-			if (method < 0) {
+			fprintf(stderr, _("Initialization of %s failed.\n"),
+				method->name);
+			exit(EXIT_FAILURE);
+		}
+	} else {
+		/* Try all methods, use the first that works */
+		for (int i = 0; gamma_methods[i].name != NULL; i++) {
+			const gamma_method_spec_t *m = &gamma_methods[i];
+			r = m->init(&state, screen_num, crtc_num);
+			if (r < 0) {
+				fprintf(stderr, _("Initialization of %s"
+						  " failed.\n"), m->name);
 				fputs(_("Trying other method...\n"), stderr);
 			} else {
-				exit(EXIT_FAILURE);
+				method = m;
+				break;
 			}
-		} else {
-			method = GAMMA_METHOD_RANDR;
 		}
-	}
-#endif
 
-#ifdef ENABLE_VIDMODE
-	if (method < 0 || method == GAMMA_METHOD_VIDMODE) {
-		/* Initialize VidMode state */
-		r = vidmode_init(&state.vidmode, screen_num);
-		if (r < 0) {
-			fputs(_("Initialization of VidMode failed.\n"),
-			      stderr);
-			if (method < 0) {
-				fputs(_("Trying other method...\n"), stderr);
-			} else {
-				exit(EXIT_FAILURE);
-			}
-		} else {
-			method = GAMMA_METHOD_VIDMODE;
+		/* Failure if no methods were successful at this point. */
+		if (method == NULL) {
+			fputs(_("No more methods to try.\n"), stderr);
+			exit(EXIT_FAILURE);
 		}
-	}
-#endif
-
-#ifdef ENABLE_WINGDI
-	if (method < 0 || method == GAMMA_METHOD_WINGDI) {
-		/* Initialize WinGDI state */
-		r = w32gdi_init(&state.w32gdi);
-		if (r < 0) {
-			fputs(_("Initialization of WinGDI failed.\n"),
-			      stderr);
-			if (method < 0) {
-				fputs(_("Trying other method...\n"), stderr);
-			} else {
-				exit(EXIT_FAILURE);
-			}
-		} else {
-			method = GAMMA_METHOD_WINGDI;
-		}
-	}
-#endif
-
-	/* Failure if no methods were successful at this point. */
-	if (method < 0) {
-		fputs(_("No more methods to try.\n"), stderr);
-		exit(EXIT_FAILURE);
 	}
 
 	if (one_shot) {
@@ -578,7 +517,7 @@ main(int argc, char *argv[])
 		r = systemtime_get_time(&now);
 		if (r < 0) {
 			fputs(_("Unable to read system time.\n"), stderr);
-			gamma_state_free(&state, method);
+			method->free(&state);
 			exit(EXIT_FAILURE);
 		}
 
@@ -596,10 +535,10 @@ main(int argc, char *argv[])
 		if (verbose) printf(_("Color temperature: %uK\n"), temp);
 
 		/* Adjust temperature */
-		r = gamma_state_set_temperature(&state, method, temp, gamma);
+		r = method->set_temperature(&state, temp, gamma);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
-			gamma_state_free(&state, method);
+			method->free(&state);
 			exit(EXIT_FAILURE);
 		}
 	} else {
@@ -686,7 +625,7 @@ main(int argc, char *argv[])
 			if (r < 0) {
 				fputs(_("Unable to read system time.\n"),
 				      stderr);
-				gamma_state_free(&state, method);
+				method->free(&state);
 				exit(EXIT_FAILURE);
 			}
 
@@ -737,7 +676,7 @@ main(int argc, char *argv[])
 			if (short_trans_done) {
 				if (disabled) {
 					/* Restore saved gamma ramps */
-					gamma_state_restore(&state, method);
+					method->restore(&state);
 				}
 				short_trans_done = 0;
 			}
@@ -756,13 +695,12 @@ main(int argc, char *argv[])
 
 			/* Adjust temperature */
 			if (!disabled || short_trans) {
-				r = gamma_state_set_temperature(&state,
-								method,
-								temp, gamma);
+				r = method->set_temperature(&state,
+							    temp, gamma);
 				if (r < 0) {
 					fputs(_("Temperature adjustment"
 						" failed.\n"), stderr);
-					gamma_state_free(&state, method);
+					method->free(&state);
 					exit(EXIT_FAILURE);
 				}
 			}
@@ -778,11 +716,11 @@ main(int argc, char *argv[])
 		}
 
 		/* Restore saved gamma ramps */
-		gamma_state_restore(&state, method);
+		method->restore(&state);
 	}
 
 	/* Clean up gamma adjustment state */
-	gamma_state_free(&state, method);
+	method->free(&state);
 
 	return EXIT_SUCCESS;
 }

@@ -38,7 +38,7 @@
 
 
 int
-w32gdi_init(w32gdi_state_t *state)
+w32gdi_init(w32gdi_state_t *state, int screen_num, int crtc_num)
 {
 	BOOL r;
 

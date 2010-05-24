@@ -31,7 +31,7 @@ typedef struct {
 	uint16_t *saved_ramps;
 } vidmode_state_t;
 
-int vidmode_init(vidmode_state_t *state, int screen_num);
+int vidmode_init(vidmode_state_t *state, int screen_num, int crtc_num);
 void vidmode_free(vidmode_state_t *state);
 void vidmode_restore(vidmode_state_t *state);
 int vidmode_set_temperature(vidmode_state_t *state, int temp, float gamma[3]);

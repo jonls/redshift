@@ -32,7 +32,7 @@
 
 
 int
-vidmode_init(vidmode_state_t *state, int screen_num)
+vidmode_init(vidmode_state_t *state, int screen_num, int crtc_num)
 {
 	int r;
 

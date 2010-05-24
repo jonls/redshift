@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-05-05 23:28+0200\n"
+"POT-Creation-Date: 2010-05-24 18:10+0200\n"
 "PO-Revision-Date: 2010-05-05 22:20+0000\n"
 "Last-Translator: Jon Lund Steffensen <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
@@ -17,17 +17,17 @@ msgstr ""
 "X-Launchpad-Export-Date: 2010-05-06 04:09+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: src/redshift.c:172
+#: src/redshift.c:197
 #, c-format
 msgid "Period: Night\n"
 msgstr "Periode: Nat\n"
 
-#: src/redshift.c:179
+#: src/redshift.c:204
 #, c-format
 msgid "Period: Transition (%.2f%% day)\n"
 msgstr "Periode: Overgang (%.2f%% dag)\n"
 
-#: src/redshift.c:183
+#: src/redshift.c:208
 #, c-format
 msgid "Period: Daytime\n"
 msgstr "Periode: Dag\n"
@@ -37,20 +37,20 @@ msgstr "Periode: Dag\n"
 #. DAY is temperature at daytime,
 #. NIGHT is temperature at night
 #. no-wrap
-#: src/redshift.c:198
+#: src/redshift.c:223
 #, c-format
 msgid "Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
 msgstr "Brug: %s -l BRED:LÆNG -t DAG:NAT [TILVALG...]\n"
 
 #. TRANSLATORS: help output 2
 #. no-wrap
-#: src/redshift.c:204
+#: src/redshift.c:229
 msgid "Set color temperature of display according to time of day.\n"
 msgstr "Indstil skærmens farvetemperatur ud fra klokkeslæt.\n"
 
 #. TRANSLATORS: help output 3
 #. no-wrap
-#: src/redshift.c:210
+#: src/redshift.c:235
 msgid ""
 "  -h\t\tDisplay this help message\n"
 "  -v\t\tVerbose output\n"
@@ -60,12 +60,13 @@ msgstr ""
 
 #. TRANSLATORS: help output 4
 #. no-wrap
-#: src/redshift.c:216
+#: src/redshift.c:241
 #, fuzzy
 msgid ""
 "  -g R:G:B\tAdditional gamma correction to apply\n"
 "  -l LAT:LON\tYour current location\n"
-"  -m METHOD\tMethod to use to set color temperature (RANDR or VidMode)\n"
+"  -m METHOD\tMethod to use to set color temperature\n"
+"  \t\t(Type `list' to see available methods)\n"
 "  -o\t\tOne shot mode (do not continously adjust color temperature)\n"
 "  -r\t\tDisable temperature transitions\n"
 "  -s SCREEN\tX screen to apply adjustments to\n"
@@ -83,7 +84,7 @@ msgstr ""
 "  -t DAG:NAT\tFarvetemperatur som sættes hhv. dag og nat\n"
 
 #. TRANSLATORS: help output 5
-#: src/redshift.c:230
+#: src/redshift.c:255
 #, c-format
 msgid ""
 "Default values:\n"
@@ -96,102 +97,104 @@ msgstr ""
 "  Dagtemperatur: %uK\n"
 "  Nattemperatur: %uK\n"
 
-#: src/redshift.c:291
+#: src/redshift.c:269
+msgid "Available adjustment methods:\n"
+msgstr ""
+
+#: src/redshift.c:327
 msgid "Malformed gamma argument.\n"
 msgstr "Fejl i gamma-argument.\n"
 
-#: src/redshift.c:293 src/redshift.c:312 src/redshift.c:363 src/redshift.c:375
-#: src/redshift.c:384
+#: src/redshift.c:329 src/redshift.c:348 src/redshift.c:394 src/redshift.c:406
+#: src/redshift.c:415
 msgid "Try `-h' for more information.\n"
 msgstr "Prøv `-h' for mere information.\n"
 
-#: src/redshift.c:310
+#: src/redshift.c:346
 msgid "Malformed location argument.\n"
 msgstr "Fejl i placeringsargument.\n"
 
-#: src/redshift.c:326
-msgid "RANDR method was not enabled at compile time.\n"
-msgstr "RANDR metode blev ikke slået til under kompilering.\n"
-
-#: src/redshift.c:336
-msgid "VidMode method was not enabled at compile time.\n"
-msgstr "VidMode metode blev ikke slået til under kompilering.\n"
-
 #. TRANSLATORS: This refers to the method
 #. used to adjust colors e.g VidMode
-#: src/redshift.c:344
+#: src/redshift.c:375
 #, c-format
 msgid "Unknown method `%s'.\n"
 msgstr "Ukendt metode `%s'.\n"
 
-#: src/redshift.c:361
+#: src/redshift.c:392
 msgid "Malformed temperature argument.\n"
 msgstr "Fejl i temperaturargument.\n"
 
-#: src/redshift.c:383
+#: src/redshift.c:414
 msgid "Latitude and longitude must be set.\n"
 msgstr "Breddegrad og længdegrad skal angives.\n"
 
 #. TRANSLATORS: Append degree symbols if possible.
-#: src/redshift.c:390
+#: src/redshift.c:421
 #, c-format
 msgid "Location: %f, %f\n"
 msgstr "Placering: %f°, %f°\n"
 
-#: src/redshift.c:397
+#: src/redshift.c:428
 #, c-format
 msgid "Latitude must be between %.1f and %.1f.\n"
 msgstr "Breddegrad skal være mellem %.1f° og %.1f°.\n"
 
-#: src/redshift.c:406
+#: src/redshift.c:437
 #, c-format
 msgid "Longitude must be between %.1f and %.1f.\n"
 msgstr "Længdegrad skal være mellem %.1f° og %.1f°.\n"
 
-#: src/redshift.c:414 src/redshift.c:422
+#: src/redshift.c:445 src/redshift.c:453
 #, c-format
 msgid "Temperature must be between %uK and %uK.\n"
 msgstr "Temperatur skal være mellem %uK og %uK.\n"
 
-#: src/redshift.c:432
+#: src/redshift.c:463
 #, c-format
 msgid "Gamma value must be between %.1f and %.1f.\n"
 msgstr "Gamma-værdi skal være mellem %.1f og %.1f.\n"
 
-#: src/redshift.c:438
+#: src/redshift.c:469
 #, c-format
 msgid "Gamma: %.3f, %.3f, %.3f\n"
 msgstr "Gamma: %.3f, %.3f, %.3f\n"
 
-#: src/redshift.c:444
+#: src/redshift.c:475
 #, c-format
 msgid "CRTC can only be selected with the RANDR method.\n"
 msgstr "CRTC kan kun vælges med RANDR metoden.\n"
 
-#: src/redshift.c:457
-msgid "Initialization of RANDR failed.\n"
+#: src/redshift.c:488 src/redshift.c:498
+#, fuzzy, c-format
+msgid "Initialization of %s failed.\n"
 msgstr "Fejl under klargøring af RANDR.\n"
 
-#: src/redshift.c:459
+#: src/redshift.c:500
 msgid "Trying other method...\n"
 msgstr "Prøver anden metode...\n"
 
-#: src/redshift.c:474
-msgid "Initialization of VidMode failed.\n"
-msgstr "Fejl under klargøring af VidMode.\n"
+#: src/redshift.c:509
+msgid "No more methods to try.\n"
+msgstr ""
+
+#: src/redshift.c:519 src/redshift.c:626
+#, fuzzy
+msgid "Unable to read system time.\n"
+msgstr "Kan ikke genskabe CRTC %i\n"
 
 #. TRANSLATORS: Append degree symbol if possible.
-#: src/redshift.c:497
+#: src/redshift.c:528
 #, c-format
 msgid "Solar elevation: %f\n"
 msgstr "Solhøjde: %f°\n"
 
-#: src/redshift.c:504 src/redshift.c:666
+#: src/redshift.c:535 src/redshift.c:693
 #, c-format
 msgid "Color temperature: %uK\n"
 msgstr "Farvetemperatur: %uK\n"
 
-#: src/redshift.c:510 src/redshift.c:675
+#: src/redshift.c:540 src/redshift.c:701
 msgid "Temperature adjustment failed.\n"
 msgstr "Fejl ved justering af temperatur.\n"
 
@@ -245,3 +248,20 @@ msgstr "Fejl ved X forespørgsel: %s\n"
 #: src/gtk-redshift/statusicon.py:61
 msgid "Toggle"
 msgstr "Slå til/fra"
+
+#~ msgid "RANDR method was not enabled at compile time.\n"
+#~ msgstr "RANDR metode blev ikke slået til under kompilering.\n"
+
+#~ msgid "VidMode method was not enabled at compile time.\n"
+#~ msgstr "VidMode metode blev ikke slået til under kompilering.\n"
+
+#, fuzzy
+#~ msgid "WinGDI method was not enabled at compile time.\n"
+#~ msgstr "RANDR metode blev ikke slået til under kompilering.\n"
+
+#~ msgid "Initialization of VidMode failed.\n"
+#~ msgstr "Fejl under klargøring af VidMode.\n"
+
+#, fuzzy
+#~ msgid "Initialization of WinGDI failed.\n"
+#~ msgstr "Fejl under klargøring af RANDR.\n"
