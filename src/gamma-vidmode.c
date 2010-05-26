@@ -143,6 +143,16 @@ vidmode_free(vidmode_state_t *state)
 }
 
 void
+vidmode_print_help(FILE *f)
+{
+	fputs(_("Adjust gamma ramps with the X VidMode extension.\n"), f);
+	fputs("\n", f);
+
+	fputs(_("  screen=N\tX screen to apply adjustments to\n"), f);
+	fputs("\n", f);
+}
+
+void
 vidmode_restore(vidmode_state_t *state)
 {
 	uint16_t *gamma_r = &state->saved_ramps[0*state->ramp_size];

@@ -29,6 +29,7 @@ typedef struct {
 
 int location_manual_init(location_manual_state_t *state, char *args);
 void location_manual_free(location_manual_state_t *state);
+void location_manual_print_help(FILE *f);
 int location_manual_get_location(location_manual_state_t *state, float *lat,
 				 float *lon);
 

@@ -290,6 +290,17 @@ randr_free(randr_state_t *state)
 	xcb_disconnect(state->conn);
 }
 
+void
+randr_print_help(FILE *f)
+{
+	fputs(_("Adjust gamma ramps with the X RANDR extension.\n"), f);
+	fputs("\n", f);
+
+	fputs(_("  screen=N\tX screen to apply adjustments to\n"
+		"  crtc=N\tCRTC to apply adjustments to\n"), f);
+	fputs("\n", f);
+}
+
 static int
 randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num, int temp,
 			       float gamma[3])

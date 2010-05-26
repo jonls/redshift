@@ -20,6 +20,7 @@
 #ifndef _REDSHIFT_LOCATION_GNOME_CLOCK_H
 #define _REDSHIFT_LOCATION_GNOME_CLOCK_H
 
+#include <stdio.h>
 
 typedef struct {
 	float lat;
@@ -29,6 +30,7 @@ typedef struct {
 
 int location_gnome_clock_init(location_gnome_clock_state_t *state, char *args);
 void location_gnome_clock_free(location_gnome_clock_state_t *state);
+void location_gnome_clock_print_help(FILE *f);
 int location_gnome_clock_get_location(location_gnome_clock_state_t *state,
 				      float *lat, float *lon);
 

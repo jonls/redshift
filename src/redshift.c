@@ -97,6 +97,7 @@ static const gamma_method_t gamma_methods[] = {
 		"RANDR",
 		(gamma_method_init_func *)randr_init,
 		(gamma_method_free_func *)randr_free,
+		(gamma_method_print_help_func *)randr_print_help,
 		(gamma_method_restore_func *)randr_restore,
 		(gamma_method_set_temperature_func *)randr_set_temperature
 	},
@@ -106,6 +107,7 @@ static const gamma_method_t gamma_methods[] = {
 		"VidMode",
 		(gamma_method_init_func *)vidmode_init,
 		(gamma_method_free_func *)vidmode_free,
+		(gamma_method_print_help_func *)vidmode_print_help,
 		(gamma_method_restore_func *)vidmode_restore,
 		(gamma_method_set_temperature_func *)vidmode_set_temperature
 	},
@@ -115,6 +117,7 @@ static const gamma_method_t gamma_methods[] = {
 		"WinGDI",
 		(gamma_method_init_func *)w32gdi_init,
 		(gamma_method_free_func *)w32gdi_free,
+		(gamma_method_print_help_func *)w32gdi_print_help,
 		(gamma_method_restore_func *)w32gdi_restore,
 		(gamma_method_set_temperature_func *)w32gdi_set_temperature
 	},
@@ -139,6 +142,8 @@ static const location_provider_t location_providers[] = {
 		"GNOME-Clock",
 		(location_provider_init_func *)location_gnome_clock_init,
 		(location_provider_free_func *)location_gnome_clock_free,
+		(location_provider_print_help_func *)
+		location_gnome_clock_print_help,
 		(location_provider_get_location_func *)
 		location_gnome_clock_get_location
 	},
@@ -147,6 +152,8 @@ static const location_provider_t location_providers[] = {
 		"Manual",
 		(location_provider_init_func *)location_manual_init,
 		(location_provider_free_func *)location_manual_free,
+		(location_provider_print_help_func *)
+		location_manual_print_help,
 		(location_provider_get_location_func *)
 		location_manual_get_location
 	},
@@ -288,6 +295,11 @@ print_method_list()
 	for (int i = 0; gamma_methods[i].name != NULL; i++) {
 		printf("  %s\n", gamma_methods[i].name);
 	}
+
+	fputs("\n", stdout);
+	fputs(_("Specify colon-separated options with"
+		" `-m METHOD:OPTIONS'.\n"), stdout);
+	fputs(_("Try `-m METHOD:help' for help.\n"), stdout);
 }
 
 static void
@@ -297,6 +309,11 @@ print_provider_list()
 	for (int i = 0; location_providers[i].name != NULL; i++) {
 		printf("  %s\n", location_providers[i].name);
 	}
+
+	fputs("\n", stdout);
+	fputs(_("Specify colon-separated options with"
+		"`-l PROVIDER:OPTIONS'.\n"), stdout);
+	fputs(_("Try `-l PROVIDER:help' for help.\n"), stdout);
 }
 
 
@@ -406,12 +423,26 @@ main(int argc, char *argv[])
 						  " `%s'.\n"), provider_name);
 				exit(EXIT_FAILURE);
 			}
+
+			/* Print provider help if arg is `help'. */
+			if (provider_args != NULL &&
+			    strcasecmp(provider_args, "help") == 0) {
+				provider->print_help(stdout);
+				exit(EXIT_FAILURE);
+			}
 			break;
 		case 'm':
 			/* Print list of methods if argument is `list' */
 			if (strcasecmp(optarg, "list") == 0) {
 				print_method_list();
 				exit(EXIT_SUCCESS);
+			}
+
+			/* Split off method arguments. */
+			s = strchr(optarg, ':');
+			if (s != NULL) {
+				*(s++) = '\0';
+				method_args = s;
 			}
 
 			/* Lookup argument in gamma methods table */
@@ -428,6 +459,13 @@ main(int argc, char *argv[])
 				   used to adjust colors e.g VidMode */
 				fprintf(stderr, _("Unknown method `%s'.\n"),
 					optarg);
+				exit(EXIT_FAILURE);
+			}
+
+			/* Print method help if arg is `help'. */
+			if (method_args != NULL &&
+			    strcasecmp(method_args, "help") == 0) {
+				method->print_help(stdout);
 				exit(EXIT_FAILURE);
 			}
 			break;

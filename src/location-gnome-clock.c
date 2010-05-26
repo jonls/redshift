@@ -35,6 +35,11 @@
 int
 location_gnome_clock_init(location_gnome_clock_state_t *state, char *args)
 {
+	if (args != NULL) {
+		fputs(_("Too many arguments.\n"), stderr);
+		return -1;
+	}
+
 	g_type_init();
 
 	GError *error = NULL;
@@ -126,6 +131,13 @@ location_gnome_clock_init(location_gnome_clock_state_t *state, char *args)
 void
 location_gnome_clock_free(location_gnome_clock_state_t *state)
 {
+}
+
+void
+location_gnome_clock_print_help(FILE *f)
+{
+	fputs(_("Use the location as set in the GNOME Clock applet.\n"), f);
+	fputs("\n", f);
 }
 
 int

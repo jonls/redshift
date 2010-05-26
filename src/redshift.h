@@ -20,10 +20,14 @@
 #ifndef _REDSHIFT_REDSHIFT_H
 #define _REDSHIFT_REDSHIFT_H
 
+#include <stdio.h>
+#include <stdlib.h>
+
 
 /* Gamma adjustment method */
 typedef int gamma_method_init_func(void *state, char *args);
 typedef void gamma_method_free_func(void *state);
+typedef void gamma_method_print_help_func(FILE *f);
 typedef void gamma_method_restore_func(void *state);
 typedef int gamma_method_set_temperature_func(void *state, int temp,
 					      float gamma[3]);
@@ -32,6 +36,7 @@ typedef struct {
 	char *name;
 	gamma_method_init_func *init;
 	gamma_method_free_func *free;
+	gamma_method_print_help_func *print_help;
 	gamma_method_restore_func *restore;
 	gamma_method_set_temperature_func *set_temperature;
 } gamma_method_t;
@@ -40,6 +45,7 @@ typedef struct {
 /* Location provider */
 typedef int location_provider_init_func(void *state, char *args);
 typedef void location_provider_free_func(void *state);
+typedef void location_provider_print_help_func(FILE *f);
 typedef int location_provider_get_location_func(void *state, float *lat,
 						float *lon);
 
@@ -47,6 +53,7 @@ typedef struct {
 	char *name;
 	location_provider_init_func *init;
 	location_provider_free_func *free;
+	location_provider_print_help_func *print_help;
 	location_provider_get_location_func *get_location;
 } location_provider_t;
 

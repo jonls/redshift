@@ -17,8 +17,8 @@
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define WINVER  0x0500
 #include <windows.h>
@@ -41,6 +41,11 @@ int
 w32gdi_init(w32gdi_state_t *state, char *args)
 {
 	BOOL r;
+
+	if (args != NULL) {
+		fputs(_("Too many arguments.\n"), stderr);
+		return -1;
+	}
 
 	/* Open device context */
 	state->hDC = GetDC(NULL);
@@ -84,6 +89,14 @@ w32gdi_free(w32gdi_state_t *state)
 
 	/* Release device context */
 	ReleaseDC(NULL, state->hDC);
+}
+
+
+void
+w32gdi_print_help(FILE *f)
+{
+	fputs(_("Adjust gamma ramps with the Windows GDI.\n"), f);
+	fputs("\n", f);
 }
 
 void

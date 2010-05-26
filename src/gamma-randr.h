@@ -20,6 +20,7 @@
 #ifndef _REDSHIFT_GAMMA_RANDR_H
 #define _REDSHIFT_GAMMA_RANDR_H
 
+#include <stdio.h>
 #include <stdint.h>
 
 #include <xcb/xcb.h>
@@ -45,6 +46,7 @@ typedef struct {
 
 int randr_init(randr_state_t *state, char *args);
 void randr_free(randr_state_t *state);
+void randr_print_help(FILE *f);
 void randr_restore(randr_state_t *state);
 int randr_set_temperature(randr_state_t *state, int temp, float gamma[3]);
 
