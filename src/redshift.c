@@ -94,7 +94,7 @@ typedef union {
 static const gamma_method_t gamma_methods[] = {
 #ifdef ENABLE_RANDR
 	{
-		"RANDR",
+		"randr",
 		(gamma_method_init_func *)randr_init,
 		(gamma_method_start_func *)randr_start,
 		(gamma_method_free_func *)randr_free,
@@ -106,7 +106,7 @@ static const gamma_method_t gamma_methods[] = {
 #endif
 #ifdef ENABLE_VIDMODE
 	{
-		"VidMode",
+		"vidmode",
 		(gamma_method_init_func *)vidmode_init,
 		(gamma_method_start_func *)vidmode_start,
 		(gamma_method_free_func *)vidmode_free,
@@ -118,7 +118,7 @@ static const gamma_method_t gamma_methods[] = {
 #endif
 #ifdef ENABLE_WINGDI
 	{
-		"WinGDI",
+		"wingdi",
 		(gamma_method_init_func *)w32gdi_init,
 		(gamma_method_start_func *)w32gdi_start,
 		(gamma_method_free_func *)w32gdi_free,
@@ -145,7 +145,7 @@ typedef union {
 static const location_provider_t location_providers[] = {
 #ifdef ENABLE_GNOME_CLOCK
 	{
-		"GNOME-Clock",
+		"gnome-clock",
 		(location_provider_init_func *)location_gnome_clock_init,
 		(location_provider_start_func *)location_gnome_clock_start,
 		(location_provider_free_func *)location_gnome_clock_free,
@@ -158,7 +158,7 @@ static const location_provider_t location_providers[] = {
 	},
 #endif
 	{
-		"Manual",
+		"manual",
 		(location_provider_init_func *)location_manual_init,
 		(location_provider_start_func *)location_manual_start,
 		(location_provider_free_func *)location_manual_free,
@@ -513,7 +513,7 @@ main(int argc, char *argv[])
 			float v = strtof(optarg, &end);
 			if (errno == 0 && *end == ':') {
 				/* Use instead as arguments to `manual'. */
-				provider_name = "Manual";
+				provider_name = "manual";
 				provider_args = optarg;
 			} else {
 				/* Split off provider arguments. */
