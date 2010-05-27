@@ -41,51 +41,19 @@
 
 
 int
-randr_init(randr_state_t *state, char *args)
+randr_init(randr_state_t *state)
 {
-	int screen_num = -1;
-	int crtc_num = -1;
+	/* Initialize state. */
+	state->screen_num = -1;
+	state->crtc_num = -1;
 
-	/* Parse arguments. */
-	while (args != NULL) {
-		char *next_arg = strchr(args, ':');
-		if (next_arg != NULL) *(next_arg++) = '\0';
-
-		char *value = strchr(args, '=');
-		if (value != NULL) *(value++) = '\0';
-
-		if (strcasecmp(args, "screen") == 0) {
-			if (value == NULL) {
-				fprintf(stderr, _("Missing value for"
-						  " parameter: `%s'.\n"),
-					args);
-				return -1;
-			}
-			screen_num = atoi(value);
-		} else if (strcasecmp(args, "crtc") == 0) {
-			if (value == NULL) {
-				fprintf(stderr, _("Missing value for"
-						  " parameter: `%s'.\n"),
-					args);
-				return -1;
-			}
-			crtc_num = atoi(value);
-		} else {
-			fprintf(stderr, _("Unknown method parameter: `%s'.\n"),
-				args);
-			return -1;
-		}
-
-		args = next_arg;
-	}
+	state->crtc_count = 0;
+	state->crtcs = NULL;
 
 	xcb_generic_error_t *error;
 
 	/* Open X server connection */
-	int preferred_screen;
-	state->conn = xcb_connect(NULL, &preferred_screen);
-
-	if (screen_num < 0) screen_num = preferred_screen;
+	state->conn = xcb_connect(NULL, &state->preferred_screen);
 
 	/* Query RandR version */
 	xcb_randr_query_version_cookie_t ver_cookie =
@@ -112,6 +80,17 @@ randr_init(randr_state_t *state, char *args)
 
 	free(ver_reply);
 
+	return 0;
+}
+
+int
+randr_start(randr_state_t *state)
+{
+	xcb_generic_error_t *error;
+
+	int screen_num = state->screen_num;
+	if (screen_num < 0) screen_num = state->preferred_screen;
+
 	/* Get screen */
 	const xcb_setup_t *setup = xcb_get_setup(state->conn);
 	xcb_screen_iterator_t iter = xcb_setup_roots_iterator(setup);
@@ -128,7 +107,6 @@ randr_init(randr_state_t *state, char *args)
 	if (state->screen == NULL) {
 		fprintf(stderr, _("Screen %i could not be found.\n"),
 			screen_num);
-		xcb_disconnect(state->conn);
 		return -1;
 	}
 
@@ -145,16 +123,14 @@ randr_init(randr_state_t *state, char *args)
 		fprintf(stderr, _("`%s' returned error %d\n"),
 			"RANDR Get Screen Resources Current",
 			error->error_code);
-		xcb_disconnect(state->conn);
 		return -1;
 	}
 
-	state->crtc_num = crtc_num;
 	state->crtc_count = res_reply->num_crtcs;
-	state->crtcs = malloc(state->crtc_count * sizeof(randr_crtc_state_t));
+	state->crtcs = calloc(state->crtc_count, sizeof(randr_crtc_state_t));
 	if (state->crtcs == NULL) {
 		perror("malloc");
-		xcb_disconnect(state->conn);
+		state->crtc_count = 0;
 		return -1;
 	}
 
@@ -186,7 +162,6 @@ randr_init(randr_state_t *state, char *args)
 			fprintf(stderr, _("`%s' returned error %d\n"),
 				"RANDR Get CRTC Gamma Size",
 				error->error_code);
-			xcb_disconnect(state->conn);
 			return -1;
 		}
 
@@ -198,7 +173,6 @@ randr_init(randr_state_t *state, char *args)
 		if (ramp_size == 0) {
 			fprintf(stderr, _("Gamma ramp size too small: %i\n"),
 				ramp_size);
-			xcb_disconnect(state->conn);
 			return -1;
 		}
 
@@ -213,7 +187,6 @@ randr_init(randr_state_t *state, char *args)
 		if (error) {
 			fprintf(stderr, _("`%s' returned error %d\n"),
 				"RANDR Get CRTC Gamma", error->error_code);
-			xcb_disconnect(state->conn);
 			return -1;
 		}
 
@@ -230,7 +203,6 @@ randr_init(randr_state_t *state, char *args)
 		if (state->crtcs[i].saved_ramps == NULL) {
 			perror("malloc");
 			free(gamma_get_reply);
-			xcb_disconnect(state->conn);
 			return -1;
 		}
 
@@ -299,6 +271,27 @@ randr_print_help(FILE *f)
 	fputs(_("  screen=N\tX screen to apply adjustments to\n"
 		"  crtc=N\tCRTC to apply adjustments to\n"), f);
 	fputs("\n", f);
+}
+
+int
+randr_set_option(randr_state_t *state, const char *key, const char *value)
+{
+	if (key == NULL) {
+		fprintf(stderr, _("Missing value for parameter: `%s'.\n"),
+			value);
+		return -1;
+	}
+
+	if (strcasecmp(key, "screen") == 0) {
+		state->screen_num = atoi(value);
+	} else if (strcasecmp(key, "crtc") == 0) {
+		state->crtc_num = atoi(value);
+	} else {
+		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
+		return -1;
+	}
+
+	return 0;
 }
 
 static int

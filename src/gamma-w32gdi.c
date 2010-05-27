@@ -38,14 +38,18 @@
 
 
 int
-w32gdi_init(w32gdi_state_t *state, char *args)
+w32gdi_init(w32gdi_state_t *state)
+{
+	state->saved_ramps = NULL;
+	state->hDC = NULL;
+
+	return 0;
+}
+
+int
+w32gdi_init(w32gdi_state_t *state)
 {
 	BOOL r;
-
-	if (args != NULL) {
-		fputs(_("Too many arguments.\n"), stderr);
-		return -1;
-	}
 
 	/* Open device context */
 	state->hDC = GetDC(NULL);
@@ -88,7 +92,7 @@ w32gdi_free(w32gdi_state_t *state)
 	free(state->saved_ramps);
 
 	/* Release device context */
-	ReleaseDC(NULL, state->hDC);
+	if (state->hDC != NULL) ReleaseDC(NULL, state->hDC);
 }
 
 
@@ -97,6 +101,12 @@ w32gdi_print_help(FILE *f)
 {
 	fputs(_("Adjust gamma ramps with the Windows GDI.\n"), f);
 	fputs("\n", f);
+}
+
+int
+w32gdi_set_option(w32gdi_state_t *state, const char *key, const char *value)
+{
+	return -1;
 }
 
 void

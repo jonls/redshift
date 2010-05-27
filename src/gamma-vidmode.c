@@ -37,36 +37,10 @@
 
 
 int
-vidmode_init(vidmode_state_t *state, char *args)
+vidmode_init(vidmode_state_t *state)
 {
-	int screen_num = -1;
-
-	/* Parse arguments. */
-	while (args != NULL) {
-		char *next_arg = strchr(args, ':');
-		if (next_arg != NULL) *(next_arg++) = '\0';
-
-		char *value = strchr(args, '=');
-		if (value != NULL) *(value++) = '\0';
-
-		if (strcasecmp(args, "screen") == 0) {
-			if (value == NULL) {
-				fprintf(stderr, _("Missing value for"
-						  " parameter: `%s'.\n"),
-					args);
-				return -1;
-			}
-			screen_num = atoi(value);
-		} else {
-			fprintf(stderr, _("Unknown method parameter: `%s'.\n"),
-				args);
-			return -1;
-		}
-
-		args = next_arg;
-	}
-
-	int r;
+	state->screen_num = -1;
+	state->saved_ramps = NULL;
 
 	/* Open display */
 	state->display = XOpenDisplay(NULL);
@@ -75,6 +49,15 @@ vidmode_init(vidmode_state_t *state, char *args)
 			"XOpenDisplay");
 		return -1;
 	}
+
+	return 0;
+}
+
+int
+vidmode_start(vidmode_state_t *state)
+{
+	int r;
+	int screen_num = state->screen_num;
 
 	if (screen_num < 0) screen_num = DefaultScreen(state->display);
 	state->screen_num = screen_num;
@@ -150,6 +133,25 @@ vidmode_print_help(FILE *f)
 
 	fputs(_("  screen=N\tX screen to apply adjustments to\n"), f);
 	fputs("\n", f);
+}
+
+int
+vidmode_set_option(vidmode_state_t *state, const char *key, const char *value)
+{
+	if (key == NULL) {
+		fprintf(stderr, _("Missing value for parameter: `%s'.\n"),
+			key);
+		return -1;
+	}
+
+	if (strcasecmp(key, "screen") == 0) {
+		state->screen_num = atoi(value);
+	} else {
+		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
+		return -1;
+	}
+
+	return 0;
 }
 
 void

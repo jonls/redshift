@@ -96,8 +96,10 @@ static const gamma_method_t gamma_methods[] = {
 	{
 		"RANDR",
 		(gamma_method_init_func *)randr_init,
+		(gamma_method_start_func *)randr_start,
 		(gamma_method_free_func *)randr_free,
 		(gamma_method_print_help_func *)randr_print_help,
+		(gamma_method_set_option_func *)randr_set_option,
 		(gamma_method_restore_func *)randr_restore,
 		(gamma_method_set_temperature_func *)randr_set_temperature
 	},
@@ -106,8 +108,10 @@ static const gamma_method_t gamma_methods[] = {
 	{
 		"VidMode",
 		(gamma_method_init_func *)vidmode_init,
+		(gamma_method_start_func *)vidmode_start,
 		(gamma_method_free_func *)vidmode_free,
 		(gamma_method_print_help_func *)vidmode_print_help,
+		(gamma_method_set_option_func *)vidmode_set_option,
 		(gamma_method_restore_func *)vidmode_restore,
 		(gamma_method_set_temperature_func *)vidmode_set_temperature
 	},
@@ -116,8 +120,10 @@ static const gamma_method_t gamma_methods[] = {
 	{
 		"WinGDI",
 		(gamma_method_init_func *)w32gdi_init,
+		(gamma_method_start_func *)w32gdi_start,
 		(gamma_method_free_func *)w32gdi_free,
 		(gamma_method_print_help_func *)w32gdi_print_help,
+		(gamma_method_set_option_func *)w32gdi_set_option,
 		(gamma_method_restore_func *)w32gdi_restore,
 		(gamma_method_set_temperature_func *)w32gdi_set_temperature
 	},
@@ -141,9 +147,12 @@ static const location_provider_t location_providers[] = {
 	{
 		"GNOME-Clock",
 		(location_provider_init_func *)location_gnome_clock_init,
+		(location_provider_start_func *)location_gnome_clock_start,
 		(location_provider_free_func *)location_gnome_clock_free,
 		(location_provider_print_help_func *)
 		location_gnome_clock_print_help,
+		(location_provider_set_option_func *)
+		location_gnome_clock_set_option,
 		(location_provider_get_location_func *)
 		location_gnome_clock_get_location
 	},
@@ -151,9 +160,12 @@ static const location_provider_t location_providers[] = {
 	{
 		"Manual",
 		(location_provider_init_func *)location_manual_init,
+		(location_provider_start_func *)location_manual_start,
 		(location_provider_free_func *)location_manual_free,
 		(location_provider_print_help_func *)
 		location_manual_print_help,
+		(location_provider_set_option_func *)
+		location_manual_set_option,
 		(location_provider_get_location_func *)
 		location_manual_get_location
 	},
@@ -317,6 +329,111 @@ print_provider_list()
 }
 
 
+static int
+provider_try_start(const location_provider_t *provider,
+		   location_state_t *state, char *args)
+{
+	int r;
+
+	r = provider->init(state);
+	if (r < 0) {
+		fprintf(stderr, _("Initialization of %s failed.\n"),
+			provider->name);
+		return -1;
+	}
+
+	/* Set provider options. */
+	while (args != NULL) {
+		char *next_arg = strchr(args, ':');
+		if (next_arg != NULL) *(next_arg++) = '\0';
+
+		char *key = NULL;
+		char *value = strchr(args, '=');
+		if (value != NULL) {
+			key = args;
+			*(value++) = '\0';
+		} else {
+			value = args;
+		}
+
+		r = provider->set_option(state, key, value);
+		if (r < 0) {
+			provider->free(state);
+			fprintf(stderr, _("Failed to set %s option.\n"),
+				provider->name);
+			fprintf(stderr, _("Try `-p %s:help' for more"
+					  " information.\n"), provider->name);
+			return -1;
+		}
+
+		args = next_arg;
+	}
+
+	/* Start provider. */
+	r = provider->start(state);
+	if (r < 0) {
+		provider->free(state);
+		fprintf(stderr, _("Failed to start provider %s.\n"),
+			provider->name);
+		return -1;
+	}
+
+	return 0;
+}
+
+static int
+method_try_start(const gamma_method_t *method,
+		 gamma_state_t *state, char *args)
+{
+	int r;
+
+	r = method->init(state);
+	if (r < 0) {
+		fprintf(stderr, _("Initialization of %s failed.\n"),
+			method->name);
+		return -1;
+	}
+
+	/* Set method options. */
+	while (args != NULL) {
+		char *next_arg = strchr(args, ':');
+		if (next_arg != NULL) *(next_arg++) = '\0';
+
+		char *key = NULL;
+		char *value = strchr(args, '=');
+		if (value != NULL) {
+			key = args;
+			*(value++) = '\0';
+		} else {
+			value = args;
+		}
+
+		r = method->set_option(state, key, value);
+		if (r < 0) {
+			method->free(state);
+			fprintf(stderr, _("Failed to set %s option.\n"),
+				method->name);
+			fprintf(stderr, _("Try `-p %s:help' for more"
+					  " information.\n"), method->name);
+			return -1;
+		}
+
+		args = next_arg;
+	}
+
+	/* Start method. */
+	r = method->start(state);
+	if (r < 0) {
+		method->free(state);
+		fprintf(stderr, _("Failed to start adjustment method %s.\n"),
+			method->name);
+		return -1;
+	}
+
+	return 0;
+}
+
+
 int
 main(int argc, char *argv[])
 {
@@ -395,6 +512,7 @@ main(int argc, char *argv[])
 			char *end;
 			float v = strtof(optarg, &end);
 			if (errno == 0 && *end == ':') {
+				/* Use instead as arguments to `manual'. */
 				provider_name = "Manual";
 				provider_args = optarg;
 			} else {
@@ -504,25 +622,21 @@ main(int argc, char *argv[])
 
 	if (provider != NULL) {
 		/* Use provider specified on command line. */
-		r = provider->init(&location_state, provider_args);
-		if (r < 0) {
-			fprintf(stderr, _("Initialization of %s failed.\n"),
-				provider->name);
-			exit(EXIT_FAILURE);
-		}
+		r = provider_try_start(provider, &location_state,
+			provider_args);
+		if (r < 0) exit(EXIT_FAILURE);
 	} else {
 		/* Try all providers, use the first that works. */
 		for (int i = 0; location_providers[i].name != NULL; i++) {
 			const location_provider_t *p = &location_providers[i];
-			r = p->init(&location_state, provider_args);
+			r = provider_try_start(p, &location_state, NULL);
 			if (r < 0) {
-				fprintf(stderr, _("Initialization of %s"
-						  " failed.\n"), p->name);
 				fputs(_("Trying other provider...\n"), stderr);
-			} else {
-				provider = p;
-				break;
+				continue;
 			}
+
+			provider = p;
+			break;
 		}
 
 		/* Failure if no providers were successful at this point. */
@@ -605,25 +719,20 @@ main(int argc, char *argv[])
 
 	if (method != NULL) {
 		/* Use method specified on command line. */
-		r = method->init(&state, method_args);
-		if (r < 0) {
-			fprintf(stderr, _("Initialization of %s failed.\n"),
-				method->name);
-			exit(EXIT_FAILURE);
-		}
+		r = method_try_start(method, &state, method_args);
+		if (r < 0) exit(EXIT_FAILURE);
 	} else {
 		/* Try all methods, use the first that works. */
 		for (int i = 0; gamma_methods[i].name != NULL; i++) {
 			const gamma_method_t *m = &gamma_methods[i];
-			r = m->init(&state, method_args);
+			r = method_try_start(m, &state, NULL);
 			if (r < 0) {
-				fprintf(stderr, _("Initialization of %s"
-						  " failed.\n"), m->name);
 				fputs(_("Trying other method...\n"), stderr);
-			} else {
-				method = m;
-				break;
+				continue;
 			}
+
+			method = m;
+			break;
 		}
 
 		/* Failure if no methods were successful at this point. */

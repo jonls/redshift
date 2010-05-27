@@ -34,40 +34,17 @@
 
 
 int
-location_manual_init(location_manual_state_t *state, char *args)
+location_manual_init(location_manual_state_t *state)
 {
 	state->lat = NAN;
 	state->lon = NAN;
 
-	/* Parse arguments. */
-	int count = 0;
-	while (args != NULL) {
-		if (count > 1) {
-			fputs(_("Too many arguments.\n"), stderr);
-			return -1;
-		}
+	return 0;
+}
 
-		char *next_arg = strchr(args, ':');
-		if (next_arg != NULL) *(next_arg++) = '\0';
-
-		/* Parse float value */
-		char *end;
-		errno = 0;
-		float value = strtof(args, &end);
-		if (errno != 0 || *end != '\0') {
-			fputs(_("Malformed argument.\n"), stderr);
-			return -1;
-		}
-
-		switch (count) {
-		case 0: state->lat = value; break;
-		case 1: state->lon = value; break;
-		}
-
-		args = next_arg;
-		count += 1;
-	}
-
+int
+location_manual_start(location_manual_state_t *state)
+{
 	/* Latitude and longitude must be set */
 	if (isnan(state->lat) || isnan(state->lon)) {
 		fputs(_("Latitude and longitude must be set.\n"), stderr);
@@ -88,9 +65,39 @@ location_manual_print_help(FILE *f)
 	fputs(_("Specify location manually.\n"), f);
 	fputs("\n", f);
 
-	fputs(_("  First argument is latitude,\n"
-		"  second argument is longitude\n"), f);
+	fputs(_("  lat=N\t\tLatitude\n"
+		"  lon=N\t\tLongitude\n"), f);
 	fputs("\n", f);
+}
+
+int
+location_manual_set_option(location_manual_state_t *state, const char *key,
+			   const char *value)
+{
+	/* Parse float value */
+	char *end;
+	errno = 0;
+	float v = strtof(value, &end);
+	if (errno != 0 || *end != '\0') {
+		fputs(_("Malformed argument.\n"), stderr);
+		return -1;
+	}
+
+	if ((key == NULL && isnan(state->lat)) ||
+	    (key != NULL && strcasecmp(key, "lat") == 0)) {
+		state->lat = v;
+	} else if ((key == NULL && isnan(state->lon)) ||
+		   (key != NULL && strcasecmp(key, "lon") == 0)) {
+		state->lon = v;
+	} else if (key == NULL) {
+		fputs(_("Too many arguments.\n"), stderr);
+		return -1;
+	} else {
+		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
+		return -1;
+	}
+
+	return 0;
 }
 
 int
