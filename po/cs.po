@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-05-25 01:34+0200\n"
-"PO-Revision-Date: 2010-06-01 11:49+0000\n"
+"PO-Revision-Date: 2010-06-02 14:15+0000\n"
 "Last-Translator: clever_fox <clever_fox@seznam.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-06-02 03:37+0000\n"
+"X-Launchpad-Export-Date: 2010-06-03 03:39+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: src/redshift.c:214
@@ -41,6 +41,8 @@ msgstr "Doba: Den\n"
 #, c-format
 msgid "Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
 msgstr ""
+"Použití: %s -l zeměpisná šířka:zeměpisná délka -t teplota den:teplota noc "
+"[VOLBY...]\n"
 
 #. TRANSLATORS: help output 2
 #. no-wrap
@@ -299,28 +301,28 @@ msgstr "Nebyl nalezen žádný applet hodin.\n"
 #: src/location-gnome-clock.c:86
 #, c-format
 msgid "Error reading city list: `%s'.\n"
-msgstr ""
+msgstr "Chyba při čtení seznamu měst: `%s'.\n"
 
 #: src/location-gnome-clock.c:106
 msgid "No city selected as current city.\n"
-msgstr ""
+msgstr "Není zvoleno současné město.\n"
 
 #: src/location-gnome-clock.c:113
 msgid "Location not specified for city.\n"
-msgstr ""
+msgstr "Tato lokace není ve městě definována.\n"
 
 #: src/location-manual.c:46
 msgid "Too many arguments.\n"
-msgstr ""
+msgstr "Příliš mnoho argumentů.\n"
 
 #: src/location-manual.c:58
 msgid "Malformed argument.\n"
-msgstr ""
+msgstr "Nevhodný argument.\n"
 
 #: src/location-manual.c:73
 msgid "Latitude and longitude must be set.\n"
-msgstr ""
+msgstr "Zeměpisná šířka a délka musí být nastavena.\n"
 
 #: src/gtk-redshift/statusicon.py:61
 msgid "Toggle"
-msgstr ""
+msgstr "Přepnout"
