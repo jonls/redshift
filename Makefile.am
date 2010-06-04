@@ -4,7 +4,8 @@ ACLOCAL_AMFLAGS = -I m4
 
 # Icons
 icondir = @datadir@/icons/hicolor/scalable/apps
-icon_DATA = data/icons/hicolor/scalable/apps/redshift.svg
+icon_DATA = data/icons/hicolor/scalable/apps/redshift.svg \
+    data/icons/hicolor/scalable/apps/redshift-idle.svg
 
 EXTRA_DIST = $(icon_DATA)
 
