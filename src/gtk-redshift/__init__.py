@@ -16,5 +16,3 @@
 # along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
 # Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
-
-__all__ = ['statusicon']
