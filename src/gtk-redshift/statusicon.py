@@ -30,7 +30,7 @@ import gtk, glib
 import defs
 
 
-def run_statusicon():
+def run():
     # Internationalisation
     gettext.bindtextdomain('redshift', defs.LOCALEDIR)
     gettext.textdomain('redshift')

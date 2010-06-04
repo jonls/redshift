@@ -121,6 +121,27 @@ AS_IF([test "x$enable_gnome_clock" != xno], [
 ])
 AM_CONDITIONAL([ENABLE_GNOME_CLOCK], [test "x$enable_gnome_clock" != xno])
 
+# Check for application indicator
+AC_MSG_CHECKING([whether to enable application indicator])
+AC_ARG_ENABLE([appindicator], [AC_HELP_STRING([--enable-appindicator],
+	[enable application indicator])],
+	[enable_appindicator=$enableval],[enable_appindicator=no])
+AS_IF([test "x$enable_appindicator" != xno], [
+	AS_IF([test $have_python = yes], [
+		AC_MSG_RESULT([yes])
+        enable_gtk=no
+	], [
+		AC_MSG_RESULT([missing dependencies])
+		AS_IF([test "x$enable_appindicator" = xyes], [
+			AC_MSG_ERROR([application indicator script requires Python 2.6])
+		])
+		enable_appindicator=no
+	])
+], [
+	AC_MSG_RESULT([no])
+])
+AM_CONDITIONAL([ENABLE_APPINDICATOR], [test "x$enable_appindicator" != xno])
+
 # Check for GTK+ status icon
 AC_MSG_CHECKING([whether to enable GTK status icon])
 AC_ARG_ENABLE([gtk], [AC_HELP_STRING([--enable-gtk],
@@ -168,4 +189,7 @@ echo "
     compiler:		${CC}
     cflags:		${CFLAGS}
     ldflags:		${LDFLAGS}
+
+    gtk status icon: ${enable_gtk}
+    application indicator: ${enable_appindicator}
 "
