@@ -273,6 +273,7 @@ print_help(const char *program_name)
 	fputs("\n", stdout);	
 
 	/* TRANSLATORS: help output 4
+	   `list' must not be translated
 	   no-wrap */
 	fputs(_("  -g R:G:B\tAdditional gamma correction to apply\n"
 		"  -l LAT:LON\tYour current location\n"
@@ -507,10 +508,11 @@ main(int argc, char *argv[])
 
 			char *provider_name = NULL;
 
-			/* Try to parse provider name as float */
+			/* Don't save the result of strtof(); we simply want
+			   to know if optarg can be parsed as a float. */
 			errno = 0;
 			char *end;
-			float v = strtof(optarg, &end);
+			strtof(optarg, &end);
 			if (errno == 0 && *end == ':') {
 				/* Use instead as arguments to `manual'. */
 				provider_name = "manual";
