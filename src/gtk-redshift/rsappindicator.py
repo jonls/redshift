@@ -26,7 +26,11 @@ import pygtk
 pygtk.require("2.0")
 
 import gtk, glib
-import appindicator
+try:
+    import appindicator
+except ImportError as ie:
+    # No module named appindicator
+    sys.exit(str(ie))
 
 import defs
 
