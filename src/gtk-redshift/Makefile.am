@@ -3,6 +3,7 @@ if ENABLE_STATUSICON
 gui_module=statusicon
 gtk_redshift_PYTHON = \
 	__init__.py \
+	utils.py \
 	statusicon.py
 nodist_gtk_redshift_PYTHON = \
 	defs.py
@@ -15,12 +16,19 @@ if ENABLE_APPINDICATOR
 gui_module=rsappindicator
 gtk_redshift_PYTHON = \
 	__init__.py \
+	utils.py \
 	rsappindicator.py
 nodist_gtk_redshift_PYTHON = \
 	defs.py
 gtk_redshiftdir = $(pythondir)/gtk_redshift
 
 bin_SCRIPTS = gtk-redshift
+endif
+
+if ENABLE_APPINDICATOR || ENABLE_STATUSICON
+# Desktop file
+desktopdir = ${datadir}/applications
+desktop_DATA = gtk-redshift.desktop
 endif
 
 EXTRA_DIST = gtk-redshift.in \
