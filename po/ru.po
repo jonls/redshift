@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-06-04 21:58+0200\n"
+"POT-Creation-Date: 2010-06-06 23:32+0200\n"
 "PO-Revision-Date: 2010-02-02 09:20+0000\n"
 "Last-Translator: Gregory Petrosyan <gregory.petrosyan@gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
@@ -394,7 +394,7 @@ msgstr "Некорректная величина гаммы.\n"
 msgid "Too many arguments.\n"
 msgstr "Некорректная величина гаммы.\n"
 
-#: src/gtk-redshift/statusicon.py:61
+#: src/gtk-redshift/statusicon.py:61 src/gtk-redshift/rsappindicator.py:70
 msgid "Toggle"
 msgstr "Включить / Выключить"
 

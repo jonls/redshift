@@ -38,6 +38,7 @@ AS_IF([test "x$enable_randr" != xno], [
 		AC_DEFINE([ENABLE_RANDR], 1,
 			[Define to 1 to enable RANDR method])
 		AC_MSG_RESULT([yes])
+		enable_randr=yes
 	], [
 		AC_MSG_RESULT([missing dependencies])
 		AS_IF([test "x$enable_randr" = xyes], [
@@ -47,8 +48,9 @@ AS_IF([test "x$enable_randr" != xno], [
 	])
 ], [
 	AC_MSG_RESULT([no])
+	enable_randr=no
 ])
-AM_CONDITIONAL([ENABLE_RANDR], [test "x$enable_randr" != xno])
+AM_CONDITIONAL([ENABLE_RANDR], [test "x$enable_randr" = xyes])
 
 # Check VidMode method 
 AC_MSG_CHECKING([whether to enable VidMode method])
@@ -60,6 +62,7 @@ AS_IF([test "x$enable_vidmode" != xno], [
 		AC_DEFINE([ENABLE_VIDMODE], 1,
 			[Define to 1 to enable VidMode method])
 		AC_MSG_RESULT([yes])
+		enable_vidmode=yes
 	], [
 		AC_MSG_RESULT([missing dependencies])
 		AS_IF([test "x$enable_vidmode" = xyes], [
@@ -69,8 +72,9 @@ AS_IF([test "x$enable_vidmode" != xno], [
 	])
 ], [
 	AC_MSG_RESULT([no])
+	enable_vidmode=no
 ])
-AM_CONDITIONAL([ENABLE_VIDMODE], [test "x$enable_vidmode" != xno])
+AM_CONDITIONAL([ENABLE_VIDMODE], [test "x$enable_vidmode" = xyes])
 
 # Check Windows GDI method 
 AC_MSG_CHECKING([whether to enable WinGDI method])
@@ -82,6 +86,7 @@ AS_IF([test "x$enable_wingdi" != xno], [
 		AC_DEFINE([ENABLE_WINGDI], 1,
 			[Define to 1 to enable WinGDI method])
 		AC_MSG_RESULT([yes])
+		enable_wingdi=yes
 	], [
 		AC_MSG_RESULT([missing dependencies])
 		AS_IF([test "x$enable_wingdi" = xyes], [
@@ -91,8 +96,9 @@ AS_IF([test "x$enable_wingdi" != xno], [
 	])
 ], [
 	AC_MSG_RESULT([no])
+	enable_wingdi=no
 ])
-AM_CONDITIONAL([ENABLE_WINGDI], [test "x$enable_wingdi" != xno])
+AM_CONDITIONAL([ENABLE_WINGDI], [test "x$enable_wingdi" = xyes])
 
 # Check that at least one method is enabled
 AS_IF([test "x$enable_randr" = xno -a "x$enable_vidmode" = xno -a "x$enable_wingdi" = xno], [
@@ -109,6 +115,7 @@ AS_IF([test "x$enable_gnome_clock" != xno], [
 		AC_DEFINE([ENABLE_GNOME_CLOCK], 1,
 			[Define to 1 to enable GNOME Clock location provider])
 		AC_MSG_RESULT([yes])
+		enable_gnome_clock=yes
 	], [
 		AC_MSG_RESULT([missing dependencies])
 		AS_IF([test "x$enable_gnome_clock" = xyes], [
@@ -118,28 +125,49 @@ AS_IF([test "x$enable_gnome_clock" != xno], [
 	])
 ], [
 	AC_MSG_RESULT([no])
+	enable_gnome_clock=no
 ])
-AM_CONDITIONAL([ENABLE_GNOME_CLOCK], [test "x$enable_gnome_clock" != xno])
+AM_CONDITIONAL([ENABLE_GNOME_CLOCK], [test "x$enable_gnome_clock" = xyes])
 
-# Check for GTK+ status icon
-AC_MSG_CHECKING([whether to enable GTK status icon])
-AC_ARG_ENABLE([gtk], [AC_HELP_STRING([--enable-gtk],
-	[enable GTK status icon])],
-	[enable_gtk=$enableval],[enable_gtk=maybe])
-AS_IF([test "x$enable_gtk" != xno], [
-	AS_IF([test $have_python = yes], [
-		AC_MSG_RESULT([yes])
-	], [
-		AC_MSG_RESULT([missing dependencies])
-		AS_IF([test "x$enable_gtk" = xyes], [
+
+# Check for GUI
+# There doesn't seem to be an easy way of detecting the presence
+# of a python module. For that reason, statusicon is the default GUI.
+AC_MSG_CHECKING([which GUI to enable])
+AC_ARG_ENABLE([gui], [AC_HELP_STRING([--enable-gui],
+	[enable GUI (appindicator, statusicon or none)])],
+	[enable_gui=$enableval],[enable_gui=maybe])
+
+# Statusicon GUI
+AS_IF([test "x$enable_gui" = xstatusicon -o "x$enable_gui" = maybe], [
+	AS_IF([test $have_python != yes], [
+		AS_IF([test "x$enable_gui" = xstatusicon], [
 			AC_MSG_ERROR([status icon script requires Python 2.6])
 		])
-		enable_gtk=no
+		enable_gui=maybe
 	])
-], [
-	AC_MSG_RESULT([no])
 ])
-AM_CONDITIONAL([ENABLE_GTK], [test "x$enable_gtk" != xno])
+
+# Appindicator GUI
+AS_IF([test "x$enable_gui" = xappindicator -o "x$enable_gui" = maybe], [
+	AS_IF([test $have_python != yes], [
+		AS_IF([test "x$enable_gui" = xappindicator], [
+			AC_MSG_ERROR([application indicator script requires Python 2.6])
+		])
+		enable_gui=maybe
+	])
+])
+
+# Fall back to no GUI
+AS_IF([test "x$enable_gui" != xappindicator -a "x$enable_gui" != xstatusicon], [
+	enable_gui=none
+])
+
+AC_MSG_RESULT([$enable_gui])
+
+AM_CONDITIONAL([ENABLE_STATUSICON], [test "x$enable_gui" = xstatusicon])
+AM_CONDITIONAL([ENABLE_APPINDICATOR], [test "x$enable_gui" = xappindicator])
+
 
 # Checks for header files.
 AC_CHECK_HEADERS([locale.h stdint.h stdlib.h string.h unistd.h sys/signal.h])
@@ -168,4 +196,14 @@ echo "
     compiler:		${CC}
     cflags:		${CFLAGS}
     ldflags:		${LDFLAGS}
+
+    Adjustment methods:
+    RANDR:		${enable_randr}
+    VidMode:		${enable_vidmode}
+    WinGDI:		${enable_wingdi}
+
+    Location providers:
+    GNOME Clock:	${enable_gnome_clock}
+
+    GUI:		${enable_gui}
 "
