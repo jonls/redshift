@@ -46,46 +46,46 @@ def run():
     args.insert(0, os.path.join(defs.BINDIR, 'redshift'))
     process = subprocess.Popen(args)
 
-    # Create status icon
-    indicator = appindicator.Indicator ("redshift",
-                          "redshift",
-                          appindicator.CATEGORY_APPLICATION_STATUS)
-    indicator.set_status (appindicator.STATUS_ACTIVE)
-
-    def toggle_cb(widget, data=None):
-        if indicator.get_icon() == 'redshift':
-            indicator.set_icon('redshift-idle')
-        else:
-            indicator.set_icon('redshift')
-        process.send_signal(signal.SIGUSR1)
-
-    def destroy_cb(widget, data=None):
-        gtk.main_quit()
-        return False
-
-    # Create popup menu
-    status_menu = gtk.Menu()
-
-    toggle_item = gtk.ImageMenuItem(_('Toggle'))
-    toggle_item.connect('activate', toggle_cb)
-    status_menu.append(toggle_item)
-
-    quit_item = gtk.ImageMenuItem(gtk.STOCK_QUIT)
-    quit_item.connect('activate', destroy_cb)
-    status_menu.append(quit_item)
-
-    status_menu.show_all()
-
-    # Set the menu
-    indicator.set_menu(status_menu)
-
-    def child_cb(pid, cond, data=None):
-        sys.exit(-1)
-
-    # Add watch on child process
-    glib.child_watch_add(process.pid, child_cb)
-
     try:
+        # Create status icon
+        indicator = appindicator.Indicator ("redshift",
+                              "redshift",
+                              appindicator.CATEGORY_APPLICATION_STATUS)
+        indicator.set_status (appindicator.STATUS_ACTIVE)
+
+        def toggle_cb(widget, data=None):
+            if indicator.get_icon() == 'redshift':
+                indicator.set_icon('redshift-idle')
+            else:
+                indicator.set_icon('redshift')
+            process.send_signal(signal.SIGUSR1)
+
+        def destroy_cb(widget, data=None):
+            gtk.main_quit()
+            return False
+
+        # Create popup menu
+        status_menu = gtk.Menu()
+
+        toggle_item = gtk.ImageMenuItem(_('Toggle'))
+        toggle_item.connect('activate', toggle_cb)
+        status_menu.append(toggle_item)
+
+        quit_item = gtk.ImageMenuItem(gtk.STOCK_QUIT)
+        quit_item.connect('activate', destroy_cb)
+        status_menu.append(quit_item)
+
+        status_menu.show_all()
+
+        # Set the menu
+        indicator.set_menu(status_menu)
+
+        def child_cb(pid, cond, data=None):
+            sys.exit(-1)
+
+        # Add watch on child process
+        glib.child_watch_add(process.pid, child_cb)
+
         # Run main loop
         gtk.main()
 
