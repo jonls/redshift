@@ -10,6 +10,10 @@ nodist_gtk_redshift_PYTHON = \
 gtk_redshiftdir = $(pythondir)/gtk_redshift
 
 bin_SCRIPTS = gtk-redshift
+
+# Desktop file
+desktopdir = ${datadir}/applications
+desktop_DATA = gtk-redshift.desktop
 endif
 
 if ENABLE_APPINDICATOR
@@ -23,9 +27,7 @@ nodist_gtk_redshift_PYTHON = \
 gtk_redshiftdir = $(pythondir)/gtk_redshift
 
 bin_SCRIPTS = gtk-redshift
-endif
 
-if ENABLE_APPINDICATOR || ENABLE_STATUSICON
 # Desktop file
 desktopdir = ${datadir}/applications
 desktop_DATA = gtk-redshift.desktop
