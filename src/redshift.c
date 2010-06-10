@@ -128,7 +128,7 @@ static const gamma_method_t gamma_methods[] = {
 		(gamma_method_set_temperature_func *)w32gdi_set_temperature
 	},
 #endif
-	{ NULL, NULL, NULL, NULL, NULL }
+	{ NULL }
 };
 
 
@@ -169,7 +169,7 @@ static const location_provider_t location_providers[] = {
 		(location_provider_get_location_func *)
 		location_manual_get_location
 	},
-	{ NULL, NULL, NULL, NULL }
+	{ NULL }
 };
 
 /* Bounds for parameters. */
@@ -187,12 +187,22 @@ static const location_provider_t location_providers[] = {
 #define DEFAULT_NIGHT_TEMP  3700
 #define DEFAULT_GAMMA        1.0
 
+/* The color temperature when no adjustment is applied. */
+#define NEUTRAL_TEMP  6500
+
 /* Angular elevation of the sun at which the color temperature
    transition period starts and ends (in degress).
    Transition during twilight, and while the sun is lower than
    3.0 degrees above the horizon. */
 #define TRANSITION_LOW     SOLAR_CIVIL_TWILIGHT_ELEV
 #define TRANSITION_HIGH    3.0
+
+/* Program modes. */
+typedef enum {
+	PROGRAM_MODE_CONTINUAL,
+	PROGRAM_MODE_ONE_SHOT,
+	PROGRAM_MODE_RESET
+} program_mode_t;
 
 
 #ifdef HAVE_SYS_SIGNAL_H
@@ -284,6 +294,7 @@ print_help(const char *program_name)
 		"  \t\t(Type `list' to see available methods)\n"
 		"  -o\t\tOne shot mode (do not continously adjust"
 		" color temperature)\n"
+		"  -x\t\tReset mode (remove adjustment from screen)\n"
 		"  -r\t\tDisable temperature transitions\n"
 		"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"),
 	      stdout);
@@ -466,13 +477,13 @@ main(int argc, char *argv[])
 	char *provider_args = NULL;
 
 	int transition = 1;
-	int one_shot = 0;
+	program_mode_t mode = PROGRAM_MODE_CONTINUAL;
 	int verbose = 0;
 	char *s;
 
 	/* Parse arguments. */
 	int opt;
-	while ((opt = getopt(argc, argv, "g:hl:m:ort:v")) != -1) {
+	while ((opt = getopt(argc, argv, "g:hl:m:ort:vx")) != -1) {
 		switch (opt) {
 		case 'g':
 			s = strchr(optarg, ':');
@@ -594,7 +605,7 @@ main(int argc, char *argv[])
 			}
 			break;
 		case 'o':
-			one_shot = 1;
+			mode = PROGRAM_MODE_ONE_SHOT;
 			break;
 		case 'r':
 			transition = 0;
@@ -615,6 +626,9 @@ main(int argc, char *argv[])
 		case 'v':
 			verbose = 1;
 			break;
+		case 'x':
+			mode = PROGRAM_MODE_RESET;
+			break;
 		case '?':
 			fputs(_("Try `-h' for more information.\n"), stderr);
 			exit(EXIT_FAILURE);
@@ -626,66 +640,77 @@ main(int argc, char *argv[])
 	   try all providers until one that works is found. */
 	location_state_t location_state;
 
-	if (provider != NULL) {
-		/* Use provider specified on command line. */
-		r = provider_try_start(provider, &location_state,
-			provider_args);
-		if (r < 0) exit(EXIT_FAILURE);
-	} else {
-		/* Try all providers, use the first that works. */
-		for (int i = 0; location_providers[i].name != NULL; i++) {
-			const location_provider_t *p = &location_providers[i];
-			r = provider_try_start(p, &location_state, NULL);
-			if (r < 0) {
-				fputs(_("Trying other provider...\n"), stderr);
-				continue;
+	/* Location is not needed for reset mode. */
+	if (mode != PROGRAM_MODE_RESET) {
+		if (provider != NULL) {
+			/* Use provider specified on command line. */
+			r = provider_try_start(provider, &location_state,
+					       provider_args);
+			if (r < 0) exit(EXIT_FAILURE);
+		} else {
+			/* Try all providers, use the first that works. */
+			for (int i = 0;
+			     location_providers[i].name != NULL; i++) {
+				const location_provider_t *p =
+					&location_providers[i];
+				r = provider_try_start(p, &location_state,
+						       NULL);
+				if (r < 0) {
+					fputs(_("Trying other provider...\n"),
+					      stderr);
+					continue;
+				}
+
+				provider = p;
+				break;
 			}
 
-			provider = p;
-			break;
-		}
-
-		/* Failure if no providers were successful at this point. */
-		if (provider == NULL) {
-			fputs(_("No more location providers to try.\n"),
-			      stderr);
-			exit(EXIT_FAILURE);
+			/* Failure if no providers were successful at this
+			   point. */
+			if (provider == NULL) {
+				fputs(_("No more location providers"
+					" to try.\n"), stderr);
+				exit(EXIT_FAILURE);
+			}
 		}
 	}
 
 	float lat = NAN;
 	float lon = NAN;
 
-	/* Get current location. */
-	r = provider->get_location(&location_state, &lat, &lon);
-	if (r < 0) {
-		fputs(_("Unable to get location from provider.\n"), stderr);
-		exit(EXIT_FAILURE);
-	}
+	if (mode != PROGRAM_MODE_RESET) {
+		/* Get current location. */
+		r = provider->get_location(&location_state, &lat, &lon);
+		if (r < 0) {
+			fputs(_("Unable to get location from provider.\n"),
+			      stderr);
+			exit(EXIT_FAILURE);
+		}
 
-	provider->free(&location_state);
+		provider->free(&location_state);
 
-	if (verbose) {
-		/* TRANSLATORS: Append degree symbols if possible. */
-		printf(_("Location: %f, %f\n"), lat, lon);
-	}
+		if (verbose) {
+			/* TRANSLATORS: Append degree symbols if possible. */
+			printf(_("Location: %f, %f\n"), lat, lon);
+		}
 
-	/* Latitude */
-	if (lat < MIN_LAT || lat > MAX_LAT) {
-		/* TRANSLATORS: Append degree symbols if possible. */
-		fprintf(stderr,
-			_("Latitude must be between %.1f and %.1f.\n"),
-			MIN_LAT, MAX_LAT);
-		exit(EXIT_FAILURE);
-	}
+		/* Latitude */
+		if (lat < MIN_LAT || lat > MAX_LAT) {
+			/* TRANSLATORS: Append degree symbols if possible. */
+			fprintf(stderr,
+				_("Latitude must be between %.1f and %.1f.\n"),
+				MIN_LAT, MAX_LAT);
+			exit(EXIT_FAILURE);
+		}
 
-	/* Longitude */
-	if (lon < MIN_LON || lon > MAX_LON) {
-		/* TRANSLATORS: Append degree symbols if possible. */
-		fprintf(stderr,
-			_("Longitude must be between %.1f and %.1f.\n"),
-			MIN_LON, MAX_LON);
-		exit(EXIT_FAILURE);
+		/* Longitude */
+		if (lon < MIN_LON || lon > MAX_LON) {
+			/* TRANSLATORS: Append degree symbols if possible. */
+			fprintf(stderr,
+				_("Longitude must be between"
+				  " %.1f and %.1f.\n"), MIN_LON, MAX_LON);
+			exit(EXIT_FAILURE);
+		}
 	}
 
 	/* Color temperature at daytime */
@@ -748,7 +773,9 @@ main(int argc, char *argv[])
 		}
 	}
 
-	if (one_shot) {
+	switch (mode) {
+	case PROGRAM_MODE_ONE_SHOT:
+	{
 		/* Current angular elevation of the sun */
 		double now;
 		r = systemtime_get_time(&now);
@@ -778,7 +805,21 @@ main(int argc, char *argv[])
 			method->free(&state);
 			exit(EXIT_FAILURE);
 		}
-	} else {
+	}
+	break;
+	case PROGRAM_MODE_RESET:
+	{
+		/* Reset screen */
+		r = method->set_temperature(&state, NEUTRAL_TEMP, gamma);
+		if (r < 0) {
+			fputs(_("Temperature adjustment failed.\n"), stderr);
+			method->free(&state);
+			exit(EXIT_FAILURE);
+		}
+	}
+	break;
+	case PROGRAM_MODE_CONTINUAL:
+	{
 		/* Transition state */
 		double short_trans_end = 0;
 		int short_trans = 0;
@@ -954,6 +995,8 @@ main(int argc, char *argv[])
 
 		/* Restore saved gamma ramps */
 		method->restore(&state);
+	}
+	break;
 	}
 
 	/* Clean up gamma adjustment state */
