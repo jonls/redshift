@@ -47,7 +47,7 @@ w32gdi_init(w32gdi_state_t *state)
 }
 
 int
-w32gdi_init(w32gdi_state_t *state)
+w32gdi_start(w32gdi_state_t *state)
 {
 	BOOL r;
 
