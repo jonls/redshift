@@ -65,6 +65,8 @@ location_manual_print_help(FILE *f)
 	fputs(_("Specify location manually.\n"), f);
 	fputs("\n", f);
 
+	/* TRANSLATORS: Manual location help output
+	   left column must not be translated */
 	fputs(_("  lat=N\t\tLatitude\n"
 		"  lon=N\t\tLongitude\n"), f);
 	fputs("\n", f);

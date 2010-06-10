@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift 1.3\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-06-06 23:32+0200\n"
+"POT-Creation-Date: 2010-06-10 13:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -95,143 +95,152 @@ msgstr ""
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
 msgstr ""
 
-#: src/redshift.c:315
+#. TRANSLATORS: `help' must not be translated.
+#: src/redshift.c:316
 msgid "Try `-m METHOD:help' for help.\n"
 msgstr ""
 
-#: src/redshift.c:321
+#: src/redshift.c:322
 msgid "Available location providers:\n"
 msgstr ""
 
-#: src/redshift.c:327
+#: src/redshift.c:328
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
 msgstr ""
 
-#: src/redshift.c:329
+#. TRANSLATORS: `help' must not be translated.
+#: src/redshift.c:331
 msgid "Try `-l PROVIDER:help' for help.\n"
 msgstr ""
 
-#: src/redshift.c:341 src/redshift.c:393
+#: src/redshift.c:343 src/redshift.c:396
 #, c-format
 msgid "Initialization of %s failed.\n"
 msgstr ""
 
-#: src/redshift.c:363 src/redshift.c:415
+#: src/redshift.c:365 src/redshift.c:418
 #, c-format
 msgid "Failed to set %s option.\n"
 msgstr ""
 
-#: src/redshift.c:365 src/redshift.c:417
+#. TRANSLATORS: `help' must not be translated.
+#: src/redshift.c:368
 #, c-format
-msgid "Try `-p %s:help' for more information.\n"
+msgid "Try `-l %s:help' for more information.\n"
 msgstr ""
 
-#: src/redshift.c:377
+#: src/redshift.c:380
 #, c-format
 msgid "Failed to start provider %s.\n"
 msgstr ""
 
-#: src/redshift.c:429
+#. TRANSLATORS: `help' must not be translated.
+#: src/redshift.c:421
+#, c-format
+msgid "Try -m %s:help' for more information.\n"
+msgstr ""
+
+#: src/redshift.c:433
 #, c-format
 msgid "Failed to start adjustment method %s.\n"
 msgstr ""
 
-#: src/redshift.c:486
+#: src/redshift.c:490
 msgid "Malformed gamma argument.\n"
 msgstr ""
 
-#: src/redshift.c:488 src/redshift.c:603 src/redshift.c:615
+#: src/redshift.c:492 src/redshift.c:607 src/redshift.c:619
 msgid "Try `-h' for more information.\n"
 msgstr ""
 
-#: src/redshift.c:542
+#: src/redshift.c:546
 #, c-format
 msgid "Unknown location provider `%s'.\n"
 msgstr ""
 
 #. TRANSLATORS: This refers to the method
 #. used to adjust colors e.g VidMode
-#: src/redshift.c:580
+#: src/redshift.c:584
 #, c-format
 msgid "Unknown method `%s'.\n"
 msgstr ""
 
-#: src/redshift.c:601
+#: src/redshift.c:605
 msgid "Malformed temperature argument.\n"
 msgstr ""
 
-#: src/redshift.c:636
+#: src/redshift.c:640
 msgid "Trying other provider...\n"
 msgstr ""
 
-#: src/redshift.c:646
+#: src/redshift.c:650
 msgid "No more location providers to try.\n"
 msgstr ""
 
-#: src/redshift.c:658
+#: src/redshift.c:662
 msgid "Unable to get location from provider.\n"
 msgstr ""
 
 #. TRANSLATORS: Append degree symbols if possible.
-#: src/redshift.c:666
+#: src/redshift.c:670
 #, c-format
 msgid "Location: %f, %f\n"
 msgstr ""
 
-#: src/redshift.c:673
+#: src/redshift.c:677
 #, c-format
 msgid "Latitude must be between %.1f and %.1f.\n"
 msgstr ""
 
-#: src/redshift.c:682
+#: src/redshift.c:686
 #, c-format
 msgid "Longitude must be between %.1f and %.1f.\n"
 msgstr ""
 
-#: src/redshift.c:690 src/redshift.c:698
+#: src/redshift.c:694 src/redshift.c:702
 #, c-format
 msgid "Temperature must be between %uK and %uK.\n"
 msgstr ""
 
-#: src/redshift.c:708
+#: src/redshift.c:712
 #, c-format
 msgid "Gamma value must be between %.1f and %.1f.\n"
 msgstr ""
 
-#: src/redshift.c:714
+#: src/redshift.c:718
 #, c-format
 msgid "Gamma: %.3f, %.3f, %.3f\n"
 msgstr ""
 
-#: src/redshift.c:732
+#: src/redshift.c:736
 msgid "Trying other method...\n"
 msgstr ""
 
-#: src/redshift.c:742
+#: src/redshift.c:746
 msgid "No more methods to try.\n"
 msgstr ""
 
-#: src/redshift.c:752 src/redshift.c:859
+#: src/redshift.c:756 src/redshift.c:863
 msgid "Unable to read system time.\n"
 msgstr ""
 
 #. TRANSLATORS: Append degree symbol if possible.
-#: src/redshift.c:761
+#: src/redshift.c:765
 #, c-format
 msgid "Solar elevation: %f\n"
 msgstr ""
 
-#: src/redshift.c:768 src/redshift.c:926
+#: src/redshift.c:772 src/redshift.c:930
 #, c-format
 msgid "Color temperature: %uK\n"
 msgstr ""
 
-#: src/redshift.c:773 src/redshift.c:934
+#: src/redshift.c:777 src/redshift.c:938
 msgid "Temperature adjustment failed.\n"
 msgstr ""
 
 #: src/gamma-randr.c:66 src/gamma-randr.c:123 src/gamma-randr.c:162
-#: src/gamma-randr.c:188 src/gamma-randr.c:245 src/gamma-randr.c:341
+#: src/gamma-randr.c:188 src/gamma-randr.c:245 src/gamma-randr.c:343
 #, c-format
 msgid "`%s' returned error %d\n"
 msgstr ""
@@ -260,39 +269,41 @@ msgstr ""
 msgid "Adjust gamma ramps with the X RANDR extension.\n"
 msgstr ""
 
-#: src/gamma-randr.c:271
+#. TRANSLATORS: RANDR help output
+#. left column must not be translated
+#: src/gamma-randr.c:273
 msgid ""
 "  screen=N\tX screen to apply adjustments to\n"
 "  crtc=N\tCRTC to apply adjustments to\n"
 msgstr ""
 
-#: src/gamma-randr.c:280 src/gamma-vidmode.c:142
+#: src/gamma-randr.c:282 src/gamma-vidmode.c:144
 #, c-format
 msgid "Missing value for parameter: `%s'.\n"
 msgstr ""
 
-#: src/gamma-randr.c:290 src/gamma-vidmode.c:150 src/location-manual.c:96
+#: src/gamma-randr.c:292 src/gamma-vidmode.c:152 src/location-manual.c:98
 #, c-format
 msgid "Unknown method parameter: `%s'.\n"
 msgstr ""
 
-#: src/gamma-randr.c:304
+#: src/gamma-randr.c:306
 #, c-format
 msgid "CRTC %d does not exist. "
 msgstr ""
 
-#: src/gamma-randr.c:307
+#: src/gamma-randr.c:309
 #, c-format
 msgid "Valid CRTCs are [0-%d].\n"
 msgstr ""
 
-#: src/gamma-randr.c:310
+#: src/gamma-randr.c:312
 #, c-format
 msgid "Only CRTC 0 exists.\n"
 msgstr ""
 
 #: src/gamma-vidmode.c:48 src/gamma-vidmode.c:69 src/gamma-vidmode.c:79
-#: src/gamma-vidmode.c:109 src/gamma-vidmode.c:169 src/gamma-vidmode.c:198
+#: src/gamma-vidmode.c:109 src/gamma-vidmode.c:171 src/gamma-vidmode.c:200
 #, c-format
 msgid "X request failed: %s\n"
 msgstr ""
@@ -301,7 +312,9 @@ msgstr ""
 msgid "Adjust gamma ramps with the X VidMode extension.\n"
 msgstr ""
 
-#: src/gamma-vidmode.c:134
+#. TRANSLATORS: VidMode help output
+#. left column must not be translated
+#: src/gamma-vidmode.c:136
 msgid "  screen=N\tX screen to apply adjustments to\n"
 msgstr ""
 
@@ -362,17 +375,19 @@ msgstr ""
 msgid "Specify location manually.\n"
 msgstr ""
 
-#: src/location-manual.c:68
+#. TRANSLATORS: Manual location help output
+#. left column must not be translated
+#: src/location-manual.c:70
 msgid ""
 "  lat=N\t\tLatitude\n"
 "  lon=N\t\tLongitude\n"
 msgstr ""
 
-#: src/location-manual.c:82
+#: src/location-manual.c:84
 msgid "Malformed argument.\n"
 msgstr ""
 
-#: src/location-manual.c:93
+#: src/location-manual.c:95
 msgid "Too many arguments.\n"
 msgstr ""
 

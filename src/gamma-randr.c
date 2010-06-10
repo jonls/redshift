@@ -268,6 +268,8 @@ randr_print_help(FILE *f)
 	fputs(_("Adjust gamma ramps with the X RANDR extension.\n"), f);
 	fputs("\n", f);
 
+	/* TRANSLATORS: RANDR help output
+	   left column must not be translated */
 	fputs(_("  screen=N\tX screen to apply adjustments to\n"
 		"  crtc=N\tCRTC to apply adjustments to\n"), f);
 	fputs("\n", f);

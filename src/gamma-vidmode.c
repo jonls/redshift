@@ -131,6 +131,8 @@ vidmode_print_help(FILE *f)
 	fputs(_("Adjust gamma ramps with the X VidMode extension.\n"), f);
 	fputs("\n", f);
 
+	/* TRANSLATORS: VidMode help output
+	   left column must not be translated */
 	fputs(_("  screen=N\tX screen to apply adjustments to\n"), f);
 	fputs("\n", f);
 }

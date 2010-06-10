@@ -312,6 +312,7 @@ print_method_list()
 	fputs("\n", stdout);
 	fputs(_("Specify colon-separated options with"
 		" `-m METHOD:OPTIONS'.\n"), stdout);
+	/* TRANSLATORS: `help' must not be translated. */
 	fputs(_("Try `-m METHOD:help' for help.\n"), stdout);
 }
 
@@ -326,6 +327,7 @@ print_provider_list()
 	fputs("\n", stdout);
 	fputs(_("Specify colon-separated options with"
 		"`-l PROVIDER:OPTIONS'.\n"), stdout);
+	/* TRANSLATORS: `help' must not be translated. */
 	fputs(_("Try `-l PROVIDER:help' for help.\n"), stdout);
 }
 
@@ -362,7 +364,8 @@ provider_try_start(const location_provider_t *provider,
 			provider->free(state);
 			fprintf(stderr, _("Failed to set %s option.\n"),
 				provider->name);
-			fprintf(stderr, _("Try `-p %s:help' for more"
+			/* TRANSLATORS: `help' must not be translated. */
+			fprintf(stderr, _("Try `-l %s:help' for more"
 					  " information.\n"), provider->name);
 			return -1;
 		}
@@ -414,7 +417,8 @@ method_try_start(const gamma_method_t *method,
 			method->free(state);
 			fprintf(stderr, _("Failed to set %s option.\n"),
 				method->name);
-			fprintf(stderr, _("Try `-p %s:help' for more"
+			/* TRANSLATORS: `help' must not be translated. */
+			fprintf(stderr, _("Try -m %s:help' for more"
 					  " information.\n"), method->name);
 			return -1;
 		}
