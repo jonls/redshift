@@ -6,28 +6,28 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2010-05-25 01:34+0200\n"
-"PO-Revision-Date: 2010-06-04 20:30+0000\n"
+"Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
+"POT-Creation-Date: 2010-06-10 20:13+0200\n"
+"PO-Revision-Date: 2010-06-10 18:39+0000\n"
 "Last-Translator: Jon Lund Steffensen <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-06-05 03:42+0000\n"
+"X-Launchpad-Export-Date: 2010-06-11 03:49+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: src/redshift.c:214
+#: src/redshift.c:243
 #, c-format
 msgid "Period: Night\n"
 msgstr "Periode: Nat\n"
 
-#: src/redshift.c:221
+#: src/redshift.c:250
 #, c-format
 msgid "Period: Transition (%.2f%% day)\n"
 msgstr "Periode: Overgang (%.2f%% dag)\n"
 
-#: src/redshift.c:225
+#: src/redshift.c:254
 #, c-format
 msgid "Period: Daytime\n"
 msgstr "Periode: Dag\n"
@@ -37,20 +37,20 @@ msgstr "Periode: Dag\n"
 #. DAY is temperature at daytime,
 #. NIGHT is temperature at night
 #. no-wrap
-#: src/redshift.c:240
+#: src/redshift.c:269
 #, c-format
 msgid "Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
 msgstr "Brug: %s -l BRED:LÆNG -t DAG:NAT [TILVALG...]\n"
 
 #. TRANSLATORS: help output 2
 #. no-wrap
-#: src/redshift.c:246
+#: src/redshift.c:275
 msgid "Set color temperature of display according to time of day.\n"
 msgstr "Indstil skærmens farvetemperatur ud fra klokkeslæt.\n"
 
 #. TRANSLATORS: help output 3
 #. no-wrap
-#: src/redshift.c:252
+#: src/redshift.c:281
 msgid ""
 "  -h\t\tDisplay this help message\n"
 "  -v\t\tVerbose output\n"
@@ -59,8 +59,9 @@ msgstr ""
 "  -v\t\tUddybende udskrift\n"
 
 #. TRANSLATORS: help output 4
+#. `list' must not be translated
 #. no-wrap
-#: src/redshift.c:258
+#: src/redshift.c:288
 msgid ""
 "  -g R:G:B\tAdditional gamma correction to apply\n"
 "  -l LAT:LON\tYour current location\n"
@@ -69,22 +70,24 @@ msgid ""
 "  -m METHOD\tMethod to use to set color temperature\n"
 "  \t\t(Type `list' to see available methods)\n"
 "  -o\t\tOne shot mode (do not continously adjust color temperature)\n"
+"  -x\t\tReset mode (remove adjustment from screen)\n"
 "  -r\t\tDisable temperature transitions\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
 "  -g R:G:B\tYderligere gamma-korrektion som skal anvendes\n"
 "  -l BRED:LÆNG\tKoordinater for din placering\n"
-"  -l METODE\tMetode til automatisk at hente placeringsopdateringer\n"
-"  \t\t(Skriv `list' for at se tilgængelige metoder)\n"
-"  -m METODE\tMetode som benyttes til at sætte farvetemperatur (RANDR eller "
-"VidMode)\n"
-"  \t\t(Skriv `list' for at se tilgængelige metoder)\n"
+"  -l METODE\tMetode som benyttes til automatisk at hente opdatering af "
+"placering\n"
+"  \t\t(Skriv `list' for at se tilgængelige muligheder)\n"
+"  -m METODE\tMetode som benyttes til at sætte farvetemperatur\n"
+"  \t\t(Skriv `list' for at se tilgængelige muligheder)\n"
 "  -o\t\tEngangsmodus (bliver ikke ved med at justere farvetemperatur)\n"
+"  -x\t\tNulstil (fjern farvejustering fra skærmen)\n"
 "  -r\t\tSlå temperaturovergange fra\n"
 "  -t DAG:NAT\tFarvetemperatur som sættes hhv. dag og nat\n"
 
 #. TRANSLATORS: help output 5
-#: src/redshift.c:273
+#: src/redshift.c:304
 #, c-format
 msgid ""
 "Default values:\n"
@@ -98,192 +101,265 @@ msgstr ""
 "  Nattemperatur: %uK\n"
 
 #. TRANSLATORS: help output 6
-#: src/redshift.c:281
+#: src/redshift.c:312
 #, c-format
 msgid "Please report bugs to <%s>\n"
 msgstr "Rapporter venligst fejl til <%s>\n"
 
-#: src/redshift.c:287
+#: src/redshift.c:318
 msgid "Available adjustment methods:\n"
 msgstr "Tilgængelige justeringsmetoder:\n"
 
-#: src/redshift.c:296
+#: src/redshift.c:324
+msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
+msgstr "Specificer indstillinger separeret med kolon: `-m METODE:VALG'.\n"
+
+#. TRANSLATORS: `help' must not be translated.
+#: src/redshift.c:327
+msgid "Try `-m METHOD:help' for help.\n"
+msgstr "Prøv `-m METODE:help' for at få hjælp.\n"
+
+#: src/redshift.c:333
 msgid "Available location providers:\n"
 msgstr "Tilgængelige metoder til placeringsopdatering:\n"
 
-#: src/redshift.c:351
+#: src/redshift.c:339
+msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
+msgstr "Specificer indstillinger separeret med kolon: `-l METODE:VALG'.\n"
+
+#. TRANSLATORS: `help' must not be translated.
+#: src/redshift.c:342
+msgid "Try `-l PROVIDER:help' for help.\n"
+msgstr "Prøv `-l METODE:help' for at få hjælp.\n"
+
+#: src/redshift.c:354 src/redshift.c:407
+#, c-format
+msgid "Initialization of %s failed.\n"
+msgstr "Fejl under klargøring af %s.\n"
+
+#: src/redshift.c:376 src/redshift.c:429
+#, c-format
+msgid "Failed to set %s option.\n"
+msgstr "Kunne ikke sætte indstilling %s.\n"
+
+#. TRANSLATORS: `help' must not be translated.
+#: src/redshift.c:379
+#, c-format
+msgid "Try `-l %s:help' for more information.\n"
+msgstr "Prøv `-l %s:help' for mere information.\n"
+
+#: src/redshift.c:391
+#, c-format
+msgid "Failed to start provider %s.\n"
+msgstr "Kunne ikke starte placeringsmetode %s.\n"
+
+#. TRANSLATORS: `help' must not be translated.
+#: src/redshift.c:432
+#, c-format
+msgid "Try -m %s:help' for more information.\n"
+msgstr "Prøv `-m %s:help' for mere information.\n"
+
+#: src/redshift.c:444
+#, c-format
+msgid "Failed to start adjustment method %s.\n"
+msgstr "Kunne ikke starte justeringsmetode %s.\n"
+
+#: src/redshift.c:501
 msgid "Malformed gamma argument.\n"
 msgstr "Fejl i gamma-argument.\n"
 
-#: src/redshift.c:353 src/redshift.c:445 src/redshift.c:457
+#: src/redshift.c:503 src/redshift.c:618 src/redshift.c:633
 msgid "Try `-h' for more information.\n"
 msgstr "Prøv `-h' for mere information.\n"
 
-#: src/redshift.c:405
+#: src/redshift.c:557
 #, c-format
 msgid "Unknown location provider `%s'.\n"
 msgstr "Ukendt metode til placeringsopdatering `%s'.\n"
 
 #. TRANSLATORS: This refers to the method
 #. used to adjust colors e.g VidMode
-#: src/redshift.c:429
+#: src/redshift.c:595
 #, c-format
 msgid "Unknown method `%s'.\n"
 msgstr "Ukendt justeringsmetode `%s'.\n"
 
-#: src/redshift.c:443
+#: src/redshift.c:616
 msgid "Malformed temperature argument.\n"
 msgstr "Fejl i temperaturargument.\n"
 
-#: src/redshift.c:471 src/redshift.c:481 src/redshift.c:572 src/redshift.c:582
-#, c-format
-msgid "Initialization of %s failed.\n"
-msgstr "Fejl under klargøring af %s.\n"
-
-#: src/redshift.c:483
+#: src/redshift.c:659
 msgid "Trying other provider...\n"
 msgstr "Prøver anden metode til placeringsopdatering...\n"
 
-#: src/redshift.c:492
+#: src/redshift.c:671
 msgid "No more location providers to try.\n"
 msgstr "Ikke flere metoder til placeringsopdateringer kan prøves.\n"
 
-#: src/redshift.c:504
+#: src/redshift.c:685
 msgid "Unable to get location from provider.\n"
 msgstr "Kan ikke modtage placeringsopdatering.\n"
 
 #. TRANSLATORS: Append degree symbols if possible.
-#: src/redshift.c:512
+#: src/redshift.c:694
 #, c-format
 msgid "Location: %f, %f\n"
 msgstr "Placering: %f°, %f°\n"
 
-#: src/redshift.c:519
+#: src/redshift.c:701
 #, c-format
 msgid "Latitude must be between %.1f and %.1f.\n"
 msgstr "Breddegrad skal være mellem %.1f° og %.1f°.\n"
 
-#: src/redshift.c:528
+#: src/redshift.c:710
 #, c-format
 msgid "Longitude must be between %.1f and %.1f.\n"
 msgstr "Længdegrad skal være mellem %.1f° og %.1f°.\n"
 
-#: src/redshift.c:536 src/redshift.c:544
+#: src/redshift.c:719 src/redshift.c:727
 #, c-format
 msgid "Temperature must be between %uK and %uK.\n"
 msgstr "Temperatur skal være mellem %uK og %uK.\n"
 
-#: src/redshift.c:554
+#: src/redshift.c:737
 #, c-format
 msgid "Gamma value must be between %.1f and %.1f.\n"
 msgstr "Gamma-værdi skal være mellem %.1f og %.1f.\n"
 
-#: src/redshift.c:560
+#: src/redshift.c:743
 #, c-format
 msgid "Gamma: %.3f, %.3f, %.3f\n"
 msgstr "Gamma: %.3f, %.3f, %.3f\n"
 
-#: src/redshift.c:584
+#: src/redshift.c:761
 msgid "Trying other method...\n"
 msgstr "Prøver anden justeringsmetode...\n"
 
-#: src/redshift.c:593
+#: src/redshift.c:771
 msgid "No more methods to try.\n"
 msgstr "Der er ikke flere justeringsmetoder som kan prøves.\n"
 
-#: src/redshift.c:603 src/redshift.c:710
+#: src/redshift.c:783 src/redshift.c:904
 msgid "Unable to read system time.\n"
 msgstr "Kan ikke læse systemtid.\n"
 
 #. TRANSLATORS: Append degree symbol if possible.
-#: src/redshift.c:612
+#: src/redshift.c:792
 #, c-format
 msgid "Solar elevation: %f\n"
 msgstr "Solhøjde: %f°\n"
 
-#: src/redshift.c:619 src/redshift.c:777
+#: src/redshift.c:799 src/redshift.c:971
 #, c-format
 msgid "Color temperature: %uK\n"
 msgstr "Farvetemperatur: %uK\n"
 
-#: src/redshift.c:624 src/redshift.c:785
+#: src/redshift.c:804 src/redshift.c:815 src/redshift.c:979
 msgid "Temperature adjustment failed.\n"
 msgstr "Fejl ved justering af temperatur.\n"
 
-#: src/gamma-randr.c:59 src/gamma-randr.c:67 src/gamma-vidmode.c:54
-#, c-format
-msgid "Missing value for parameter: `%s'.\n"
-msgstr "Manglende værdi for parameter: `%s'.\n"
-
-#: src/gamma-randr.c:74 src/gamma-vidmode.c:61
-#, c-format
-msgid "Unknown method parameter: `%s'.\n"
-msgstr "Ukendt parameter til justeringsmetode: `%s'.\n"
-
-#: src/gamma-randr.c:98 src/gamma-randr.c:145 src/gamma-randr.c:186
-#: src/gamma-randr.c:214 src/gamma-randr.c:273 src/gamma-randr.c:337
+#: src/gamma-randr.c:66 src/gamma-randr.c:123 src/gamma-randr.c:162
+#: src/gamma-randr.c:188 src/gamma-randr.c:245 src/gamma-randr.c:343
 #, c-format
 msgid "`%s' returned error %d\n"
 msgstr "`%s' returnerede fejlen %d\n"
 
-#: src/gamma-randr.c:106
+#: src/gamma-randr.c:74
 #, c-format
 msgid "Unsupported RANDR version (%u.%u)\n"
 msgstr "Ikke-understøttet RANDR version (%u.%u)\n"
 
-#: src/gamma-randr.c:129
+#: src/gamma-randr.c:108
 #, c-format
 msgid "Screen %i could not be found.\n"
 msgstr "Skærm %i kunne ikke findes.\n"
 
-#: src/gamma-randr.c:199 src/gamma-vidmode.c:103
+#: src/gamma-randr.c:174 src/gamma-vidmode.c:86
 #, c-format
 msgid "Gamma ramp size too small: %i\n"
 msgstr "Størrelsen på gammarampen er for lille: %i\n"
 
-#: src/gamma-randr.c:275
+#: src/gamma-randr.c:247
 #, c-format
 msgid "Unable to restore CRTC %i\n"
 msgstr "Kan ikke genskabe CRTC %i\n"
 
-#: src/gamma-randr.c:300
+#: src/gamma-randr.c:268
+msgid "Adjust gamma ramps with the X RANDR extension.\n"
+msgstr "Juster gammaramper med X RANDR udvidelsen.\n"
+
+#. TRANSLATORS: RANDR help output
+#. left column must not be translated
+#: src/gamma-randr.c:273
+msgid ""
+"  screen=N\tX screen to apply adjustments to\n"
+"  crtc=N\tCRTC to apply adjustments to\n"
+msgstr ""
+"  screen=N\tX sckærm som skal justeres\n"
+"  crtc=N\tCRTC som skal justeres\n"
+
+#: src/gamma-randr.c:282 src/gamma-vidmode.c:144
+#, c-format
+msgid "Missing value for parameter: `%s'.\n"
+msgstr "Manglende værdi for parameter: `%s'.\n"
+
+#: src/gamma-randr.c:292 src/gamma-vidmode.c:152 src/location-manual.c:98
+#, c-format
+msgid "Unknown method parameter: `%s'.\n"
+msgstr "Ukendt parameter til justeringsmetode: `%s'.\n"
+
+#: src/gamma-randr.c:306
 #, c-format
 msgid "CRTC %d does not exist. "
 msgstr "CRTC %d eksisterer ikke. "
 
-#: src/gamma-randr.c:303
+#: src/gamma-randr.c:309
 #, c-format
 msgid "Valid CRTCs are [0-%d].\n"
 msgstr "Gyldige CRTCer er [0-%d].\n"
 
-#: src/gamma-randr.c:306
+#: src/gamma-randr.c:312
 #, c-format
 msgid "Only CRTC 0 exists.\n"
 msgstr "Kun CRTC 0 eksisterer.\n"
 
-#: src/gamma-vidmode.c:74 src/gamma-vidmode.c:86 src/gamma-vidmode.c:96
-#: src/gamma-vidmode.c:126 src/gamma-vidmode.c:157 src/gamma-vidmode.c:186
+#: src/gamma-vidmode.c:48 src/gamma-vidmode.c:69 src/gamma-vidmode.c:79
+#: src/gamma-vidmode.c:109 src/gamma-vidmode.c:171 src/gamma-vidmode.c:200
 #, c-format
 msgid "X request failed: %s\n"
 msgstr "Fejl ved X forespørgsel: %s\n"
 
-#: src/gamma-w32gdi.c:48
+#: src/gamma-vidmode.c:131
+msgid "Adjust gamma ramps with the X VidMode extension.\n"
+msgstr "Juster gammaramper med X VidMode udvidelsen.\n"
+
+#. TRANSLATORS: VidMode help output
+#. left column must not be translated
+#: src/gamma-vidmode.c:136
+msgid "  screen=N\tX screen to apply adjustments to\n"
+msgstr "  screen=N\tX skærm som skal justeres\n"
+
+#: src/gamma-w32gdi.c:57
 msgid "Unable to open device context.\n"
 msgstr "Fejl ved åbning af enhedskontekst.\n"
 
-#: src/gamma-w32gdi.c:55
+#: src/gamma-w32gdi.c:64
 msgid "Display device does not support gamma ramps.\n"
 msgstr "Skærmenhed understøtter ikke gammaramper.\n"
 
-#: src/gamma-w32gdi.c:71
+#: src/gamma-w32gdi.c:80
 msgid "Unable to save current gamma ramp.\n"
 msgstr "Kan ikke gemme nuværende gammarampe.\n"
 
-#: src/gamma-w32gdi.c:94
+#: src/gamma-w32gdi.c:102
+msgid "Adjust gamma ramps with the Windows GDI.\n"
+msgstr "Juster gammaramper med Windows GDI.\n"
+
+#: src/gamma-w32gdi.c:117
 msgid "Unable to restore gamma ramps.\n"
 msgstr "Kan ikke genskabe gammaramper.\n"
 
-#: src/gamma-w32gdi.c:119
+#: src/gamma-w32gdi.c:142
 msgid "Unable to set gamma ramps.\n"
 msgstr "Kan ikke sætte gammaramper.\n"
 
@@ -308,18 +384,54 @@ msgstr "Ingen by er valgt som den gældende by.\n"
 msgid "Location not specified for city.\n"
 msgstr "Placering er ikke specificeret for byen.\n"
 
-#: src/location-manual.c:46
-msgid "Too many arguments.\n"
-msgstr "For mange parametre.\n"
+#: src/location-gnome-clock.c:140
+msgid "Use the location as set in the GNOME Clock applet.\n"
+msgstr ""
+"Brug placering som er indstillet i panelprogrammet i GNOME som viser "
+"klokken.\n"
 
-#: src/location-manual.c:58
-msgid "Malformed argument.\n"
-msgstr "Fejl i parameteren.\n"
-
-#: src/location-manual.c:73
+#: src/location-manual.c:50
 msgid "Latitude and longitude must be set.\n"
 msgstr "Breddegrad og længdegrad skal angives.\n"
 
-#: src/gtk-redshift/statusicon.py:61
+#: src/location-manual.c:65
+msgid "Specify location manually.\n"
+msgstr "Specificer placering manuelt.\n"
+
+#. TRANSLATORS: Manual location help output
+#. left column must not be translated
+#: src/location-manual.c:70
+msgid ""
+"  lat=N\t\tLatitude\n"
+"  lon=N\t\tLongitude\n"
+msgstr ""
+"  lat=N\t\tBreddegrad\n"
+"  lon=N\t\tLængdegrad\n"
+
+#: src/location-manual.c:84
+msgid "Malformed argument.\n"
+msgstr "Fejl i parameteren.\n"
+
+#: src/location-manual.c:95
+msgid "Too many arguments.\n"
+msgstr "For mange parametre.\n"
+
+#: src/gtk-redshift/statusicon.py:61 src/gtk-redshift/rsappindicator.py:70
 msgid "Toggle"
 msgstr "Slå til/fra"
+
+#~ msgid "Malformed location argument.\n"
+#~ msgstr "Fejl i placeringsargument.\n"
+
+#~ msgid "RANDR method was not enabled at compile time.\n"
+#~ msgstr "RANDR metode blev ikke slået til under kompilering.\n"
+
+#~ msgid "VidMode method was not enabled at compile time.\n"
+#~ msgstr "VidMode metode blev ikke slået til under kompilering.\n"
+
+#~ msgid "Initialization of VidMode failed.\n"
+#~ msgstr "Fejl under klargøring af VidMode.\n"
+
+#, c-format
+#~ msgid "CRTC can only be selected with the RANDR method.\n"
+#~ msgstr "CRTC kan kun vælges med RANDR metoden.\n"
