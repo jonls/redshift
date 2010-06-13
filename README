@@ -6,78 +6,8 @@ Redshift adjusts the color temperature of your screen according to
 your surroundings. This may help your eyes hurt less if you are
 working in front of the screen at night.
 
-Download
---------
+Run `redshift -h' for help on command line options. You can run the program
+as `gtk-redshift' instead of 'redshift' for a graphical status icon.
 
-Latest release is redshift 1.3 published on 2010-05-12. There are also
-packages available for some distributions:
-
- * Ubuntu: Packages for Ubuntu Karmic.
- * Gentoo: Redshift is in the Sunrise overlay.
-
-What is it?
------------
-
-The program uses an X server extension to adjust the color
-temperature. This is done by setting appropriate gamma ramps. If you
-have configured your own gamma ramps they will be overwritten but in
-that case you probably care too much about color accuracy to use this
-program anyway. Your graphics driver and X server needs to either
-support at least RANDR version 1.3 or the VidMode extension.
-
-The color temperature is set according to the position of the sun. A
-different color temperature is set during night and daytime. During
-twilight and early morning, the color temperature transitions smoothly
-from night to daytime temperature to allow your eyes to slowly
-adapt. At night the color temperature should be set to match the lamps in your
-room. This is typically a low temperature at around 3000K--4000K
-(default is 3700K). During the day, the color temperature should match
-the light from outside, typically around 5500K--6500K (default is
-5500K). The light has a higher temperature on an overcast day.
-
-How does it work?
------------------
-
-Redshift will continously update the color temperature at regular
-intervals. One shot mode can be selected if you only want to do one
-adjustment. The color adjustments done by Redshift can be temporarily
-toggled on and off by sending it the USR1 signal:
-
- $ killall -USR1 redshift
-
-The command line options are explained in the following paragraphs. The
-only required parameter is your current location, all other options
-have reasonable defaults.
-
-  -h		Display help message.
-  -v		Verbose output.
-
-  -g R:G:B	Additional gamma correction to apply. Can also be
-     		specified as -g GAMMA to set all channels to the same
-     		gamma value.
-  -l LAT:LON	Your current location in latitudes and longitudes.
-  -m METHOD	Method to use to set color temperature (randr or
-     		vidmode). Default is randr. In some cases one of the
-     		methods will not work. In that case you may be able to
-     		use the other method.
-  -o		One shot mode. Do not continously adjust color
-     		temperature.
-  -r		Disable temperature transition. By default the program
-     		will make a smooth transition to the desired color
-     		temperature when the program is started and stopped.
-  -s SCREEN	X screen to apply adjustments to.
-  -c CRTC	CRTC to apply adjustments to (RANDR only)
-  -t DAY:NIGHT	Color temperature to set at daytime/night.
-
-Example (location is Copenhagen, Denmark):
-
- $ redshift -l 55.7:12.6 -t 5700:3600 -g 0.8 -m vidmode -v
-
-Status icon
------------
-
-Start the program gtk-redshift instead of redshift, with the same
-arguments as you would pass to redshift. This will create an icon for
-Redshift in the system tray. The icon will allow you to toggle
-Redshift on and off. Thanks goes to the Tango Desktop Project for the
-icon. gtk-redshift requires at least Python 2.6 and PyGTK 2.12.
+Website:	http://jonls.dk/redshift/
+Project page:	http://launchpad.net/redshift
