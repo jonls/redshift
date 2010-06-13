@@ -20,7 +20,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define WINVER  0x0500
+#ifndef WINVER
+# define WINVER  0x0500
+#endif
 #include <windows.h>
 #include <wingdi.h>
 
