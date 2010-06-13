@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-06-10 20:13+0200\n"
-"PO-Revision-Date: 2010-02-02 09:20+0000\n"
+"POT-Creation-Date: 2010-06-13 21:58+0200\n"
+"PO-Revision-Date: 2010-06-10 12:48+0000\n"
 "Last-Translator: Gregory Petrosyan <gregory.petrosyan@gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-02-13 05:02+0000\n"
+"X-Launchpad-Export-Date: 2010-06-11 03:49+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: src/redshift.c:243
@@ -62,7 +62,6 @@ msgstr ""
 #. `list' must not be translated
 #. no-wrap
 #: src/redshift.c:288
-#, fuzzy
 msgid ""
 "  -g R:G:B\tAdditional gamma correction to apply\n"
 "  -l LAT:LON\tYour current location\n"
@@ -75,13 +74,6 @@ msgid ""
 "  -r\t\tDisable temperature transitions\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
-"  -g R:G:B\tДополнительная гамма-коррекция\n"
-"  -l ШИР:ДОЛ\tВаше текущее местоположение\n"
-"  -m МЕТОД\tМетод коррекции (randr или vidmode)\n"
-"  -o\t\tОднократная коррекция\n"
-"  -r\t\tВыключить начальное плавное изменение цветовой температуры\n"
-"  -s ЭКРАН\tЭкран X, к которому применять коррекцию\n"
-"  -t ДЕНЬ:НОЧЬ\tЦветовая температура для ночного/дневного времени\n"
 
 #. TRANSLATORS: help output 5
 #: src/redshift.c:304
@@ -126,9 +118,9 @@ msgid "Try `-l PROVIDER:help' for help.\n"
 msgstr ""
 
 #: src/redshift.c:354 src/redshift.c:407
-#, fuzzy, c-format
+#, c-format
 msgid "Initialization of %s failed.\n"
-msgstr "Инициализация RANDR не удалась.\n"
+msgstr ""
 
 #: src/redshift.c:376 src/redshift.c:429
 #, c-format
@@ -137,9 +129,9 @@ msgstr ""
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:379
-#, fuzzy, c-format
+#, c-format
 msgid "Try `-l %s:help' for more information.\n"
-msgstr "Воспользуйтесь «-h» для получения дополнительной информации.\n"
+msgstr ""
 
 #: src/redshift.c:391
 #, c-format
@@ -148,9 +140,9 @@ msgstr ""
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:432
-#, fuzzy, c-format
+#, c-format
 msgid "Try -m %s:help' for more information.\n"
-msgstr "Воспользуйтесь «-h» для получения дополнительной информации.\n"
+msgstr ""
 
 #: src/redshift.c:444
 #, c-format
@@ -166,9 +158,9 @@ msgid "Try `-h' for more information.\n"
 msgstr "Воспользуйтесь «-h» для получения дополнительной информации.\n"
 
 #: src/redshift.c:557
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown location provider `%s'.\n"
-msgstr "Неизвестный метод «%s».\n"
+msgstr ""
 
 #. TRANSLATORS: This refers to the method
 #. used to adjust colors e.g VidMode
@@ -182,9 +174,8 @@ msgid "Malformed temperature argument.\n"
 msgstr "Некорректное значение температуры.\n"
 
 #: src/redshift.c:659
-#, fuzzy
 msgid "Trying other provider...\n"
-msgstr "Пробую другой метод...\n"
+msgstr ""
 
 #: src/redshift.c:671
 msgid "No more location providers to try.\n"
@@ -234,9 +225,8 @@ msgid "No more methods to try.\n"
 msgstr ""
 
 #: src/redshift.c:783 src/redshift.c:904
-#, fuzzy
 msgid "Unable to read system time.\n"
-msgstr "Не удается восстановить CRTC %i\n"
+msgstr ""
 
 #. TRANSLATORS: Append degree symbol if possible.
 #: src/redshift.c:792
@@ -297,9 +287,9 @@ msgid "Missing value for parameter: `%s'.\n"
 msgstr ""
 
 #: src/gamma-randr.c:292 src/gamma-vidmode.c:152 src/location-manual.c:98
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown method parameter: `%s'.\n"
-msgstr "Неизвестный метод «%s».\n"
+msgstr ""
 
 #: src/gamma-randr.c:306
 #, c-format
@@ -332,32 +322,29 @@ msgstr ""
 msgid "  screen=N\tX screen to apply adjustments to\n"
 msgstr ""
 
-#: src/gamma-w32gdi.c:57
-#, fuzzy
+#: src/gamma-w32gdi.c:59
 msgid "Unable to open device context.\n"
-msgstr "Не удается восстановить CRTC %i\n"
+msgstr ""
 
-#: src/gamma-w32gdi.c:64
+#: src/gamma-w32gdi.c:66
 msgid "Display device does not support gamma ramps.\n"
 msgstr ""
 
-#: src/gamma-w32gdi.c:80
+#: src/gamma-w32gdi.c:82
 msgid "Unable to save current gamma ramp.\n"
 msgstr ""
 
-#: src/gamma-w32gdi.c:102
+#: src/gamma-w32gdi.c:104
 msgid "Adjust gamma ramps with the Windows GDI.\n"
 msgstr ""
 
-#: src/gamma-w32gdi.c:117
-#, fuzzy
+#: src/gamma-w32gdi.c:119
 msgid "Unable to restore gamma ramps.\n"
-msgstr "Не удается восстановить CRTC %i\n"
+msgstr ""
 
-#: src/gamma-w32gdi.c:142
-#, fuzzy
+#: src/gamma-w32gdi.c:144
 msgid "Unable to set gamma ramps.\n"
-msgstr "Не удается восстановить CRTC %i\n"
+msgstr ""
 
 #: src/location-gnome-clock.c:46
 msgid "Cannot list dirs in `/apps/panel/applets'.\n"
@@ -401,14 +388,12 @@ msgid ""
 msgstr ""
 
 #: src/location-manual.c:84
-#, fuzzy
 msgid "Malformed argument.\n"
-msgstr "Некорректная величина гаммы.\n"
+msgstr ""
 
 #: src/location-manual.c:95
-#, fuzzy
 msgid "Too many arguments.\n"
-msgstr "Некорректная величина гаммы.\n"
+msgstr ""
 
 #: src/gtk-redshift/statusicon.py:61 src/gtk-redshift/rsappindicator.py:70
 msgid "Toggle"
@@ -423,13 +408,5 @@ msgstr "Включить / Выключить"
 #~ msgid "VidMode method was not enabled at compile time.\n"
 #~ msgstr "Метод VidMode был выключен во время компиляции.\n"
 
-#, fuzzy
-#~ msgid "WinGDI method was not enabled at compile time.\n"
-#~ msgstr "Метод RANDR был выключен во время компиляции.\n"
-
 #~ msgid "Initialization of VidMode failed.\n"
 #~ msgstr "Инициализация VidMode не удалась.\n"
-
-#, fuzzy
-#~ msgid "Initialization of WinGDI failed.\n"
-#~ msgstr "Инициализация RANDR не удалась.\n"

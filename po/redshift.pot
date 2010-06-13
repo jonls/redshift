@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift 1.3\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-06-10 20:13+0200\n"
+"POT-Creation-Date: 2010-06-13 21:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -319,27 +319,27 @@ msgstr ""
 msgid "  screen=N\tX screen to apply adjustments to\n"
 msgstr ""
 
-#: src/gamma-w32gdi.c:57
+#: src/gamma-w32gdi.c:59
 msgid "Unable to open device context.\n"
 msgstr ""
 
-#: src/gamma-w32gdi.c:64
+#: src/gamma-w32gdi.c:66
 msgid "Display device does not support gamma ramps.\n"
 msgstr ""
 
-#: src/gamma-w32gdi.c:80
+#: src/gamma-w32gdi.c:82
 msgid "Unable to save current gamma ramp.\n"
 msgstr ""
 
-#: src/gamma-w32gdi.c:102
+#: src/gamma-w32gdi.c:104
 msgid "Adjust gamma ramps with the Windows GDI.\n"
 msgstr ""
 
-#: src/gamma-w32gdi.c:117
+#: src/gamma-w32gdi.c:119
 msgid "Unable to restore gamma ramps.\n"
 msgstr ""
 
-#: src/gamma-w32gdi.c:142
+#: src/gamma-w32gdi.c:144
 msgid "Unable to set gamma ramps.\n"
 msgstr ""
 
