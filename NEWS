@@ -1,3 +1,20 @@
+v1.4 (2010-06-13)
+* Command line options for color adjustment methods changed. Procedure for
+  setting specific screen (-s) or CRTC (-c) changed. See `redshift -h' for
+  more information.
+* Automatically obtain the location from the GNOME Clock applet if possible.
+* Add application indicator GUI (by Francesco Marella) (fixes #588086).
+* Add reset option (-x) that removes any color adjustment applied. Based on
+  patch by Dan Helfman (fixes #590777).
+* `configure' options for GUI changed; see `configure --help' for more
+  information.
+* New translations:
+  - German (Jan-Christoph Borchardt)
+  - Italian (Andrea Amoroso)
+  - Czech (clever_fox)
+  - Spanish (Fernando Ossandon)
+  - Finnish (Ilari Oras)
+
 v1.3 (2010-05-12)
 * Allow adjusting individual CRTCs when using RANDR. Contributed by
   Alexandros Frantzis.
