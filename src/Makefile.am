@@ -9,7 +9,7 @@ INCLUDES = -DLOCALEDIR=\"$(localedir)\"
 bin_PROGRAMS = redshift
 
 redshift_SOURCES = \
-	redshift.c \
+	redshift.c redshift.h \
 	colorramp.c colorramp.h \
 	solar.c solar.h \
 	systemtime.c systemtime.h \

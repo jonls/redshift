@@ -141,22 +141,26 @@ AC_ARG_ENABLE([gui], [AC_HELP_STRING([--enable-gui],
 	[enable_gui=$enableval],[enable_gui=maybe])
 
 # Statusicon GUI
-AS_IF([test "x$enable_gui" = xstatusicon -o "x$enable_gui" = maybe], [
-	AS_IF([test $have_python != yes], [
+AS_IF([test "x$enable_gui" = xstatusicon -o "x$enable_gui" = xmaybe], [
+	AS_IF([test "x$have_python" != xyes], [
 		AS_IF([test "x$enable_gui" = xstatusicon], [
 			AC_MSG_ERROR([status icon script requires Python 2.6])
 		])
 		enable_gui=maybe
+	], [
+		enable_gui=statusicon
 	])
 ])
 
 # Appindicator GUI
-AS_IF([test "x$enable_gui" = xappindicator -o "x$enable_gui" = maybe], [
-	AS_IF([test $have_python != yes], [
+AS_IF([test "x$enable_gui" = xappindicator -o "x$enable_gui" = xmaybe], [
+	AS_IF([test "x$have_python" != xyes], [
 		AS_IF([test "x$enable_gui" = xappindicator], [
 			AC_MSG_ERROR([application indicator script requires Python 2.6])
 		])
 		enable_gui=maybe
+	], [
+		enable_gui=appindicator
 	])
 ])
 
