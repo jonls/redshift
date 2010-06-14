@@ -49,6 +49,10 @@ def run():
 
         def toggle_cb(widget, data=None):
             process.send_signal(signal.SIGUSR1)
+	    if status_icon.get_icon_name() == 'redshift':
+	      status_icon.set_from_icon_name('redshift-idle')
+	    else:
+	      status_icon.set_from_icon_name('redshift')
 
         def destroy_cb(widget, data=None):
             status_icon.set_visible(False)
