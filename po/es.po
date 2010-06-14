@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-06-13 21:58+0200\n"
-"PO-Revision-Date: 2010-05-27 22:10+0000\n"
-"Last-Translator: Fernando Ossandon <Unknown>\n"
+"POT-Creation-Date: 2010-06-13 22:39+0200\n"
+"PO-Revision-Date: 2010-06-13 20:24+0000\n"
+"Last-Translator: Jon Lund Steffensen <Unknown>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-05-29 03:58+0000\n"
+"X-Launchpad-Export-Date: 2010-06-14 03:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: src/redshift.c:243
@@ -62,7 +62,6 @@ msgstr ""
 #. `list' must not be translated
 #. no-wrap
 #: src/redshift.c:288
-#, fuzzy
 msgid ""
 "  -g R:G:B\tAdditional gamma correction to apply\n"
 "  -l LAT:LON\tYour current location\n"
@@ -75,16 +74,6 @@ msgid ""
 "  -r\t\tDisable temperature transitions\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
-"  -g R:G:B\tCorrección gamma adicional a aplicar \n"
-"  -l LAT:LON\tTu ubicación actual\n"
-"  -l PROVIDER\tSeleccionar proveedor para actualizaciones automáticas de "
-"localización\n"
-"  \t\t(Tipea `lista' para ver los proveedores disponibles)\n"
-"  -m METHOD\tMétodo a usar en el control de la temperatura\n"
-"  \t\t(Tipea `lista' para ver los métodos disponibles)\n"
-"  -o\t\tModo unitario (no ajusta continuamente la temperatura del color)\n"
-"  -r\t\tDeshabilita las transiciones de temperatura\n"
-"  -t DAY:NIGHT\tAjustar la temperatura del color a día/noche\n"
 
 #. TRANSLATORS: help output 5
 #: src/redshift.c:304
@@ -144,25 +133,25 @@ msgstr ""
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:379
-#, fuzzy, c-format
+#, c-format
 msgid "Try `-l %s:help' for more information.\n"
-msgstr "Tipee `-h' para más información.\n"
+msgstr ""
 
 #: src/redshift.c:391
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to start provider %s.\n"
-msgstr "Proveedores de localización disponibles:\n"
+msgstr ""
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:432
-#, fuzzy, c-format
+#, c-format
 msgid "Try -m %s:help' for more information.\n"
-msgstr "Tipee `-h' para más información.\n"
+msgstr ""
 
 #: src/redshift.c:444
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to start adjustment method %s.\n"
-msgstr "Métodos de ajuste disponibles:\n"
+msgstr ""
 
 #: src/redshift.c:501
 msgid "Malformed gamma argument.\n"
