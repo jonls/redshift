@@ -1,3 +1,8 @@
+v1.4.1 (2010-06-15)
+* Include Ubuntu Mono icons by Joern Konopka.
+* Fix: Toggle icon in statusicon.py like appindicator already does.
+* Tranlation updates: Spanish (Fernando Ossandon), Russian (Чистый)
+
 v1.4 (2010-06-13)
 * Command line options for color adjustment methods changed. Procedure for
   setting specific screen (-s) or CRTC (-c) changed. See `redshift -h' for
