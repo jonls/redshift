@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
 "POT-Creation-Date: 2010-06-13 22:39+0200\n"
-"PO-Revision-Date: 2010-06-10 12:48+0000\n"
-"Last-Translator: Gregory Petrosyan <gregory.petrosyan@gmail.com>\n"
+"PO-Revision-Date: 2010-06-14 11:22+0000\n"
+"Last-Translator: Чистый <klaider@yandex.ru>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-06-14 03:48+0000\n"
+"X-Launchpad-Export-Date: 2010-06-15 03:38+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: src/redshift.c:243
@@ -55,8 +55,8 @@ msgid ""
 "  -h\t\tDisplay this help message\n"
 "  -v\t\tVerbose output\n"
 msgstr ""
-"  -h\t\tОтобразить это справочное сообщение\n"
-"  -v\t\tМногословный вывод\n"
+"  -h\t\tПоказать это сообщение\n"
+"-v\t\tПодробный вывод\n"
 
 #. TRANSLATORS: help output 4
 #. `list' must not be translated
@@ -74,6 +74,16 @@ msgid ""
 "  -r\t\tDisable temperature transitions\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
+"  -g R:G:B\tAdditional gamma correction to apply\n"
+"-l LAT:LON\tВаше текущее месторасположение\n"
+"-l PROVIDER\tSelect provider for automatic location updates\n"
+"\t\t(Type `list' to see available providers)\n"
+"-m METHOD\tMethod to use to set color temperature\n"
+"\t\t(Type `list' to see available methods)\n"
+"-o\t\tOne shot mode (do not continously adjust color temperature)\n"
+"-x\t\tReset mode (remove adjustment from screen)\n"
+"-r\t\tDisable temperature transitions\n"
+"-t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 
 #. TRANSLATORS: help output 5
 #: src/redshift.c:304
@@ -84,16 +94,19 @@ msgid ""
 "  Daytime temperature: %uK\n"
 "  Night temperature: %uK\n"
 msgstr ""
+"Значения по умолчанию:\n"
+"Температура днем: %uK\n"
+"Температура ночью: %uK\n"
 
 #. TRANSLATORS: help output 6
 #: src/redshift.c:312
 #, c-format
 msgid "Please report bugs to <%s>\n"
-msgstr ""
+msgstr "Пожалуйста, об ошибках сообщайте на <%s>\n"
 
 #: src/redshift.c:318
 msgid "Available adjustment methods:\n"
-msgstr ""
+msgstr "Доступны методы корректировки:\n"
 
 #: src/redshift.c:324
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
@@ -102,11 +115,11 @@ msgstr ""
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:327
 msgid "Try `-m METHOD:help' for help.\n"
-msgstr ""
+msgstr "Попробуйте `-m METHOD:help' для справки.\n"
 
 #: src/redshift.c:333
 msgid "Available location providers:\n"
-msgstr ""
+msgstr "Доступные местные поставщики:\n"
 
 #: src/redshift.c:339
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
@@ -115,39 +128,39 @@ msgstr ""
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:342
 msgid "Try `-l PROVIDER:help' for help.\n"
-msgstr ""
+msgstr "Попробуйте `-l PROVIDER:help' для справки.\n"
 
 #: src/redshift.c:354 src/redshift.c:407
 #, c-format
 msgid "Initialization of %s failed.\n"
-msgstr ""
+msgstr "Ошибка инициализации %s\n"
 
 #: src/redshift.c:376 src/redshift.c:429
 #, c-format
 msgid "Failed to set %s option.\n"
-msgstr ""
+msgstr "Не удалось установить опцию %s\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:379
 #, c-format
 msgid "Try `-l %s:help' for more information.\n"
-msgstr ""
+msgstr "Попробуйте `-l %s:help' для дополнительной информации.\n"
 
 #: src/redshift.c:391
 #, c-format
 msgid "Failed to start provider %s.\n"
-msgstr ""
+msgstr "Ошибка запуска поставщика %s\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:432
 #, c-format
 msgid "Try -m %s:help' for more information.\n"
-msgstr ""
+msgstr "Попробуйте -m %s:help' для дополнительной информации.\n"
 
 #: src/redshift.c:444
 #, c-format
 msgid "Failed to start adjustment method %s.\n"
-msgstr ""
+msgstr "Не удалось запустить метод корректировки %s.\n"
 
 #: src/redshift.c:501
 msgid "Malformed gamma argument.\n"
@@ -160,7 +173,7 @@ msgstr "Воспользуйтесь «-h» для получения допол
 #: src/redshift.c:557
 #, c-format
 msgid "Unknown location provider `%s'.\n"
-msgstr ""
+msgstr "Неизвестное местоположение поставщика `%s'.\n"
 
 #. TRANSLATORS: This refers to the method
 #. used to adjust colors e.g VidMode
@@ -175,7 +188,7 @@ msgstr "Некорректное значение температуры.\n"
 
 #: src/redshift.c:659
 msgid "Trying other provider...\n"
-msgstr ""
+msgstr "Использовать другого поставщика...\n"
 
 #: src/redshift.c:671
 msgid "No more location providers to try.\n"
@@ -183,7 +196,7 @@ msgstr ""
 
 #: src/redshift.c:685
 msgid "Unable to get location from provider.\n"
-msgstr ""
+msgstr "Не удается получить местоположение от поставщика.\n"
 
 #. TRANSLATORS: Append degree symbols if possible.
 #: src/redshift.c:694
@@ -284,33 +297,33 @@ msgstr ""
 #: src/gamma-randr.c:282 src/gamma-vidmode.c:144
 #, c-format
 msgid "Missing value for parameter: `%s'.\n"
-msgstr ""
+msgstr "Отсутствует значение для параметра: `%s'.\n"
 
 #: src/gamma-randr.c:292 src/gamma-vidmode.c:152 src/location-manual.c:98
 #, c-format
 msgid "Unknown method parameter: `%s'.\n"
-msgstr ""
+msgstr "Неизвестный параметр метода: `%s'.\n"
 
 #: src/gamma-randr.c:306
 #, c-format
 msgid "CRTC %d does not exist. "
-msgstr ""
+msgstr "CRTC %d не найден. "
 
 #: src/gamma-randr.c:309
 #, c-format
 msgid "Valid CRTCs are [0-%d].\n"
-msgstr ""
+msgstr "Правильный CRTCs [0-%d].\n"
 
 #: src/gamma-randr.c:312
 #, c-format
 msgid "Only CRTC 0 exists.\n"
-msgstr ""
+msgstr "Существует только CRTC 0.\n"
 
 #: src/gamma-vidmode.c:48 src/gamma-vidmode.c:69 src/gamma-vidmode.c:79
 #: src/gamma-vidmode.c:109 src/gamma-vidmode.c:171 src/gamma-vidmode.c:200
 #, c-format
 msgid "X request failed: %s\n"
-msgstr "Запрос X не удался: %s\n"
+msgstr "Ошибка X запроса: %s\n"
 
 #: src/gamma-vidmode.c:131
 msgid "Adjust gamma ramps with the X VidMode extension.\n"
@@ -324,7 +337,7 @@ msgstr ""
 
 #: src/gamma-w32gdi.c:59
 msgid "Unable to open device context.\n"
-msgstr ""
+msgstr "Не удается открыть устройство связи.\n"
 
 #: src/gamma-w32gdi.c:66
 msgid "Display device does not support gamma ramps.\n"
@@ -332,7 +345,7 @@ msgstr ""
 
 #: src/gamma-w32gdi.c:82
 msgid "Unable to save current gamma ramp.\n"
-msgstr ""
+msgstr "Не удается сохранить текущий ramp гаммы\n"
 
 #: src/gamma-w32gdi.c:104
 msgid "Adjust gamma ramps with the Windows GDI.\n"
@@ -357,7 +370,7 @@ msgstr ""
 #: src/location-gnome-clock.c:86
 #, c-format
 msgid "Error reading city list: `%s'.\n"
-msgstr ""
+msgstr "Ошибка при чтении списка городов: `%s'.\n"
 
 #: src/location-gnome-clock.c:106
 msgid "No city selected as current city.\n"
@@ -369,7 +382,7 @@ msgstr ""
 
 #: src/location-gnome-clock.c:140
 msgid "Use the location as set in the GNOME Clock applet.\n"
-msgstr ""
+msgstr "Использовать местоположение, указанное в апплете Gnome Clock\n"
 
 #: src/location-manual.c:50
 msgid "Latitude and longitude must be set.\n"
@@ -377,7 +390,7 @@ msgstr "Широта и долгота должны быть указаны.\n"
 
 #: src/location-manual.c:65
 msgid "Specify location manually.\n"
-msgstr ""
+msgstr "Укажите местоположение вручную:\n"
 
 #. TRANSLATORS: Manual location help output
 #. left column must not be translated
@@ -393,7 +406,7 @@ msgstr ""
 
 #: src/location-manual.c:95
 msgid "Too many arguments.\n"
-msgstr ""
+msgstr "Слишком много аргументов.\n"
 
 #: src/gtk-redshift/statusicon.py:61 src/gtk-redshift/rsappindicator.py:70
 msgid "Toggle"

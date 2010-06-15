@@ -1,4 +1,4 @@
-# Spanish translation for redshift
+# Hebrew translation for redshift
 # Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
 # This file is distributed under the same license as the redshift package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-02-01 22:16+0100\n"
-"PO-Revision-Date: 2010-06-14 15:32+0000\n"
-"Last-Translator: Fernando Ossandon <ferossan@gmail.com>\n"
-"Language-Team: Spanish <es@li.org>\n"
+"PO-Revision-Date: 2010-06-14 11:38+0000\n"
+"Last-Translator: Ddorda <d.dorda@gmail.com>\n"
+"Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,4 +19,4 @@ msgstr ""
 
 #: src/gtk-redshift/gtk-redshift:59
 msgid "Toggle"
-msgstr "Cambiar"
+msgstr "הפיכת מצב"
