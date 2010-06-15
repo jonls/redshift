@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
 "POT-Creation-Date: 2010-06-13 22:39+0200\n"
-"PO-Revision-Date: 2010-06-02 14:15+0000\n"
+"PO-Revision-Date: 2010-06-13 20:24+0000\n"
 "Last-Translator: clever_fox <clever_fox@seznam.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-06-03 03:39+0000\n"
+"X-Launchpad-Export-Date: 2010-06-14 03:47+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: src/redshift.c:243
@@ -64,7 +64,6 @@ msgstr ""
 #. `list' must not be translated
 #. no-wrap
 #: src/redshift.c:288
-#, fuzzy
 msgid ""
 "  -g R:G:B\tAdditional gamma correction to apply\n"
 "  -l LAT:LON\tYour current location\n"
@@ -77,17 +76,6 @@ msgid ""
 "  -r\t\tDisable temperature transitions\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
-"  -g R:G:B\tPřídavná korekce gamma\n"
-"  -l zeměpisná šířka:zeměpisná délka\tVaše současná poloha\n"
-"  -l POSKYTOVATEL\tVyberte poskytovatele pro automatickou aktualizaci "
-"polohy\n"
-"  \t\t(Napište `list' pro zobrazení dostupných poskytovatelů)\n"
-"  -m METODA\tMetoda použitá k nastavení teploty barev\n"
-"  \t\t(Napište `list' pro zobrazení dostupných metod)\n"
-"  -o\t\tRežim jednoho pokusu (nepřizpůsobuje teplotu barev průběžně)\n"
-"  -r\t\tVypnout přechody teploty\n"
-"  -t teplota den:teplota noc\tTeplota barev, která se má nastavit ve dně/"
-"noci\n"
 
 #. TRANSLATORS: help output 5
 #: src/redshift.c:304
@@ -147,25 +135,25 @@ msgstr ""
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:379
-#, fuzzy, c-format
+#, c-format
 msgid "Try `-l %s:help' for more information.\n"
-msgstr "Zkuste `-h' pro více informací.\n"
+msgstr ""
 
 #: src/redshift.c:391
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to start provider %s.\n"
-msgstr "Dostupní poskytovatelé polohy:\n"
+msgstr ""
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:432
-#, fuzzy, c-format
+#, c-format
 msgid "Try -m %s:help' for more information.\n"
-msgstr "Zkuste `-h' pro více informací.\n"
+msgstr ""
 
 #: src/redshift.c:444
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to start adjustment method %s.\n"
-msgstr "Dostupné metody přizpůsobení:\n"
+msgstr ""
 
 #: src/redshift.c:501
 msgid "Malformed gamma argument.\n"
