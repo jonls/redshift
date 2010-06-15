@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: redshift 1.4\n"
+"Project-Id-Version: redshift 1.4.1\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-06-13 22:39+0200\n"
+"POT-Creation-Date: 2010-06-15 13:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -392,6 +392,6 @@ msgstr ""
 msgid "Too many arguments.\n"
 msgstr ""
 
-#: src/gtk-redshift/statusicon.py:61 src/gtk-redshift/rsappindicator.py:70
+#: src/gtk-redshift/statusicon.py:65 src/gtk-redshift/rsappindicator.py:70
 msgid "Toggle"
 msgstr ""

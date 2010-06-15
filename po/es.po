@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-06-13 22:39+0200\n"
+"POT-Creation-Date: 2010-06-15 13:00+0200\n"
 "PO-Revision-Date: 2010-06-14 17:15+0000\n"
 "Last-Translator: Fernando Ossandon <ferossan@gmail.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -113,8 +113,8 @@ msgstr "Métodos de ajuste disponibles:\n"
 #: src/redshift.c:324
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
 msgstr ""
-"Señalar opciones separadas con \"dos puntos\" mediante `-m "
-"MÉTODO:OPCIONES'.\n"
+"Señalar opciones separadas con \"dos puntos\" mediante `-m MÉTODO:"
+"OPCIONES'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:327
@@ -128,8 +128,8 @@ msgstr "Proveedores de localización disponibles:\n"
 #: src/redshift.c:339
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
 msgstr ""
-"Señalar opciones separadas con \"dos puntos\" mediante `-l "
-"PROVEEDOR:OPCIONES'.\n"
+"Señalar opciones separadas con \"dos puntos\" mediante `-l PROVEEDOR:"
+"OPCIONES'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:342
@@ -418,6 +418,6 @@ msgstr "Parámetro no válido.\n"
 msgid "Too many arguments.\n"
 msgstr "Demasiados parámetros.\n"
 
-#: src/gtk-redshift/statusicon.py:61 src/gtk-redshift/rsappindicator.py:70
+#: src/gtk-redshift/statusicon.py:65 src/gtk-redshift/rsappindicator.py:70
 msgid "Toggle"
 msgstr "Cambiar"
