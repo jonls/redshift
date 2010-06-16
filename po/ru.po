@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-06-13 22:39+0200\n"
-"PO-Revision-Date: 2010-06-14 11:22+0000\n"
+"POT-Creation-Date: 2010-06-15 13:00+0200\n"
+"PO-Revision-Date: 2010-06-15 11:44+0000\n"
 "Last-Translator: Чистый <klaider@yandex.ru>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-06-15 03:38+0000\n"
+"X-Launchpad-Export-Date: 2010-06-16 03:55+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: src/redshift.c:243
@@ -408,7 +408,7 @@ msgstr ""
 msgid "Too many arguments.\n"
 msgstr "Слишком много аргументов.\n"
 
-#: src/gtk-redshift/statusicon.py:61 src/gtk-redshift/rsappindicator.py:70
+#: src/gtk-redshift/statusicon.py:65 src/gtk-redshift/rsappindicator.py:70
 msgid "Toggle"
 msgstr "Включить / Выключить"
 
