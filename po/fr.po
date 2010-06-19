@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-06-15 13:00+0200\n"
-"PO-Revision-Date: 2010-06-15 21:42+0000\n"
-"Last-Translator: Hangman <Unknown>\n"
+"PO-Revision-Date: 2010-06-18 20:24+0000\n"
+"Last-Translator: XioNoX <Unknown>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-06-16 03:55+0000\n"
+"X-Launchpad-Export-Date: 2010-06-19 03:56+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: src/redshift.c:243
@@ -121,12 +121,12 @@ msgstr ""
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:342
 msgid "Try `-l PROVIDER:help' for help.\n"
-msgstr ""
+msgstr "Essayez `-l PROVIDER:help'  pour de l'aide.\n"
 
 #: src/redshift.c:354 src/redshift.c:407
 #, c-format
 msgid "Initialization of %s failed.\n"
-msgstr ""
+msgstr "Initialisation de %s echouée.\n"
 
 #: src/redshift.c:376 src/redshift.c:429
 #, c-format
@@ -137,7 +137,7 @@ msgstr ""
 #: src/redshift.c:379
 #, c-format
 msgid "Try `-l %s:help' for more information.\n"
-msgstr ""
+msgstr "Essayez `-l %s:help' pour plus d'informations.\n"
 
 #: src/redshift.c:391
 #, c-format
@@ -148,7 +148,7 @@ msgstr ""
 #: src/redshift.c:432
 #, c-format
 msgid "Try -m %s:help' for more information.\n"
-msgstr ""
+msgstr "Essayez -m %s:help' pour plus d'informations.\n"
 
 #: src/redshift.c:444
 #, c-format
@@ -200,17 +200,17 @@ msgstr ""
 #: src/redshift.c:701
 #, c-format
 msgid "Latitude must be between %.1f and %.1f.\n"
-msgstr ""
+msgstr "Latitude doit être entre %.1f et %.1f.\n"
 
 #: src/redshift.c:710
 #, c-format
 msgid "Longitude must be between %.1f and %.1f.\n"
-msgstr ""
+msgstr "Longitude doit être entre %.1f et %.1f.\n"
 
 #: src/redshift.c:719 src/redshift.c:727
 #, c-format
 msgid "Temperature must be between %uK and %uK.\n"
-msgstr ""
+msgstr "Température doit être entre %uK et %uK.\n"
 
 #: src/redshift.c:737
 #, c-format
@@ -232,13 +232,13 @@ msgstr ""
 
 #: src/redshift.c:783 src/redshift.c:904
 msgid "Unable to read system time.\n"
-msgstr ""
+msgstr "Impossible de lire l'heure système.\n"
 
 #. TRANSLATORS: Append degree symbol if possible.
 #: src/redshift.c:792
 #, c-format
 msgid "Solar elevation: %f\n"
-msgstr ""
+msgstr "Élévation solaire : %f\n"
 
 #: src/redshift.c:799 src/redshift.c:971
 #, c-format
@@ -258,12 +258,12 @@ msgstr ""
 #: src/gamma-randr.c:74
 #, c-format
 msgid "Unsupported RANDR version (%u.%u)\n"
-msgstr ""
+msgstr "Version de RANDR non supporté (%u.%u)\n"
 
 #: src/gamma-randr.c:108
 #, c-format
 msgid "Screen %i could not be found.\n"
-msgstr ""
+msgstr "Moniteur %i introuvable.\n"
 
 #: src/gamma-randr.c:174 src/gamma-vidmode.c:86
 #, c-format
@@ -273,7 +273,7 @@ msgstr ""
 #: src/gamma-randr.c:247
 #, c-format
 msgid "Unable to restore CRTC %i\n"
-msgstr ""
+msgstr "Impossible de rétablir CRTC %i\n"
 
 #: src/gamma-randr.c:268
 msgid "Adjust gamma ramps with the X RANDR extension.\n"
