@@ -130,7 +130,7 @@ void
 colorramp_fill(uint16_t *gamma_r, uint16_t *gamma_g, uint16_t *gamma_b,
 	       int size, int temp, float gamma[3])
 {
-	/* Calculate white point */
+	/* Approximate white point */
 	float white_point[3];
 	float alpha = (temp % 100) / 100.0;
 	int temp_index = ((temp - 1000) / 100)*3;
