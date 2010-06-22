@@ -67,9 +67,15 @@ def run():
         status_menu.append(toggle_item)
 
         autostart_item = gtk.CheckMenuItem(_('Autostart'))
-        autostart_item.set_active(utils.get_autostart())
-        autostart_item.connect('activate', autostart_cb)
-        status_menu.append(autostart_item)
+        try:
+            autostart_item.set_active(utils.get_autostart())
+        except IOError as strerror:
+            print strerror
+            autostart_item.set_property('sensitive', False)
+        else:
+            autostart_item.connect('activate', autostart_cb)
+        finally:
+            status_menu.append(autostart_item)
 
         quit_item = gtk.ImageMenuItem(gtk.STOCK_QUIT)
         quit_item.connect('activate', destroy_cb)
