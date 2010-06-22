@@ -28,7 +28,16 @@ def get_autostart():
     autostart_dir = base.save_config_path("autostart")
     autostart_file = os.path.join(autostart_dir, REDSHIFT_DESKTOP)
     if not os.path.exists(autostart_file):
-        raise IOError("Installed redshift desktop file not found!")
+        desktop_files = list(base.load_data_paths("applications", 
+            REDSHIFT_DESKTOP))
+        if not desktop_files:
+            raise IOError("Installed redshift desktop file not found!")
+        desktop_file_path = desktop_files[0]
+        # Read installed file and modify it
+        dfile = desktop.DesktopEntry(desktop_file_path)
+        dfile.set(AUTOSTART_KEY, "false")
+        dfile.write(filename=autostart_file)
+        return False
     else:
         dfile = desktop.DesktopEntry(autostart_file)
         if dfile.get(AUTOSTART_KEY) == 'false':
