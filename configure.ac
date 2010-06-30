@@ -171,6 +171,7 @@ AS_IF([test "x$enable_gui" != xappindicator -a "x$enable_gui" != xstatusicon], [
 
 AC_MSG_RESULT([$enable_gui])
 
+AM_CONDITIONAL([ENABLE_GUI], [test "x$enable_gui" != xnone])
 AM_CONDITIONAL([ENABLE_STATUSICON], [test "x$enable_gui" = xstatusicon])
 AM_CONDITIONAL([ENABLE_APPINDICATOR], [test "x$enable_gui" = xappindicator])
 

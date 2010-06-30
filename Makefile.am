@@ -15,10 +15,19 @@ ubuntu_mono_light_icondir = @datadir@/icons/ubuntu-mono-light/scalable/apps
 ubuntu_mono_light_icon_DATA = data/icons/ubuntu-mono-light/scalable/apps/redshift.svg \
 	data/icons/ubuntu-mono-light/scalable/apps/redshift-idle.svg
 
+
+# Desktop file
+if ENABLE_GUI
+desktopdir = @datadir@/applications
+desktop_DATA = data/applications/gtk-redshift.desktop
+endif
+
+
 EXTRA_DIST = \
 	$(hicolor_icon_DATA) \
 	$(ubuntu_mono_dark_icon_DATA) \
-	$(ubuntu_mono_light_icon_DATA)
+	$(ubuntu_mono_light_icon_DATA) \
+	$(desktop_DATA)
 
 
 # Update PO translations
