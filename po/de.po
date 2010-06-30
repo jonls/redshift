@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-06-15 13:00+0200\n"
+"POT-Creation-Date: 2010-06-30 19:54+0200\n"
 "PO-Revision-Date: 2010-06-13 20:24+0000\n"
 "Last-Translator: Jan-Christoph Borchardt <inquata@gmail.com>\n"
 "Language-Team: German <de@li.org>\n"
@@ -413,6 +413,10 @@ msgstr "Fehlerhaftes Kommando.\n"
 msgid "Too many arguments.\n"
 msgstr "Zu viele Kommandos.\n"
 
-#: src/gtk-redshift/statusicon.py:65 src/gtk-redshift/rsappindicator.py:70
+#: src/gtk-redshift/statusicon.py:69 src/gtk-redshift/rsappindicator.py:74
 msgid "Toggle"
 msgstr "Umschalten"
+
+#: src/gtk-redshift/statusicon.py:73 src/gtk-redshift/rsappindicator.py:78
+msgid "Autostart"
+msgstr ""

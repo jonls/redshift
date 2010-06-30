@@ -28,6 +28,7 @@ pygtk.require("2.0")
 import gtk, glib
 
 import defs
+import utils
 
 
 def run():
@@ -54,6 +55,9 @@ def run():
 	    else:
 	      status_icon.set_from_icon_name('redshift')
 
+        def autostart_cb(widget, data=None):
+            utils.set_autostart(widget.get_active())
+
         def destroy_cb(widget, data=None):
             status_icon.set_visible(False)
             gtk.main_quit()
@@ -65,6 +69,17 @@ def run():
         toggle_item = gtk.ImageMenuItem(_('Toggle'))
         toggle_item.connect('activate', toggle_cb)
         status_menu.append(toggle_item)
+
+        autostart_item = gtk.CheckMenuItem(_('Autostart'))
+        try:
+            autostart_item.set_active(utils.get_autostart())
+        except IOError as strerror:
+            print strerror
+            autostart_item.set_property('sensitive', False)
+        else:
+            autostart_item.connect('activate', autostart_cb)
+        finally:
+            status_menu.append(autostart_item)
 
         quit_item = gtk.ImageMenuItem(gtk.STOCK_QUIT)
         quit_item.connect('activate', destroy_cb)

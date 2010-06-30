@@ -33,6 +33,7 @@ except ImportError as ie:
     sys.exit(str(ie))
 
 import defs
+import utils
 
 
 def run():
@@ -60,6 +61,9 @@ def run():
                 indicator.set_icon('redshift')
             process.send_signal(signal.SIGUSR1)
 
+        def autostart_cb(widget, data=None):
+            utils.set_autostart(widget.get_active())
+
         def destroy_cb(widget, data=None):
             gtk.main_quit()
             return False
@@ -70,6 +74,17 @@ def run():
         toggle_item = gtk.ImageMenuItem(_('Toggle'))
         toggle_item.connect('activate', toggle_cb)
         status_menu.append(toggle_item)
+
+        autostart_item = gtk.CheckMenuItem(_('Autostart'))
+        try:
+            autostart_item.set_active(utils.get_autostart())
+        except IOError as strerror:
+            print strerror
+            autostart_item.set_property('sensitive', False)
+        else:
+            autostart_item.connect('activate', autostart_cb)
+        finally:
+            status_menu.append(autostart_item)
 
         quit_item = gtk.ImageMenuItem(gtk.STOCK_QUIT)
         quit_item.connect('activate', destroy_cb)

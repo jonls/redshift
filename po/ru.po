@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-06-15 13:00+0200\n"
+"POT-Creation-Date: 2010-06-30 19:54+0200\n"
 "PO-Revision-Date: 2010-06-14 11:22+0000\n"
 "Last-Translator: Чистый <klaider@yandex.ru>\n"
 "Language-Team: Russian <ru@li.org>\n"
@@ -408,9 +408,13 @@ msgstr ""
 msgid "Too many arguments.\n"
 msgstr "Слишком много аргументов.\n"
 
-#: src/gtk-redshift/statusicon.py:65 src/gtk-redshift/rsappindicator.py:70
+#: src/gtk-redshift/statusicon.py:69 src/gtk-redshift/rsappindicator.py:74
 msgid "Toggle"
 msgstr "Включить / Выключить"
+
+#: src/gtk-redshift/statusicon.py:73 src/gtk-redshift/rsappindicator.py:78
+msgid "Autostart"
+msgstr ""
 
 #~ msgid "Malformed location argument.\n"
 #~ msgstr "Некорректное значение местоположения.\n"
