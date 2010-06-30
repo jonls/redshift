@@ -40,12 +40,13 @@ location_gnome_clock_init(location_gnome_clock_state_t *state)
 	GError *error = NULL;
 	GConfClient *client = gconf_client_get_default();
 
-	GSList *applets = gconf_client_all_dirs(client, "/apps/panel/applets",
-						&error);
+	GSList *applets = gconf_client_get_list(client,
+			"/apps/panel/general/applet_id_list",
+			GCONF_VALUE_STRING, &error);
 	if (error) {
-		fputs(_("Cannot list dirs in `/apps/panel/applets'.\n"),
-		      stderr);
+		fputs(_("Cannot list GNOME panel applets.\n"), stderr);
 		g_object_unref(client);
+		g_slist_free(applets);
 		return -1;
 	}
 
@@ -54,7 +55,8 @@ location_gnome_clock_init(location_gnome_clock_state_t *state)
 	     applet = g_slist_next(applet)) {
 		char *path = applet->data;
 		if (cities_key == NULL) {
-			char *key = g_strdup_printf("%s/bonobo_iid", path);
+			char *key = g_strdup_printf("/apps/panel/applets/%s"
+						    "/bonobo_iid", path);
 			char *bonobo_iid = gconf_client_get_string(client, key,
 								   &error);
 
@@ -62,7 +64,8 @@ location_gnome_clock_init(location_gnome_clock_state_t *state)
 				if (!strcmp(bonobo_iid,
 					    "OAFIID:GNOME_ClockApplet")) {
 					cities_key = g_strdup_printf(
-						"%s/prefs/cities", path);
+						"/apps/panel/applets/%s"
+						"/prefs/cities", path);
 				}
 				g_free(bonobo_iid);
 			}
