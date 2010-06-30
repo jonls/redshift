@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-06-30 19:54+0200\n"
+"POT-Creation-Date: 2010-06-30 20:28+0200\n"
 "PO-Revision-Date: 2010-06-13 20:24+0000\n"
 "Last-Translator: Jan-Christoph Borchardt <inquata@gmail.com>\n"
 "Language-Team: German <de@li.org>\n"
@@ -188,72 +188,84 @@ msgid "Malformed temperature argument.\n"
 msgstr "Fehlerhaftes Kommando für Temperatur.\n"
 
 #: src/redshift.c:659
-msgid "Trying other provider...\n"
+#, fuzzy
+msgid "Trying next provider...\n"
 msgstr "Anderer Dienst wird versucht …\n"
 
-#: src/redshift.c:671
+#: src/redshift.c:665
+#, fuzzy, c-format
+msgid "Using provider `%s'.\n"
+msgstr "Unbekannter Dienst »%s«.\n"
+
+#: src/redshift.c:673
 msgid "No more location providers to try.\n"
 msgstr "Keine weiteren Dienste verfügbar.\n"
 
-#: src/redshift.c:685
+#: src/redshift.c:687
 msgid "Unable to get location from provider.\n"
 msgstr "Konnte Standort nicht vom Dienst erhalten.\n"
 
 #. TRANSLATORS: Append degree symbols if possible.
-#: src/redshift.c:694
+#: src/redshift.c:696
 #, c-format
 msgid "Location: %f, %f\n"
 msgstr "Standort: %f, %f\n"
 
-#: src/redshift.c:701
+#: src/redshift.c:703
 #, c-format
 msgid "Latitude must be between %.1f and %.1f.\n"
 msgstr "Der Breitengrad muss sich zwischen %.1f und %.1f befinden.\n"
 
-#: src/redshift.c:710
+#: src/redshift.c:712
 #, c-format
 msgid "Longitude must be between %.1f and %.1f.\n"
 msgstr "Der Längengrad muss sich zwischen %.1f und %.1f befinden.\n"
 
-#: src/redshift.c:719 src/redshift.c:727
+#: src/redshift.c:721 src/redshift.c:729
 #, c-format
 msgid "Temperature must be between %uK and %uK.\n"
 msgstr "Die Temperatur muss sich zwischen %uK und %uK befinden.\n"
 
-#: src/redshift.c:737
+#: src/redshift.c:739
 #, c-format
 msgid "Gamma value must be between %.1f and %.1f.\n"
 msgstr "Der Gamma-Wert muss sich zwischen %.1f und %.1f befinden.\n"
 
-#: src/redshift.c:743
+#: src/redshift.c:745
 #, c-format
 msgid "Gamma: %.3f, %.3f, %.3f\n"
 msgstr "Gamma: %.3f, %.3f, %.3f\n"
 
-#: src/redshift.c:761
-msgid "Trying other method...\n"
+#: src/redshift.c:763
+#, fuzzy
+msgid "Trying next method...\n"
 msgstr "Andere Methode wird versucht …\n"
 
-#: src/redshift.c:771
+#: src/redshift.c:768
+#, fuzzy, c-format
+msgid "Using method `%s'.\n"
+msgstr "Unbekannte Methode »%s«.\n"
+
+#: src/redshift.c:775
 msgid "No more methods to try.\n"
 msgstr "Keine weiteren Methoden verfügbar.\n"
 
-#: src/redshift.c:783 src/redshift.c:904
+#: src/redshift.c:787 src/redshift.c:908
 msgid "Unable to read system time.\n"
 msgstr "Konnte Systemzeit nicht auslesen.\n"
 
 #. TRANSLATORS: Append degree symbol if possible.
-#: src/redshift.c:792
+#: src/redshift.c:796
 #, c-format
 msgid "Solar elevation: %f\n"
 msgstr "Sonnenstand: %f°\n"
 
-#: src/redshift.c:799 src/redshift.c:971
+#: src/redshift.c:803 src/redshift.c:975
 #, c-format
 msgid "Color temperature: %uK\n"
 msgstr "Farbtemperatur: %uK\n"
 
-#: src/redshift.c:804 src/redshift.c:815 src/redshift.c:979
+#: src/redshift.c:808 src/redshift.c:819 src/redshift.c:983
 msgid "Temperature adjustment failed.\n"
 msgstr "Temperaturänderung fehlgeschlagen.\n"
 
@@ -362,28 +374,29 @@ msgstr "Konnte Gamma-Anstieg nicht wiederherstellen.\n"
 msgid "Unable to set gamma ramps.\n"
 msgstr "Konnte Gamma-Anstieg nicht festlegen.\n"
 
-#: src/location-gnome-clock.c:46
-msgid "Cannot list dirs in `/apps/panel/applets'.\n"
+#: src/location-gnome-clock.c:47
+#, fuzzy
+msgid "Cannot list GNOME panel applets.\n"
 msgstr "Konnte Verzeichnisse in »/apps/panel/applets« nicht anzeigen.\n"
 
-#: src/location-gnome-clock.c:78
+#: src/location-gnome-clock.c:81
 msgid "No clock applet was found.\n"
 msgstr "Konnte kein Uhren-Applet finden.\n"
 
-#: src/location-gnome-clock.c:86
+#: src/location-gnome-clock.c:89
 #, c-format
 msgid "Error reading city list: `%s'.\n"
 msgstr "Fehler beim Lesen der Stadtliste: »%s«.\n"
 
-#: src/location-gnome-clock.c:106
+#: src/location-gnome-clock.c:109
 msgid "No city selected as current city.\n"
 msgstr "Keine Stadt ist als aktueller Standort ausgewählt.\n"
 
-#: src/location-gnome-clock.c:113
+#: src/location-gnome-clock.c:116
 msgid "Location not specified for city.\n"
 msgstr "Ort der Stadt ist nicht festgelegt.\n"
 
-#: src/location-gnome-clock.c:140
+#: src/location-gnome-clock.c:143
 msgid "Use the location as set in the GNOME Clock applet.\n"
 msgstr "Den Standort aus dem GNOME-Uhren-Applet benutzen.\n"
 

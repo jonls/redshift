@@ -656,11 +656,13 @@ main(int argc, char *argv[])
 				r = provider_try_start(p, &location_state,
 						       NULL);
 				if (r < 0) {
-					fputs(_("Trying other provider...\n"),
+					fputs(_("Trying next provider...\n"),
 					      stderr);
 					continue;
 				}
 
+				/* Found provider that works. */
+				printf(_("Using provider `%s'.\n"), p->name);
 				provider = p;
 				break;
 			}
@@ -758,10 +760,12 @@ main(int argc, char *argv[])
 			const gamma_method_t *m = &gamma_methods[i];
 			r = method_try_start(m, &state, NULL);
 			if (r < 0) {
-				fputs(_("Trying other method...\n"), stderr);
+				fputs(_("Trying next method...\n"), stderr);
 				continue;
 			}
 
+			/* Found method that works. */
+			printf(_("Using method `%s'.\n"), m->name);
 			method = m;
 			break;
 		}
