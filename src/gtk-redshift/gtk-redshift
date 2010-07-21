@@ -19,5 +19,5 @@
 
 
 if __name__ == '__main__':
-    from gtk_redshift.@gui_module@ import run
+    from gtk_redshift.statusicon import run
     run()

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# statusicon.py -- GTK+ status icon source
+# statusicon.py -- Application panel indicator / GTK+ status icon source
 # This file is part of Redshift.
 
 # Redshift is free software: you can redistribute it and/or modify
@@ -26,6 +26,10 @@ import pygtk
 pygtk.require("2.0")
 
 import gtk, glib
+try:
+    import appindicator
+except ImportError:
+    appindicator = None
 
 import defs
 import utils
@@ -43,23 +47,37 @@ def run():
     process = subprocess.Popen(args)
 
     try:
-        # Create status icon
-        status_icon = gtk.StatusIcon()
-        status_icon.set_from_icon_name('redshift')
-        status_icon.set_tooltip('Redshift')
+        if appindicator:
+            # Create indicator
+            indicator = appindicator.Indicator ("redshift",
+                                  "redshift",
+                                  appindicator.CATEGORY_APPLICATION_STATUS)
+            indicator.set_status (appindicator.STATUS_ACTIVE)
+        else:
+            # Create status icon
+            status_icon = gtk.StatusIcon()
+            status_icon.set_from_icon_name('redshift')
+            status_icon.set_tooltip('Redshift')
 
         def toggle_cb(widget, data=None):
             process.send_signal(signal.SIGUSR1)
-	    if status_icon.get_icon_name() == 'redshift':
-	      status_icon.set_from_icon_name('redshift-idle')
-	    else:
-	      status_icon.set_from_icon_name('redshift')
+            if appindicator:
+                if indicator.get_icon() == 'redshift':
+                    indicator.set_icon('redshift-idle')
+                else:
+                    indicator.set_icon('redshift')
+            else:
+	            if status_icon.get_icon_name() == 'redshift':
+	              status_icon.set_from_icon_name('redshift-idle')
+	            else:
+	              status_icon.set_from_icon_name('redshift')
 
         def autostart_cb(widget, data=None):
             utils.set_autostart(widget.get_active())
 
         def destroy_cb(widget, data=None):
-            status_icon.set_visible(False)
+            if not appindicator:
+                status_icon.set_visible(False)
             gtk.main_quit()
             return False
 
@@ -85,15 +103,21 @@ def run():
         quit_item.connect('activate', destroy_cb)
         status_menu.append(quit_item)
 
-        def popup_menu_cb(widget, button, time, data=None):
+        if appindicator:
             status_menu.show_all()
-            status_menu.popup(None, None, gtk.status_icon_position_menu,
-                              button, time, status_icon)
 
-        # Connect signals for status icon and show
-        status_icon.connect('activate', toggle_cb)
-        status_icon.connect('popup-menu', popup_menu_cb)
-        status_icon.set_visible(True)
+            # Set the menu
+            indicator.set_menu(status_menu)
+        else:
+            def popup_menu_cb(widget, button, time, data=None):
+                status_menu.show_all()
+                status_menu.popup(None, None, gtk.status_icon_position_menu,
+                                  button, time, status_icon)
+
+            # Connect signals for status icon and show
+            status_icon.connect('activate', toggle_cb)
+            status_icon.connect('popup-menu', popup_menu_cb)
+            status_icon.set_visible(True)
 
         def child_cb(pid, cond, data=None):
             sys.exit(-1)

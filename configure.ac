@@ -131,50 +131,25 @@ AS_IF([test "x$enable_gnome_clock" != xno], [
 ])
 AM_CONDITIONAL([ENABLE_GNOME_CLOCK], [test "x$enable_gnome_clock" = xyes])
 
-
-# Check for GUI
-# There doesn't seem to be an easy way of detecting the presence
-# of a python module. For that reason, statusicon is the default GUI.
-AC_MSG_CHECKING([which GUI to enable])
+# Check for AppIndicator or GTK+ status icon
+AC_MSG_CHECKING([whether to enable AppIndicator or GTK status icon])
 AC_ARG_ENABLE([gui], [AC_HELP_STRING([--enable-gui],
-	[enable GUI (appindicator, statusicon or none)])],
+	[enable AppIndicator or GTK status icon])],
 	[enable_gui=$enableval],[enable_gui=maybe])
-
-# Statusicon GUI
-AS_IF([test "x$enable_gui" = xstatusicon -o "x$enable_gui" = xmaybe], [
-	AS_IF([test "x$have_python" != xyes], [
-		AS_IF([test "x$enable_gui" = xstatusicon], [
-			AC_MSG_ERROR([status icon script requires Python 2.6])
-		])
-		enable_gui=maybe
+AS_IF([test "x$enable_gui" != xno], [
+	AS_IF([test $have_python = yes], [
+		AC_MSG_RESULT([yes])
 	], [
-		enable_gui=statusicon
-	])
-])
-
-# Appindicator GUI
-AS_IF([test "x$enable_gui" = xappindicator -o "x$enable_gui" = xmaybe], [
-	AS_IF([test "x$have_python" != xyes], [
-		AS_IF([test "x$enable_gui" = xappindicator], [
-			AC_MSG_ERROR([application indicator script requires Python 2.6])
+		AC_MSG_RESULT([missing dependencies])
+		AS_IF([test "x$enable_gui" = xyes], [
+			AC_MSG_ERROR([appindicator and status icon script requires Python 2.6])
 		])
-		enable_gui=maybe
-	], [
-		enable_gui=appindicator
+		enable_gui=no
 	])
+], [
+	AC_MSG_RESULT([no])
 ])
-
-# Fall back to no GUI
-AS_IF([test "x$enable_gui" != xappindicator -a "x$enable_gui" != xstatusicon], [
-	enable_gui=none
-])
-
-AC_MSG_RESULT([$enable_gui])
-
-AM_CONDITIONAL([ENABLE_GUI], [test "x$enable_gui" != xnone])
-AM_CONDITIONAL([ENABLE_STATUSICON], [test "x$enable_gui" = xstatusicon])
-AM_CONDITIONAL([ENABLE_APPINDICATOR], [test "x$enable_gui" = xappindicator])
-
+AM_CONDITIONAL([ENABLE_GUI], [test "x$enable_gui" != xno])
 
 # Checks for header files.
 AC_CHECK_HEADERS([locale.h stdint.h stdlib.h string.h unistd.h sys/signal.h])
