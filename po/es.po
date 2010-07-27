@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-06-30 20:28+0200\n"
+"POT-Creation-Date: 2010-07-28 00:45+0200\n"
 "PO-Revision-Date: 2010-06-14 17:15+0000\n"
 "Last-Translator: Fernando Ossandon <ferossan@gmail.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -431,10 +431,10 @@ msgstr "Parámetro no válido.\n"
 msgid "Too many arguments.\n"
 msgstr "Demasiados parámetros.\n"
 
-#: src/gtk-redshift/statusicon.py:69 src/gtk-redshift/rsappindicator.py:74
+#: src/gtk-redshift/statusicon.py:92
 msgid "Toggle"
 msgstr "Cambiar"
 
-#: src/gtk-redshift/statusicon.py:73 src/gtk-redshift/rsappindicator.py:78
+#: src/gtk-redshift/statusicon.py:96
 msgid "Autostart"
 msgstr ""

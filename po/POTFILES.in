@@ -10,4 +10,3 @@ src/location-gnome-clock.c
 src/location-manual.c
 
 src/gtk-redshift/statusicon.py
-src/gtk-redshift/rsappindicator.py
