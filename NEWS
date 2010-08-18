@@ -1,3 +1,12 @@
+v1.5 (2010-08-18)
+* New ubuntu-mono-dark icons that fit better with the color guidelines.
+  Contributed by aleth.
+* Improve GNOME location provider (patch by Gabriel de Perthuis).
+* Application launcher and autostart feature contributed by Francesco Marella.
+* Translation updates: Basque (Ibai Oihanguren); French (Hangman, XioNoX);
+  German (Jan-Christoph Borchardt); Hebrew (dotancohen); Spanish
+  (Fernando Ossandon).
+
 v1.4.1 (2010-06-15)
 * Include Ubuntu Mono icons by Joern Konopka.
 * Fix: Toggle icon in statusicon.py like appindicator already does.
