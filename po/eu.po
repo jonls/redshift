@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2010-06-30 20:28+0200\n"
+"Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
+"POT-Creation-Date: 2010-08-18 21:09+0200\n"
 "PO-Revision-Date: 2010-07-03 12:59+0000\n"
 "Last-Translator: Ibai Oihanguren <Unknown>\n"
 "Language-Team: Basque <eu@li.org>\n"
@@ -270,39 +270,39 @@ msgstr "Kolore-tenperatura: %uK\n"
 msgid "Temperature adjustment failed.\n"
 msgstr "Tenperatura egokitzeak huts egin du.\n"
 
-#: src/gamma-randr.c:66 src/gamma-randr.c:123 src/gamma-randr.c:162
-#: src/gamma-randr.c:188 src/gamma-randr.c:245 src/gamma-randr.c:343
+#: src/gamma-randr.c:69 src/gamma-randr.c:126 src/gamma-randr.c:165
+#: src/gamma-randr.c:191 src/gamma-randr.c:248 src/gamma-randr.c:346
 #, c-format
 msgid "`%s' returned error %d\n"
 msgstr "`%s'(k) akats hau itzuli du: %d\n"
 
-#: src/gamma-randr.c:74
+#: src/gamma-randr.c:77
 #, c-format
 msgid "Unsupported RANDR version (%u.%u)\n"
 msgstr "Onartu gabeko RANDR bertsioa (%u.%u)\n"
 
-#: src/gamma-randr.c:108
+#: src/gamma-randr.c:111
 #, c-format
 msgid "Screen %i could not be found.\n"
 msgstr "%i pantaila ez da aurkitu.\n"
 
-#: src/gamma-randr.c:174 src/gamma-vidmode.c:86
+#: src/gamma-randr.c:177 src/gamma-vidmode.c:86
 #, c-format
 msgid "Gamma ramp size too small: %i\n"
 msgstr "Gamma ramp tamaina txikiegia: %i\n"
 
-#: src/gamma-randr.c:247
+#: src/gamma-randr.c:250
 #, c-format
 msgid "Unable to restore CRTC %i\n"
 msgstr "Ezin izan da CRTCa berrezarri %i\n"
 
-#: src/gamma-randr.c:268
+#: src/gamma-randr.c:271
 msgid "Adjust gamma ramps with the X RANDR extension.\n"
 msgstr "Gammaren ramp-ak X RANDR hedapenarekin egokitu.\n"
 
 #. TRANSLATORS: RANDR help output
 #. left column must not be translated
-#: src/gamma-randr.c:273
+#: src/gamma-randr.c:276
 msgid ""
 "  screen=N\tX screen to apply adjustments to\n"
 "  crtc=N\tCRTC to apply adjustments to\n"
@@ -310,27 +310,27 @@ msgstr ""
 "  screen=N\tEgokitzapenak aplikatzeko X pantaila\n"
 "  crtc=N\tEgokitzapenak aplikatzeko CRTCa\n"
 
-#: src/gamma-randr.c:282 src/gamma-vidmode.c:144
+#: src/gamma-randr.c:285 src/gamma-vidmode.c:144
 #, c-format
 msgid "Missing value for parameter: `%s'.\n"
 msgstr "Balioa falta da parametro honentzat: `%s'.\n"
 
-#: src/gamma-randr.c:292 src/gamma-vidmode.c:152 src/location-manual.c:98
+#: src/gamma-randr.c:295 src/gamma-vidmode.c:152 src/location-manual.c:98
 #, c-format
 msgid "Unknown method parameter: `%s'.\n"
 msgstr "Metodoaren parametro ezezaguna: `%s'.\n"
 
-#: src/gamma-randr.c:306
+#: src/gamma-randr.c:309
 #, c-format
 msgid "CRTC %d does not exist. "
 msgstr "%d CRTCa ez da existitzen. "
 
-#: src/gamma-randr.c:309
+#: src/gamma-randr.c:312
 #, c-format
 msgid "Valid CRTCs are [0-%d].\n"
 msgstr "Onartutako CRTCak honakoak dira [0-%d].\n"
 
-#: src/gamma-randr.c:312
+#: src/gamma-randr.c:315
 #, c-format
 msgid "Only CRTC 0 exists.\n"
 msgstr "0 CRTCa baino ez da existitzen.\n"
@@ -426,10 +426,10 @@ msgstr "Gaizki eratutako argumentua.\n"
 msgid "Too many arguments.\n"
 msgstr "Argumentu gehiegi.\n"
 
-#: src/gtk-redshift/statusicon.py:69 src/gtk-redshift/rsappindicator.py:74
+#: src/gtk-redshift/statusicon.py:91
 msgid "Toggle"
 msgstr "Txandakatu"
 
-#: src/gtk-redshift/statusicon.py:73 src/gtk-redshift/rsappindicator.py:78
+#: src/gtk-redshift/statusicon.py:95
 msgid "Autostart"
 msgstr "Autoabiarazi"
