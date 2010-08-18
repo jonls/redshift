@@ -62,9 +62,12 @@ randr_init(randr_state_t *state)
 	xcb_randr_query_version_reply_t *ver_reply =
 		xcb_randr_query_version_reply(state->conn, ver_cookie, &error);
 
-	if (error) {
+	/* TODO What does it mean when both error and ver_reply is NULL?
+	   Apparently, we have to check both to avoid seg faults. */
+	if (error || ver_reply == NULL) {
+		int ec = (error != 0) ? error->error_code : -1;
 		fprintf(stderr, _("`%s' returned error %d\n"),
-			"RANDR Query Version", error->error_code);
+			"RANDR Query Version", ec);
 		xcb_disconnect(state->conn);
 		return -1;
 	}
