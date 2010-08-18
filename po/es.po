@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-07-28 00:45+0200\n"
-"PO-Revision-Date: 2010-06-14 17:15+0000\n"
+"POT-Creation-Date: 2010-06-30 20:28+0200\n"
+"PO-Revision-Date: 2010-07-01 05:09+0000\n"
 "Last-Translator: Fernando Ossandon <ferossan@gmail.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-06-15 03:38+0000\n"
+"X-Launchpad-Export-Date: 2010-07-02 03:39+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: src/redshift.c:243
@@ -113,8 +113,8 @@ msgstr "Métodos de ajuste disponibles:\n"
 #: src/redshift.c:324
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
 msgstr ""
-"Señalar opciones separadas con \"dos puntos\" mediante `-m MÉTODO:"
-"OPCIONES'.\n"
+"Señalar opciones separadas con \"dos puntos\" mediante `-m "
+"MÉTODO:OPCIONES'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:327
@@ -128,8 +128,8 @@ msgstr "Proveedores de localización disponibles:\n"
 #: src/redshift.c:339
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
 msgstr ""
-"Señalar opciones separadas con \"dos puntos\" mediante `-l PROVEEDOR:"
-"OPCIONES'.\n"
+"Señalar opciones separadas con \"dos puntos\" mediante `-l "
+"PROVEEDOR:OPCIONES'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:342
@@ -193,14 +193,13 @@ msgid "Malformed temperature argument.\n"
 msgstr "Parámetro de temperatura no válido.\n"
 
 #: src/redshift.c:659
-#, fuzzy
 msgid "Trying next provider...\n"
-msgstr "Probando otro proveedor...\n"
+msgstr "Probando el siguiente proveedor...\n"
 
 #: src/redshift.c:665
-#, fuzzy, c-format
+#, c-format
 msgid "Using provider `%s'.\n"
-msgstr "Proveedor de localización `%s' desconocido.\n"
+msgstr "Usando el proveedor `%s'.\n"
 
 #: src/redshift.c:673
 msgid "No more location providers to try.\n"
@@ -242,14 +241,13 @@ msgid "Gamma: %.3f, %.3f, %.3f\n"
 msgstr "Gamma: %.3f, %.3f, %.3f\n"
 
 #: src/redshift.c:763
-#, fuzzy
 msgid "Trying next method...\n"
-msgstr "Probando otro método...\n"
+msgstr "Probando el siguiente método...\n"
 
 #: src/redshift.c:768
-#, fuzzy, c-format
+#, c-format
 msgid "Using method `%s'.\n"
-msgstr "Método `%s' desconocido.\n"
+msgstr "Usando el método `%s'.\n"
 
 #: src/redshift.c:775
 msgid "No more methods to try.\n"
@@ -380,9 +378,8 @@ msgid "Unable to set gamma ramps.\n"
 msgstr "Incapaz de establecer rangos gamma.\n"
 
 #: src/location-gnome-clock.c:47
-#, fuzzy
 msgid "Cannot list GNOME panel applets.\n"
-msgstr "No es posible listar directorios en `/apps/panel/applets'.\n"
+msgstr "No es posible listar los applets del panel de GNOME.\n"
 
 #: src/location-gnome-clock.c:81
 msgid "No clock applet was found.\n"
@@ -431,10 +428,10 @@ msgstr "Parámetro no válido.\n"
 msgid "Too many arguments.\n"
 msgstr "Demasiados parámetros.\n"
 
-#: src/gtk-redshift/statusicon.py:92
+#: src/gtk-redshift/statusicon.py:69 src/gtk-redshift/rsappindicator.py:74
 msgid "Toggle"
 msgstr "Cambiar"
 
-#: src/gtk-redshift/statusicon.py:96
+#: src/gtk-redshift/statusicon.py:73 src/gtk-redshift/rsappindicator.py:78
 msgid "Autostart"
-msgstr ""
+msgstr "Inicio automático"

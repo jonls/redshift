@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
 "POT-Creation-Date: 2010-07-28 00:45+0200\n"
-"PO-Revision-Date: 2010-06-13 20:24+0000\n"
-"Last-Translator: Andrea Amoroso <andrea.amoroso@alice.it>\n"
+"PO-Revision-Date: 2010-08-10 07:48+0000\n"
+"Last-Translator: Fire <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-06-14 03:48+0000\n"
+"X-Launchpad-Export-Date: 2010-08-11 03:59+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: src/redshift.c:243
@@ -115,7 +115,8 @@ msgstr "Metodi di correzione disponibili:\n"
 
 #: src/redshift.c:324
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
-msgstr "Specificare opzioni separate dai due punti con `-m METODO:OPZIONI'.\n"
+msgstr ""
+"Specificare opzioni separate dai due punti con `-m METODO:OPZIONI'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:327
@@ -193,14 +194,13 @@ msgid "Malformed temperature argument.\n"
 msgstr "Argomento della temperatura in forma errata.\n"
 
 #: src/redshift.c:659
-#, fuzzy
 msgid "Trying next provider...\n"
-msgstr "Provando con un altro provider...\n"
+msgstr ""
 
 #: src/redshift.c:665
-#, fuzzy, c-format
+#, c-format
 msgid "Using provider `%s'.\n"
-msgstr "Provider posizionale sconosciuto `%s'.\n"
+msgstr ""
 
 #: src/redshift.c:673
 msgid "No more location providers to try.\n"
@@ -242,14 +242,13 @@ msgid "Gamma: %.3f, %.3f, %.3f\n"
 msgstr "Gamma: %.3f, %.3f, %.3f\n"
 
 #: src/redshift.c:763
-#, fuzzy
 msgid "Trying next method...\n"
-msgstr "Provando altro metodo...\n"
+msgstr ""
 
 #: src/redshift.c:768
-#, fuzzy, c-format
+#, c-format
 msgid "Using method `%s'.\n"
-msgstr "Metodo sconosciuto `%s'.\n"
+msgstr ""
 
 #: src/redshift.c:775
 msgid "No more methods to try.\n"
@@ -380,9 +379,8 @@ msgid "Unable to set gamma ramps.\n"
 msgstr "Impossibile impostare la scala dei gamma.\n"
 
 #: src/location-gnome-clock.c:47
-#, fuzzy
 msgid "Cannot list GNOME panel applets.\n"
-msgstr "Impossibile elencare le cartelle in `/apps/panel/applets'.\n"
+msgstr ""
 
 #: src/location-gnome-clock.c:81
 msgid "No clock applet was found.\n"
@@ -438,4 +436,4 @@ msgstr "Verifica"
 
 #: src/gtk-redshift/statusicon.py:96
 msgid "Autostart"
-msgstr ""
+msgstr "Avvio automatico"

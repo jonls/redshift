@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-07-28 00:45+0200\n"
-"PO-Revision-Date: 2010-06-13 20:24+0000\n"
+"POT-Creation-Date: 2010-06-30 20:28+0200\n"
+"PO-Revision-Date: 2010-06-30 18:51+0000\n"
 "Last-Translator: Jon Lund Steffensen <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-06-14 03:48+0000\n"
+"X-Launchpad-Export-Date: 2010-07-01 03:52+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: src/redshift.c:243
@@ -189,14 +189,13 @@ msgid "Malformed temperature argument.\n"
 msgstr "Fejl i temperaturargument.\n"
 
 #: src/redshift.c:659
-#, fuzzy
 msgid "Trying next provider...\n"
-msgstr "Prøver anden metode til placeringsopdatering...\n"
+msgstr "Prøver næste placeringsmetode...\n"
 
 #: src/redshift.c:665
-#, fuzzy, c-format
+#, c-format
 msgid "Using provider `%s'.\n"
-msgstr "Ukendt metode til placeringsopdatering `%s'.\n"
+msgstr "Bruger placeringsmetoden `%s'.\n"
 
 #: src/redshift.c:673
 msgid "No more location providers to try.\n"
@@ -238,14 +237,13 @@ msgid "Gamma: %.3f, %.3f, %.3f\n"
 msgstr "Gamma: %.3f, %.3f, %.3f\n"
 
 #: src/redshift.c:763
-#, fuzzy
 msgid "Trying next method...\n"
-msgstr "Prøver anden justeringsmetode...\n"
+msgstr "Prøver næste farvejusteringsmetode...\n"
 
 #: src/redshift.c:768
-#, fuzzy, c-format
+#, c-format
 msgid "Using method `%s'.\n"
-msgstr "Ukendt justeringsmetode `%s'.\n"
+msgstr "Bruger farvejusteringsmetoden `%s'.\n"
 
 #: src/redshift.c:775
 msgid "No more methods to try.\n"
@@ -376,9 +374,8 @@ msgid "Unable to set gamma ramps.\n"
 msgstr "Kan ikke sætte gammaramper.\n"
 
 #: src/location-gnome-clock.c:47
-#, fuzzy
 msgid "Cannot list GNOME panel applets.\n"
-msgstr "Kan ikke hente liste over mapper i `/apps/panel/applets'.\n"
+msgstr "Kan ikke hente liste over GNOMEs panelprogrammer.\n"
 
 #: src/location-gnome-clock.c:81
 msgid "No clock applet was found.\n"
@@ -429,13 +426,13 @@ msgstr "Fejl i parameteren.\n"
 msgid "Too many arguments.\n"
 msgstr "For mange parametre.\n"
 
-#: src/gtk-redshift/statusicon.py:92
+#: src/gtk-redshift/statusicon.py:69 src/gtk-redshift/rsappindicator.py:74
 msgid "Toggle"
 msgstr "Slå til/fra"
 
-#: src/gtk-redshift/statusicon.py:96
+#: src/gtk-redshift/statusicon.py:73 src/gtk-redshift/rsappindicator.py:78
 msgid "Autostart"
-msgstr ""
+msgstr "Automatisk opstart"
 
 #~ msgid "Malformed location argument.\n"
 #~ msgstr "Fejl i placeringsargument.\n"
@@ -449,5 +446,6 @@ msgstr ""
 #~ msgid "Initialization of VidMode failed.\n"
 #~ msgstr "Fejl under klargøring af VidMode.\n"
 
+#, c-format
 #~ msgid "CRTC can only be selected with the RANDR method.\n"
 #~ msgstr "CRTC kan kun vælges med RANDR metoden.\n"
