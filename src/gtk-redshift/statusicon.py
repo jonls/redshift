@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # statusicon.py -- GUI status icon source
 # This file is part of Redshift.
 

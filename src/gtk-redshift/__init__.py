@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # __init__.py -- gtk-redshift package __init__ file
 # This file is part of Redshift.
 
