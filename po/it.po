@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-07-28 00:45+0200\n"
-"PO-Revision-Date: 2010-08-10 07:48+0000\n"
+"POT-Creation-Date: 2010-08-18 21:09+0200\n"
+"PO-Revision-Date: 2010-08-19 01:07+0000\n"
 "Last-Translator: Fire <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-08-11 03:59+0000\n"
+"X-Launchpad-Export-Date: 2010-08-19 03:55+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: src/redshift.c:243
@@ -107,7 +107,7 @@ msgstr ""
 #: src/redshift.c:312
 #, c-format
 msgid "Please report bugs to <%s>\n"
-msgstr "Per favore segnalate i bug a <%s>\n"
+msgstr "Per favore segnala gli errori a <%s>.\n"
 
 #: src/redshift.c:318
 msgid "Available adjustment methods:\n"
@@ -195,12 +195,12 @@ msgstr "Argomento della temperatura in forma errata.\n"
 
 #: src/redshift.c:659
 msgid "Trying next provider...\n"
-msgstr ""
+msgstr "Provando il prossimo provider...\n"
 
 #: src/redshift.c:665
 #, c-format
 msgid "Using provider `%s'.\n"
-msgstr ""
+msgstr "Usando il provider `%s'\n"
 
 #: src/redshift.c:673
 msgid "No more location providers to try.\n"
@@ -243,12 +243,12 @@ msgstr "Gamma: %.3f, %.3f, %.3f\n"
 
 #: src/redshift.c:763
 msgid "Trying next method...\n"
-msgstr ""
+msgstr "Provando il prossimo metodo...\n"
 
 #: src/redshift.c:768
 #, c-format
 msgid "Using method `%s'.\n"
-msgstr ""
+msgstr "Usando il metodo `%s'.\n"
 
 #: src/redshift.c:775
 msgid "No more methods to try.\n"
@@ -273,39 +273,39 @@ msgstr "Temperatura di colore: %uK\n"
 msgid "Temperature adjustment failed.\n"
 msgstr "Impostazione della temperatura fallita.\n"
 
-#: src/gamma-randr.c:66 src/gamma-randr.c:123 src/gamma-randr.c:162
-#: src/gamma-randr.c:188 src/gamma-randr.c:245 src/gamma-randr.c:343
+#: src/gamma-randr.c:69 src/gamma-randr.c:126 src/gamma-randr.c:165
+#: src/gamma-randr.c:191 src/gamma-randr.c:248 src/gamma-randr.c:346
 #, c-format
 msgid "`%s' returned error %d\n"
 msgstr "`%s' ha prodotto l'errore %d\n"
 
-#: src/gamma-randr.c:74
+#: src/gamma-randr.c:77
 #, c-format
 msgid "Unsupported RANDR version (%u.%u)\n"
 msgstr "Versione di RANDR non supportata (%u.%u)\n"
 
-#: src/gamma-randr.c:108
+#: src/gamma-randr.c:111
 #, c-format
 msgid "Screen %i could not be found.\n"
 msgstr "Lo schermo %i non è stato trovato.\n"
 
-#: src/gamma-randr.c:174 src/gamma-vidmode.c:86
+#: src/gamma-randr.c:177 src/gamma-vidmode.c:86
 #, c-format
 msgid "Gamma ramp size too small: %i\n"
 msgstr "Dimensione della scala gamma troppo piccola: %i\n"
 
-#: src/gamma-randr.c:247
+#: src/gamma-randr.c:250
 #, c-format
 msgid "Unable to restore CRTC %i\n"
 msgstr "Impossibile ripristinare CRTC %i\n"
 
-#: src/gamma-randr.c:268
+#: src/gamma-randr.c:271
 msgid "Adjust gamma ramps with the X RANDR extension.\n"
 msgstr "Regolare la scala dei gamma con l'estensione di X RANDR.\n"
 
 #. TRANSLATORS: RANDR help output
 #. left column must not be translated
-#: src/gamma-randr.c:273
+#: src/gamma-randr.c:276
 msgid ""
 "  screen=N\tX screen to apply adjustments to\n"
 "  crtc=N\tCRTC to apply adjustments to\n"
@@ -313,27 +313,27 @@ msgstr ""
 "  schermo=N\tSchermo di X su cui applicare le regolazioni\n"
 "  crtc=N\tCRTC su cui applicare le regolazioni\n"
 
-#: src/gamma-randr.c:282 src/gamma-vidmode.c:144
+#: src/gamma-randr.c:285 src/gamma-vidmode.c:144
 #, c-format
 msgid "Missing value for parameter: `%s'.\n"
 msgstr "Valore mancante per il parametro: `%s'.\n"
 
-#: src/gamma-randr.c:292 src/gamma-vidmode.c:152 src/location-manual.c:98
+#: src/gamma-randr.c:295 src/gamma-vidmode.c:152 src/location-manual.c:98
 #, c-format
 msgid "Unknown method parameter: `%s'.\n"
 msgstr "Parametro del metodo non conosciuto: `%s'.\n"
 
-#: src/gamma-randr.c:306
+#: src/gamma-randr.c:309
 #, c-format
 msgid "CRTC %d does not exist. "
 msgstr "CRTC %d non esiste. "
 
-#: src/gamma-randr.c:309
+#: src/gamma-randr.c:312
 #, c-format
 msgid "Valid CRTCs are [0-%d].\n"
 msgstr "I CRTC validi sono [0-%d].\n"
 
-#: src/gamma-randr.c:312
+#: src/gamma-randr.c:315
 #, c-format
 msgid "Only CRTC 0 exists.\n"
 msgstr "Esiste solo il CRTC 0.\n"
@@ -380,7 +380,7 @@ msgstr "Impossibile impostare la scala dei gamma.\n"
 
 #: src/location-gnome-clock.c:47
 msgid "Cannot list GNOME panel applets.\n"
-msgstr ""
+msgstr "Impossibile listare gli applet GNOME.\n"
 
 #: src/location-gnome-clock.c:81
 msgid "No clock applet was found.\n"
@@ -430,10 +430,10 @@ msgstr "Argomento malformato.\n"
 msgid "Too many arguments.\n"
 msgstr "Troppi argomenti.\n"
 
-#: src/gtk-redshift/statusicon.py:92
+#: src/gtk-redshift/statusicon.py:91
 msgid "Toggle"
 msgstr "Verifica"
 
-#: src/gtk-redshift/statusicon.py:96
+#: src/gtk-redshift/statusicon.py:95
 msgid "Autostart"
 msgstr "Avvio automatico"

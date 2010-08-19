@@ -6,15 +6,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2010-06-30 20:28+0200\n"
-"PO-Revision-Date: 2010-07-04 13:30+0000\n"
-"Last-Translator: dotancohen <Unknown>\n"
+"Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
+"POT-Creation-Date: 2010-08-18 21:09+0200\n"
+"PO-Revision-Date: 2010-08-18 21:19+0000\n"
+"Last-Translator: Jon Lund Steffensen <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-05 03:51+0000\n"
+"X-Launchpad-Export-Date: 2010-08-19 03:55+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: src/redshift.c:243
@@ -253,65 +253,65 @@ msgstr ""
 msgid "Temperature adjustment failed.\n"
 msgstr ""
 
-#: src/gamma-randr.c:66 src/gamma-randr.c:123 src/gamma-randr.c:162
-#: src/gamma-randr.c:188 src/gamma-randr.c:245 src/gamma-randr.c:343
+#: src/gamma-randr.c:69 src/gamma-randr.c:126 src/gamma-randr.c:165
+#: src/gamma-randr.c:191 src/gamma-randr.c:248 src/gamma-randr.c:346
 #, c-format
 msgid "`%s' returned error %d\n"
 msgstr ""
 
-#: src/gamma-randr.c:74
+#: src/gamma-randr.c:77
 #, c-format
 msgid "Unsupported RANDR version (%u.%u)\n"
 msgstr ""
 
-#: src/gamma-randr.c:108
+#: src/gamma-randr.c:111
 #, c-format
 msgid "Screen %i could not be found.\n"
 msgstr ""
 
-#: src/gamma-randr.c:174 src/gamma-vidmode.c:86
+#: src/gamma-randr.c:177 src/gamma-vidmode.c:86
 #, c-format
 msgid "Gamma ramp size too small: %i\n"
 msgstr ""
 
-#: src/gamma-randr.c:247
+#: src/gamma-randr.c:250
 #, c-format
 msgid "Unable to restore CRTC %i\n"
 msgstr ""
 
-#: src/gamma-randr.c:268
+#: src/gamma-randr.c:271
 msgid "Adjust gamma ramps with the X RANDR extension.\n"
 msgstr ""
 
 #. TRANSLATORS: RANDR help output
 #. left column must not be translated
-#: src/gamma-randr.c:273
+#: src/gamma-randr.c:276
 msgid ""
 "  screen=N\tX screen to apply adjustments to\n"
 "  crtc=N\tCRTC to apply adjustments to\n"
 msgstr ""
 
-#: src/gamma-randr.c:282 src/gamma-vidmode.c:144
+#: src/gamma-randr.c:285 src/gamma-vidmode.c:144
 #, c-format
 msgid "Missing value for parameter: `%s'.\n"
 msgstr ""
 
-#: src/gamma-randr.c:292 src/gamma-vidmode.c:152 src/location-manual.c:98
+#: src/gamma-randr.c:295 src/gamma-vidmode.c:152 src/location-manual.c:98
 #, c-format
 msgid "Unknown method parameter: `%s'.\n"
 msgstr ""
 
-#: src/gamma-randr.c:306
+#: src/gamma-randr.c:309
 #, c-format
 msgid "CRTC %d does not exist. "
 msgstr ""
 
-#: src/gamma-randr.c:309
+#: src/gamma-randr.c:312
 #, c-format
 msgid "Valid CRTCs are [0-%d].\n"
 msgstr ""
 
-#: src/gamma-randr.c:312
+#: src/gamma-randr.c:315
 #, c-format
 msgid "Only CRTC 0 exists.\n"
 msgstr ""
@@ -405,10 +405,10 @@ msgstr ""
 msgid "Too many arguments.\n"
 msgstr ""
 
-#: src/gtk-redshift/statusicon.py:69 src/gtk-redshift/rsappindicator.py:74
+#: src/gtk-redshift/statusicon.py:91
 msgid "Toggle"
 msgstr ""
 
-#: src/gtk-redshift/statusicon.py:73 src/gtk-redshift/rsappindicator.py:78
+#: src/gtk-redshift/statusicon.py:95
 msgid "Autostart"
 msgstr ""
