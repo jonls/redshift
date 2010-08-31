@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
 "POT-Creation-Date: 2010-08-18 21:09+0200\n"
-"PO-Revision-Date: 2010-08-29 18:36+0000\n"
+"PO-Revision-Date: 2010-08-30 11:50+0000\n"
 "Last-Translator: Emilien Klein <emilien+ubuntu@klein.st>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-08-30 04:08+0000\n"
+"X-Launchpad-Export-Date: 2010-08-31 04:06+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: src/redshift.c:243
@@ -267,7 +267,7 @@ msgstr ""
 #: src/gamma-randr.c:191 src/gamma-randr.c:248 src/gamma-randr.c:346
 #, c-format
 msgid "`%s' returned error %d\n"
-msgstr ""
+msgstr "'%s' a retourné l'erreur %d\n"
 
 #: src/gamma-randr.c:77
 #, c-format
