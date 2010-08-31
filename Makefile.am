@@ -22,6 +22,8 @@ desktopdir = @datadir@/applications
 desktop_DATA = data/applications/gtk-redshift.desktop
 endif
 
+# man page
+dist_man1_MANS = redshift.1
 
 EXTRA_DIST = \
 	$(hicolor_icon_DATA) \
