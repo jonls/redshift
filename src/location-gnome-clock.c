@@ -51,10 +51,11 @@ location_gnome_clock_init(location_gnome_clock_state_t *state)
 	}
 
 	char *cities_key = NULL;
+	char *current_city = NULL;
 	for (GSList *applet = applets; applet != NULL;
 	     applet = g_slist_next(applet)) {
 		char *path = applet->data;
-		if (cities_key == NULL) {
+		if (current_city == NULL) {
 			char *key = g_strdup_printf("/apps/panel/applets/%s"
 						    "/bonobo_iid", path);
 			char *bonobo_iid = gconf_client_get_string(client, key,
@@ -66,6 +67,29 @@ location_gnome_clock_init(location_gnome_clock_state_t *state)
 					cities_key = g_strdup_printf(
 						"/apps/panel/applets/%s"
 						"/prefs/cities", path);
+
+					GSList *cities = gconf_client_get_list(client, cities_key,
+								GCONF_VALUE_STRING, &error);
+
+					if (error) {
+						fprintf(stderr, _("Error reading city list: `%s'.\n"),
+							cities_key);
+						g_free(cities_key);
+						g_object_unref(client);
+						return -1;
+					}
+
+					g_free(cities_key);
+
+					for (GSList *city = cities; city != NULL;
+						city = g_slist_next(city)) {
+							char *city_spec = city->data;
+							char *c = strstr(city_spec, "current=\"true\"");
+							if (c) current_city = g_strdup(city_spec);
+							g_free(city->data);
+					}
+					g_slist_free(cities);
+
 				}
 				g_free(bonobo_iid);
 			}
@@ -82,28 +106,6 @@ location_gnome_clock_init(location_gnome_clock_state_t *state)
 		g_object_unref(client);
 		return -1;
 	}
-
-	GSList *cities = gconf_client_get_list(client, cities_key,
-					       GCONF_VALUE_STRING, &error);
-	if (error) {
-		fprintf(stderr, _("Error reading city list: `%s'.\n"),
-			cities_key);
-		g_free(cities_key);
-		g_object_unref(client);
-		return -1;
-	}
-
-	g_free(cities_key);
-
-	char *current_city = NULL;
-	for (GSList *city = cities; city != NULL;
-	     city = g_slist_next(city)) {
-		char *city_spec = city->data;
-		char *c = strstr(city_spec, "current=\"true\"");
-		if (c) current_city = g_strdup(city_spec);
-		g_free(city->data);
-	}
-	g_slist_free(cities);
 
 	if (current_city == NULL) {
 		fputs(_("No city selected as current city.\n"), stderr);
