@@ -1,0 +1,73 @@
+.TH REDSHIFT: "1" "August 2010" "redshift" "User Commands"
+.SH NAME
+redshift \- Set color temperature of display according to time of day.
+.SH SYNOPSIS
+.B redshift
+\fI-l LAT:LON -t DAY:NIGHT \fR[\fIOPTIONS\fR...]
+.SH DESCRIPTION
+.B redshift
+adjusts the color temperature of your screen according to your
+surroundings. This may help your eyes hurt less if you are working in
+front of the screen at night.
+
+The color temperature is set according to the position of the sun. A
+different color temperature is set during night and daytime. During
+twilight and early morning, the color temperature transitions smoothly
+from night to daytime temperature to allow your eyes to slowly
+adapt.
+.SH OPTIONS
+.TP
+\fB\-h\fR
+Display this help message
+.TP
+\fB\-v\fR
+Verbose output
+.TP
+\fB\-g\fR R:G:B
+Additional gamma correction to apply
+.TP
+\fB\-l\fR LAT:LON
+Your current location
+.TP
+\fB\-l\fR PROVIDER
+Select provider for automatic location updates
+(Type `list' to see available providers)
+.TP
+\fB\-m\fR METHOD
+Method to use to set color temperature
+(Type `list' to see available methods)
+.TP
+\fB\-o\fR
+One shot mode (do not continously adjust color temperature)
+.TP
+\fB\-x\fR
+Reset mode (remove adjustment from screen)
+.TP
+\fB\-r\fR
+Disable temperature transitions
+.TP
+\fB\-t\fR DAY:NIGHT
+Color temperature to set at daytime/night
+.PP
+Default values:
+.IP
+Daytime temperature: 5500K
+Night temperature: 3700K
+.SH EXAMPLE
+Example for Copenhagen, Denmark:
+.IP
+$ redshift -l 55.7:12.6 -t 5700:3600 -g 0.8 -m vidmode -v
+.SH AUTHOR
+.B redshift
+was written by Jon Lund Steffensen <jonlst@gmail.com>.
+.PP
+Both
+.B redshift
+and this manual page are released under the GNU General Public
+License, version 3.
+.SH BUGS
+Please report bugs to <https://bugs.launchpad.net/redshift>
+.SH KNOWN ISSUES
+Redshift won’t affect the color of your cursor when your graphics driver
+is configured to use hardware cursors. Some graphics drivers have an
+option to disable hardware cursors in xorg.conf.
