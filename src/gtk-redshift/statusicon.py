@@ -88,7 +88,7 @@ def run():
         # Create popup menu
         status_menu = gtk.Menu()
 
-        toggle_item = gtk.ImageMenuItem(_('Toggle'))
+        toggle_item = gtk.MenuItem(_('Toggle'))
         toggle_item.connect('activate', toggle_cb)
         status_menu.append(toggle_item)
 
