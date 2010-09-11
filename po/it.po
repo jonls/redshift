@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
 "POT-Creation-Date: 2010-08-18 21:09+0200\n"
-"PO-Revision-Date: 2010-08-19 01:07+0000\n"
-"Last-Translator: Fire <Unknown>\n"
+"PO-Revision-Date: 2010-09-10 13:00+0000\n"
+"Last-Translator: Andrea Amoroso <andrea.amoroso@alice.it>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-08-20 03:49+0000\n"
+"X-Launchpad-Export-Date: 2010-09-11 05:03+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: src/redshift.c:243
@@ -406,7 +406,7 @@ msgstr "Usa la posizione impostata nell'applet Orologio di Gnome.\n"
 #: src/location-manual.c:50
 msgid "Latitude and longitude must be set.\n"
 msgstr ""
-"La latitudine e la longitudine devono essere impostati necessariamente.\n"
+"La latitudine e la longitudine devono essere impostate obbligatoriamente.\n"
 
 #: src/location-manual.c:65
 msgid "Specify location manually.\n"
@@ -424,7 +424,7 @@ msgstr ""
 
 #: src/location-manual.c:84
 msgid "Malformed argument.\n"
-msgstr "Argomento malformato.\n"
+msgstr "Argomento in forma errata.\n"
 
 #: src/location-manual.c:95
 msgid "Too many arguments.\n"
@@ -432,7 +432,7 @@ msgstr "Troppi argomenti.\n"
 
 #: src/gtk-redshift/statusicon.py:91
 msgid "Toggle"
-msgstr "Verifica"
+msgstr "Attiva/Disattiva"
 
 #: src/gtk-redshift/statusicon.py:95
 msgid "Autostart"
