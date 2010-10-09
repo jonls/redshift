@@ -301,6 +301,16 @@ print_help(const char *program_name)
 	fputs("\n", stdout);
 
 	/* TRANSLATORS: help output 5 */
+	printf(_("The neutral temperature is %uK. Using this value will not\n"
+		 "change the color temperature of the display. Setting the\n"
+		 "color temperature to a value higher than this results in\n"
+		 "more blue light, and setting a lower value will result in\n"
+		 "more red light.\n"),
+		 NEUTRAL_TEMP);
+
+	fputs("\n", stdout);
+
+	/* TRANSLATORS: help output 6 */
 	printf(_("Default values:\n\n"
 		 "  Daytime temperature: %uK\n"
 		 "  Night temperature: %uK\n"),
@@ -308,7 +318,7 @@ print_help(const char *program_name)
 
 	fputs("\n", stdout);
 
-	/* TRANSLATORS: help output 6 */
+	/* TRANSLATORS: help output 7 */
 	printf(_("Please report bugs to <%s>\n"), PACKAGE_BUGREPORT);
 }
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-08-18 21:09+0200\n"
+"POT-Creation-Date: 2010-10-09 23:01+0200\n"
 "PO-Revision-Date: 2010-07-03 12:59+0000\n"
 "Last-Translator: Ibai Oihanguren <Unknown>\n"
 "Language-Team: Basque <eu@li.org>\n"
@@ -91,6 +91,17 @@ msgstr ""
 #: src/redshift.c:304
 #, c-format
 msgid ""
+"The neutral temperature is %uK. Using this value will not\n"
+"change the color temperature of the display. Setting the\n"
+"color temperature to a value higher than this results in\n"
+"more blue light, and setting a lower value will result in\n"
+"more red light.\n"
+msgstr ""
+
+#. TRANSLATORS: help output 6
+#: src/redshift.c:314
+#, c-format
+msgid ""
 "Default values:\n"
 "\n"
 "  Daytime temperature: %uK\n"
@@ -101,172 +112,172 @@ msgstr ""
 "  Eguneko tenperatura: %uK\n"
 "  Gaueko tenperatura: %uK\n"
 
-#. TRANSLATORS: help output 6
-#: src/redshift.c:312
+#. TRANSLATORS: help output 7
+#: src/redshift.c:322
 #, c-format
 msgid "Please report bugs to <%s>\n"
 msgstr "Mesedez, eman arazoen berri <%s> helbidean\n"
 
-#: src/redshift.c:318
+#: src/redshift.c:328
 msgid "Available adjustment methods:\n"
 msgstr "Eskuragarri dauden metodoak:\n"
 
-#: src/redshift.c:324
+#: src/redshift.c:334
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
 msgstr "Zehaztu aukerak kakotxez bereizita honela: `-m METODOA:AUKERAK'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:327
+#: src/redshift.c:337
 msgid "Try `-m METHOD:help' for help.\n"
 msgstr "Idatzi `-m METODOA:help' laguntza lortzeko.\n"
 
-#: src/redshift.c:333
+#: src/redshift.c:343
 msgid "Available location providers:\n"
 msgstr "Eskuragarri dauden kokapen-hornitzaileak:\n"
 
-#: src/redshift.c:339
+#: src/redshift.c:349
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
 msgstr ""
 "Zehaztu aukerak kakotxez bereizita honela: `-l HORNITZAILEA:AUKERAK'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:342
+#: src/redshift.c:352
 msgid "Try `-l PROVIDER:help' for help.\n"
 msgstr "Idatzi `-l HORNITZAILEA:help' laguntza lortzeko.\n"
 
-#: src/redshift.c:354 src/redshift.c:407
+#: src/redshift.c:364 src/redshift.c:417
 #, c-format
 msgid "Initialization of %s failed.\n"
 msgstr "%s abiarazteak huts egin du.\n"
 
-#: src/redshift.c:376 src/redshift.c:429
+#: src/redshift.c:386 src/redshift.c:439
 #, c-format
 msgid "Failed to set %s option.\n"
 msgstr "Ezin izan da %s aukera ezarri.\n"
 
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:379
+#: src/redshift.c:389
 #, c-format
 msgid "Try `-l %s:help' for more information.\n"
 msgstr "Idatzi `-l %s:help' informazio gehiagorako.\n"
 
-#: src/redshift.c:391
+#: src/redshift.c:401
 #, c-format
 msgid "Failed to start provider %s.\n"
 msgstr "Ezin izan da %s hornitzailea abiarazi.\n"
 
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:432
+#: src/redshift.c:442
 #, c-format
 msgid "Try -m %s:help' for more information.\n"
 msgstr "Idatzi `-m %s:help' informazio gehiagorako.\n"
 
-#: src/redshift.c:444
+#: src/redshift.c:454
 #, c-format
 msgid "Failed to start adjustment method %s.\n"
 msgstr "Ezin izan da %s egokitze-metodoa abiarazi.\n"
 
-#: src/redshift.c:501
+#: src/redshift.c:511
 msgid "Malformed gamma argument.\n"
 msgstr "Gaizki eratutako gamma argumentua.\n"
 
-#: src/redshift.c:503 src/redshift.c:618 src/redshift.c:633
+#: src/redshift.c:513 src/redshift.c:628 src/redshift.c:643
 msgid "Try `-h' for more information.\n"
 msgstr "Idatzi `-h' informazio gehiagorako.\n"
 
-#: src/redshift.c:557
+#: src/redshift.c:567
 #, c-format
 msgid "Unknown location provider `%s'.\n"
 msgstr "Kokapen-hornitzaile ezezaguna: `%s'.\n"
 
 #. TRANSLATORS: This refers to the method
 #. used to adjust colors e.g VidMode
-#: src/redshift.c:595
+#: src/redshift.c:605
 #, c-format
 msgid "Unknown method `%s'.\n"
 msgstr "Metodo ezezaguna: `%s'.\n"
 
-#: src/redshift.c:616
+#: src/redshift.c:626
 msgid "Malformed temperature argument.\n"
 msgstr "Gaizki eratutako tenperatura argumentua.\n"
 
-#: src/redshift.c:659
+#: src/redshift.c:669
 msgid "Trying next provider...\n"
 msgstr "Hurrengo hornitzailearekin saiatzen...\n"
 
-#: src/redshift.c:665
+#: src/redshift.c:675
 #, c-format
 msgid "Using provider `%s'.\n"
 msgstr "`%s' hornitzailea erabiltzen.\n"
 
-#: src/redshift.c:673
+#: src/redshift.c:683
 msgid "No more location providers to try.\n"
 msgstr "Ez dago beste kokapen-hornitzailerik probatzeko.\n"
 
-#: src/redshift.c:687
+#: src/redshift.c:697
 msgid "Unable to get location from provider.\n"
 msgstr "Ezin izan da hornitzailearengandik kokapenik lortu.\n"
 
 #. TRANSLATORS: Append degree symbols if possible.
-#: src/redshift.c:696
+#: src/redshift.c:706
 #, c-format
 msgid "Location: %f, %f\n"
 msgstr "Kokapena: %f, %f\n"
 
-#: src/redshift.c:703
+#: src/redshift.c:713
 #, c-format
 msgid "Latitude must be between %.1f and %.1f.\n"
 msgstr "Latitudea muga hauen barruan egon behar da: %.1f eta %.1f.\n"
 
-#: src/redshift.c:712
+#: src/redshift.c:722
 #, c-format
 msgid "Longitude must be between %.1f and %.1f.\n"
 msgstr "Longitudea muga hauen barruan egon behar da: %.1f eta %.1f.\n"
 
-#: src/redshift.c:721 src/redshift.c:729
+#: src/redshift.c:731 src/redshift.c:739
 #, c-format
 msgid "Temperature must be between %uK and %uK.\n"
 msgstr "Tenperatura muga hauen barruan egon behar da: %uK eta %uK.\n"
 
-#: src/redshift.c:739
+#: src/redshift.c:749
 #, c-format
 msgid "Gamma value must be between %.1f and %.1f.\n"
 msgstr "Gamma balioa muga hauen barruan egon behar da: %.1f eta %.1f.\n"
 
-#: src/redshift.c:745
+#: src/redshift.c:755
 #, c-format
 msgid "Gamma: %.3f, %.3f, %.3f\n"
 msgstr "Gamma: %.3f, %.3f, %.3f\n"
 
-#: src/redshift.c:763
+#: src/redshift.c:773
 msgid "Trying next method...\n"
 msgstr "Hurrengo metodoarekin saiatzen...\n"
 
-#: src/redshift.c:768
+#: src/redshift.c:778
 #, c-format
 msgid "Using method `%s'.\n"
 msgstr "`%s' metodoa erabiltzen.\n"
 
-#: src/redshift.c:775
+#: src/redshift.c:785
 msgid "No more methods to try.\n"
 msgstr "Ez dago beste metodorik probatzeko.\n"
 
-#: src/redshift.c:787 src/redshift.c:908
+#: src/redshift.c:797 src/redshift.c:918
 msgid "Unable to read system time.\n"
 msgstr "Ezin izan da sistemaren ordua irakurri.\n"
 
 #. TRANSLATORS: Append degree symbol if possible.
-#: src/redshift.c:796
+#: src/redshift.c:806
 #, c-format
 msgid "Solar elevation: %f\n"
 msgstr "Eguzkiaren gorapen-angelua: %fº\n"
 
-#: src/redshift.c:803 src/redshift.c:975
+#: src/redshift.c:813 src/redshift.c:985
 #, c-format
 msgid "Color temperature: %uK\n"
 msgstr "Kolore-tenperatura: %uK\n"
 
-#: src/redshift.c:808 src/redshift.c:819 src/redshift.c:983
+#: src/redshift.c:818 src/redshift.c:829 src/redshift.c:993
 msgid "Temperature adjustment failed.\n"
 msgstr "Tenperatura egokitzeak huts egin du.\n"
 
@@ -286,7 +297,7 @@ msgstr "Onartu gabeko RANDR bertsioa (%u.%u)\n"
 msgid "Screen %i could not be found.\n"
 msgstr "%i pantaila ez da aurkitu.\n"
 
-#: src/gamma-randr.c:177 src/gamma-vidmode.c:86
+#: src/gamma-randr.c:177 src/gamma-vidmode.c:84
 #, c-format
 msgid "Gamma ramp size too small: %i\n"
 msgstr "Gamma ramp tamaina txikiegia: %i\n"
@@ -310,12 +321,12 @@ msgstr ""
 "  screen=N\tEgokitzapenak aplikatzeko X pantaila\n"
 "  crtc=N\tEgokitzapenak aplikatzeko CRTCa\n"
 
-#: src/gamma-randr.c:285 src/gamma-vidmode.c:144
+#: src/gamma-randr.c:285 src/gamma-vidmode.c:139
 #, c-format
 msgid "Missing value for parameter: `%s'.\n"
 msgstr "Balioa falta da parametro honentzat: `%s'.\n"
 
-#: src/gamma-randr.c:295 src/gamma-vidmode.c:152 src/location-manual.c:98
+#: src/gamma-randr.c:295 src/gamma-vidmode.c:147 src/location-manual.c:98
 #, c-format
 msgid "Unknown method parameter: `%s'.\n"
 msgstr "Metodoaren parametro ezezaguna: `%s'.\n"
@@ -335,19 +346,19 @@ msgstr "Onartutako CRTCak honakoak dira [0-%d].\n"
 msgid "Only CRTC 0 exists.\n"
 msgstr "0 CRTCa baino ez da existitzen.\n"
 
-#: src/gamma-vidmode.c:48 src/gamma-vidmode.c:69 src/gamma-vidmode.c:79
-#: src/gamma-vidmode.c:109 src/gamma-vidmode.c:171 src/gamma-vidmode.c:200
+#: src/gamma-vidmode.c:48 src/gamma-vidmode.c:69 src/gamma-vidmode.c:78
+#: src/gamma-vidmode.c:105 src/gamma-vidmode.c:166 src/gamma-vidmode.c:195
 #, c-format
 msgid "X request failed: %s\n"
 msgstr "X eskaerak huts egin du: %s\n"
 
-#: src/gamma-vidmode.c:131
+#: src/gamma-vidmode.c:126
 msgid "Adjust gamma ramps with the X VidMode extension.\n"
 msgstr "Egokitu gammaren ramp-ak X VidMode hedapenarekin.\n"
 
 #. TRANSLATORS: VidMode help output
 #. left column must not be translated
-#: src/gamma-vidmode.c:136
+#: src/gamma-vidmode.c:131
 msgid "  screen=N\tX screen to apply adjustments to\n"
 msgstr "  screen=N\tEgokitzapenak aplikatzeko X pantaila\n"
 
@@ -375,28 +386,28 @@ msgstr "Ezin izan dira gammaren ramp-ak berrezarri.\n"
 msgid "Unable to set gamma ramps.\n"
 msgstr "Ezin izan dira gammaren ramp-ak ezarri.\n"
 
-#: src/location-gnome-clock.c:47
-msgid "Cannot list GNOME panel applets.\n"
-msgstr "Ezin dira GNOME paneleko applet-ak zerrendatu.\n"
-
-#: src/location-gnome-clock.c:81
-msgid "No clock applet was found.\n"
-msgstr "Ez da erloju appletik aurkitu.\n"
-
-#: src/location-gnome-clock.c:89
+#: src/location-gnome-clock.c:50
 #, c-format
 msgid "Error reading city list: `%s'.\n"
 msgstr "Errorea herrien zerrenda irakurtzean: `%s'.\n"
 
-#: src/location-gnome-clock.c:109
+#: src/location-gnome-clock.c:83
+msgid "Cannot list GNOME panel applets.\n"
+msgstr "Ezin dira GNOME paneleko applet-ak zerrendatu.\n"
+
+#: src/location-gnome-clock.c:125
+msgid "No clock applet was found.\n"
+msgstr "Ez da erloju appletik aurkitu.\n"
+
+#: src/location-gnome-clock.c:130
 msgid "No city selected as current city.\n"
 msgstr "Ez da herririk aukeratu momentuko herri gisa.\n"
 
-#: src/location-gnome-clock.c:116
+#: src/location-gnome-clock.c:139
 msgid "Location not specified for city.\n"
 msgstr "Ez da herriarentzako kokapenik zehaztu.\n"
 
-#: src/location-gnome-clock.c:143
+#: src/location-gnome-clock.c:169
 msgid "Use the location as set in the GNOME Clock applet.\n"
 msgstr "Erabili GNOMEren erloju appletean ezarritako kokapena.\n"
 
