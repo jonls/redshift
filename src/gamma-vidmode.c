@@ -68,7 +68,6 @@ vidmode_start(vidmode_state_t *state)
 	if (!r) {
 		fprintf(stderr, _("X request failed: %s\n"),
 			"XF86VidModeQueryVersion");
-		XCloseDisplay(state->display);
 		return -1;
 	}
 
@@ -78,14 +77,12 @@ vidmode_start(vidmode_state_t *state)
 	if (!r) {
 		fprintf(stderr, _("X request failed: %s\n"),
 			"XF86VidModeGetGammaRampSize");
-		XCloseDisplay(state->display);
 		return -1;
 	}
 
 	if (state->ramp_size == 0) {
 		fprintf(stderr, _("Gamma ramp size too small: %i\n"),
 			state->ramp_size);
-		XCloseDisplay(state->display);
 		return -1;
 	}
 
@@ -93,7 +90,6 @@ vidmode_start(vidmode_state_t *state)
 	state->saved_ramps = malloc(3*state->ramp_size*sizeof(uint16_t));
 	if (state->saved_ramps == NULL) {
 		perror("malloc");
-		XCloseDisplay(state->display);
 		return -1;
 	}
 
@@ -108,7 +104,6 @@ vidmode_start(vidmode_state_t *state)
 	if (!r) {
 		fprintf(stderr, _("X request failed: %s\n"),
 			"XF86VidModeGetGammaRamp");
-		XCloseDisplay(state->display);
 		return -1;
 	}
 
