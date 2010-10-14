@@ -560,6 +560,7 @@ main(int argc, char *argv[])
 					&location_providers[i];
 				if (strcasecmp(provider_name, p->name) == 0) {
 					provider = p;
+					break;
 				}
 			}
 
@@ -573,7 +574,7 @@ main(int argc, char *argv[])
 			if (provider_args != NULL &&
 			    strcasecmp(provider_args, "help") == 0) {
 				provider->print_help(stdout);
-				exit(EXIT_FAILURE);
+				exit(EXIT_SUCCESS);
 			}
 			break;
 		case 'm':
@@ -596,6 +597,7 @@ main(int argc, char *argv[])
 					&gamma_methods[i];
 				if (strcasecmp(optarg, m->name) == 0) {
 					method = m;
+					break;
 				}
 			}
 
@@ -611,7 +613,7 @@ main(int argc, char *argv[])
 			if (method_args != NULL &&
 			    strcasecmp(method_args, "help") == 0) {
 				method->print_help(stdout);
-				exit(EXIT_FAILURE);
+				exit(EXIT_SUCCESS);
 			}
 			break;
 		case 'o':
