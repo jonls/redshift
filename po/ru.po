@@ -7,27 +7,28 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-10-09 23:01+0200\n"
+"POT-Creation-Date: 2010-10-15 12:40+0200\n"
 "PO-Revision-Date: 2010-08-09 07:07+0000\n"
 "Last-Translator: Papazu <Unknown>\n"
 "Language-Team: Russian <ru@li.org>\n"
+"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2010-08-10 03:46+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: src/redshift.c:243
+#: src/redshift.c:244
 #, c-format
 msgid "Period: Night\n"
 msgstr "Период: Ночь\n"
 
-#: src/redshift.c:250
+#: src/redshift.c:251
 #, c-format
 msgid "Period: Transition (%.2f%% day)\n"
 msgstr "Период: Переходный (%.2f%% дневной)\n"
 
-#: src/redshift.c:254
+#: src/redshift.c:255
 #, c-format
 msgid "Period: Daytime\n"
 msgstr "Период: День\n"
@@ -37,20 +38,20 @@ msgstr "Период: День\n"
 #. DAY is temperature at daytime,
 #. NIGHT is temperature at night
 #. no-wrap
-#: src/redshift.c:269
+#: src/redshift.c:270
 #, c-format
 msgid "Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
 msgstr "Использование: %s -l ШИР:ДОЛ -t ДЕНЬ:НОЧЬ [ОПЦИИ...]\n"
 
 #. TRANSLATORS: help output 2
 #. no-wrap
-#: src/redshift.c:275
+#: src/redshift.c:276
 msgid "Set color temperature of display according to time of day.\n"
 msgstr "Установить цветовую температуру в соответствии со временем суток.\n"
 
 #. TRANSLATORS: help output 3
 #. no-wrap
-#: src/redshift.c:281
+#: src/redshift.c:282
 msgid ""
 "  -h\t\tDisplay this help message\n"
 "  -v\t\tVerbose output\n"
@@ -61,7 +62,7 @@ msgstr ""
 #. TRANSLATORS: help output 4
 #. `list' must not be translated
 #. no-wrap
-#: src/redshift.c:288
+#: src/redshift.c:289
 msgid ""
 "  -g R:G:B\tAdditional gamma correction to apply\n"
 "  -l LAT:LON\tYour current location\n"
@@ -86,7 +87,7 @@ msgstr ""
 "-t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 
 #. TRANSLATORS: help output 5
-#: src/redshift.c:304
+#: src/redshift.c:305
 #, c-format
 msgid ""
 "The neutral temperature is %uK. Using this value will not\n"
@@ -97,7 +98,7 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: help output 6
-#: src/redshift.c:314
+#: src/redshift.c:315
 #, c-format
 msgid ""
 "Default values:\n"
@@ -110,172 +111,204 @@ msgstr ""
 "Температура ночью: %uK\n"
 
 #. TRANSLATORS: help output 7
-#: src/redshift.c:322
+#: src/redshift.c:323
 #, c-format
 msgid "Please report bugs to <%s>\n"
 msgstr "Пожалуйста, об ошибках сообщайте на <%s>\n"
 
-#: src/redshift.c:328
+#: src/redshift.c:329
 msgid "Available adjustment methods:\n"
 msgstr "Доступны методы корректировки:\n"
 
-#: src/redshift.c:334
+#: src/redshift.c:335
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
 msgstr ""
 
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:337
+#: src/redshift.c:338
 msgid "Try `-m METHOD:help' for help.\n"
 msgstr "Попробуйте `-m METHOD:help' для справки.\n"
 
-#: src/redshift.c:343
+#: src/redshift.c:344
 msgid "Available location providers:\n"
 msgstr "Доступные местные поставщики:\n"
 
-#: src/redshift.c:349
+#: src/redshift.c:350
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
 msgstr ""
 
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:352
+#: src/redshift.c:353
 msgid "Try `-l PROVIDER:help' for help.\n"
 msgstr "Попробуйте `-l PROVIDER:help' для справки.\n"
 
-#: src/redshift.c:364 src/redshift.c:417
+#: src/redshift.c:366 src/redshift.c:444
 #, c-format
 msgid "Initialization of %s failed.\n"
 msgstr "Ошибка инициализации %s\n"
 
-#: src/redshift.c:386 src/redshift.c:439
+#: src/redshift.c:381 src/redshift.c:412 src/redshift.c:459 src/redshift.c:490
 #, c-format
 msgid "Failed to set %s option.\n"
 msgstr "Не удалось установить опцию %s\n"
 
+#. TRANSLATORS: `help' must not be
+#. translated.
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:389
+#: src/redshift.c:386 src/redshift.c:415
 #, c-format
 msgid "Try `-l %s:help' for more information.\n"
 msgstr "Попробуйте `-l %s:help' для дополнительной информации.\n"
 
-#: src/redshift.c:401
+#: src/redshift.c:427
 #, c-format
 msgid "Failed to start provider %s.\n"
 msgstr "Ошибка запуска поставщика %s\n"
 
+#. TRANSLATORS: `help' must not be
+#. translated.
+#: src/redshift.c:464
+#, fuzzy, c-format
+msgid "Try `-m %s:help' for more information.\n"
+msgstr "Попробуйте -m %s:help' для дополнительной информации.\n"
+
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:442
+#: src/redshift.c:493
 #, c-format
 msgid "Try -m %s:help' for more information.\n"
 msgstr "Попробуйте -m %s:help' для дополнительной информации.\n"
 
-#: src/redshift.c:454
+#: src/redshift.c:505
 #, c-format
 msgid "Failed to start adjustment method %s.\n"
 msgstr "Не удалось запустить метод корректировки %s.\n"
 
-#: src/redshift.c:511
+#: src/redshift.c:606
 msgid "Malformed gamma argument.\n"
 msgstr "Некорректная величина гаммы.\n"
 
-#: src/redshift.c:513 src/redshift.c:628 src/redshift.c:643
+#: src/redshift.c:608 src/redshift.c:703 src/redshift.c:718
 msgid "Try `-h' for more information.\n"
 msgstr "Воспользуйтесь «-h» для получения дополнительной информации.\n"
 
-#: src/redshift.c:567
+#: src/redshift.c:649 src/redshift.c:783
 #, c-format
 msgid "Unknown location provider `%s'.\n"
 msgstr "Неизвестное местоположение поставщика `%s'.\n"
 
 #. TRANSLATORS: This refers to the method
 #. used to adjust colors e.g VidMode
-#: src/redshift.c:605
-#, c-format
-msgid "Unknown method `%s'.\n"
+#: src/redshift.c:680 src/redshift.c:769
+#, fuzzy, c-format
+msgid "Unknown adjustment method `%s'.\n"
 msgstr "Неизвестный метод «%s».\n"
 
-#: src/redshift.c:626
+#: src/redshift.c:701
 msgid "Malformed temperature argument.\n"
 msgstr "Некорректное значение температуры.\n"
 
-#: src/redshift.c:669
+#: src/redshift.c:757
+#, fuzzy
+msgid "Malformed gamma setting.\n"
+msgstr "Некорректная величина гаммы.\n"
+
+#: src/redshift.c:792
+#, fuzzy, c-format
+msgid "Unknown configuration setting `%s'.\n"
+msgstr "Неизвестное местоположение поставщика `%s'.\n"
+
+#: src/redshift.c:827
 msgid "Trying next provider...\n"
 msgstr ""
 
-#: src/redshift.c:675
+#: src/redshift.c:833
 #, c-format
 msgid "Using provider `%s'.\n"
 msgstr ""
 
-#: src/redshift.c:683
+#: src/redshift.c:841
 msgid "No more location providers to try.\n"
 msgstr ""
 
-#: src/redshift.c:697
+#: src/redshift.c:855
 msgid "Unable to get location from provider.\n"
 msgstr "Не удается получить местоположение от поставщика.\n"
 
 #. TRANSLATORS: Append degree symbols if possible.
-#: src/redshift.c:706
+#: src/redshift.c:864
 #, c-format
 msgid "Location: %f, %f\n"
 msgstr "Местоположение: %f°, %f°\n"
 
-#: src/redshift.c:713
+#: src/redshift.c:871
 #, c-format
 msgid "Latitude must be between %.1f and %.1f.\n"
 msgstr "Широта должна быть между %.1f и %.1f.\n"
 
-#: src/redshift.c:722
+#: src/redshift.c:880
 #, c-format
 msgid "Longitude must be between %.1f and %.1f.\n"
 msgstr "Долгота должна быть между %.1f и %.1f.\n"
 
-#: src/redshift.c:731 src/redshift.c:739
+#: src/redshift.c:889 src/redshift.c:897
 #, c-format
 msgid "Temperature must be between %uK and %uK.\n"
 msgstr "Температура должна быть между %uK и %uK.\n"
 
-#: src/redshift.c:749
+#: src/redshift.c:907
 #, c-format
 msgid "Gamma value must be between %.1f and %.1f.\n"
 msgstr "Гамма должна быть между %.1f и %.1f.\n"
 
-#: src/redshift.c:755
+#: src/redshift.c:913
 #, c-format
 msgid "Gamma: %.3f, %.3f, %.3f\n"
 msgstr "Гамма: %.3f, %.3f, %.3f\n"
 
-#: src/redshift.c:773
+#: src/redshift.c:932
 msgid "Trying next method...\n"
 msgstr ""
 
-#: src/redshift.c:778
+#: src/redshift.c:937
 #, c-format
 msgid "Using method `%s'.\n"
 msgstr ""
 
-#: src/redshift.c:785
+#: src/redshift.c:944
 msgid "No more methods to try.\n"
 msgstr ""
 
-#: src/redshift.c:797 src/redshift.c:918
+#: src/redshift.c:956 src/redshift.c:1077
 msgid "Unable to read system time.\n"
 msgstr ""
 
 #. TRANSLATORS: Append degree symbol if possible.
-#: src/redshift.c:806
+#: src/redshift.c:965
 #, c-format
 msgid "Solar elevation: %f\n"
 msgstr "Высота Солнца над горизонтом: %f°\n"
 
-#: src/redshift.c:813 src/redshift.c:985
+#: src/redshift.c:972 src/redshift.c:1144
 #, c-format
 msgid "Color temperature: %uK\n"
 msgstr "Цветовая температура: %uK\n"
 
-#: src/redshift.c:818 src/redshift.c:829 src/redshift.c:993
+#: src/redshift.c:977 src/redshift.c:988 src/redshift.c:1152
 msgid "Temperature adjustment failed.\n"
 msgstr "Корректировка цветовой температуры не удалась.\n"
+
+#: src/config-ini.c:107
+#, fuzzy
+msgid "Malformed section header in config file.\n"
+msgstr "Некорректное значение местоположения.\n"
+
+#: src/config-ini.c:143
+msgid "Malformed assignment in config file.\n"
+msgstr ""
+
+#: src/config-ini.c:154
+msgid "Assignment outside section in config file.\n"
+msgstr ""
 
 #: src/gamma-randr.c:69 src/gamma-randr.c:126 src/gamma-randr.c:165
 #: src/gamma-randr.c:191 src/gamma-randr.c:248 src/gamma-randr.c:346
@@ -436,9 +469,6 @@ msgstr "Включить / Выключить"
 #: src/gtk-redshift/statusicon.py:95
 msgid "Autostart"
 msgstr ""
-
-#~ msgid "Malformed location argument.\n"
-#~ msgstr "Некорректное значение местоположения.\n"
 
 #~ msgid "RANDR method was not enabled at compile time.\n"
 #~ msgstr "Метод RANDR был выключен во время компиляции.\n"

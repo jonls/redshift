@@ -42,6 +42,7 @@
 #endif
 
 #include "redshift.h"
+#include "config-ini.h"
 #include "solar.h"
 #include "systemtime.h"
 
@@ -355,7 +356,8 @@ print_provider_list()
 
 static int
 provider_try_start(const location_provider_t *provider,
-		   location_state_t *state, char *args)
+		   location_state_t *state,
+		   config_ini_state_t *config, char *args)
 {
 	int r;
 
@@ -366,7 +368,31 @@ provider_try_start(const location_provider_t *provider,
 		return -1;
 	}
 
-	/* Set provider options. */
+	/* Set provider options from config file. */
+	config_ini_section_t *section =
+		config_ini_get_section(config, provider->name);
+	if (section != NULL) {
+		config_ini_setting_t *setting = section->settings;
+		while (setting != NULL) {
+			r = provider->set_option(state, setting->name,
+						 setting->value);
+			if (r < 0) {
+				provider->free(state);
+				fprintf(stderr, _("Failed to set %s"
+						  " option.\n"),
+					provider->name);
+				/* TRANSLATORS: `help' must not be
+				   translated. */
+				fprintf(stderr, _("Try `-l %s:help' for more"
+						  " information.\n"),
+					provider->name);
+				return -1;
+			}
+			setting = setting->next;
+		}
+	}
+
+	/* Set provider options from command line. */
 	while (args != NULL) {
 		char *next_arg = strchr(args, ':');
 		if (next_arg != NULL) *(next_arg++) = '\0';
@@ -408,7 +434,8 @@ provider_try_start(const location_provider_t *provider,
 
 static int
 method_try_start(const gamma_method_t *method,
-		 gamma_state_t *state, char *args)
+		 gamma_state_t *state,
+		 config_ini_state_t *config, char *args)
 {
 	int r;
 
@@ -419,7 +446,31 @@ method_try_start(const gamma_method_t *method,
 		return -1;
 	}
 
-	/* Set method options. */
+	/* Set method options from config file. */
+	config_ini_section_t *section =
+		config_ini_get_section(config, method->name);
+	if (section != NULL) {
+		config_ini_setting_t *setting = section->settings;
+		while (setting != NULL) {
+			r = method->set_option(state, setting->name,
+						 setting->value);
+			if (r < 0) {
+				method->free(state);
+				fprintf(stderr, _("Failed to set %s"
+						  " option.\n"),
+					method->name);
+				/* TRANSLATORS: `help' must not be
+				   translated. */
+				fprintf(stderr, _("Try `-m %s:help' for more"
+						  " information.\n"),
+					method->name);
+				return -1;
+			}
+			setting = setting->next;
+		}
+	}
+
+	/* Set method options from command line. */
 	while (args != NULL) {
 		char *next_arg = strchr(args, ':');
 		if (next_arg != NULL) *(next_arg++) = '\0';
@@ -459,6 +510,60 @@ method_try_start(const gamma_method_t *method,
 	return 0;
 }
 
+/* A gamma string contains either one floating point value,
+   or three values separated by colon. */
+static int
+parse_gamma_string(const char *str, float gamma[])
+{
+	char *s = strchr(str, ':');
+	if (s == NULL) {
+		/* Use value for all channels */
+		float g = atof(str);
+		gamma[0] = gamma[1] = gamma[2] = g;
+	} else {
+		/* Parse separate value for each channel */
+		*(s++) = '\0';
+		char *g_s = s;
+		s = strchr(s, ':');
+		if (s == NULL) return -1;
+
+		*(s++) = '\0';
+		gamma[0] = atof(str); /* Red */
+		gamma[1] = atof(g_s); /* Blue */
+		gamma[2] = atof(s); /* Green */
+	}
+}
+
+static const gamma_method_t *
+find_gamma_method(const char *name)
+{
+	const gamma_method_t *method = NULL;
+	for (int i = 0; gamma_methods[i].name != NULL; i++) {
+		const gamma_method_t *m = &gamma_methods[i];
+		if (strcasecmp(name, m->name) == 0) {
+		        method = m;
+			break;
+		}
+	}
+
+	return method;
+}
+
+static const location_provider_t *
+find_location_provider(const char *name)
+{
+	const location_provider_t *provider = NULL;
+	for (int i = 0; location_providers[i].name != NULL; i++) {
+		const location_provider_t *p = &location_providers[i];
+		if (strcasecmp(name, p->name) == 0) {
+			provider = p;
+			break;
+		}
+	}
+
+	return provider;
+}
+
 
 int
 main(int argc, char *argv[])
@@ -475,10 +580,10 @@ main(int argc, char *argv[])
 	textdomain(PACKAGE);
 #endif
 
-	/* Initialize to defaults */
-	int temp_day = DEFAULT_DAY_TEMP;
-	int temp_night = DEFAULT_NIGHT_TEMP;
-	float gamma[3] = { DEFAULT_GAMMA, DEFAULT_GAMMA, DEFAULT_GAMMA };
+	/* Initialize to NULL values. */
+	int temp_day = -1;
+	int temp_night = -1;
+	float gamma[3] = { NAN, NAN, NAN };
 
 	const gamma_method_t *method = NULL;
 	char *method_args = NULL;
@@ -486,7 +591,7 @@ main(int argc, char *argv[])
 	const location_provider_t *provider = NULL;
 	char *provider_args = NULL;
 
-	int transition = 1;
+	int transition = -1;
 	program_mode_t mode = PROGRAM_MODE_CONTINUAL;
 	int verbose = 0;
 	char *s;
@@ -496,28 +601,13 @@ main(int argc, char *argv[])
 	while ((opt = getopt(argc, argv, "g:hl:m:ort:vx")) != -1) {
 		switch (opt) {
 		case 'g':
-			s = strchr(optarg, ':');
-			if (s == NULL) {
-				/* Use value for all channels */
-				float g = atof(optarg);
-				gamma[0] = gamma[1] = gamma[2] = g;
-			} else {
-				/* Parse separate value for each channel */
-				*(s++) = '\0';
-				gamma[0] = atof(optarg); /* Red */
-				char *g_s = s;
-				s = strchr(s, ':');
-				if (s == NULL) {
-  					fputs(_("Malformed gamma argument.\n"),
-					      stderr);
-					fputs(_("Try `-h' for more"
-						" information.\n"), stderr);
-					exit(EXIT_FAILURE);
-				}
-
-				*(s++) = '\0';
-				gamma[1] = atof(g_s); /* Blue */
-				gamma[2] = atof(s); /* Green */
+			r = parse_gamma_string(optarg, gamma);
+			if (r < 0) {
+				fputs(_("Malformed gamma argument.\n"),
+				      stderr);
+				fputs(_("Try `-h' for more"
+					" information.\n"), stderr);
+				exit(EXIT_FAILURE);
 			}
 			break;
 		case 'h':
@@ -553,17 +643,8 @@ main(int argc, char *argv[])
 				provider_name = optarg;
 			}
 
-			/* Lookup argument in location provider table */
-			for (int i = 0; location_providers[i].name != NULL;
-			     i++) {
-				const location_provider_t *p =
-					&location_providers[i];
-				if (strcasecmp(provider_name, p->name) == 0) {
-					provider = p;
-					break;
-				}
-			}
-
+			/* Lookup provider from name. */
+			provider = find_location_provider(provider_name);
 			if (provider == NULL) {
 				fprintf(stderr, _("Unknown location provider"
 						  " `%s'.\n"), provider_name);
@@ -591,21 +672,13 @@ main(int argc, char *argv[])
 				method_args = s;
 			}
 
-			/* Lookup argument in gamma methods table */
-			for (int i = 0; gamma_methods[i].name != NULL; i++) {
-				const gamma_method_t *m =
-					&gamma_methods[i];
-				if (strcasecmp(optarg, m->name) == 0) {
-					method = m;
-					break;
-				}
-			}
-
+			/* Find adjustment method by name. */
+			method = find_gamma_method(optarg);
 			if (method == NULL) {
 				/* TRANSLATORS: This refers to the method
 				   used to adjust colors e.g VidMode */
-				fprintf(stderr, _("Unknown method `%s'.\n"),
-					optarg);
+				fprintf(stderr, _("Unknown adjustment method"
+						  " `%s'.\n"), optarg);
 				exit(EXIT_FAILURE);
 			}
 
@@ -648,6 +721,89 @@ main(int argc, char *argv[])
 		}
 	}
 
+	/* Load settings from config file. */
+	config_ini_state_t config_state;
+	r = config_ini_init(&config_state, NULL);
+	if (r < 0) {
+		fputs("Unable to load config file.\n", stderr);
+		exit(EXIT_FAILURE);
+	}
+
+	/* Read global config settings. */
+	config_ini_section_t *section = config_ini_get_section(&config_state,
+							       "redshift");
+	if (section != NULL) {
+		config_ini_setting_t *setting = section->settings;
+		while (setting != NULL) {
+			if (strcasecmp(setting->name, "temp-day") == 0) {
+				if (temp_day < 0) {
+					temp_day = atoi(setting->value);
+				}
+			} else if (strcasecmp(setting->name,
+					      "temp-night") == 0) {
+				if (temp_night < 0) {
+					temp_night = atoi(setting->value);
+				}
+			} else if (strcasecmp(setting->name,
+					      "transition") == 0) {
+				if (transition < 0) {
+					transition = !!atoi(setting->value);
+				}
+			} else if (strcasecmp(setting->name, "gamma") == 0) {
+				if (isnan(gamma[0])) {
+					r = parse_gamma_string(setting->value,
+							       gamma);
+					if (r < 0) {
+						fputs(_("Malformed gamma"
+							" setting.\n"),
+						      stderr);
+						exit(EXIT_FAILURE);
+					}
+				}
+			} else if (strcasecmp(setting->name,
+					      "adjustment-method") == 0) {
+				if (method == NULL) {
+					method = find_gamma_method(
+						setting->value);
+					if (method == NULL) {
+						fprintf(stderr, _("Unknown"
+								  " adjustment"
+								  " method"
+								  " `%s'.\n"),
+							setting->value);
+						exit(EXIT_FAILURE);
+					}
+				}
+			} else if (strcasecmp(setting->name,
+					      "location-provider") == 0) {
+				if (provider == NULL) {
+					provider = find_location_provider(
+						setting->value);
+					if (provider == NULL) {
+						fprintf(stderr, _("Unknown"
+								  " location"
+								  " provider"
+								  " `%s'.\n"),
+							setting->value);
+						exit(EXIT_FAILURE);
+					}
+				}
+			} else {
+				fprintf(stderr, _("Unknown configuration"
+						  " setting `%s'.\n"),
+					setting->name);
+			}
+			setting = setting->next;
+		}
+	}
+
+	/* Use default values for settings that were neither defined in
+	   the config file nor on the command line. */
+	if (temp_day < 0) temp_day = DEFAULT_DAY_TEMP;
+	if (temp_night < 0) temp_night = DEFAULT_NIGHT_TEMP;
+	if (isnan(gamma[0])) gamma[0] = gamma[1] = gamma[2] = DEFAULT_GAMMA;
+	if (transition < 0) transition = 1;
+
 	/* Initialize location provider. If provider is NULL
 	   try all providers until one that works is found. */
 	location_state_t location_state;
@@ -657,7 +813,7 @@ main(int argc, char *argv[])
 		if (provider != NULL) {
 			/* Use provider specified on command line. */
 			r = provider_try_start(provider, &location_state,
-					       provider_args);
+					       &config_state, provider_args);
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
 			/* Try all providers, use the first that works. */
@@ -666,7 +822,7 @@ main(int argc, char *argv[])
 				const location_provider_t *p =
 					&location_providers[i];
 				r = provider_try_start(p, &location_state,
-						       NULL);
+						       &config_state, NULL);
 				if (r < 0) {
 					fputs(_("Trying next provider...\n"),
 					      stderr);
@@ -764,13 +920,14 @@ main(int argc, char *argv[])
 
 	if (method != NULL) {
 		/* Use method specified on command line. */
-		r = method_try_start(method, &state, method_args);
+		r = method_try_start(method, &state, &config_state,
+				     method_args);
 		if (r < 0) exit(EXIT_FAILURE);
 	} else {
 		/* Try all methods, use the first that works. */
 		for (int i = 0; gamma_methods[i].name != NULL; i++) {
 			const gamma_method_t *m = &gamma_methods[i];
-			r = method_try_start(m, &state, NULL);
+			r = method_try_start(m, &state, &config_state, NULL);
 			if (r < 0) {
 				fputs(_("Trying next method...\n"), stderr);
 				continue;
