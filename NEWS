@@ -1,3 +1,14 @@
+v1.6 (2010-10-18)
+* Support for optional configuration file (fixes #590722).
+* Add man page for redshift written by Andrew Starr-Bochicchio (fixes #582196).
+* Explain in help output that 6500K is the neutral color temperature
+  (fixes #627113).
+* Fix: Handle multiple instances of the GNOME clock applet; contributed by
+  Francesco Marella (fixes #610860).
+* Fix: Redshift crashes when VidMode fails (fixes #657451).
+* Fix: Toggle menu item should not be of class gtk.ImageMenuItem
+  (fixes #620355).
+
 v1.5 (2010-08-18)
 * New ubuntu-mono-dark icons that fit better with the color guidelines.
   Contributed by aleth.
