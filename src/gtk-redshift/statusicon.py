@@ -54,7 +54,8 @@ def run():
     try:
         if appindicator:
             # Create indicator
-            indicator = appindicator.Indicator('redshift', 'redshift',
+            indicator = appindicator.Indicator('redshift',
+                                               'redshift-status-on',
                                                appindicator.CATEGORY_APPLICATION_STATUS)
             indicator.set_status(appindicator.STATUS_ACTIVE)
         else:
