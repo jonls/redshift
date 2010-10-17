@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-10-15 12:40+0200\n"
+"POT-Creation-Date: 2010-10-18 01:15+0200\n"
 "PO-Revision-Date: 2010-06-13 20:24+0000\n"
 "Last-Translator: clever_fox <clever_fox@seznam.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -66,6 +66,7 @@ msgstr ""
 #. no-wrap
 #: src/redshift.c:289
 msgid ""
+"  -c FILE\tLoad settings from specified configuration file\n"
 "  -g R:G:B\tAdditional gamma correction to apply\n"
 "  -l LAT:LON\tYour current location\n"
 "  -l PROVIDER\tSelect provider for automatic location updates\n"
@@ -79,7 +80,7 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: help output 5
-#: src/redshift.c:305
+#: src/redshift.c:306
 #, c-format
 msgid ""
 "The neutral temperature is %uK. Using this value will not\n"
@@ -90,7 +91,7 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: help output 6
-#: src/redshift.c:315
+#: src/redshift.c:316
 #, c-format
 msgid ""
 "Default values:\n"
@@ -104,43 +105,43 @@ msgstr ""
 "  Teplota v noci: %uK\n"
 
 #. TRANSLATORS: help output 7
-#: src/redshift.c:323
+#: src/redshift.c:324
 #, c-format
 msgid "Please report bugs to <%s>\n"
 msgstr "Chyby prosím hlaste na <%s>\n"
 
-#: src/redshift.c:329
+#: src/redshift.c:330
 msgid "Available adjustment methods:\n"
 msgstr "Dostupné metody přizpůsobení:\n"
 
-#: src/redshift.c:335
+#: src/redshift.c:336
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
 msgstr ""
 
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:338
+#: src/redshift.c:339
 msgid "Try `-m METHOD:help' for help.\n"
 msgstr ""
 
-#: src/redshift.c:344
+#: src/redshift.c:345
 msgid "Available location providers:\n"
 msgstr "Dostupní poskytovatelé polohy:\n"
 
-#: src/redshift.c:350
+#: src/redshift.c:351
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
 msgstr ""
 
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:353
+#: src/redshift.c:354
 msgid "Try `-l PROVIDER:help' for help.\n"
 msgstr ""
 
-#: src/redshift.c:366 src/redshift.c:444
+#: src/redshift.c:367 src/redshift.c:445
 #, c-format
 msgid "Initialization of %s failed.\n"
 msgstr "Inicializace %s selhala.\n"
 
-#: src/redshift.c:381 src/redshift.c:412 src/redshift.c:459 src/redshift.c:490
+#: src/redshift.c:382 src/redshift.c:413 src/redshift.c:460 src/redshift.c:491
 #, c-format
 msgid "Failed to set %s option.\n"
 msgstr ""
@@ -148,160 +149,160 @@ msgstr ""
 #. TRANSLATORS: `help' must not be
 #. translated.
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:386 src/redshift.c:415
+#: src/redshift.c:387 src/redshift.c:416
 #, c-format
 msgid "Try `-l %s:help' for more information.\n"
 msgstr ""
 
-#: src/redshift.c:427
+#: src/redshift.c:428
 #, c-format
 msgid "Failed to start provider %s.\n"
 msgstr ""
 
 #. TRANSLATORS: `help' must not be
 #. translated.
-#: src/redshift.c:464
+#: src/redshift.c:465
 #, fuzzy, c-format
 msgid "Try `-m %s:help' for more information.\n"
 msgstr "Zkuste `-h' pro více informací.\n"
 
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:493
+#: src/redshift.c:494
 #, c-format
 msgid "Try -m %s:help' for more information.\n"
 msgstr ""
 
-#: src/redshift.c:505
+#: src/redshift.c:506
 #, c-format
 msgid "Failed to start adjustment method %s.\n"
 msgstr ""
 
-#: src/redshift.c:606
+#: src/redshift.c:613
 msgid "Malformed gamma argument.\n"
 msgstr "Neplatný argument gamma.\n"
 
-#: src/redshift.c:608 src/redshift.c:703 src/redshift.c:718
+#: src/redshift.c:615 src/redshift.c:710 src/redshift.c:725
 msgid "Try `-h' for more information.\n"
 msgstr "Zkuste `-h' pro více informací.\n"
 
-#: src/redshift.c:649 src/redshift.c:783
+#: src/redshift.c:656 src/redshift.c:792
 #, c-format
 msgid "Unknown location provider `%s'.\n"
 msgstr "Neznámý poskytovatel polohy `%s'.\n"
 
 #. TRANSLATORS: This refers to the method
 #. used to adjust colors e.g VidMode
-#: src/redshift.c:680 src/redshift.c:769
+#: src/redshift.c:687 src/redshift.c:778
 #, fuzzy, c-format
 msgid "Unknown adjustment method `%s'.\n"
 msgstr "Neznámá metoda `%s'.\n"
 
-#: src/redshift.c:701
+#: src/redshift.c:708
 msgid "Malformed temperature argument.\n"
 msgstr "Neplatný argument teploty.\n"
 
-#: src/redshift.c:757
+#: src/redshift.c:766
 #, fuzzy
 msgid "Malformed gamma setting.\n"
 msgstr "Neplatný argument gamma.\n"
 
-#: src/redshift.c:792
+#: src/redshift.c:801
 #, fuzzy, c-format
 msgid "Unknown configuration setting `%s'.\n"
 msgstr "Neznámý poskytovatel polohy `%s'.\n"
 
-#: src/redshift.c:827
+#: src/redshift.c:836
 #, fuzzy
 msgid "Trying next provider...\n"
 msgstr "Zkouší se jiný poskytovatel...\n"
 
-#: src/redshift.c:833
+#: src/redshift.c:842
 #, fuzzy, c-format
 msgid "Using provider `%s'.\n"
 msgstr "Neznámý poskytovatel polohy `%s'.\n"
 
-#: src/redshift.c:841
+#: src/redshift.c:850
 msgid "No more location providers to try.\n"
 msgstr "Nejsou žádní další poskytovatelé polohy k vyzkoušení.\n"
 
-#: src/redshift.c:855
+#: src/redshift.c:864
 msgid "Unable to get location from provider.\n"
 msgstr "Nebylo možné získat polohu od poskytovatele.\n"
 
 #. TRANSLATORS: Append degree symbols if possible.
-#: src/redshift.c:864
+#: src/redshift.c:873
 #, c-format
 msgid "Location: %f, %f\n"
 msgstr "Poloha: %f, %f\n"
 
-#: src/redshift.c:871
+#: src/redshift.c:880
 #, c-format
 msgid "Latitude must be between %.1f and %.1f.\n"
 msgstr "Zeměpisná šířka musí být mezi %.1f a %.1f.\n"
 
-#: src/redshift.c:880
+#: src/redshift.c:889
 #, c-format
 msgid "Longitude must be between %.1f and %.1f.\n"
 msgstr "Zeměpisná délka musí být mezi %.1f a %.1f.\n"
 
-#: src/redshift.c:889 src/redshift.c:897
+#: src/redshift.c:898 src/redshift.c:906
 #, c-format
 msgid "Temperature must be between %uK and %uK.\n"
 msgstr "Teplota musí být mezi %uK a %uK.\n"
 
-#: src/redshift.c:907
+#: src/redshift.c:916
 #, c-format
 msgid "Gamma value must be between %.1f and %.1f.\n"
 msgstr "Hodnota gamma musí být %.1f a %.1f.\n"
 
-#: src/redshift.c:913
+#: src/redshift.c:922
 #, c-format
 msgid "Gamma: %.3f, %.3f, %.3f\n"
 msgstr "Gamma: %.3f, %.3f, %.3f\n"
 
-#: src/redshift.c:932
+#: src/redshift.c:941
 #, fuzzy
 msgid "Trying next method...\n"
 msgstr "Zkouší se jiná metoda...\n"
 
-#: src/redshift.c:937
+#: src/redshift.c:946
 #, fuzzy, c-format
 msgid "Using method `%s'.\n"
 msgstr "Neznámá metoda `%s'.\n"
 
-#: src/redshift.c:944
+#: src/redshift.c:953
 msgid "No more methods to try.\n"
 msgstr "Nejsou další metody k vyzkoušení.\n"
 
-#: src/redshift.c:956 src/redshift.c:1077
+#: src/redshift.c:965 src/redshift.c:1086
 msgid "Unable to read system time.\n"
 msgstr "Nebylo možné načíst systémový čas.\n"
 
 #. TRANSLATORS: Append degree symbol if possible.
-#: src/redshift.c:965
+#: src/redshift.c:974
 #, c-format
 msgid "Solar elevation: %f\n"
 msgstr "Solarní elevace: %f\n"
 
-#: src/redshift.c:972 src/redshift.c:1144
+#: src/redshift.c:981 src/redshift.c:1153
 #, c-format
 msgid "Color temperature: %uK\n"
 msgstr "Teplota barev: %uK\n"
 
-#: src/redshift.c:977 src/redshift.c:988 src/redshift.c:1152
+#: src/redshift.c:986 src/redshift.c:997 src/redshift.c:1161
 msgid "Temperature adjustment failed.\n"
 msgstr "Přizpůsobení barev selhalo.\n"
 
-#: src/config-ini.c:107
+#: src/config-ini.c:109
 msgid "Malformed section header in config file.\n"
 msgstr ""
 
-#: src/config-ini.c:143
+#: src/config-ini.c:145
 #, fuzzy
 msgid "Malformed assignment in config file.\n"
 msgstr "Nevhodný argument.\n"
 
-#: src/config-ini.c:154
+#: src/config-ini.c:156
 msgid "Assignment outside section in config file.\n"
 msgstr ""
 

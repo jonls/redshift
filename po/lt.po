@@ -1,4 +1,4 @@
-# German translation for redshift
+# Lithuanian translation for redshift
 # Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
 # This file is distributed under the same license as the redshift package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
@@ -8,30 +8,30 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
 "POT-Creation-Date: 2010-10-18 01:15+0200\n"
-"PO-Revision-Date: 2010-10-11 18:08+0000\n"
-"Last-Translator: Jan-Christoph Borchardt <JanCBorchardt@gmail.com>\n"
-"Language-Team: German <de@li.org>\n"
-"Language: de\n"
+"PO-Revision-Date: 2010-08-19 16:22+0000\n"
+"Last-Translator: Aurimas Fišeras <Unknown>\n"
+"Language-Team: Lithuanian <lt@li.org>\n"
+"Language: lt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-10-12 04:58+0000\n"
+"X-Launchpad-Export-Date: 2010-08-20 03:49+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: src/redshift.c:244
 #, c-format
 msgid "Period: Night\n"
-msgstr "Zeitraum: Nacht\n"
+msgstr "Periodas: naktis\n"
 
 #: src/redshift.c:251
 #, c-format
 msgid "Period: Transition (%.2f%% day)\n"
-msgstr "Zeitraum: Übergang (%.2f%% Tag)\n"
+msgstr "Period: perėjimas (%.2f%% day)\n"
 
 #: src/redshift.c:255
 #, c-format
 msgid "Period: Daytime\n"
-msgstr "Zeitraum: Tag\n"
+msgstr "Periodas: Diena\n"
 
 #. TRANSLATORS: help output 1
 #. LAT is latitude, LON is longitude,
@@ -41,13 +41,13 @@ msgstr "Zeitraum: Tag\n"
 #: src/redshift.c:270
 #, c-format
 msgid "Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
-msgstr "Benutzung: %s -l BREITE:LÄNGE -t TAG:NACHT [OPTIONEN …]\n"
+msgstr "Naudojimas: %s -l PLA:ILG -t DIENA:NAKTIS [PARAMETRAI...]\n"
 
 #. TRANSLATORS: help output 2
 #. no-wrap
 #: src/redshift.c:276
 msgid "Set color temperature of display according to time of day.\n"
-msgstr "Farbtemperatur des Bildschirms je nach Tageszeit ändern.\n"
+msgstr "Monitoriaus spalvų temperatūros nustatymas pagal paros laiką.\n"
 
 #. TRANSLATORS: help output 3
 #. no-wrap
@@ -56,8 +56,8 @@ msgid ""
 "  -h\t\tDisplay this help message\n"
 "  -v\t\tVerbose output\n"
 msgstr ""
-"  -h\t\tDiese Hilfenachricht anzeigen\n"
-"  -v\t\tAusführliche Ausgabe\n"
+"  -h\t\tParodo šį pagalbos pranešimą\n"
+"  -v\t\tDaugiažodė išvestis\n"
 
 #. TRANSLATORS: help output 4
 #. `list' must not be translated
@@ -77,16 +77,17 @@ msgid ""
 "  -r\t\tDisable temperature transitions\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
-"  -g R:G:B\tZusätzliche Gamma-Korrektur\n"
-"  -l BREITE:LÄNGE\tIhr aktueller Standort\n"
-"  -l DIENST\tDienst für automatische Standortaktualisierungen\n"
-"  \t\t(Benutzen Sie »list« für verfügbare Anbieter)\n"
-"  -m METHOD\tMethode für Änderung der Farbtemperatur\n"
-"  \t\t(Benutzen Sie »list« für verfügbare Methoden)\n"
-"  -o\t\tEinfach-Modus (Farbtemperatur nicht ständig verändern)\n"
-"  -x\t\tZurücksetzen-Modus (Änderungen entfernen)\n"
-"  -r\t\tTemperatur-Übergänge deaktivieren\n"
-"  -t TAG:NACHT\tFarbtemperatur tagsüber und nachts\n"
+"  -g R:G:B\tPapildomai taikoma gamos korekcija\n"
+"  -l PLA:ILG\tJūsų dabartinė vieta\n"
+"  -l TIEKĖJAS\tTiekėjo pasirinkimas automatiniam vietos atnaujinimui\n"
+"  \t\t(Surinkite „list“ prieinamiems tiekėjams išvesti)\n"
+"  -m METODAS\tMetodas naudojamas spalvų temperatūrai nustatyti\n"
+"  \t\t(Surinkite „list“ prieinamiems metodams išvesti)\n"
+"  -o\t\tVieno nustatymo veiksena (nuolatos nereguliuoti spalvų "
+"temperatūros)\n"
+"  -x\t\tAtkūrimo veiksena (pašalinti ekrano sureguliavimą)\n"
+"  -r\t\tIšjungti temperatūros virsmus\n"
+"  -t DIENA:NAKTIS\tNustatoma spalvų temperatūra dieną/naktį\n"
 
 #. TRANSLATORS: help output 5
 #: src/redshift.c:306
@@ -98,10 +99,6 @@ msgid ""
 "more blue light, and setting a lower value will result in\n"
 "more red light.\n"
 msgstr ""
-"Die neutrale Temperatur ist %u K. Dieser Wert wird\n"
-"die Farbtemperatur des Bildschirms nicht verändern.\n"
-"Eine höhere Farbtemperatur ergibt blaueres Licht,\n"
-"eine niedrige ergibt roteres Licht.\n"
 
 #. TRANSLATORS: help output 6
 #: src/redshift.c:316
@@ -112,52 +109,54 @@ msgid ""
 "  Daytime temperature: %uK\n"
 "  Night temperature: %uK\n"
 msgstr ""
-"Vorgabewerte:\n"
+"Numatytosios reikšmės:\n"
 "\n"
-"  Temperatur tagsüber: %uK\n"
-"  Temperatur nachts: %uK\n"
+"  Dienos temperatūra: %uK\n"
+"  Nakties temperatūra: %uK\n"
 
 #. TRANSLATORS: help output 7
 #: src/redshift.c:324
 #, c-format
 msgid "Please report bugs to <%s>\n"
-msgstr "Bitte melden Sie Fehler auf <%s>\n"
+msgstr "Apie klaidas praneškite <%s>\n"
 
 #: src/redshift.c:330
 msgid "Available adjustment methods:\n"
-msgstr "Verfügbare Änderungsmethoden:\n"
+msgstr "Prieinami sureguliavimo metodai:\n"
 
 #: src/redshift.c:336
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
-msgstr "Geben Sie kommaseparierte Optionen an: »-m METHODE:OPTIONEN«.\n"
+msgstr ""
+"Nurodykite dvitaškiu atskirtus parametrus taip „-m METODAS:PARAMETRAI“.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:339
 msgid "Try `-m METHOD:help' for help.\n"
-msgstr "Benutzen Sie »-m METHODE:help« für Hilfe.\n"
+msgstr "Mėginkite „-m METODAS:help“ pagalbai gauti.\n"
 
 #: src/redshift.c:345
 msgid "Available location providers:\n"
-msgstr "Verfügbare Standortbestimmungs-Dienste:\n"
+msgstr "Prieinami vietos tiekėjai:\n"
 
 #: src/redshift.c:351
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
-msgstr "Geben Sie kommaseparierte Optionen an: »-l DIENST:OPTIONEN«.\n"
+msgstr ""
+"Nurodykite dvitaškiu atskirtus parametrus taip „-l TIEKĖJAS:PARAMETRAI“.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:354
 msgid "Try `-l PROVIDER:help' for help.\n"
-msgstr "Benutzen Sie »-l DIENST:help« für Hilfe.\n"
+msgstr "Mėginkite „-l TIEKĖJAS:help“ pagalbai gauti.\n"
 
 #: src/redshift.c:367 src/redshift.c:445
 #, c-format
 msgid "Initialization of %s failed.\n"
-msgstr "Starten von %s fehlgeschlagen.\n"
+msgstr "Nepavyko inicijuoti %s.\n"
 
 #: src/redshift.c:382 src/redshift.c:413 src/redshift.c:460 src/redshift.c:491
 #, c-format
 msgid "Failed to set %s option.\n"
-msgstr "Setzen der Option %s fehlgeschlagen.\n"
+msgstr "Nepavyko nustatyti parametro %s.\n"
 
 #. TRANSLATORS: `help' must not be
 #. translated.
@@ -165,144 +164,144 @@ msgstr "Setzen der Option %s fehlgeschlagen.\n"
 #: src/redshift.c:387 src/redshift.c:416
 #, c-format
 msgid "Try `-l %s:help' for more information.\n"
-msgstr "Benutzen Sie »-l %s:help« für weitere Informationen.\n"
+msgstr "Norėdami gauti daugiau informacijos, mėginkite „-l %s:help“.\n"
 
 #: src/redshift.c:428
 #, c-format
 msgid "Failed to start provider %s.\n"
-msgstr "Starten des Dienstes %s fehlgeschlagen.\n"
+msgstr "Nepavyko paleisti tiekėjo %s.\n"
 
 #. TRANSLATORS: `help' must not be
 #. translated.
 #: src/redshift.c:465
 #, fuzzy, c-format
 msgid "Try `-m %s:help' for more information.\n"
-msgstr "Benutzen Sie »-m %s:help« für weitere Informationen.\n"
+msgstr "Norėdami gauti daugiau informacijos, mėginkite „-m %s:help“.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:494
 #, c-format
 msgid "Try -m %s:help' for more information.\n"
-msgstr "Benutzen Sie »-m %s:help« für weitere Informationen.\n"
+msgstr "Norėdami gauti daugiau informacijos, mėginkite „-m %s:help“.\n"
 
 #: src/redshift.c:506
 #, c-format
 msgid "Failed to start adjustment method %s.\n"
-msgstr "Starten der Änderungsmethode %s fehlgeschlagen.\n"
+msgstr "Nepavyko paleisti sureguliavimo metodo %s.\n"
 
 #: src/redshift.c:613
 msgid "Malformed gamma argument.\n"
-msgstr "Fehlerhaftes Kommando für Gamma-Wert.\n"
+msgstr "Blogai suformuotas gamos argumentas.\n"
 
 #: src/redshift.c:615 src/redshift.c:710 src/redshift.c:725
 msgid "Try `-h' for more information.\n"
-msgstr "Benutzen Sie »-h« für mehr Informationen.\n"
+msgstr "Norėdami gauti daugiau informacijos, mėginkite „-h“.\n"
 
 #: src/redshift.c:656 src/redshift.c:792
 #, c-format
 msgid "Unknown location provider `%s'.\n"
-msgstr "Unbekannter Dienst »%s«.\n"
+msgstr "Nežinomas vietos tiekėjas „%s“.\n"
 
 #. TRANSLATORS: This refers to the method
 #. used to adjust colors e.g VidMode
 #: src/redshift.c:687 src/redshift.c:778
 #, fuzzy, c-format
 msgid "Unknown adjustment method `%s'.\n"
-msgstr "Unbekannte Methode »%s«.\n"
+msgstr "Nežinomas metodas „%s“.\n"
 
 #: src/redshift.c:708
 msgid "Malformed temperature argument.\n"
-msgstr "Fehlerhaftes Kommando für Temperatur.\n"
+msgstr "Blogai suformuotas temperatūros argumentas.\n"
 
 #: src/redshift.c:766
 #, fuzzy
 msgid "Malformed gamma setting.\n"
-msgstr "Fehlerhaftes Kommando für Gamma-Wert.\n"
+msgstr "Blogai suformuotas gamos argumentas.\n"
 
 #: src/redshift.c:801
 #, fuzzy, c-format
 msgid "Unknown configuration setting `%s'.\n"
-msgstr "Unbekannter Dienst »%s«.\n"
+msgstr "Nežinomas vietos tiekėjas „%s“.\n"
 
 #: src/redshift.c:836
 msgid "Trying next provider...\n"
-msgstr "Nächster Dienst wird getestet …\n"
+msgstr "Mėginamas kitas tiekėjas...\n"
 
 #: src/redshift.c:842
 #, c-format
 msgid "Using provider `%s'.\n"
-msgstr "Dienst »%s« wird benutzt.\n"
+msgstr "Naudojamas tiekėjas „%s“.\n"
 
 #: src/redshift.c:850
 msgid "No more location providers to try.\n"
-msgstr "Keine weiteren Dienste verfügbar.\n"
+msgstr "Daugiau nebeliko vietos tiekėjų mėginimui.\n"
 
 #: src/redshift.c:864
 msgid "Unable to get location from provider.\n"
-msgstr "Konnte Standort nicht vom Dienst erhalten.\n"
+msgstr "Nepavyko gauti vietos iš tiekėjo.\n"
 
 #. TRANSLATORS: Append degree symbols if possible.
 #: src/redshift.c:873
 #, c-format
 msgid "Location: %f, %f\n"
-msgstr "Standort: %f, %f\n"
+msgstr "Vieta: %f, %f\n"
 
 #: src/redshift.c:880
 #, c-format
 msgid "Latitude must be between %.1f and %.1f.\n"
-msgstr "Der Breitengrad muss sich zwischen %.1f und %.1f befinden.\n"
+msgstr "Platuma turi būti tarp %.1f ir %.1f.\n"
 
 #: src/redshift.c:889
 #, c-format
 msgid "Longitude must be between %.1f and %.1f.\n"
-msgstr "Der Längengrad muss sich zwischen %.1f und %.1f befinden.\n"
+msgstr "Ilguma turi būti tarp %.1f ir %.1f.\n"
 
 #: src/redshift.c:898 src/redshift.c:906
 #, c-format
 msgid "Temperature must be between %uK and %uK.\n"
-msgstr "Die Temperatur muss sich zwischen %uK und %uK befinden.\n"
+msgstr "Temperatūra turi būti tarp %uK ir %uK.\n"
 
 #: src/redshift.c:916
 #, c-format
 msgid "Gamma value must be between %.1f and %.1f.\n"
-msgstr "Der Gamma-Wert muss sich zwischen %.1f und %.1f befinden.\n"
+msgstr "Gamos reikšmė turi būti tarp %.1f ir %.1f.\n"
 
 #: src/redshift.c:922
 #, c-format
 msgid "Gamma: %.3f, %.3f, %.3f\n"
-msgstr "Gamma: %.3f, %.3f, %.3f\n"
+msgstr "Gama: %.3f, %.3f, %.3f\n"
 
 #: src/redshift.c:941
 msgid "Trying next method...\n"
-msgstr "Nächste Methode wird getestet …\n"
+msgstr "Mėginamas kitas metodas...\n"
 
 #: src/redshift.c:946
 #, c-format
 msgid "Using method `%s'.\n"
-msgstr "Methode »%s« wird benutzt.\n"
+msgstr "Naudojamas metodas „%s“.\n"
 
 #: src/redshift.c:953
 msgid "No more methods to try.\n"
-msgstr "Keine weiteren Methoden verfügbar.\n"
+msgstr "Daugiau nebeliko metodų mėginimui.\n"
 
 #: src/redshift.c:965 src/redshift.c:1086
 msgid "Unable to read system time.\n"
-msgstr "Konnte Systemzeit nicht auslesen.\n"
+msgstr "Nepavyko perskaityti sistemos laiko.\n"
 
 #. TRANSLATORS: Append degree symbol if possible.
 #: src/redshift.c:974
 #, c-format
 msgid "Solar elevation: %f\n"
-msgstr "Sonnenstand: %f°\n"
+msgstr "Saulės aukštis virš horizonto: %f\n"
 
 #: src/redshift.c:981 src/redshift.c:1153
 #, c-format
 msgid "Color temperature: %uK\n"
-msgstr "Farbtemperatur: %uK\n"
+msgstr "Spalvų temperatūra: %uK\n"
 
 #: src/redshift.c:986 src/redshift.c:997 src/redshift.c:1161
 msgid "Temperature adjustment failed.\n"
-msgstr "Temperaturänderung fehlgeschlagen.\n"
+msgstr "Nepavyko sureguliuoti temperatūros.\n"
 
 #: src/config-ini.c:109
 msgid "Malformed section header in config file.\n"
@@ -311,7 +310,7 @@ msgstr ""
 #: src/config-ini.c:145
 #, fuzzy
 msgid "Malformed assignment in config file.\n"
-msgstr "Fehlerhaftes Kommando.\n"
+msgstr "Blogai suformuotas argumentas.\n"
 
 #: src/config-ini.c:156
 msgid "Assignment outside section in config file.\n"
@@ -321,31 +320,31 @@ msgstr ""
 #: src/gamma-randr.c:191 src/gamma-randr.c:248 src/gamma-randr.c:346
 #, c-format
 msgid "`%s' returned error %d\n"
-msgstr "»%s« gab einen Fehler zurück %d\n"
+msgstr "„%s“ grąžino klaidą %d\n"
 
 #: src/gamma-randr.c:77
 #, c-format
 msgid "Unsupported RANDR version (%u.%u)\n"
-msgstr "Nicht unterstützte RANDR-Version (%u.%u)\n"
+msgstr "Nepalaikoma RANDR versija (%u.%u)\n"
 
 #: src/gamma-randr.c:111
 #, c-format
 msgid "Screen %i could not be found.\n"
-msgstr "Konnte Bildschirm %i nicht finden.\n"
+msgstr "Nepavyko rasti ekrano %i.\n"
 
 #: src/gamma-randr.c:177 src/gamma-vidmode.c:84
 #, c-format
 msgid "Gamma ramp size too small: %i\n"
-msgstr "Gamma-Anstiegswert zu klein: %i\n"
+msgstr "Gamos lentelės dydis per mažas: %i\n"
 
 #: src/gamma-randr.c:250
 #, c-format
 msgid "Unable to restore CRTC %i\n"
-msgstr "Konnte CRTC nicht wiederherstellen %i\n"
+msgstr "Nepavyko atkurti CRTC %i\n"
 
 #: src/gamma-randr.c:271
 msgid "Adjust gamma ramps with the X RANDR extension.\n"
-msgstr "Gamma-Anstieg mit der X-RANDR-Erweiterung ändern.\n"
+msgstr "Gamos lentelių sureguliavimas naudojant X RANDR plėtinį.\n"
 
 #. TRANSLATORS: RANDR help output
 #. left column must not be translated
@@ -354,106 +353,106 @@ msgid ""
 "  screen=N\tX screen to apply adjustments to\n"
 "  crtc=N\tCRTC to apply adjustments to\n"
 msgstr ""
-"  screen=N\tX-Bildschirm, auf den die Veränderungen angewandt werden\n"
-"  crtc=N\tCRTC, auf den die Veränderungen angewandt werden\n"
+"  ekranas=N\tX ekranas sureguliavimui taikyti\n"
+"  crtc=N\tCRTC sureguliavimui taikyti\n"
 
 #: src/gamma-randr.c:285 src/gamma-vidmode.c:139
 #, c-format
 msgid "Missing value for parameter: `%s'.\n"
-msgstr "Fehlender Wert für Kommando: »%s«.\n"
+msgstr "Trūksta reikšmės parametrui: „%s“.\n"
 
 #: src/gamma-randr.c:295 src/gamma-vidmode.c:147 src/location-manual.c:98
 #, c-format
 msgid "Unknown method parameter: `%s'.\n"
-msgstr "Unbekanntes Kommando für Methode: »%s«.\n"
+msgstr "Nežinomas metodo parametras: „%s“.\n"
 
 #: src/gamma-randr.c:309
 #, c-format
 msgid "CRTC %d does not exist. "
-msgstr "CRTC %d gibt es nicht. "
+msgstr "CRTC %d neegzistuoja. "
 
 #: src/gamma-randr.c:312
 #, c-format
 msgid "Valid CRTCs are [0-%d].\n"
-msgstr "Gültige CRTCs sind [0-%d].\n"
+msgstr "Galimi CRTC yra [0-%d].\n"
 
 #: src/gamma-randr.c:315
 #, c-format
 msgid "Only CRTC 0 exists.\n"
-msgstr "Es gibt nur CRTC 0.\n"
+msgstr "Egzistuoja tik CRTC 0.\n"
 
 #: src/gamma-vidmode.c:48 src/gamma-vidmode.c:69 src/gamma-vidmode.c:78
 #: src/gamma-vidmode.c:105 src/gamma-vidmode.c:166 src/gamma-vidmode.c:195
 #, c-format
 msgid "X request failed: %s\n"
-msgstr "X-Anfrage fehlgeschlagen: %s\n"
+msgstr "X užklausa nepavyko: %s\n"
 
 #: src/gamma-vidmode.c:126
 msgid "Adjust gamma ramps with the X VidMode extension.\n"
-msgstr "Gamma-Änstiegswerte mit der X-VidMode-Erweiterung ändern.\n"
+msgstr "Gamos lentelių sureguliavimas naudojant X VidMode plėtinį.\n"
 
 #. TRANSLATORS: VidMode help output
 #. left column must not be translated
 #: src/gamma-vidmode.c:131
 msgid "  screen=N\tX screen to apply adjustments to\n"
-msgstr "  screen=N\tX-Bildschirm, auf den die Änderungen angewandt werden\n"
+msgstr "  ekranas=N\tX ekranas sureguliavimui taikyti\n"
 
 #: src/gamma-w32gdi.c:59
 msgid "Unable to open device context.\n"
-msgstr "Konnte Gerätekontext nicht öffnen.\n"
+msgstr "Nepavyko atverti įrenginio konteksto.\n"
 
 #: src/gamma-w32gdi.c:66
 msgid "Display device does not support gamma ramps.\n"
-msgstr "Anzeigegerät unterstützt Gamma-Anstieg nicht.\n"
+msgstr "Ekrano įrenginys nepalaiko gamos lentelių.\n"
 
 #: src/gamma-w32gdi.c:82
 msgid "Unable to save current gamma ramp.\n"
-msgstr "Konnte aktuellen Gamma-Anstiegswert nicht speichern.\n"
+msgstr "Nepavyko išsaugoti dabartinės gamos lentelės.\n"
 
 #: src/gamma-w32gdi.c:104
 msgid "Adjust gamma ramps with the Windows GDI.\n"
-msgstr "Gamma-Anstieg mit der Windows GDI ändern.\n"
+msgstr "Gamos lentelių sureguliavimas naudojant Windows GDI.\n"
 
 #: src/gamma-w32gdi.c:119
 msgid "Unable to restore gamma ramps.\n"
-msgstr "Konnte Gamma-Anstieg nicht wiederherstellen.\n"
+msgstr "Nepavyko atkurti gamos lentelių.\n"
 
 #: src/gamma-w32gdi.c:144
 msgid "Unable to set gamma ramps.\n"
-msgstr "Konnte Gamma-Anstieg nicht festlegen.\n"
+msgstr "Nepavyko nustatyti gamos lentelių.\n"
 
 #: src/location-gnome-clock.c:50
 #, c-format
 msgid "Error reading city list: `%s'.\n"
-msgstr "Fehler beim Lesen der Stadtliste: »%s«.\n"
+msgstr "Klaida skaitant miestų sąrašą: „%s“.\n"
 
 #: src/location-gnome-clock.c:83
 msgid "Cannot list GNOME panel applets.\n"
-msgstr "GNOME Leisten-Applets konnten nicht aufgelistet werden.\n"
+msgstr "Nepavyko išvesti GNOME skydelio elementų sąrašo.\n"
 
 #: src/location-gnome-clock.c:125
 msgid "No clock applet was found.\n"
-msgstr "Konnte kein Uhren-Applet finden.\n"
+msgstr "Nepavyko rasti laikrodžio programėlės.\n"
 
 #: src/location-gnome-clock.c:130
 msgid "No city selected as current city.\n"
-msgstr "Keine Stadt ist als aktueller Standort ausgewählt.\n"
+msgstr "Nė vienas miestas nepasirinktas kaip dabartinis miestas.\n"
 
 #: src/location-gnome-clock.c:139
 msgid "Location not specified for city.\n"
-msgstr "Ort der Stadt ist nicht festgelegt.\n"
+msgstr "Miestui nenurodyta vieta.\n"
 
 #: src/location-gnome-clock.c:169
 msgid "Use the location as set in the GNOME Clock applet.\n"
-msgstr "Den Standort aus dem GNOME-Uhren-Applet benutzen.\n"
+msgstr "Naudoti GNOME laikrodžio programėlėje nustatytą vietą.\n"
 
 #: src/location-manual.c:50
 msgid "Latitude and longitude must be set.\n"
-msgstr "Breiten- und Längengrad müssen festgelegt sein.\n"
+msgstr "Platuma ir ilguma turi būti nustatytos.\n"
 
 #: src/location-manual.c:65
 msgid "Specify location manually.\n"
-msgstr "Standort manuell festlegen.\n"
+msgstr "Nurodyti vietą rankiniu būdu.\n"
 
 #. TRANSLATORS: Manual location help output
 #. left column must not be translated
@@ -462,21 +461,21 @@ msgid ""
 "  lat=N\t\tLatitude\n"
 "  lon=N\t\tLongitude\n"
 msgstr ""
-"  lat=N\t\tBreitengrad\n"
-"  lon=N\t\tLängengrad\n"
+"  pla=N\t\tPlatuma\n"
+"  ilg=N\t\tIlguma\n"
 
 #: src/location-manual.c:84
 msgid "Malformed argument.\n"
-msgstr "Fehlerhaftes Kommando.\n"
+msgstr "Blogai suformuotas argumentas.\n"
 
 #: src/location-manual.c:95
 msgid "Too many arguments.\n"
-msgstr "Zu viele Kommandos.\n"
+msgstr "Per daug argumentų.\n"
 
 #: src/gtk-redshift/statusicon.py:91
 msgid "Toggle"
-msgstr "Umschalten"
+msgstr "Perjungti"
 
 #: src/gtk-redshift/statusicon.py:95
 msgid "Autostart"
-msgstr "Automatischer Start"
+msgstr "Automatinis paleidimas"
