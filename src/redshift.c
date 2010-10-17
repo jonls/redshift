@@ -286,7 +286,8 @@ print_help(const char *program_name)
 	/* TRANSLATORS: help output 4
 	   `list' must not be translated
 	   no-wrap */
-	fputs(_("  -g R:G:B\tAdditional gamma correction to apply\n"
+	fputs(_("  -c FILE\tLoad settings from specified configuration file\n"
+		"  -g R:G:B\tAdditional gamma correction to apply\n"
 		"  -l LAT:LON\tYour current location\n"
 		"  -l PROVIDER\tSelect provider for automatic"
 		" location updates\n"
@@ -580,7 +581,9 @@ main(int argc, char *argv[])
 	textdomain(PACKAGE);
 #endif
 
-	/* Initialize to NULL values. */
+	/* Initialize settings to NULL values. */
+	char *config_filepath = NULL;
+
 	int temp_day = -1;
 	int temp_night = -1;
 	float gamma[3] = { NAN, NAN, NAN };
@@ -596,10 +599,14 @@ main(int argc, char *argv[])
 	int verbose = 0;
 	char *s;
 
-	/* Parse arguments. */
+	/* Parse command line arguments. */
 	int opt;
-	while ((opt = getopt(argc, argv, "g:hl:m:ort:vx")) != -1) {
+	while ((opt = getopt(argc, argv, "c:g:hl:m:ort:vx")) != -1) {
 		switch (opt) {
+		case 'c':
+			if (config_filepath != NULL) free(config_filepath);
+			config_filepath = strdup(optarg);
+			break;
 		case 'g':
 			r = parse_gamma_string(optarg, gamma);
 			if (r < 0) {
@@ -723,11 +730,13 @@ main(int argc, char *argv[])
 
 	/* Load settings from config file. */
 	config_ini_state_t config_state;
-	r = config_ini_init(&config_state, NULL);
+	r = config_ini_init(&config_state, config_filepath);
 	if (r < 0) {
 		fputs("Unable to load config file.\n", stderr);
 		exit(EXIT_FAILURE);
 	}
+
+	if (config_filepath != NULL) free(config_filepath);
 
 	/* Read global config settings. */
 	config_ini_section_t *section = config_ini_get_section(&config_state,
