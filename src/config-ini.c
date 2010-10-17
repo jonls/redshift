@@ -39,6 +39,8 @@
 static FILE *
 open_config_file(const char *filepath)
 {
+	FILE *f = NULL;
+
 	if (filepath == NULL) {
 		char cp[MAX_CONFIG_PATH];
 		char *env;
@@ -54,21 +56,21 @@ open_config_file(const char *filepath)
 		}
 
 		if (filepath != NULL) {
-			FILE *f = fopen(filepath, "r");
+			f = fopen(filepath, "r");
 			if (f != NULL) return f;
 			else if (f == NULL && errno != ENOENT) return NULL;
 		}
 
 		/* TODO look in getenv("XDG_CONFIG_DIRS") */
 	} else {
-		FILE *f = fopen(filepath, "r");
+		f = fopen(filepath, "r");
 		if (f == NULL) {
 			perror("fopen");
 			return NULL;
 		}
 	}
 
-	return NULL;
+	return f;
 }
 
 int
