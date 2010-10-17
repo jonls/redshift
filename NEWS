@@ -8,6 +8,10 @@ v1.6 (2010-10-18)
 * Fix: Redshift crashes when VidMode fails (fixes #657451).
 * Fix: Toggle menu item should not be of class gtk.ImageMenuItem
   (fixes #620355).
+* New translations and translation updates: Lithuanian (Aurimas Fišeras);
+  Brazilian Portuguese (Matteus Sthefano Leite da Silva);
+  Finnish (Jani Välimaa); Italian (Simone Sandri); French (Emilien Klein);
+  Russian (Anton Chernyshov).
 
 v1.5 (2010-08-18)
 * New ubuntu-mono-dark icons that fit better with the color guidelines.
