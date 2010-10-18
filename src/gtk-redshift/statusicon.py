@@ -67,15 +67,15 @@ def run():
         def toggle_cb(widget, data=None):
             process.send_signal(signal.SIGUSR1)
             if appindicator:
-                if indicator.get_icon() == 'redshift':
+                if indicator.get_icon() == 'redshift-status-on':
                     indicator.set_icon('redshift-status-off')
                 else:
                     indicator.set_icon('redshift-status-on')
             else:
-	            if status_icon.get_icon_name() == 'redshift':
-	              status_icon.set_from_icon_name('redshift-status-off')
+	            if status_icon.get_icon_name() == 'redshift-status-on':
+                        status_icon.set_from_icon_name('redshift-status-off')
 	            else:
-	              status_icon.set_from_icon_name('redshift-status-on')
+                        status_icon.set_from_icon_name('redshift-status-on')
 
         def autostart_cb(widget, data=None):
             utils.set_autostart(widget.get_active())

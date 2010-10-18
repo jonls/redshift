@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-10-18 01:15+0200\n"
+"POT-Creation-Date: 2010-10-18 02:05+0200\n"
 "PO-Revision-Date: 2010-09-10 16:10+0000\n"
 "Last-Translator: Jani Välimaa <Unknown>\n"
 "Language-Team: Finnish <fi@li.org>\n"
@@ -453,10 +453,10 @@ msgstr ""
 msgid "Too many arguments.\n"
 msgstr ""
 
-#: src/gtk-redshift/statusicon.py:91
+#: src/gtk-redshift/statusicon.py:92
 msgid "Toggle"
 msgstr "Kytke"
 
-#: src/gtk-redshift/statusicon.py:95
+#: src/gtk-redshift/statusicon.py:96
 msgid "Autostart"
 msgstr ""

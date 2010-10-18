@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift 1.6\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-10-18 01:15+0200\n"
+"POT-Creation-Date: 2010-10-18 02:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -445,10 +445,10 @@ msgstr ""
 msgid "Too many arguments.\n"
 msgstr ""
 
-#: src/gtk-redshift/statusicon.py:91
+#: src/gtk-redshift/statusicon.py:92
 msgid "Toggle"
 msgstr ""
 
-#: src/gtk-redshift/statusicon.py:95
+#: src/gtk-redshift/statusicon.py:96
 msgid "Autostart"
 msgstr ""
