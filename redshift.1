@@ -23,6 +23,9 @@ Display this help message
 \fB\-v\fR
 Verbose output
 .TP
+\fB\-c\fR FILE
+Load settings from specified configuration file
+.TP
 \fB\-g\fR R:G:B
 Additional gamma correction to apply
 .TP
@@ -49,6 +52,12 @@ Disable temperature transitions
 \fB\-t\fR DAY:NIGHT
 Color temperature to set at daytime/night
 .PP
+The neutral temperature is 6500K. Using this value will not
+change the color temperature of the display. Setting the
+color temperature to a value higher than this results in
+more blue light, and setting a lower value will result in
+more red light.
+
 Default values:
 .IP
 Daytime temperature: 5500K
