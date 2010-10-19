@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
 "POT-Creation-Date: 2010-10-18 02:05+0200\n"
-"PO-Revision-Date: 2010-10-18 01:51+0000\n"
-"Last-Translator: Jon Lund Steffensen <Unknown>\n"
+"PO-Revision-Date: 2010-10-18 09:26+0000\n"
+"Last-Translator: Fire <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-10-18 05:01+0000\n"
+"X-Launchpad-Export-Date: 2010-10-19 05:04+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "Language: it\n"
 
@@ -78,6 +78,19 @@ msgid ""
 "  -r\t\tDisable temperature transitions\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
+"  -c FILE\t Carica impostazioni da uno specifico file di configurazione\n"
+"  -g R:G:B\tCorrezione aggiuntiva da applicare alla gamma\n"
+"  -l LAT:LON\tLa tua posizione attuale\n"
+"  -l PROVIDER\tSeleziona il provider per gli aggiornamenti della "
+"localizzazione automatica\n"
+"  \t\t(Digita 'list' per vedere i provider disponibili)\n"
+"  -m METHOD\tMetodo da usare per impostare per la temperature del colore\n"
+"  \t\t(Digita 'list' per vedere i metodi disponibili)\n"
+"  -o\t\tModalità one shot (non aggiorna continuamente la temperatura del "
+"colore)\n"
+"  -x\t\tModalità reset (rimuovi l'aggiustamento dallo schermo)\n"
+"  -r\t\tDisabilita la transizione della temperatura\n"
+"  -t DAY:NIGHT\tTemperatura del colore da impostare di giorno/notte\n"
 
 #. TRANSLATORS: help output 5
 #: src/redshift.c:306
@@ -197,7 +210,7 @@ msgstr "Provider posizionale sconosciuto `%s'.\n"
 #: src/redshift.c:687 src/redshift.c:778
 #, c-format
 msgid "Unknown adjustment method `%s'.\n"
-msgstr ""
+msgstr "Metodo di aggiustamento sconosciuto `%s'.\n"
 
 #: src/redshift.c:708
 msgid "Malformed temperature argument.\n"
@@ -205,7 +218,7 @@ msgstr "Argomento della temperatura in forma errata.\n"
 
 #: src/redshift.c:766
 msgid "Malformed gamma setting.\n"
-msgstr ""
+msgstr "Impostazioni gamma errata.\n"
 
 #: src/redshift.c:801
 #, c-format
