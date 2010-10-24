@@ -1,20 +1,21 @@
 # Finnish translation for redshift
 # Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
 # This file is distributed under the same license as the redshift package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
+# Jani Välimaa <wally@mandriva.org>, 2010.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
 "POT-Creation-Date: 2010-10-18 02:05+0200\n"
-"PO-Revision-Date: 2010-10-19 08:15+0000\n"
+"PO-Revision-Date: 2010-10-23 12:59+0000\n"
 "Last-Translator: Jani Välimaa <Unknown>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-10-20 05:02+0000\n"
+"X-Launchpad-Export-Date: 2010-10-24 05:02+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "Language: fi\n"
 
@@ -80,9 +81,9 @@ msgstr ""
 "  -g R:G:B\tKäytettävä lisägammakorjaus\n"
 "  -l LAT:LON\tNykyinen sijainti\n"
 "  -l TARJOAJA\tAutomaattisten sijaintitietojen tarjoaja\n"
-"\t\t('list' näyttää käytettävissä olevat tarjoajat)\n"
+"  \t\t('list' näyttää käytettävissä olevat tarjoajat)\n"
 "  -m MENETELMÄ\tVärilämpötilan säätömenetelmä\n"
-"\t\t('list' näyttää käytettävissä olevat menetelmät)\n"
+"  \t\t('list' näyttää käytettävissä olevat menetelmät)\n"
 "  -o\t\tSäädä vain kerran (ei jatkuvaa värilämpötilan säätöä)\n"
 "  -x\t\tNollaa säädöt (poistaa säädöt näytöltä)\n"
 "  -r\t\tPoista lämpötilan muutos käytöstä\n"
@@ -131,8 +132,8 @@ msgstr "Käytettävissä olevat säätömenetelmät:\n"
 #: src/redshift.c:336
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
 msgstr ""
-"Luettele kaksoispisteellä erotellut asetukset valitsimella '-m "
-"MENETELMÄ:ASETUKSET'.\n"
+"Luettele kaksoispisteellä erotellut asetukset valitsimella\n"
+"'-m MENETELMÄ:ASETUKSET'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:339
@@ -146,8 +147,8 @@ msgstr "Käytettävissä olevat sijainnintarjoajat:\n"
 #: src/redshift.c:351
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
 msgstr ""
-"Luettele kaksoispisteellä erotellut asetukset valitsimella '-l "
-"TARJOAJA:ASETUKSET'.\n"
+"Luettele kaksoispisteellä erotellut asetukset valitsimella\n"
+"'-l TARJOAJA:ASETUKSET'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:354
@@ -442,19 +443,19 @@ msgstr "Nykyistä sijaintia ei ole valittu.\n"
 
 #: src/location-gnome-clock.c:139
 msgid "Location not specified for city.\n"
-msgstr ""
+msgstr "Kaupungille ei ole määritelty sijaintia.\n"
 
 #: src/location-gnome-clock.c:169
 msgid "Use the location as set in the GNOME Clock applet.\n"
-msgstr "Käytä GNOMEn kellosovelmassa asetettua sijaintia.\n"
+msgstr "Käytä GNOMEn kellosovelmaan asetettua sijaintia.\n"
 
 #: src/location-manual.c:50
 msgid "Latitude and longitude must be set.\n"
-msgstr "Leveys- ja pituusaste on asetettava.\n"
+msgstr "Leveys- ja pituupiiri on asetettava.\n"
 
 #: src/location-manual.c:65
 msgid "Specify location manually.\n"
-msgstr "Määritä sijainti käsin.\n"
+msgstr "Määritä sijainti manuaalisesti.\n"
 
 #. TRANSLATORS: Manual location help output
 #. left column must not be translated
@@ -463,8 +464,8 @@ msgid ""
 "  lat=N\t\tLatitude\n"
 "  lon=N\t\tLongitude\n"
 msgstr ""
-"  lat=N\t\tLeveysaste\n"
-"  lon=N\t\tPituusaste\n"
+"  lat=N\t\tLeveyspiiri\n"
+"  lon=N\t\tPituuspiiri\n"
 
 #: src/location-manual.c:84
 msgid "Malformed argument.\n"
