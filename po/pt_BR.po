@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
 "POT-Creation-Date: 2010-10-18 02:05+0200\n"
-"PO-Revision-Date: 2010-10-18 01:49+0000\n"
-"Last-Translator: Jon Lund Steffensen <Unknown>\n"
+"PO-Revision-Date: 2010-10-28 15:37+0000\n"
+"Last-Translator: Gabriel <Unknown>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-10-19 05:04+0000\n"
+"X-Launchpad-Export-Date: 2010-10-29 05:39+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "Language: pt_BR\n"
 
@@ -165,7 +165,7 @@ msgstr "Não foi possível iniciar o provedor %s.\n"
 #: src/redshift.c:465
 #, c-format
 msgid "Try `-m %s:help' for more information.\n"
-msgstr ""
+msgstr "Tente `-m %s:help' para mais informações.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:494
