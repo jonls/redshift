@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-10-18 02:05+0200\n"
-"PO-Revision-Date: 2010-10-26 16:27+0000\n"
+"PO-Revision-Date: 2010-11-02 00:05+0000\n"
 "Last-Translator: Manuel Xosé Lemos <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-10-27 05:07+0000\n"
+"X-Launchpad-Export-Date: 2010-11-02 04:57+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: src/redshift.c:244
@@ -439,16 +439,16 @@ msgstr ""
 
 #: src/location-manual.c:84
 msgid "Malformed argument.\n"
-msgstr ""
+msgstr "Argumento formado incorrectamente.\n"
 
 #: src/location-manual.c:95
 msgid "Too many arguments.\n"
-msgstr ""
+msgstr "Demasiados argumentos.\n"
 
 #: src/gtk-redshift/statusicon.py:92
 msgid "Toggle"
-msgstr ""
+msgstr "Alternar"
 
 #: src/gtk-redshift/statusicon.py:96
 msgid "Autostart"
-msgstr ""
+msgstr "Inicio automático"
