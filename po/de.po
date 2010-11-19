@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
 "POT-Creation-Date: 2010-10-18 02:05+0200\n"
-"PO-Revision-Date: 2010-11-15 02:48+0000\n"
-"Last-Translator: Danny Stieben <Unknown>\n"
+"PO-Revision-Date: 2010-11-18 21:02+0000\n"
+"Last-Translator: cmdrhenner <cmdrhenner@gmail.com>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-11-16 05:15+0000\n"
+"X-Launchpad-Export-Date: 2010-11-19 04:59+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "Language: de\n"
 
@@ -76,6 +76,19 @@ msgid ""
 "  -r\t\tDisable temperature transitions\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
+"  -c FILE\tEinstellungen von ausgewählter Konfigurationsdatei laden\n"
+"-g R:G:B\tZusätzliche Gammakorrektur anwenden\n"
+"-l BREITE:LÄNGE\tIhr aktueller Standort\n"
+"-l ANBIETER\tWählen Sie Ihren Anbieter für automatische Aktualisierungen des "
+"Standorts\n"
+"\t\t(Tipen Sie 'list' um verfügbare Methoden anzusehen)\n"
+"-m METHODEN\tMethode benutzen um die Farbtemperatur zu verändern\n"
+"\t\t(Tipen Sie 'list' um verfügbare Methoden anzusehen)\n"
+"-o\t\tEinselshot modus (bitte nicht andauernd die Farbtemperatur verändern)\n"
+"-x\t\tEinstellungen zurücknehmen (Eigene Einstellungen zum Bildschirm "
+"löschen)\n"
+"-r\t\tTemperatur Übergänge ausschalten\n"
+"-t TAG:NACHT\tFarbtemperatur einstellen bei Tag u. Nacht\n"
 
 #. TRANSLATORS: help output 5
 #: src/redshift.c:306
@@ -166,7 +179,7 @@ msgstr "Starten des Dienstes %s fehlgeschlagen.\n"
 #: src/redshift.c:465
 #, c-format
 msgid "Try `-m %s:help' for more information.\n"
-msgstr ""
+msgstr "Probieren Sie '-m%s:hilfe' für mehr Information.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:494
@@ -197,7 +210,7 @@ msgstr "Unbekannter Dienst »%s«.\n"
 #: src/redshift.c:687 src/redshift.c:778
 #, c-format
 msgid "Unknown adjustment method `%s'.\n"
-msgstr ""
+msgstr "Unbekanntes Anpassungsverfahren »%s«\n"
 
 #: src/redshift.c:708
 msgid "Malformed temperature argument.\n"
@@ -205,12 +218,12 @@ msgstr "Fehlerhaftes Kommando für Temperatur.\n"
 
 #: src/redshift.c:766
 msgid "Malformed gamma setting.\n"
-msgstr ""
+msgstr "Verkehrte Gamma-Einstellung.\n"
 
 #: src/redshift.c:801
 #, c-format
 msgid "Unknown configuration setting `%s'.\n"
-msgstr ""
+msgstr "Unbekannte Konfigurationseinstellung »%s«\n"
 
 #: src/redshift.c:836
 msgid "Trying next provider...\n"
