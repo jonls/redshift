@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
 "POT-Creation-Date: 2010-10-18 02:05+0200\n"
-"PO-Revision-Date: 2010-11-18 21:02+0000\n"
+"PO-Revision-Date: 2010-12-03 10:08+0000\n"
 "Last-Translator: cmdrhenner <cmdrhenner@gmail.com>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-11-19 04:59+0000\n"
+"X-Launchpad-Export-Date: 2010-12-04 05:26+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "Language: de\n"
 
@@ -307,11 +307,11 @@ msgstr "Temperaturänderung fehlgeschlagen.\n"
 
 #: src/config-ini.c:109
 msgid "Malformed section header in config file.\n"
-msgstr ""
+msgstr "Verunstaltete Header-Sektion in der Konfigurationsdatei.\n"
 
 #: src/config-ini.c:145
 msgid "Malformed assignment in config file.\n"
-msgstr ""
+msgstr "Verunstaltete Abgrenzung in der Konfigurationsdatei.\n"
 
 #: src/config-ini.c:156
 msgid "Assignment outside section in config file.\n"
