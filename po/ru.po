@@ -9,13 +9,13 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
 "POT-Creation-Date: 2010-10-18 02:05+0200\n"
-"PO-Revision-Date: 2010-10-19 23:02+0000\n"
-"Last-Translator: Jon Lund Steffensen <Unknown>\n"
+"PO-Revision-Date: 2010-12-04 23:30+0000\n"
+"Last-Translator: Alexey Ivanov <alexey.ivanes@gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-10-21 05:10+0000\n"
+"X-Launchpad-Export-Date: 2010-12-05 05:00+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "Language: ru\n"
 
@@ -103,8 +103,8 @@ msgid ""
 "  Night temperature: %uK\n"
 msgstr ""
 "Значения по умолчанию:\n"
-"  Температура днем: %uK\n"
-"  Температура ночью: %uK\n"
+"  Температура цвета днем: %uK\n"
+"  Температура цвета ночью: %uK\n"
 
 #. TRANSLATORS: help output 7
 #: src/redshift.c:324
@@ -243,12 +243,12 @@ msgstr "Возможные значения широты: %.1f - %.1f.\n"
 #: src/redshift.c:889
 #, c-format
 msgid "Longitude must be between %.1f and %.1f.\n"
-msgstr "Возможны значения долготы: %.1f - %.1f.\n"
+msgstr "Долгота должна быть между %.1f и %.1f.\n"
 
 #: src/redshift.c:898 src/redshift.c:906
 #, c-format
 msgid "Temperature must be between %uK and %uK.\n"
-msgstr "Возможные значения температуры цвета: %uK - %uK.\n"
+msgstr "Температура должна быть между %uK и %uK.\n"
 
 #: src/redshift.c:916
 #, c-format
@@ -262,20 +262,20 @@ msgstr "Гамма: %.3f, %.3f, %.3f\n"
 
 #: src/redshift.c:941
 msgid "Trying next method...\n"
-msgstr "Использование следующего метода...\n"
+msgstr "Попытка использования следующего метода...\n"
 
 #: src/redshift.c:946
 #, c-format
 msgid "Using method `%s'.\n"
-msgstr "Использование метода корректировки `%s'.\n"
+msgstr "Использование метода `%s'.\n"
 
 #: src/redshift.c:953
 msgid "No more methods to try.\n"
-msgstr "Больше нет доступных методов корректировки.\n"
+msgstr "Больше нет доступных для использования методов.\n"
 
 #: src/redshift.c:965 src/redshift.c:1086
 msgid "Unable to read system time.\n"
-msgstr "Невозможно прочесть текущее системное время.\n"
+msgstr "Невозможно прочесть системное время.\n"
 
 #. TRANSLATORS: Append degree symbol if possible.
 #: src/redshift.c:974
@@ -290,7 +290,7 @@ msgstr "Температура цвета: %uK\n"
 
 #: src/redshift.c:986 src/redshift.c:997 src/redshift.c:1161
 msgid "Temperature adjustment failed.\n"
-msgstr "Изменить температуру цвета не удалось.\n"
+msgstr "Корректировка цветовой температуры не удалась.\n"
 
 #: src/config-ini.c:109
 msgid "Malformed section header in config file.\n"
@@ -324,7 +324,7 @@ msgstr "Экран %i не может быть найден.\n"
 #: src/gamma-randr.c:177 src/gamma-vidmode.c:84
 #, c-format
 msgid "Gamma ramp size too small: %i\n"
-msgstr "Таблица корректировки цветов слишком мала: %i\n"
+msgstr "Размер таблицы корректировки цвета мал: %i\n"
 
 #: src/gamma-randr.c:250
 #, c-format
@@ -333,7 +333,7 @@ msgstr "Не удается восстановить параметры CRT ко
 
 #: src/gamma-randr.c:271
 msgid "Adjust gamma ramps with the X RANDR extension.\n"
-msgstr "Коррекция цвета с помощью расширения RANDR.\n"
+msgstr "Корректирование цвета с помощью расширения X RANDR.\n"
 
 #. TRANSLATORS: RANDR help output
 #. left column must not be translated
@@ -378,7 +378,7 @@ msgstr "Ошибка X запроса: %s\n"
 
 #: src/gamma-vidmode.c:126
 msgid "Adjust gamma ramps with the X VidMode extension.\n"
-msgstr "Коррекция цвета с помощью расширения VidMode.\n"
+msgstr "Корректирование цвета с помощью расширения X VidMode.\n"
 
 #. TRANSLATORS: VidMode help output
 #. left column must not be translated
@@ -388,15 +388,15 @@ msgstr "  screen=N\tX экран к которому применять корр
 
 #: src/gamma-w32gdi.c:59
 msgid "Unable to open device context.\n"
-msgstr "Не удается определить атрибуты устройства.\n"
+msgstr "Не удается открыть контекст устройства.\n"
 
 #: src/gamma-w32gdi.c:66
 msgid "Display device does not support gamma ramps.\n"
-msgstr "Подключенный монитор не поддерживает коррекцию цвета.\n"
+msgstr "Дисплей не поддерживает коррекцию цвета.\n"
 
 #: src/gamma-w32gdi.c:82
 msgid "Unable to save current gamma ramp.\n"
-msgstr "Не удается сохранить текущую таблицу коррекции цветов.\n"
+msgstr "Не удается сохранить текущие значения корректировки цвета.\n"
 
 #: src/gamma-w32gdi.c:104
 msgid "Adjust gamma ramps with the Windows GDI.\n"
@@ -404,11 +404,11 @@ msgstr "Коррекция цвета с помощью Windows GDI.\n"
 
 #: src/gamma-w32gdi.c:119
 msgid "Unable to restore gamma ramps.\n"
-msgstr "Невозможно восстановить таблицу коррекции цветов.\n"
+msgstr "Невозможно восстановить исходные значения корректировки цвета.\n"
 
 #: src/gamma-w32gdi.c:144
 msgid "Unable to set gamma ramps.\n"
-msgstr "Невозможно изменить таблицу коррекции цветов.\n"
+msgstr "Невозможно установить параметры корректировки цвета.\n"
 
 #: src/location-gnome-clock.c:50
 #, c-format
