@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
 "POT-Creation-Date: 2010-10-18 02:05+0200\n"
-"PO-Revision-Date: 2010-12-03 10:08+0000\n"
-"Last-Translator: cmdrhenner <cmdrhenner@gmail.com>\n"
+"PO-Revision-Date: 2011-01-18 20:26+0000\n"
+"Last-Translator: Well Well Well <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-04 05:26+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-19 05:09+0000\n"
+"X-Generator: Launchpad (build 12177)\n"
 "Language: de\n"
 
 #: src/redshift.c:244
@@ -315,7 +315,7 @@ msgstr "Verunstaltete Abgrenzung in der Konfigurationsdatei.\n"
 
 #: src/config-ini.c:156
 msgid "Assignment outside section in config file.\n"
-msgstr ""
+msgstr "Zuweisung außerhalb von Sektion in Konfigurationsdatei.\n"
 
 #: src/gamma-randr.c:69 src/gamma-randr.c:126 src/gamma-randr.c:165
 #: src/gamma-randr.c:191 src/gamma-randr.c:248 src/gamma-randr.c:346
@@ -480,3 +480,39 @@ msgstr "Umschalten"
 #: src/gtk-redshift/statusicon.py:96
 msgid "Autostart"
 msgstr "Automatischer Start"
+
+#~ msgid ""
+#~ "  -g R:G:B\tAdditional gamma correction to apply\n"
+#~ "  -l LAT:LON\tYour current location\n"
+#~ "  -l PROVIDER\tSelect provider for automatic location updates\n"
+#~ "  \t\t(Type `list' to see available providers)\n"
+#~ "  -m METHOD\tMethod to use to set color temperature\n"
+#~ "  \t\t(Type `list' to see available methods)\n"
+#~ "  -o\t\tOne shot mode (do not continously adjust color temperature)\n"
+#~ "  -x\t\tReset mode (remove adjustment from screen)\n"
+#~ "  -r\t\tDisable temperature transitions\n"
+#~ "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
+#~ msgstr ""
+#~ "  -g R:G:B\tZusätzliche Gamma-Korrektur\n"
+#~ "  -l BREITE:LÄNGE\tIhr aktueller Standort\n"
+#~ "  -l DIENST\tDienst für automatische Standortaktualisierungen\n"
+#~ "  \t\t(Benutzen Sie »list« für verfügbare Anbieter)\n"
+#~ "  -m METHOD\tMethode für Änderung der Farbtemperatur\n"
+#~ "  \t\t(Benutzen Sie »list« für verfügbare Methoden)\n"
+#~ "  -o\t\tEinfach-Modus (Farbtemperatur nicht ständig verändern)\n"
+#~ "  -x\t\tZurücksetzen-Modus (Änderungen entfernen)\n"
+#~ "  -r\t\tTemperatur-Übergänge deaktivieren\n"
+#~ "  -t TAG:NACHT\tFarbtemperatur tagsüber und nachts\n"
+
+#, c-format
+#~ msgid "Unknown method `%s'.\n"
+#~ msgstr "Unbekannte Methode »%s«.\n"
+
+#~ msgid "Trying other provider...\n"
+#~ msgstr "Anderer Dienst wird versucht …\n"
+
+#~ msgid "Trying other method...\n"
+#~ msgstr "Andere Methode wird versucht …\n"
+
+#~ msgid "Cannot list dirs in `/apps/panel/applets'.\n"
+#~ msgstr "Konnte Verzeichnisse in »/apps/panel/applets« nicht anzeigen.\n"
