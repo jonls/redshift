@@ -24,6 +24,7 @@ PKG_CHECK_MODULES([XCB_RANDR], [xcb-randr],
 
 PKG_CHECK_MODULES([GLIB], [glib-2.0 gobject-2.0], [have_glib=yes], [have_glib=no])
 PKG_CHECK_MODULES([GCONF], [gconf-2.0], [have_gconf=yes], [have_gconf=no])
+PKG_CHECK_MODULES([GEOCLUE], [geoclue], [have_geoclue=yes], [have_geoclue=no])
 
 AC_CHECK_HEADER([windows.h], [have_windows_h=yes], [have_windows_h=no])
 
@@ -130,6 +131,15 @@ AS_IF([test "x$enable_gnome_clock" != xno], [
 	enable_gnome_clock=no
 ])
 AM_CONDITIONAL([ENABLE_GNOME_CLOCK], [test "x$enable_gnome_clock" = xyes])
+
+# conditionally enable geoclue provider
+AC_ARG_ENABLE([geoclue], [AC_HELP_STRING([--enable-geoclue],
+		[enable Geoclue location provider])],
+		[enable_geoclue=yes
+		AC_DEFINE([ENABLE_GEOCLUE], 1,
+			[Define to 1 to enable Geoclue location provider])
+		],[enable_geoclue=no])
+AM_CONDITIONAL([ENABLE_GEOCLUE], [test "x$enable_geoclue" = xyes])
 
 # Check for GUI status icon
 AC_MSG_CHECKING([whether to enable GUI status icon])
