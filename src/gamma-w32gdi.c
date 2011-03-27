@@ -43,7 +43,6 @@ int
 w32gdi_init(w32gdi_state_t *state)
 {
 	state->saved_ramps = NULL;
-	state->hDC = NULL;
 
 	return 0;
 }
@@ -54,14 +53,14 @@ w32gdi_start(w32gdi_state_t *state)
 	BOOL r;
 
 	/* Open device context */
-	state->hDC = GetDC(NULL);
-	if (state->hDC == NULL) {
+	HDC hDC = GetDC(NULL);
+	if (hDC == NULL) {
 		fputs(_("Unable to open device context.\n"), stderr);
 		return -1;
 	}
 
 	/* Check support for gamma ramps */
-	int cmcap = GetDeviceCaps(state->hDC, COLORMGMTCAPS);
+	int cmcap = GetDeviceCaps(hDC, COLORMGMTCAPS);
 	if (cmcap != CM_GAMMA_RAMP) {
 		fputs(_("Display device does not support gamma ramps.\n"),
 		      stderr);
@@ -72,17 +71,20 @@ w32gdi_start(w32gdi_state_t *state)
 	state->saved_ramps = malloc(3*GAMMA_RAMP_SIZE*sizeof(WORD));
 	if (state->saved_ramps == NULL) {
 		perror("malloc");
-		ReleaseDC(NULL, state->hDC);
+		ReleaseDC(NULL, hDC);
 		return -1;
 	}
 
 	/* Save current gamma ramps so we can restore them at program exit */
-	r = GetDeviceGammaRamp(state->hDC, state->saved_ramps);
+	r = GetDeviceGammaRamp(hDC, state->saved_ramps);
 	if (!r) {
 		fputs(_("Unable to save current gamma ramp.\n"), stderr);
-		ReleaseDC(NULL, state->hDC);
+		ReleaseDC(NULL, hDC);
 		return -1;
 	}
+
+	/* Release device context */
+	ReleaseDC(NULL, hDC);
 
 	return 0;
 }
@@ -92,9 +94,6 @@ w32gdi_free(w32gdi_state_t *state)
 {
 	/* Free saved ramps */
 	free(state->saved_ramps);
-
-	/* Release device context */
-	if (state->hDC != NULL) ReleaseDC(NULL, state->hDC);
 }
 
 
@@ -114,15 +113,32 @@ w32gdi_set_option(w32gdi_state_t *state, const char *key, const char *value)
 void
 w32gdi_restore(w32gdi_state_t *state)
 {
+	/* Open device context */
+	HDC hDC = GetDC(NULL);
+	if (hDC == NULL) {
+		fputs(_("Unable to open device context.\n"), stderr);
+		return;
+	}
+
 	/* Restore gamma ramps */
-	BOOL r = SetDeviceGammaRamp(state->hDC, state->saved_ramps);
+	BOOL r = SetDeviceGammaRamp(hDC, state->saved_ramps);
 	if (!r) fputs(_("Unable to restore gamma ramps.\n"), stderr);
+
+	/* Release device context */
+	ReleaseDC(NULL, hDC);
 }
 
 int
 w32gdi_set_temperature(w32gdi_state_t *state, int temp, float gamma[3])
 {
 	BOOL r;
+
+	/* Open device context */
+	HDC hDC = GetDC(NULL);
+	if (hDC == NULL) {
+		fputs(_("Unable to open device context.\n"), stderr);
+		return -1;
+	}
 
 	/* Create new gamma ramps */
 	WORD *gamma_ramps = malloc(3*GAMMA_RAMP_SIZE*sizeof(WORD));
@@ -139,7 +155,7 @@ w32gdi_set_temperature(w32gdi_state_t *state, int temp, float gamma[3])
 		       temp, gamma);
 
 	/* Set new gamma ramps */
-	r = SetDeviceGammaRamp(state->hDC, gamma_ramps);
+	r = SetDeviceGammaRamp(hDC, gamma_ramps);
 	if (!r) {
 		fputs(_("Unable to set gamma ramps.\n"), stderr);
 		free(gamma_ramps);
@@ -147,6 +163,9 @@ w32gdi_set_temperature(w32gdi_state_t *state, int temp, float gamma[3])
 	}
 
 	free(gamma_ramps);
+
+	/* Release device context */
+	ReleaseDC(NULL, hDC);
 
 	return 0;
 }

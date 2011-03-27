@@ -25,7 +25,6 @@
 
 
 typedef struct {
-	HDC hDC;
 	WORD *saved_ramps;
 } w32gdi_state_t;
 
