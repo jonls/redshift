@@ -24,6 +24,7 @@ PKG_CHECK_MODULES([XCB_RANDR], [xcb-randr],
 
 PKG_CHECK_MODULES([GLIB], [glib-2.0 gobject-2.0], [have_glib=yes], [have_glib=no])
 PKG_CHECK_MODULES([GCONF], [gconf-2.0], [have_gconf=yes], [have_gconf=no])
+PKG_CHECK_MODULES([GEOCLUE], [geoclue], [have_geoclue=yes], [have_geoclue=no])
 
 AC_CHECK_HEADER([windows.h], [have_windows_h=yes], [have_windows_h=no])
 
@@ -113,7 +114,7 @@ AC_ARG_ENABLE([gnome-clock], [AC_HELP_STRING([--enable-gnome-clock],
 	[enable GNOME Clock location provider])],
 	[enable_gnome_clock=$enableval],[enable_gnome_clock=maybe])
 AS_IF([test "x$enable_gnome_clock" != xno], [
-	AS_IF([test $have_glib = yes -a $have_gconf = yes], [
+	AS_IF([test "x$have_glib" = "xyes" -a "x$have_gconf" = xyes], [
 		AC_DEFINE([ENABLE_GNOME_CLOCK], 1,
 			[Define to 1 to enable GNOME Clock location provider])
 		AC_MSG_RESULT([yes])
@@ -130,6 +131,31 @@ AS_IF([test "x$enable_gnome_clock" != xno], [
 	enable_gnome_clock=no
 ])
 AM_CONDITIONAL([ENABLE_GNOME_CLOCK], [test "x$enable_gnome_clock" = xyes])
+
+# Check Geoclue location provider
+AC_MSG_CHECKING([whether to enable Geoclue location provider])
+AC_ARG_ENABLE([geoclue], [AC_HELP_STRING([--enable-geoclue],
+	[enable Geoclue location provider])],
+	[enable_geoclue=$enableval],[enable_geoclue=maybe])
+AS_IF([test "x$enable_geoclue" != xno], [
+	AS_IF([test "x$have_geoclue" = xyes], [
+		AC_DEFINE([ENABLE_GEOCLUE], 1,
+			[Define to 1 to enable Geoclue location provider])
+		AC_MSG_RESULT([yes])
+		enable_geoclue=yes
+	], [
+		AC_MSG_RESULT([missing dependencies])
+		AS_IF([test "x$enable_geoclue" = xyes], [
+			AC_MSG_ERROR([missing dependencies for Geoclue location provider])
+		])
+		enable_geoclue=no
+	])
+], [
+	AC_MSG_RESULT([no])
+	enable_geoclue=no
+])
+AM_CONDITIONAL([ENABLE_GEOCLUE], [test "x$enable_geoclue" = xyes])
+
 
 # Check for GUI status icon
 AC_MSG_CHECKING([whether to enable GUI status icon])
@@ -187,6 +213,7 @@ echo "
 
     Location providers:
     GNOME Clock:	${enable_gnome_clock}
+    Geoclue:		${enable_geoclue}
 
     GUI:		${enable_gui}
 "

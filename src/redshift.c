@@ -76,6 +76,10 @@
 # include "location-gnome-clock.h"
 #endif
 
+#ifdef ENABLE_GEOCLUE
+# include "location-geoclue.h"
+#endif
+
 
 /* Union of state data for gamma adjustment methods */
 typedef union {
@@ -139,11 +143,28 @@ typedef union {
 #ifdef ENABLE_GNOME_CLOCK
 	location_gnome_clock_state_t gnome_clock;
 #endif
+#ifdef ENABLE_GEOCLUE
+	location_geoclue_state_t geoclue;
+#endif
 } location_state_t;
 
 
 /* Location provider method structs */
 static const location_provider_t location_providers[] = {
+#ifdef ENABLE_GEOCLUE
+	{
+		"geoclue",
+		(location_provider_init_func *)location_geoclue_init,
+		(location_provider_start_func *)location_geoclue_start,
+		(location_provider_free_func *)location_geoclue_free,
+		(location_provider_print_help_func *)
+		location_geoclue_print_help,
+		(location_provider_set_option_func *)
+		location_geoclue_set_option,
+		(location_provider_get_location_func *)
+		location_geoclue_get_location
+	},
+#endif
 #ifdef ENABLE_GNOME_CLOCK
 	{
 		"gnome-clock",

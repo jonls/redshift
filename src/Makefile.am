@@ -20,7 +20,8 @@ EXTRA_redshift_SOURCES = \
 	gamma-randr.c gamma-randr.h \
 	gamma-vidmode.c gamma-vidmode.h \
 	gamma-w32gdi.c gamma-w32gdi.h \
-	location-gnome-clock.c location-gnome-clock.h
+	location-gnome-clock.c location-gnome-clock.h \
+	location-geoclue.c location-geoclue.h
 
 AM_CFLAGS =
 redshift_LDADD = @LIBINTL@
@@ -53,4 +54,11 @@ AM_CFLAGS += $(GLIB_CFLAGS) $(GCONF_CFLAGS)
 redshift_LDADD += \
 	$(GLIB_LIBS) $(GLIB_CFLAGS) \
 	$(GCONF_LIBS) $(GCONF_CFLAGS)
+endif
+
+if ENABLE_GEOCLUE
+redshift_SOURCES += location-geoclue.c location-geoclue.h
+AM_CFLAGS += $(GEOCLUE_CFLAGS) $(GEOCLUE_LIBS)
+redshift_LDADD += \
+	$(GEOCLUE_LIBS) $(GEOCLUE_CFLAGS)
 endif
