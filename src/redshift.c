@@ -533,6 +533,8 @@ parse_gamma_string(const char *str, float gamma[])
 		gamma[1] = atof(g_s); /* Blue */
 		gamma[2] = atof(s); /* Green */
 	}
+
+	return 0;
 }
 
 static const gamma_method_t *
