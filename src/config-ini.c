@@ -49,6 +49,12 @@ open_config_file(const char *filepath)
 		    env[0] != '\0') {
 			snprintf(cp, sizeof(cp), "%s/redshift.conf", env);
 			filepath = cp;
+#ifdef _WIN32
+		} else if ((env = getenv("userprofile")) != NULL && env[0] != '\0') {
+			snprintf(cp, sizeof(cp),
+				 "%s/.config/redshift.conf", env);
+			filepath = cp;
+#endif
 		} else if ((env = getenv("HOME")) != NULL && env[0] != '\0') {
 			snprintf(cp, sizeof(cp),
 				 "%s/.config/redshift.conf", env);
