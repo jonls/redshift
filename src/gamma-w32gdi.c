@@ -144,6 +144,7 @@ w32gdi_set_temperature(w32gdi_state_t *state, int temp, float gamma[3])
 	WORD *gamma_ramps = malloc(3*GAMMA_RAMP_SIZE*sizeof(WORD));
 	if (gamma_ramps == NULL) {
 		perror("malloc");
+		ReleaseDC(NULL, hDC);
 		return -1;
 	}
 
@@ -157,8 +158,12 @@ w32gdi_set_temperature(w32gdi_state_t *state, int temp, float gamma[3])
 	/* Set new gamma ramps */
 	r = SetDeviceGammaRamp(hDC, gamma_ramps);
 	if (!r) {
-		fputs(_("Unable to set gamma ramps.\n"), stderr);
+		/* TODO it happens that SetDeviceGammaRamp returns FALSE on
+		   occasions where the adjustment seems to be successful.
+		   Does this only happen with multiple monitors connected? */
+		fputs(_("Unable to set gamma ramps.\n"), stderr);s
 		free(gamma_ramps);
+		ReleaseDC(NULL, hDC);
 		return -1;
 	}
 
