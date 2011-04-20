@@ -301,7 +301,7 @@ randr_set_option(randr_state_t *state, const char *key, const char *value)
 
 static int
 randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num, int temp,
-			       float gamma[3])
+			       float brightness, float gamma[3])
 {
 	xcb_generic_error_t *error;
 	
@@ -333,7 +333,7 @@ randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num, int temp,
 	uint16_t *gamma_b = &gamma_ramps[2*ramp_size];
 
 	colorramp_fill(gamma_r, gamma_g, gamma_b, ramp_size,
-		       temp, gamma);
+		       temp, brightness, gamma);
 
 	/* Set new gamma ramps */
 	xcb_void_cookie_t gamma_set_cookie =
@@ -355,7 +355,8 @@ randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num, int temp,
 }
 
 int
-randr_set_temperature(randr_state_t *state, int temp, float gamma[3])
+randr_set_temperature(randr_state_t *state, int temp, float brightness,
+		      float gamma[3])
 {
 	int r;
 
@@ -364,12 +365,13 @@ randr_set_temperature(randr_state_t *state, int temp, float gamma[3])
 	if (state->crtc_num < 0) {
 		for (int i = 0; i < state->crtc_count; i++) {
 			r = randr_set_temperature_for_crtc(state, i,
-							   temp, gamma);
+							   temp, brightness,
+							   gamma);
 			if (r < 0) return -1;
 		}
 	} else {
 		return randr_set_temperature_for_crtc(state, state->crtc_num,
-						      temp, gamma);
+						      temp, brightness, gamma);
 	}
 
 	return 0;

@@ -129,7 +129,8 @@ w32gdi_restore(w32gdi_state_t *state)
 }
 
 int
-w32gdi_set_temperature(w32gdi_state_t *state, int temp, float gamma[3])
+w32gdi_set_temperature(w32gdi_state_t *state, int temp, float brightness,
+		       float gamma[3])
 {
 	BOOL r;
 
@@ -153,7 +154,7 @@ w32gdi_set_temperature(w32gdi_state_t *state, int temp, float gamma[3])
 	WORD *gamma_b = &gamma_ramps[2*GAMMA_RAMP_SIZE];
 
 	colorramp_fill(gamma_r, gamma_g, gamma_b, GAMMA_RAMP_SIZE,
-		       temp, gamma);
+		       temp, brightness, gamma);
 
 	/* Set new gamma ramps */
 	r = SetDeviceGammaRamp(hDC, gamma_ramps);
@@ -161,7 +162,7 @@ w32gdi_set_temperature(w32gdi_state_t *state, int temp, float gamma[3])
 		/* TODO it happens that SetDeviceGammaRamp returns FALSE on
 		   occasions where the adjustment seems to be successful.
 		   Does this only happen with multiple monitors connected? */
-		fputs(_("Unable to set gamma ramps.\n"), stderr);s
+		fputs(_("Unable to set gamma ramps.\n"), stderr);
 		free(gamma_ramps);
 		ReleaseDC(NULL, hDC);
 		return -1;

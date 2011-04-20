@@ -169,7 +169,8 @@ vidmode_restore(vidmode_state_t *state)
 }
 
 int
-vidmode_set_temperature(vidmode_state_t *state, int temp, float gamma[3])
+vidmode_set_temperature(vidmode_state_t *state, int temp, float brightness,
+			float gamma[3])
 {
 	int r;
 
@@ -185,7 +186,7 @@ vidmode_set_temperature(vidmode_state_t *state, int temp, float gamma[3])
 	uint16_t *gamma_b = &gamma_ramps[2*state->ramp_size];
 
 	colorramp_fill(gamma_r, gamma_g, gamma_b, state->ramp_size,
-		       temp, gamma);
+		       temp, brightness, gamma);
 
 	/* Set new gamma ramps */
 	r = XF86VidModeSetGammaRamp(state->display, state->screen_num,

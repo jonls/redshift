@@ -201,12 +201,15 @@ static const location_provider_t location_providers[] = {
 #define MAX_LON   180.0
 #define MIN_TEMP   1000
 #define MAX_TEMP  10000
+#define MIN_BRIGHTNESS  0.1
+#define MAX_BRIGHTNESS  1.0
 #define MIN_GAMMA   0.1
 #define MAX_GAMMA  10.0
 
 /* Default values for parameters. */
 #define DEFAULT_DAY_TEMP    5500
 #define DEFAULT_NIGHT_TEMP  3700
+#define DEFAULT_BRIGHTNESS   1.0
 #define DEFAULT_GAMMA        1.0
 
 /* The color temperature when no adjustment is applied. */
@@ -610,6 +613,7 @@ main(int argc, char *argv[])
 	int temp_day = -1;
 	int temp_night = -1;
 	float gamma[3] = { NAN, NAN, NAN };
+	float brightness = NAN;
 
 	const gamma_method_t *method = NULL;
 	char *method_args = NULL;
@@ -624,8 +628,11 @@ main(int argc, char *argv[])
 
 	/* Parse command line arguments. */
 	int opt;
-	while ((opt = getopt(argc, argv, "c:g:hl:m:ort:vx")) != -1) {
+	while ((opt = getopt(argc, argv, "b:c:g:hl:m:ort:vx")) != -1) {
 		switch (opt) {
+		case 'b':
+			brightness = atof(optarg);
+			break;
 		case 'c':
 			if (config_filepath != NULL) free(config_filepath);
 			config_filepath = strdup(optarg);
@@ -781,6 +788,11 @@ main(int argc, char *argv[])
 				if (transition < 0) {
 					transition = !!atoi(setting->value);
 				}
+			} else if (strcasecmp(setting->name,
+					      "brightness") == 0) {
+				if (isnan(brightness)) {
+					brightness = atof(setting->value);
+				}
 			} else if (strcasecmp(setting->name, "gamma") == 0) {
 				if (isnan(gamma[0])) {
 					r = parse_gamma_string(setting->value,
@@ -833,6 +845,7 @@ main(int argc, char *argv[])
 	   the config file nor on the command line. */
 	if (temp_day < 0) temp_day = DEFAULT_DAY_TEMP;
 	if (temp_night < 0) temp_night = DEFAULT_NIGHT_TEMP;
+	if (isnan(brightness)) brightness = DEFAULT_BRIGHTNESS;
 	if (isnan(gamma[0])) gamma[0] = gamma[1] = gamma[2] = DEFAULT_GAMMA;
 	if (transition < 0) transition = 1;
 
@@ -931,6 +944,18 @@ main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
+	/* Brightness */
+	if (brightness < MIN_BRIGHTNESS || brightness > MAX_BRIGHTNESS) {
+		fprintf(stderr,
+			_("Brightness value must be between %.1f and %.1f.\n"),
+			MIN_BRIGHTNESS, MAX_BRIGHTNESS);
+		exit(EXIT_FAILURE);
+	}
+
+	if (verbose) {
+		printf(_("Brightness: %.2f\n"), brightness);
+	}
+
 	/* Gamma */
 	if (gamma[0] < MIN_GAMMA || gamma[0] > MAX_GAMMA ||
 	    gamma[1] < MIN_GAMMA || gamma[1] > MAX_GAMMA ||
@@ -1004,7 +1029,7 @@ main(int argc, char *argv[])
 		if (verbose) printf(_("Color temperature: %uK\n"), temp);
 
 		/* Adjust temperature */
-		r = method->set_temperature(&state, temp, gamma);
+		r = method->set_temperature(&state, temp, brightness, gamma);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
 			method->free(&state);
@@ -1015,7 +1040,7 @@ main(int argc, char *argv[])
 	case PROGRAM_MODE_RESET:
 	{
 		/* Reset screen */
-		r = method->set_temperature(&state, NEUTRAL_TEMP, gamma);
+		r = method->set_temperature(&state, NEUTRAL_TEMP, 1.0, gamma);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
 			method->free(&state);
@@ -1179,7 +1204,8 @@ main(int argc, char *argv[])
 			/* Adjust temperature */
 			if (!disabled || short_trans) {
 				r = method->set_temperature(&state,
-							    temp, gamma);
+							    temp, brightness,
+							    gamma);
 				if (r < 0) {
 					fputs(_("Temperature adjustment"
 						" failed.\n"), stderr);
