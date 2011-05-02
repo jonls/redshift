@@ -9,14 +9,14 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
 "POT-Creation-Date: 2010-10-18 02:05+0200\n"
-"PO-Revision-Date: 2010-12-04 23:30+0000\n"
-"Last-Translator: Alexey Ivanov <alexey.ivanes@gmail.com>\n"
+"PO-Revision-Date: 2011-05-01 14:20+0000\n"
+"Last-Translator: Ivan Ysh <Unknown>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-06 04:58+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-05-02 04:48+0000\n"
+"X-Generator: Launchpad (build 12758)\n"
 "Language: ru\n"
 
 #: src/redshift.c:244
@@ -166,7 +166,7 @@ msgstr "Ошибка обращения к источнику местополо
 #: src/redshift.c:465
 #, c-format
 msgid "Try `-m %s:help' for more information.\n"
-msgstr ""
+msgstr "Попробуйте `-m %s:help' для дополнительной информации.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:494
@@ -210,7 +210,7 @@ msgstr ""
 #: src/redshift.c:801
 #, c-format
 msgid "Unknown configuration setting `%s'.\n"
-msgstr ""
+msgstr "Неизвестный параметр конфигурации `%s'.\n"
 
 #: src/redshift.c:836
 msgid "Trying next provider...\n"
@@ -294,7 +294,7 @@ msgstr "Корректировка цветовой температуры не 
 
 #: src/config-ini.c:109
 msgid "Malformed section header in config file.\n"
-msgstr ""
+msgstr "Неправильный заголовок секции в файле конфигурации.\n"
 
 #: src/config-ini.c:145
 msgid "Malformed assignment in config file.\n"
@@ -469,5 +469,76 @@ msgstr "Включить/Выключить"
 msgid "Autostart"
 msgstr "Автозапуск"
 
+#, c-format
+#~ msgid "Unknown method `%s'.\n"
+#~ msgstr "Неизвестный метод «%s».\n"
+
+#, c-format
+#~ msgid "Unknown parameter `%c'.\n"
+#~ msgstr "Неизвестный параметр «%c».\n"
+
+#~ msgid "Trying other method...\n"
+#~ msgstr "Пробую другой метод...\n"
+
+#~ msgid "Initialization of RANDR failed.\n"
+#~ msgstr "Инициализация RANDR не удалась.\n"
+
 #~ msgid "Initialization of VidMode failed.\n"
 #~ msgstr "Инициализация VidMode не удалась.\n"
+
+#~ msgid ""
+#~ "  -g R:G:B\tAdditional gamma correction to apply\n"
+#~ "  -l LAT:LON\tYour current location\n"
+#~ "  -m METHOD\tMethod to use to set color temperature (randr or vidmode)\n"
+#~ "  -o\t\tOne shot mode (do not continously adjust color temperature)\n"
+#~ "  -r\t\tDisable initial temperature transition\n"
+#~ "  -s SCREEN\tX screen to apply adjustments to\n"
+#~ "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
+#~ msgstr ""
+#~ "  -g R:G:B\tДополнительная гамма-коррекция\n"
+#~ "  -l ШИР:ДОЛ\tВаше текущее местоположение\n"
+#~ "  -m МЕТОД\tМетод коррекции (randr или vidmode)\n"
+#~ "  -o\t\tОднократная коррекция\n"
+#~ "  -r\t\tВыключить начальное плавное изменение цветовой температуры\n"
+#~ "  -s ЭКРАН\tЭкран X, к которому применять коррекцию\n"
+#~ "  -t ДЕНЬ:НОЧЬ\tЦветовая температура для ночного/дневного времени\n"
+
+#~ msgid "Try `--help' for more information.\n"
+#~ msgstr "Воспользуйтесь «--help» для получения дополнительной информации.\n"
+
+#~ msgid "Trying other provider...\n"
+#~ msgstr "Использовать другого поставщика...\n"
+
+#~ msgid ""
+#~ "  -g R:G:B\tAdditional gamma correction to apply\n"
+#~ "  -l LAT:LON\tYour current location\n"
+#~ "  -l PROVIDER\tSelect provider for automatic location updates\n"
+#~ "  \t\t(Type `list' to see available providers)\n"
+#~ "  -m METHOD\tMethod to use to set color temperature\n"
+#~ "  \t\t(Type `list' to see available methods)\n"
+#~ "  -o\t\tOne shot mode (do not continously adjust color temperature)\n"
+#~ "  -x\t\tReset mode (remove adjustment from screen)\n"
+#~ "  -r\t\tDisable temperature transitions\n"
+#~ "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
+#~ msgstr ""
+#~ "  -g R:G:B\tПрименить дополнительную коррекцию гаммы\n"
+#~ "  -l LAT:LON\tВаше текущее местоположение\n"
+#~ "  -l PROVIDER\tВыберите источник для автоматической коррекции "
+#~ "местоположения\n"
+#~ "  \t\t(Укажите опцию `list' чтобы увидеть возможные варианты)\n"
+#~ "  -m METHOD\tМетод для коррекции температуры цвета\n"
+#~ "  \t\t(Укажите опцию `list' чтобы увидеть возможные варианты)\n"
+#~ "  -o\t\tОдноразовая коррекция (не выполнять непрерывную коррекцию "
+#~ "температуры)\n"
+#~ "  -x\t\tСброс (отменить выполненную коррекцию цвета)\n"
+#~ "  -r\t\tЗапретить изменение температуры\n"
+#~ "  -t DAY:NIGHT\tТемпература цвета для дня/ночи\n"
+
+#~ msgid "Malformed location argument.\n"
+#~ msgstr "Некорректно указано местоположение.\n"
+
+#~ msgid "RANDR method was not enabled at compile time.\n"
+#~ msgstr "Метод RANDR был отключен во время компиляции.\n"
+
+#~ msgid "VidMode method was not enabled at compile time.\n"
+#~ msgstr "Метод VidMode был отключен во время компиляции.\n"
