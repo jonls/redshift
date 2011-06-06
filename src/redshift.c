@@ -226,7 +226,8 @@ static const location_provider_t location_providers[] = {
 typedef enum {
 	PROGRAM_MODE_CONTINUAL,
 	PROGRAM_MODE_ONE_SHOT,
-	PROGRAM_MODE_RESET
+	PROGRAM_MODE_RESET,
+	PROGRAM_MODE_MANUAL
 } program_mode_t;
 
 
@@ -320,6 +321,7 @@ print_help(const char *program_name)
 		"  \t\t(Type `list' to see available methods)\n"
 		"  -o\t\tOne shot mode (do not continously adjust"
 		" color temperature)\n"
+		"  -O TEMP\tOne shot manual mode (set color temperature)\n"
 		"  -x\t\tReset mode (remove adjustment from screen)\n"
 		"  -r\t\tDisable temperature transitions\n"
 		"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"),
@@ -610,6 +612,7 @@ main(int argc, char *argv[])
 	/* Initialize settings to NULL values. */
 	char *config_filepath = NULL;
 
+	int temp_set = -1;
 	int temp_day = -1;
 	int temp_night = -1;
 	float gamma[3] = { NAN, NAN, NAN };
@@ -628,7 +631,7 @@ main(int argc, char *argv[])
 
 	/* Parse command line arguments. */
 	int opt;
-	while ((opt = getopt(argc, argv, "b:c:g:hl:m:ort:vx")) != -1) {
+	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:rt:vx")) != -1) {
 		switch (opt) {
 		case 'b':
 			brightness = atof(optarg);
@@ -728,6 +731,10 @@ main(int argc, char *argv[])
 			break;
 		case 'o':
 			mode = PROGRAM_MODE_ONE_SHOT;
+			break;
+		case 'O':
+			mode = PROGRAM_MODE_MANUAL;
+			temp_set = atoi(optarg);
 			break;
 		case 'r':
 			transition = 0;
@@ -849,12 +856,16 @@ main(int argc, char *argv[])
 	if (isnan(gamma[0])) gamma[0] = gamma[1] = gamma[2] = DEFAULT_GAMMA;
 	if (transition < 0) transition = 1;
 
+	float lat = NAN;
+	float lon = NAN;
+
 	/* Initialize location provider. If provider is NULL
 	   try all providers until one that works is found. */
 	location_state_t location_state;
 
-	/* Location is not needed for reset mode. */
-	if (mode != PROGRAM_MODE_RESET) {
+	/* Location is not needed for reset mode
+	   or for manual temperature setting. */
+	if (mode != PROGRAM_MODE_RESET && mode != PROGRAM_MODE_MANUAL) {
 		if (provider != NULL) {
 			/* Use provider specified on command line. */
 			r = provider_try_start(provider, &location_state,
@@ -888,60 +899,65 @@ main(int argc, char *argv[])
 				exit(EXIT_FAILURE);
 			}
 		}
-	}
 
-	float lat = NAN;
-	float lon = NAN;
-
-	if (mode != PROGRAM_MODE_RESET) {
 		/* Get current location. */
 		r = provider->get_location(&location_state, &lat, &lon);
 		if (r < 0) {
-			fputs(_("Unable to get location from provider.\n"),
-			      stderr);
-			exit(EXIT_FAILURE);
+		        fputs(_("Unable to get location from provider.\n"),
+		              stderr);
+		        exit(EXIT_FAILURE);
 		}
-
+	
 		provider->free(&location_state);
-
+	
 		if (verbose) {
-			/* TRANSLATORS: Append degree symbols if possible. */
-			printf(_("Location: %f, %f\n"), lat, lon);
+		        /* TRANSLATORS: Append degree symbols if possible. */
+		        printf(_("Location: %f, %f\n"), lat, lon);
 		}
-
+	
 		/* Latitude */
 		if (lat < MIN_LAT || lat > MAX_LAT) {
-			/* TRANSLATORS: Append degree symbols if possible. */
-			fprintf(stderr,
-				_("Latitude must be between %.1f and %.1f.\n"),
-				MIN_LAT, MAX_LAT);
-			exit(EXIT_FAILURE);
+		        /* TRANSLATORS: Append degree symbols if possible. */
+		        fprintf(stderr,
+		                _("Latitude must be between %.1f and %.1f.\n"),
+		                MIN_LAT, MAX_LAT);
+		        exit(EXIT_FAILURE);
 		}
-
+	
 		/* Longitude */
 		if (lon < MIN_LON || lon > MAX_LON) {
-			/* TRANSLATORS: Append degree symbols if possible. */
+		        /* TRANSLATORS: Append degree symbols if possible. */
+		        fprintf(stderr,
+		                _("Longitude must be between"
+		                  " %.1f and %.1f.\n"), MIN_LON, MAX_LON);
+		        exit(EXIT_FAILURE);
+		}
+
+		/* Color temperature at daytime */
+		if (temp_day < MIN_TEMP || temp_day >= MAX_TEMP) {
 			fprintf(stderr,
-				_("Longitude must be between"
-				  " %.1f and %.1f.\n"), MIN_LON, MAX_LON);
+				_("Temperature must be between %uK and %uK.\n"),
+				MIN_TEMP, MAX_TEMP);
+			exit(EXIT_FAILURE);
+		}
+	
+		/* Color temperature at night */
+		if (temp_night < MIN_TEMP || temp_night >= MAX_TEMP) {
+			fprintf(stderr,
+				_("Temperature must be between %uK and %uK.\n"),
+				MIN_TEMP, MAX_TEMP);
 			exit(EXIT_FAILURE);
 		}
 	}
 
-	/* Color temperature at daytime */
-	if (temp_day < MIN_TEMP || temp_day >= MAX_TEMP) {
-		fprintf(stderr,
-			_("Temperature must be between %uK and %uK.\n"),
-			MIN_TEMP, MAX_TEMP);
-		exit(EXIT_FAILURE);
-	}
-
-	/* Color temperature at night */
-	if (temp_night < MIN_TEMP || temp_night >= MAX_TEMP) {
-		fprintf(stderr,
-			_("Temperature must be between %uK and %uK.\n"),
-			MIN_TEMP, MAX_TEMP);
-		exit(EXIT_FAILURE);
+	if (mode == PROGRAM_MODE_MANUAL) {
+		/* Check color temperature to be set */
+		if (temp_set < MIN_TEMP || temp_set >= MAX_TEMP) {
+			fprintf(stderr,
+				_("Temperature must be between %uK and %uK.\n"),
+				MIN_TEMP, MAX_TEMP);
+			exit(EXIT_FAILURE);
+		}
 	}
 
 	/* Brightness */
@@ -1035,6 +1051,20 @@ main(int argc, char *argv[])
 			method->free(&state);
 			exit(EXIT_FAILURE);
 		}
+	}
+	break;
+	case PROGRAM_MODE_MANUAL:
+	{
+		if (verbose) printf(_("Color temperature: %uK\n"), temp_set);
+
+		/* Adjust temperature */
+		r = method->set_temperature(&state, temp_set, brightness, gamma);
+		if (r < 0) {
+			fputs(_("Temperature adjustment failed.\n"), stderr);
+			method->free(&state);
+			exit(EXIT_FAILURE);
+		}
+		
 	}
 	break;
 	case PROGRAM_MODE_RESET:
