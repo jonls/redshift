@@ -1,3 +1,14 @@
+v1.7 (2011-07-04)
+* Add Geoclue location provider by Mathieu Trudel-Lapierre.
+* Allow brightness to be adjusted (-b).
+* Provide option to set color temperature directly (Joe Hillenbrand).
+* Add option to show program version (-V).
+* Add configure.ac option to install ubuntu icons. They will no longer be
+   installed by default (Francesco Marella).
+* config: Look in %userprofile%/.config/redshift.conf on windows platform.
+* Fix: w32gdi: Obtain a new DC handle on every adjustment. This fixes a bug
+   where redshift stops updating the screen.
+
 v1.6 (2010-10-18)
 * Support for optional configuration file (fixes #590722).
 * Add man page for redshift written by Andrew Starr-Bochicchio (fixes #582196).
