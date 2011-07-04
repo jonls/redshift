@@ -312,7 +312,8 @@ print_help(const char *program_name)
 	/* TRANSLATORS: help output 4
 	   `list' must not be translated
 	   no-wrap */
-	fputs(_("  -c FILE\tLoad settings from specified configuration file\n"
+	fputs(_("  -b N\t\tScreen brightness to apply (max is 1.0)\n"
+                "  -c FILE\tLoad settings from specified configuration file\n"
 		"  -g R:G:B\tAdditional gamma correction to apply\n"
 		"  -l LAT:LON\tYour current location\n"
 		"  -l PROVIDER\tSelect provider for automatic"
