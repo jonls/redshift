@@ -1,34 +1,35 @@
 # Finnish translation for redshift
 # Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
 # This file is distributed under the same license as the redshift package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
+# Jani Välimaa <wally@mandriva.org>, 2010.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-10-18 02:05+0200\n"
-"PO-Revision-Date: 2010-09-10 16:10+0000\n"
+"POT-Creation-Date: 2011-07-04 14:50+0200\n"
+"PO-Revision-Date: 2010-10-23 12:59+0000\n"
 "Last-Translator: Jani Välimaa <Unknown>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-09-11 05:03+0000\n"
+"X-Launchpad-Export-Date: 2010-10-24 05:02+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: src/redshift.c:244
+#: src/redshift.c:269
 #, c-format
 msgid "Period: Night\n"
 msgstr "Hetki: Yö\n"
 
-#: src/redshift.c:251
+#: src/redshift.c:276
 #, c-format
 msgid "Period: Transition (%.2f%% day)\n"
 msgstr "Hetki: siirtymä (%.2f%% päivä)\n"
 
-#: src/redshift.c:255
+#: src/redshift.c:280
 #, c-format
 msgid "Period: Daytime\n"
 msgstr "Hetki: Päivä\n"
@@ -38,20 +39,20 @@ msgstr "Hetki: Päivä\n"
 #. DAY is temperature at daytime,
 #. NIGHT is temperature at night
 #. no-wrap
-#: src/redshift.c:270
+#: src/redshift.c:295
 #, c-format
 msgid "Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
 msgstr "Käyttö: %s -l LAT:LON -t PÄIVÄ:YÖ [VALINNAT...]\n"
 
 #. TRANSLATORS: help output 2
 #. no-wrap
-#: src/redshift.c:276
+#: src/redshift.c:301
 msgid "Set color temperature of display according to time of day.\n"
 msgstr "Säädä näytön värilämpötila vuorokaudenajan mukaan.\n"
 
 #. TRANSLATORS: help output 3
 #. no-wrap
-#: src/redshift.c:282
+#: src/redshift.c:307
 msgid ""
 "  -h\t\tDisplay this help message\n"
 "  -v\t\tVerbose output\n"
@@ -62,7 +63,8 @@ msgstr ""
 #. TRANSLATORS: help output 4
 #. `list' must not be translated
 #. no-wrap
-#: src/redshift.c:289
+#: src/redshift.c:314
+#, fuzzy
 msgid ""
 "  -c FILE\tLoad settings from specified configuration file\n"
 "  -g R:G:B\tAdditional gamma correction to apply\n"
@@ -72,13 +74,25 @@ msgid ""
 "  -m METHOD\tMethod to use to set color temperature\n"
 "  \t\t(Type `list' to see available methods)\n"
 "  -o\t\tOne shot mode (do not continously adjust color temperature)\n"
+"  -O TEMP\tOne shot manual mode (set color temperature)\n"
 "  -x\t\tReset mode (remove adjustment from screen)\n"
 "  -r\t\tDisable temperature transitions\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
+"  -c TIEDOSTO\tLataa asetukset asetustiedostosta\n"
+"  -g R:G:B\tKäytettävä lisägammakorjaus\n"
+"  -l LAT:LON\tNykyinen sijainti\n"
+"  -l TARJOAJA\tAutomaattisten sijaintitietojen tarjoaja\n"
+"  \t\t('list' näyttää käytettävissä olevat tarjoajat)\n"
+"  -m MENETELMÄ\tVärilämpötilan säätömenetelmä\n"
+"  \t\t('list' näyttää käytettävissä olevat menetelmät)\n"
+"  -o\t\tSäädä vain kerran (ei jatkuvaa värilämpötilan säätöä)\n"
+"  -x\t\tNollaa säädöt (poistaa säädöt näytöltä)\n"
+"  -r\t\tPoista lämpötilan muutos käytöstä\n"
+"  -t PÄIVÄ:YÖ\tPäiväsaikaan/yöaikaan käytettävä värilämpötila\n"
 
 #. TRANSLATORS: help output 5
-#: src/redshift.c:306
+#: src/redshift.c:332
 #, c-format
 msgid ""
 "The neutral temperature is %uK. Using this value will not\n"
@@ -87,9 +101,14 @@ msgid ""
 "more blue light, and setting a lower value will result in\n"
 "more red light.\n"
 msgstr ""
+"Neutraali värilämpötila on %uK. Käytettäessä neutraalia\n"
+"arvoa, ei näytön värilämpötila muutu. Käytettäessä\n"
+"neutraalia värilämpötilaa korkeampaa arvoa, muuttuu\n"
+"näytön valo sinisemmäksi ja käytettäessä alhaisempaa\n"
+"arvoa, muuttuu valo punaisemmaksi.\n"
 
 #. TRANSLATORS: help output 6
-#: src/redshift.c:316
+#: src/redshift.c:342
 #, c-format
 msgid ""
 "Default values:\n"
@@ -103,201 +122,215 @@ msgstr ""
 "  Yöajan värilämpötila: %uK\n"
 
 #. TRANSLATORS: help output 7
-#: src/redshift.c:324
+#: src/redshift.c:350
 #, c-format
 msgid "Please report bugs to <%s>\n"
-msgstr "Ole ystävällinen ja raportoi bugi <%s>lle\n"
+msgstr "Raportoi bugeista osoitteeseen <%s>\n"
 
-#: src/redshift.c:330
+#: src/redshift.c:356
 msgid "Available adjustment methods:\n"
-msgstr "Käytettävissä olevat säätömahdollisuudet:\n"
+msgstr "Käytettävissä olevat säätömenetelmät:\n"
 
-#: src/redshift.c:336
+#: src/redshift.c:362
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
 msgstr ""
+"Luettele kaksoispisteellä erotellut asetukset valitsimella\n"
+"'-m MENETELMÄ:ASETUKSET'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:339
+#: src/redshift.c:365
 msgid "Try `-m METHOD:help' for help.\n"
-msgstr ""
+msgstr "Valitsin '-m MENETELMÄ:help' antaa lisätietoja.\n"
 
-#: src/redshift.c:345
+#: src/redshift.c:371
 msgid "Available location providers:\n"
-msgstr ""
+msgstr "Käytettävissä olevat sijainnintarjoajat:\n"
 
-#: src/redshift.c:351
+#: src/redshift.c:377
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
 msgstr ""
+"Luettele kaksoispisteellä erotellut asetukset valitsimella\n"
+"'-l TARJOAJA:ASETUKSET'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:354
+#: src/redshift.c:380
 msgid "Try `-l PROVIDER:help' for help.\n"
-msgstr ""
+msgstr "Valitsin '-l TARJOAJA:help' antaa lisätietoja.\n"
 
-#: src/redshift.c:367 src/redshift.c:445
+#: src/redshift.c:393 src/redshift.c:471
 #, c-format
 msgid "Initialization of %s failed.\n"
-msgstr ""
+msgstr "%s:n käyttöönotto epäonnistui.\n"
 
-#: src/redshift.c:382 src/redshift.c:413 src/redshift.c:460 src/redshift.c:491
+#: src/redshift.c:408 src/redshift.c:439 src/redshift.c:486 src/redshift.c:517
 #, c-format
 msgid "Failed to set %s option.\n"
-msgstr ""
+msgstr "Asetuksen %s asettaminen epäonnistui.\n"
 
 #. TRANSLATORS: `help' must not be
 #. translated.
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:387 src/redshift.c:416
+#: src/redshift.c:413 src/redshift.c:442
 #, c-format
 msgid "Try `-l %s:help' for more information.\n"
-msgstr ""
+msgstr "Valitsin '-l %s:help' antaa lisätietoja.\n"
 
-#: src/redshift.c:428
+#: src/redshift.c:454
 #, c-format
 msgid "Failed to start provider %s.\n"
-msgstr ""
+msgstr "Tarjoajan %s käynnistäminen epäonnistui.\n"
 
 #. TRANSLATORS: `help' must not be
 #. translated.
-#: src/redshift.c:465
-#, fuzzy, c-format
+#: src/redshift.c:491
+#, c-format
 msgid "Try `-m %s:help' for more information.\n"
-msgstr "Kokeile '-h' saadaksesi lisää tietoa.\n"
+msgstr "Valitsin '-m %s:help' antaa lisätietoja.\n"
 
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:494
+#: src/redshift.c:520
 #, c-format
 msgid "Try -m %s:help' for more information.\n"
-msgstr ""
+msgstr "Valitsin -m %s:help' antaa lisätietoja.\n"
 
-#: src/redshift.c:506
+#: src/redshift.c:532
 #, c-format
 msgid "Failed to start adjustment method %s.\n"
-msgstr ""
+msgstr "Säätömenetelmän %s käynnistäminen epäonnistui.\n"
 
-#: src/redshift.c:613
+#: src/redshift.c:646
 msgid "Malformed gamma argument.\n"
-msgstr "Vääränlainen gamman argumentti.\n"
+msgstr "Vääränlainen gamman parametri.\n"
 
-#: src/redshift.c:615 src/redshift.c:710 src/redshift.c:725
+#: src/redshift.c:648 src/redshift.c:747 src/redshift.c:762
 msgid "Try `-h' for more information.\n"
-msgstr "Kokeile '-h' saadaksesi lisää tietoa.\n"
+msgstr "Valitsin '-h' antaa lisätietoja.\n"
 
-#: src/redshift.c:656 src/redshift.c:792
+#: src/redshift.c:689 src/redshift.c:834
 #, c-format
 msgid "Unknown location provider `%s'.\n"
-msgstr ""
+msgstr "Tuntematon sijainnin toimittaja '%s'.\n"
 
 #. TRANSLATORS: This refers to the method
 #. used to adjust colors e.g VidMode
-#: src/redshift.c:687 src/redshift.c:778
-#, fuzzy, c-format
+#: src/redshift.c:720 src/redshift.c:820
+#, c-format
 msgid "Unknown adjustment method `%s'.\n"
-msgstr "Tuntematon metodi `%s'.\n"
+msgstr "Tuntematon säätömenetelmä '%s'.\n"
 
-#: src/redshift.c:708
+#: src/redshift.c:745
 msgid "Malformed temperature argument.\n"
-msgstr "Vääränmuotoinen värilämpötilan argumentti.\n"
+msgstr "Vääränmuotoinen värilämpötilan parametri.\n"
 
-#: src/redshift.c:766
-#, fuzzy
+#: src/redshift.c:808
 msgid "Malformed gamma setting.\n"
-msgstr "Vääränlainen gamman argumentti.\n"
+msgstr "Vääränmuotoinen gamma-asetus.\n"
 
-#: src/redshift.c:801
+#: src/redshift.c:843
 #, c-format
 msgid "Unknown configuration setting `%s'.\n"
-msgstr ""
+msgstr "Tuntematon asetus '%s'.\n"
 
-#: src/redshift.c:836
+#: src/redshift.c:883
 msgid "Trying next provider...\n"
-msgstr ""
+msgstr "Kokeillaan seuraavaa toimittajaa...\n"
 
-#: src/redshift.c:842
+#: src/redshift.c:889
 #, c-format
 msgid "Using provider `%s'.\n"
-msgstr ""
+msgstr "Käytetään toimittajaa '%s'.\n"
 
-#: src/redshift.c:850
+#: src/redshift.c:897
 msgid "No more location providers to try.\n"
-msgstr ""
+msgstr "Ei enää kokeiltavia toimittajia.\n"
 
-#: src/redshift.c:864
+#: src/redshift.c:906
 msgid "Unable to get location from provider.\n"
-msgstr ""
+msgstr "Sijaintia ei saatu toimittajalta.\n"
 
 #. TRANSLATORS: Append degree symbols if possible.
-#: src/redshift.c:873
+#: src/redshift.c:915
 #, c-format
 msgid "Location: %f, %f\n"
 msgstr "Sijainti: %f, %f\n"
 
-#: src/redshift.c:880
+#: src/redshift.c:922
 #, c-format
 msgid "Latitude must be between %.1f and %.1f.\n"
-msgstr "Leveyspiiri on asetettava väliltä %.1f - %.1f.\n"
+msgstr "Leveyspiirin on oltava väliltä %.1f - %.1f.\n"
 
-#: src/redshift.c:889
+#: src/redshift.c:931
 #, c-format
 msgid "Longitude must be between %.1f and %.1f.\n"
-msgstr "Pituuspiiri on asetettava väliltä %.1f - %.1f.\n"
+msgstr "Pituuspiirin on oltava väliltä %.1f - %.1f.\n"
 
-#: src/redshift.c:898 src/redshift.c:906
+#: src/redshift.c:939 src/redshift.c:947 src/redshift.c:957
 #, c-format
 msgid "Temperature must be between %uK and %uK.\n"
-msgstr "Värilämpötila on säädettävä väliltä %uK - %uK.\n"
+msgstr "Värilämpötilan on oltava väliltä %uK - %uK.\n"
 
-#: src/redshift.c:916
+#: src/redshift.c:966
+#, fuzzy, c-format
+msgid "Brightness value must be between %.1f and %.1f.\n"
+msgstr "Gamman arvon on oltava väliltä %.1f - %.1f.\n"
+
+#: src/redshift.c:972
+#, c-format
+msgid "Brightness: %.2f\n"
+msgstr ""
+
+#: src/redshift.c:980
 #, c-format
 msgid "Gamma value must be between %.1f and %.1f.\n"
-msgstr "Gamman arvo on asetettava väliltä %.1f - %.1f.\n"
+msgstr "Gamman arvon on oltava väliltä %.1f - %.1f.\n"
 
-#: src/redshift.c:922
+#: src/redshift.c:986
 #, c-format
 msgid "Gamma: %.3f, %.3f, %.3f\n"
 msgstr "Gamma: %.3f, %.3f, %.3f\n"
 
-#: src/redshift.c:941
+#: src/redshift.c:1005
 msgid "Trying next method...\n"
-msgstr ""
+msgstr "Kokeillaan seuraavaa menetelmää...\n"
 
-#: src/redshift.c:946
+#: src/redshift.c:1010
 #, c-format
 msgid "Using method `%s'.\n"
-msgstr ""
+msgstr "Käytetään menetelmää '%s'.\n"
 
-#: src/redshift.c:953
+#: src/redshift.c:1017
 msgid "No more methods to try.\n"
-msgstr ""
+msgstr "Ei enää kokeiltavia menetelmiä.\n"
 
-#: src/redshift.c:965 src/redshift.c:1086
+#: src/redshift.c:1029 src/redshift.c:1164
 msgid "Unable to read system time.\n"
-msgstr ""
+msgstr "Ei voida lukea järjestelmän aikaa.\n"
 
 #. TRANSLATORS: Append degree symbol if possible.
-#: src/redshift.c:974
+#: src/redshift.c:1038
 #, c-format
 msgid "Solar elevation: %f\n"
-msgstr ""
+msgstr "Auringon korkeuskulma: %f°\n"
 
-#: src/redshift.c:981 src/redshift.c:1153
+#: src/redshift.c:1045 src/redshift.c:1058 src/redshift.c:1231
 #, c-format
 msgid "Color temperature: %uK\n"
 msgstr "Värilämpötila: %uK\n"
 
-#: src/redshift.c:986 src/redshift.c:997 src/redshift.c:1161
+#: src/redshift.c:1050 src/redshift.c:1063 src/redshift.c:1075
+#: src/redshift.c:1240
 msgid "Temperature adjustment failed.\n"
 msgstr "Värilämpötilan säätö epäonnistui.\n"
 
-#: src/config-ini.c:109
+#: src/config-ini.c:115
 msgid "Malformed section header in config file.\n"
 msgstr ""
 
-#: src/config-ini.c:145
+#: src/config-ini.c:151
 msgid "Malformed assignment in config file.\n"
 msgstr ""
 
-#: src/config-ini.c:156
+#: src/config-ini.c:162
 msgid "Assignment outside section in config file.\n"
 msgstr ""
 
@@ -305,12 +338,12 @@ msgstr ""
 #: src/gamma-randr.c:191 src/gamma-randr.c:248 src/gamma-randr.c:346
 #, c-format
 msgid "`%s' returned error %d\n"
-msgstr "`%s' antoi virheen %d\n"
+msgstr "'%s' palautti virheen %d\n"
 
 #: src/gamma-randr.c:77
 #, c-format
 msgid "Unsupported RANDR version (%u.%u)\n"
-msgstr "RANDRin versio ei ole tuettu (%u.%u)\n"
+msgstr "RANDR versio %u.%u ei ole tuettu\n"
 
 #: src/gamma-randr.c:111
 #, c-format
@@ -342,12 +375,12 @@ msgstr ""
 #: src/gamma-randr.c:285 src/gamma-vidmode.c:139
 #, c-format
 msgid "Missing value for parameter: `%s'.\n"
-msgstr ""
+msgstr "Puuttuva arvo asetukselle '%s'.\n"
 
 #: src/gamma-randr.c:295 src/gamma-vidmode.c:147 src/location-manual.c:98
 #, c-format
 msgid "Unknown method parameter: `%s'.\n"
-msgstr ""
+msgstr "Tuntematon menetelmäparametri '%s'.\n"
 
 #: src/gamma-randr.c:309
 #, c-format
@@ -357,7 +390,7 @@ msgstr "CRTC %d ei ole olemassa. "
 #: src/gamma-randr.c:312
 #, c-format
 msgid "Valid CRTCs are [0-%d].\n"
-msgstr ""
+msgstr "Kelvot CRTC:t ovat [o-%d].\n"
 
 #: src/gamma-randr.c:315
 #, c-format
@@ -365,7 +398,7 @@ msgid "Only CRTC 0 exists.\n"
 msgstr "Vain CRTC 0 on olemassa.\n"
 
 #: src/gamma-vidmode.c:48 src/gamma-vidmode.c:69 src/gamma-vidmode.c:78
-#: src/gamma-vidmode.c:105 src/gamma-vidmode.c:166 src/gamma-vidmode.c:195
+#: src/gamma-vidmode.c:105 src/gamma-vidmode.c:166 src/gamma-vidmode.c:196
 #, c-format
 msgid "X request failed: %s\n"
 msgstr "X-kutsu epäonnistui: %s\n"
@@ -380,62 +413,62 @@ msgstr ""
 msgid "  screen=N\tX screen to apply adjustments to\n"
 msgstr ""
 
-#: src/gamma-w32gdi.c:59
+#: src/gamma-w32gdi.c:58 src/gamma-w32gdi.c:119 src/gamma-w32gdi.c:140
 msgid "Unable to open device context.\n"
 msgstr ""
 
-#: src/gamma-w32gdi.c:66
+#: src/gamma-w32gdi.c:65
 msgid "Display device does not support gamma ramps.\n"
 msgstr ""
 
-#: src/gamma-w32gdi.c:82
+#: src/gamma-w32gdi.c:81
 msgid "Unable to save current gamma ramp.\n"
 msgstr ""
 
-#: src/gamma-w32gdi.c:104
+#: src/gamma-w32gdi.c:103
 msgid "Adjust gamma ramps with the Windows GDI.\n"
 msgstr ""
 
-#: src/gamma-w32gdi.c:119
+#: src/gamma-w32gdi.c:125
 msgid "Unable to restore gamma ramps.\n"
 msgstr ""
 
-#: src/gamma-w32gdi.c:144
+#: src/gamma-w32gdi.c:165
 msgid "Unable to set gamma ramps.\n"
 msgstr ""
 
-#: src/location-gnome-clock.c:50
+#: src/location-gnome-clock.c:48
 #, c-format
 msgid "Error reading city list: `%s'.\n"
-msgstr ""
+msgstr "Virhe luettaessa listaa kaupungeista: '%s'.\n"
 
-#: src/location-gnome-clock.c:83
+#: src/location-gnome-clock.c:87
 msgid "Cannot list GNOME panel applets.\n"
-msgstr ""
+msgstr "Ei voida listata GNOMEn paneelisovelmia.\n"
 
-#: src/location-gnome-clock.c:125
+#: src/location-gnome-clock.c:145
 msgid "No clock applet was found.\n"
-msgstr ""
+msgstr "Kellosovelmaa ei löytynyt.\n"
 
-#: src/location-gnome-clock.c:130
+#: src/location-gnome-clock.c:150
 msgid "No city selected as current city.\n"
-msgstr ""
+msgstr "Nykyistä sijaintia ei ole valittu.\n"
 
-#: src/location-gnome-clock.c:139
+#: src/location-gnome-clock.c:159
 msgid "Location not specified for city.\n"
-msgstr ""
+msgstr "Kaupungille ei ole määritelty sijaintia.\n"
 
-#: src/location-gnome-clock.c:169
+#: src/location-gnome-clock.c:189
 msgid "Use the location as set in the GNOME Clock applet.\n"
-msgstr ""
+msgstr "Käytä GNOMEn kellosovelmaan asetettua sijaintia.\n"
 
 #: src/location-manual.c:50
 msgid "Latitude and longitude must be set.\n"
-msgstr "Pituus- ja leveyspiirit on asetettava.\n"
+msgstr "Leveys- ja pituupiiri on asetettava.\n"
 
 #: src/location-manual.c:65
 msgid "Specify location manually.\n"
-msgstr ""
+msgstr "Määritä sijainti manuaalisesti.\n"
 
 #. TRANSLATORS: Manual location help output
 #. left column must not be translated
@@ -444,14 +477,16 @@ msgid ""
 "  lat=N\t\tLatitude\n"
 "  lon=N\t\tLongitude\n"
 msgstr ""
+"  lat=N\t\tLeveyspiiri\n"
+"  lon=N\t\tPituuspiiri\n"
 
 #: src/location-manual.c:84
 msgid "Malformed argument.\n"
-msgstr ""
+msgstr "Vääränmuotoinen parametri.\n"
 
 #: src/location-manual.c:95
 msgid "Too many arguments.\n"
-msgstr ""
+msgstr "Liian monta parametria.\n"
 
 #: src/gtk-redshift/statusicon.py:92
 msgid "Toggle"
@@ -459,4 +494,4 @@ msgstr "Kytke"
 
 #: src/gtk-redshift/statusicon.py:96
 msgid "Autostart"
-msgstr ""
+msgstr "Automaattikäynnistys"

@@ -7,28 +7,28 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2010-10-18 02:05+0200\n"
-"PO-Revision-Date: 2010-08-18 21:23+0000\n"
+"POT-Creation-Date: 2011-07-04 14:50+0200\n"
+"PO-Revision-Date: 2010-10-25 08:30+0000\n"
 "Last-Translator: Jon Lund Steffensen <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-08-19 03:55+0000\n"
+"X-Launchpad-Export-Date: 2010-10-26 04:46+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: src/redshift.c:244
+#: src/redshift.c:269
 #, c-format
 msgid "Period: Night\n"
 msgstr "Periode: Nat\n"
 
-#: src/redshift.c:251
+#: src/redshift.c:276
 #, c-format
 msgid "Period: Transition (%.2f%% day)\n"
 msgstr "Periode: Overgang (%.2f%% dag)\n"
 
-#: src/redshift.c:255
+#: src/redshift.c:280
 #, c-format
 msgid "Period: Daytime\n"
 msgstr "Periode: Dag\n"
@@ -38,20 +38,20 @@ msgstr "Periode: Dag\n"
 #. DAY is temperature at daytime,
 #. NIGHT is temperature at night
 #. no-wrap
-#: src/redshift.c:270
+#: src/redshift.c:295
 #, c-format
 msgid "Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
 msgstr "Brug: %s -l BRED:LÆNG -t DAG:NAT [TILVALG...]\n"
 
 #. TRANSLATORS: help output 2
 #. no-wrap
-#: src/redshift.c:276
+#: src/redshift.c:301
 msgid "Set color temperature of display according to time of day.\n"
 msgstr "Indstil skærmens farvetemperatur ud fra klokkeslæt.\n"
 
 #. TRANSLATORS: help output 3
 #. no-wrap
-#: src/redshift.c:282
+#: src/redshift.c:307
 msgid ""
 "  -h\t\tDisplay this help message\n"
 "  -v\t\tVerbose output\n"
@@ -62,7 +62,7 @@ msgstr ""
 #. TRANSLATORS: help output 4
 #. `list' must not be translated
 #. no-wrap
-#: src/redshift.c:289
+#: src/redshift.c:314
 #, fuzzy
 msgid ""
 "  -c FILE\tLoad settings from specified configuration file\n"
@@ -73,24 +73,25 @@ msgid ""
 "  -m METHOD\tMethod to use to set color temperature\n"
 "  \t\t(Type `list' to see available methods)\n"
 "  -o\t\tOne shot mode (do not continously adjust color temperature)\n"
+"  -O TEMP\tOne shot manual mode (set color temperature)\n"
 "  -x\t\tReset mode (remove adjustment from screen)\n"
 "  -r\t\tDisable temperature transitions\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
-"  -g R:G:B\tYderligere gamma-korrektion som skal anvendes\n"
-"  -l BRED:LÆNG\tKoordinater for din placering\n"
-"  -l METODE\tMetode som benyttes til automatisk at hente opdatering af "
-"placering\n"
-"  \t\t(Skriv `list' for at se tilgængelige muligheder)\n"
-"  -m METODE\tMetode som benyttes til at sætte farvetemperatur\n"
-"  \t\t(Skriv `list' for at se tilgængelige muligheder)\n"
-"  -o\t\tEngangsmodus (bliver ikke ved med at justere farvetemperatur)\n"
-"  -x\t\tNulstil (fjern farvejustering fra skærmen)\n"
+"  -c FIL\tIndlæs indstillinger fra konfigurationsfil\n"
+"  -g R:G:B\tYderligere gamma-justering\n"
+"  -l BRED:LÆNG\tDin nuværende placering\n"
+"  -l METODE\tVælg metode for automatisk placeringsopdatering\n"
+"  \t\t(Skriv `list' for at se tilgængelige metoder)\n"
+"  -m METODE\tVælg metode for farvejustering\n"
+"  \t\t(Skriv `list' for at se tilgængelige metoder)\n"
+"  -o\t\tEngangsmodus (juster farvetemperatur én gang)\n"
+"  -x\t\tGendan normal farvejustering\n"
 "  -r\t\tSlå temperaturovergange fra\n"
-"  -t DAG:NAT\tFarvetemperatur som sættes hhv. dag og nat\n"
+"  -t DAG:NAT\tFarvetemperatur som skal benyttes hhv. dag og nat\n"
 
 #. TRANSLATORS: help output 5
-#: src/redshift.c:306
+#: src/redshift.c:332
 #, c-format
 msgid ""
 "The neutral temperature is %uK. Using this value will not\n"
@@ -99,9 +100,13 @@ msgid ""
 "more blue light, and setting a lower value will result in\n"
 "more red light.\n"
 msgstr ""
+"Den neutrale temperatur er %uK. Når denne værde benyttes vil\n"
+"der ikke ske nogen farveændringer. En højere værdi vil\n"
+"resultere i mere blåt lås, mens en lavere værdi vil resultere\n"
+"i mere rødt lys.\n"
 
 #. TRANSLATORS: help output 6
-#: src/redshift.c:316
+#: src/redshift.c:342
 #, c-format
 msgid ""
 "Default values:\n"
@@ -115,43 +120,43 @@ msgstr ""
 "  Nattemperatur: %uK\n"
 
 #. TRANSLATORS: help output 7
-#: src/redshift.c:324
+#: src/redshift.c:350
 #, c-format
 msgid "Please report bugs to <%s>\n"
 msgstr "Rapporter venligst fejl til <%s>\n"
 
-#: src/redshift.c:330
+#: src/redshift.c:356
 msgid "Available adjustment methods:\n"
 msgstr "Tilgængelige justeringsmetoder:\n"
 
-#: src/redshift.c:336
+#: src/redshift.c:362
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
 msgstr "Specificer indstillinger separeret med kolon: `-m METODE:VALG'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:339
+#: src/redshift.c:365
 msgid "Try `-m METHOD:help' for help.\n"
 msgstr "Prøv `-m METODE:help' for at få hjælp.\n"
 
-#: src/redshift.c:345
+#: src/redshift.c:371
 msgid "Available location providers:\n"
 msgstr "Tilgængelige metoder til placeringsopdatering:\n"
 
-#: src/redshift.c:351
+#: src/redshift.c:377
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
 msgstr "Specificer indstillinger separeret med kolon: `-l METODE:VALG'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:354
+#: src/redshift.c:380
 msgid "Try `-l PROVIDER:help' for help.\n"
 msgstr "Prøv `-l METODE:help' for at få hjælp.\n"
 
-#: src/redshift.c:367 src/redshift.c:445
+#: src/redshift.c:393 src/redshift.c:471
 #, c-format
 msgid "Initialization of %s failed.\n"
 msgstr "Fejl under klargøring af %s.\n"
 
-#: src/redshift.c:382 src/redshift.c:413 src/redshift.c:460 src/redshift.c:491
+#: src/redshift.c:408 src/redshift.c:439 src/redshift.c:486 src/redshift.c:517
 #, c-format
 msgid "Failed to set %s option.\n"
 msgstr "Kunne ikke sætte indstilling %s.\n"
@@ -159,161 +164,169 @@ msgstr "Kunne ikke sætte indstilling %s.\n"
 #. TRANSLATORS: `help' must not be
 #. translated.
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:387 src/redshift.c:416
+#: src/redshift.c:413 src/redshift.c:442
 #, c-format
 msgid "Try `-l %s:help' for more information.\n"
 msgstr "Prøv `-l %s:help' for mere information.\n"
 
-#: src/redshift.c:428
+#: src/redshift.c:454
 #, c-format
 msgid "Failed to start provider %s.\n"
 msgstr "Kunne ikke starte placeringsmetode %s.\n"
 
 #. TRANSLATORS: `help' must not be
 #. translated.
-#: src/redshift.c:465
-#, fuzzy, c-format
+#: src/redshift.c:491
+#, c-format
 msgid "Try `-m %s:help' for more information.\n"
 msgstr "Prøv `-m %s:help' for mere information.\n"
 
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:494
+#: src/redshift.c:520
 #, c-format
 msgid "Try -m %s:help' for more information.\n"
 msgstr "Prøv `-m %s:help' for mere information.\n"
 
-#: src/redshift.c:506
+#: src/redshift.c:532
 #, c-format
 msgid "Failed to start adjustment method %s.\n"
 msgstr "Kunne ikke starte justeringsmetode %s.\n"
 
-#: src/redshift.c:613
+#: src/redshift.c:646
 msgid "Malformed gamma argument.\n"
 msgstr "Fejl i gamma-argument.\n"
 
-#: src/redshift.c:615 src/redshift.c:710 src/redshift.c:725
+#: src/redshift.c:648 src/redshift.c:747 src/redshift.c:762
 msgid "Try `-h' for more information.\n"
 msgstr "Prøv `-h' for mere information.\n"
 
-#: src/redshift.c:656 src/redshift.c:792
+#: src/redshift.c:689 src/redshift.c:834
 #, c-format
 msgid "Unknown location provider `%s'.\n"
 msgstr "Ukendt metode til placeringsopdatering `%s'.\n"
 
 #. TRANSLATORS: This refers to the method
 #. used to adjust colors e.g VidMode
-#: src/redshift.c:687 src/redshift.c:778
-#, fuzzy, c-format
+#: src/redshift.c:720 src/redshift.c:820
+#, c-format
 msgid "Unknown adjustment method `%s'.\n"
-msgstr "Ukendt justeringsmetode `%s'.\n"
+msgstr "Ukendt justeringsmetode: `%s'.\n"
 
-#: src/redshift.c:708
+#: src/redshift.c:745
 msgid "Malformed temperature argument.\n"
 msgstr "Fejl i temperaturargument.\n"
 
-#: src/redshift.c:766
-#, fuzzy
+#: src/redshift.c:808
 msgid "Malformed gamma setting.\n"
-msgstr "Fejl i gamma-argument.\n"
+msgstr "Fejl i gamma indstilling.\n"
 
-#: src/redshift.c:801
-#, fuzzy, c-format
+#: src/redshift.c:843
+#, c-format
 msgid "Unknown configuration setting `%s'.\n"
-msgstr "Ukendt metode til placeringsopdatering `%s'.\n"
+msgstr "Ukendt konfigurationsindstilling `%s'.\n"
 
-#: src/redshift.c:836
+#: src/redshift.c:883
 msgid "Trying next provider...\n"
 msgstr "Prøver næste placeringsmetode...\n"
 
-#: src/redshift.c:842
+#: src/redshift.c:889
 #, c-format
 msgid "Using provider `%s'.\n"
 msgstr "Bruger placeringsmetoden `%s'.\n"
 
-#: src/redshift.c:850
+#: src/redshift.c:897
 msgid "No more location providers to try.\n"
 msgstr "Ikke flere metoder til placeringsopdateringer kan prøves.\n"
 
-#: src/redshift.c:864
+#: src/redshift.c:906
 msgid "Unable to get location from provider.\n"
 msgstr "Kan ikke modtage placeringsopdatering.\n"
 
 #. TRANSLATORS: Append degree symbols if possible.
-#: src/redshift.c:873
+#: src/redshift.c:915
 #, c-format
 msgid "Location: %f, %f\n"
 msgstr "Placering: %f°, %f°\n"
 
-#: src/redshift.c:880
+#: src/redshift.c:922
 #, c-format
 msgid "Latitude must be between %.1f and %.1f.\n"
 msgstr "Breddegrad skal være mellem %.1f° og %.1f°.\n"
 
-#: src/redshift.c:889
+#: src/redshift.c:931
 #, c-format
 msgid "Longitude must be between %.1f and %.1f.\n"
 msgstr "Længdegrad skal være mellem %.1f° og %.1f°.\n"
 
-#: src/redshift.c:898 src/redshift.c:906
+#: src/redshift.c:939 src/redshift.c:947 src/redshift.c:957
 #, c-format
 msgid "Temperature must be between %uK and %uK.\n"
 msgstr "Temperatur skal være mellem %uK og %uK.\n"
 
-#: src/redshift.c:916
+#: src/redshift.c:966
+#, fuzzy, c-format
+msgid "Brightness value must be between %.1f and %.1f.\n"
+msgstr "Gamma-værdi skal være mellem %.1f og %.1f.\n"
+
+#: src/redshift.c:972
+#, c-format
+msgid "Brightness: %.2f\n"
+msgstr ""
+
+#: src/redshift.c:980
 #, c-format
 msgid "Gamma value must be between %.1f and %.1f.\n"
 msgstr "Gamma-værdi skal være mellem %.1f og %.1f.\n"
 
-#: src/redshift.c:922
+#: src/redshift.c:986
 #, c-format
 msgid "Gamma: %.3f, %.3f, %.3f\n"
 msgstr "Gamma: %.3f, %.3f, %.3f\n"
 
-#: src/redshift.c:941
+#: src/redshift.c:1005
 msgid "Trying next method...\n"
 msgstr "Prøver næste farvejusteringsmetode...\n"
 
-#: src/redshift.c:946
+#: src/redshift.c:1010
 #, c-format
 msgid "Using method `%s'.\n"
 msgstr "Bruger farvejusteringsmetoden `%s'.\n"
 
-#: src/redshift.c:953
+#: src/redshift.c:1017
 msgid "No more methods to try.\n"
 msgstr "Der er ikke flere justeringsmetoder som kan prøves.\n"
 
-#: src/redshift.c:965 src/redshift.c:1086
+#: src/redshift.c:1029 src/redshift.c:1164
 msgid "Unable to read system time.\n"
 msgstr "Kan ikke læse systemtid.\n"
 
 #. TRANSLATORS: Append degree symbol if possible.
-#: src/redshift.c:974
+#: src/redshift.c:1038
 #, c-format
 msgid "Solar elevation: %f\n"
 msgstr "Solhøjde: %f°\n"
 
-#: src/redshift.c:981 src/redshift.c:1153
+#: src/redshift.c:1045 src/redshift.c:1058 src/redshift.c:1231
 #, c-format
 msgid "Color temperature: %uK\n"
 msgstr "Farvetemperatur: %uK\n"
 
-#: src/redshift.c:986 src/redshift.c:997 src/redshift.c:1161
+#: src/redshift.c:1050 src/redshift.c:1063 src/redshift.c:1075
+#: src/redshift.c:1240
 msgid "Temperature adjustment failed.\n"
 msgstr "Fejl ved justering af temperatur.\n"
 
-#: src/config-ini.c:109
-#, fuzzy
+#: src/config-ini.c:115
 msgid "Malformed section header in config file.\n"
-msgstr "Fejl i placeringsargument.\n"
+msgstr "Fejl i sektionshoved i konfigurationsfil.\n"
 
-#: src/config-ini.c:145
-#, fuzzy
+#: src/config-ini.c:151
 msgid "Malformed assignment in config file.\n"
-msgstr "Fejl i parameteren.\n"
+msgstr "Fejl ved variabeltildeling i konfigurationsfil.\n"
 
-#: src/config-ini.c:156
+#: src/config-ini.c:162
 msgid "Assignment outside section in config file.\n"
-msgstr ""
+msgstr "Variabeltildeling udenfor sektion i konfigurationsfil.\n"
 
 #: src/gamma-randr.c:69 src/gamma-randr.c:126 src/gamma-randr.c:165
 #: src/gamma-randr.c:191 src/gamma-randr.c:248 src/gamma-randr.c:346
@@ -381,7 +394,7 @@ msgid "Only CRTC 0 exists.\n"
 msgstr "Kun CRTC 0 eksisterer.\n"
 
 #: src/gamma-vidmode.c:48 src/gamma-vidmode.c:69 src/gamma-vidmode.c:78
-#: src/gamma-vidmode.c:105 src/gamma-vidmode.c:166 src/gamma-vidmode.c:195
+#: src/gamma-vidmode.c:105 src/gamma-vidmode.c:166 src/gamma-vidmode.c:196
 #, c-format
 msgid "X request failed: %s\n"
 msgstr "Fejl ved X forespørgsel: %s\n"
@@ -396,52 +409,52 @@ msgstr "Juster gammaramper med X VidMode udvidelsen.\n"
 msgid "  screen=N\tX screen to apply adjustments to\n"
 msgstr "  screen=N\tX skærm som skal justeres\n"
 
-#: src/gamma-w32gdi.c:59
+#: src/gamma-w32gdi.c:58 src/gamma-w32gdi.c:119 src/gamma-w32gdi.c:140
 msgid "Unable to open device context.\n"
 msgstr "Fejl ved åbning af enhedskontekst.\n"
 
-#: src/gamma-w32gdi.c:66
+#: src/gamma-w32gdi.c:65
 msgid "Display device does not support gamma ramps.\n"
 msgstr "Skærmenhed understøtter ikke gammaramper.\n"
 
-#: src/gamma-w32gdi.c:82
+#: src/gamma-w32gdi.c:81
 msgid "Unable to save current gamma ramp.\n"
 msgstr "Kan ikke gemme nuværende gammarampe.\n"
 
-#: src/gamma-w32gdi.c:104
+#: src/gamma-w32gdi.c:103
 msgid "Adjust gamma ramps with the Windows GDI.\n"
 msgstr "Juster gammaramper med Windows GDI.\n"
 
-#: src/gamma-w32gdi.c:119
+#: src/gamma-w32gdi.c:125
 msgid "Unable to restore gamma ramps.\n"
 msgstr "Kan ikke genskabe gammaramper.\n"
 
-#: src/gamma-w32gdi.c:144
+#: src/gamma-w32gdi.c:165
 msgid "Unable to set gamma ramps.\n"
 msgstr "Kan ikke sætte gammaramper.\n"
 
-#: src/location-gnome-clock.c:50
+#: src/location-gnome-clock.c:48
 #, c-format
 msgid "Error reading city list: `%s'.\n"
 msgstr "Fejl ved læsning af liste over byer: `%s'.\n"
 
-#: src/location-gnome-clock.c:83
+#: src/location-gnome-clock.c:87
 msgid "Cannot list GNOME panel applets.\n"
 msgstr "Kan ikke hente liste over GNOMEs panelprogrammer.\n"
 
-#: src/location-gnome-clock.c:125
+#: src/location-gnome-clock.c:145
 msgid "No clock applet was found.\n"
 msgstr "Fandt intet ur i panelet.\n"
 
-#: src/location-gnome-clock.c:130
+#: src/location-gnome-clock.c:150
 msgid "No city selected as current city.\n"
 msgstr "Ingen by er valgt som den gældende by.\n"
 
-#: src/location-gnome-clock.c:139
+#: src/location-gnome-clock.c:159
 msgid "Location not specified for city.\n"
 msgstr "Placering er ikke specificeret for byen.\n"
 
-#: src/location-gnome-clock.c:169
+#: src/location-gnome-clock.c:189
 msgid "Use the location as set in the GNOME Clock applet.\n"
 msgstr ""
 "Brug placering som er indstillet i panelprogrammet i GNOME som viser "
