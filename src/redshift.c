@@ -305,8 +305,9 @@ print_help(const char *program_name)
 	/* TRANSLATORS: help output 3
 	   no-wrap */
 	fputs(_("  -h\t\tDisplay this help message\n"
-		"  -v\t\tVerbose output\n"), stdout);
-	fputs("\n", stdout);	
+		"  -v\t\tVerbose output\n"
+                "  -V\t\tShow program version\n"), stdout);
+	fputs("\n", stdout);
 
 	/* TRANSLATORS: help output 4
 	   `list' must not be translated
@@ -631,7 +632,7 @@ main(int argc, char *argv[])
 
 	/* Parse command line arguments. */
 	int opt;
-	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:rt:vx")) != -1) {
+	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:rt:vVx")) != -1) {
 		switch (opt) {
 		case 'b':
 			brightness = atof(optarg);
@@ -755,6 +756,10 @@ main(int argc, char *argv[])
 		case 'v':
 			verbose = 1;
 			break;
+                case 'V':
+                        printf("%s\n", PACKAGE_STRING);
+                        exit(EXIT_SUCCESS);
+                        break;
 		case 'x':
 			mode = PROGRAM_MODE_RESET;
 			break;
