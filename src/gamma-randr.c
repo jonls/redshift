@@ -72,7 +72,7 @@ randr_init(randr_state_t *state)
 		return -1;
 	}
 
-	if (ver_reply->major_version < RANDR_VERSION_MAJOR ||
+	if (ver_reply->major_version != RANDR_VERSION_MAJOR ||
 	    ver_reply->minor_version < RANDR_VERSION_MINOR) {
 		fprintf(stderr, _("Unsupported RANDR version (%u.%u)\n"),
 			ver_reply->major_version, ver_reply->minor_version);
