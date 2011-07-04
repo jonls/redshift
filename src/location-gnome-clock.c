@@ -37,16 +37,14 @@
 static char *
 find_current_city(GConfClient *client, const char *id)
 {
-	GError *error = NULL;
-
 	char *current_city = NULL;
 	char *cities_key = g_strdup_printf("/apps/panel/applets/%s"
 					   "/prefs/cities", id);
 	GSList *cities = gconf_client_get_list(client,
 					       cities_key,
-					       GCONF_VALUE_STRING, &error);
+					       GCONF_VALUE_STRING, NULL);
 
-	if (error) {
+	if (cities == NULL) {
 		fprintf(stderr, _("Error reading city list: `%s'.\n"),
 			cities_key);
 		g_free(cities_key);
@@ -72,17 +70,23 @@ location_gnome_clock_init(location_gnome_clock_state_t *state)
 {
 	g_type_init();
 
-	GError *error = NULL;
 	GConfClient *client = gconf_client_get_default();
 
 	/* Get a list of active applets in the panel. */
 	GSList *applets = gconf_client_get_list(client,
 			"/apps/panel/general/applet_id_list",
-			GCONF_VALUE_STRING, &error);
-	if (error) {
+			GCONF_VALUE_STRING, NULL);
+ 	if (applets == NULL) {
+ 		/* JDS has an alternate list of applets. */
+ 		applets = gconf_client_get_list(client,
+ 				"/apps/panel/general/applet_id_list_jds",
+ 				GCONF_VALUE_STRING, NULL);
+ 	}
+ 
+ 	if (applets == NULL) {
 		fputs(_("Cannot list GNOME panel applets.\n"), stderr);
-		g_object_unref(client);
 		g_slist_free(applets);
+		g_object_unref(client);
 		return -1;
 	}
 
@@ -102,11 +106,11 @@ location_gnome_clock_init(location_gnome_clock_state_t *state)
 			char *key = g_strdup_printf("/apps/panel/applets/%s"
 						    "/bonobo_iid", id);
 			char *bonobo_iid = gconf_client_get_string(client, key,
-								   &error);
+								   NULL);
 
-			/* Try both gnome-panel 2.30.x and earlier bonobo_iid key and
-			   newer applet_iid. */
-			if (!error && bonobo_iid != NULL &&
+			/* Try both gnome-panel 2.30.x and earlier bonobo_iid
+			   key and newer applet_iid. */
+			if (bonobo_iid != NULL &&
 			    !strcmp(bonobo_iid, "OAFIID:GNOME_ClockApplet")) {
 				clock_applet_count += 1;
 				current_city = find_current_city(client, id);
@@ -115,9 +119,9 @@ location_gnome_clock_init(location_gnome_clock_state_t *state)
                                 key = g_strdup_printf("/apps/panel/applets/%s"
                                                       "/applet_iid", id);
 				char *applet_iid = gconf_client_get_string(client, key,
-                                                                           &error);
+                                                                           NULL);
 
-				if (!error && applet_iid != NULL &&
+				if (applet_iid != NULL &&
 				    !strcmp(applet_iid, "ClockAppletFactory::ClockApplet")) {
 					clock_applet_count += 1;
 					current_city = find_current_city(client, id);
