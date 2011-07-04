@@ -104,10 +104,26 @@ location_gnome_clock_init(location_gnome_clock_state_t *state)
 			char *bonobo_iid = gconf_client_get_string(client, key,
 								   &error);
 
+			/* Try both gnome-panel 2.30.x and earlier bonobo_iid key and
+			   newer applet_iid. */
 			if (!error && bonobo_iid != NULL &&
 			    !strcmp(bonobo_iid, "OAFIID:GNOME_ClockApplet")) {
 				clock_applet_count += 1;
 				current_city = find_current_city(client, id);
+			} else {
+                                g_free(key);
+                                key = g_strdup_printf("/apps/panel/applets/%s"
+                                                      "/applet_iid", id);
+				char *applet_iid = gconf_client_get_string(client, key,
+                                                                           &error);
+
+				if (!error && applet_iid != NULL &&
+				    !strcmp(applet_iid, "ClockAppletFactory::ClockApplet")) {
+					clock_applet_count += 1;
+					current_city = find_current_city(client, id);
+				}
+
+				g_free(applet_iid);
 			}
 
 			g_free(bonobo_iid);
