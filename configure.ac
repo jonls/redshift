@@ -177,6 +177,17 @@ AS_IF([test "x$enable_gui" != xno], [
 ])
 AM_CONDITIONAL([ENABLE_GUI], [test "x$enable_gui" != xno])
 
+# Check for Ubuntu icons
+AC_MSG_CHECKING([whether to enable Ubuntu icons])
+AC_ARG_ENABLE([ubuntu], [AC_HELP_STRING([--enable-ubuntu],
+	[enable Ubuntu icons])],
+        [enable_ubuntu=$enableval],[enable_ubuntu=no])
+AS_IF([test "x$enable_ubuntu" != xno], [
+        AC_MSG_RESULT([yes])
+], [
+        AC_MSG_RESULT([no])
+])
+AM_CONDITIONAL([ENABLE_UBUNTU], [test "x$enable_ubuntu" != xno])
 
 # Checks for header files.
 AC_CHECK_HEADERS([locale.h stdint.h stdlib.h string.h unistd.h sys/signal.h])
@@ -216,4 +227,5 @@ echo "
     Geoclue:		${enable_geoclue}
 
     GUI:		${enable_gui}
+    Ubuntu icons:	${enable_ubuntu}
 "
