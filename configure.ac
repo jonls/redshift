@@ -190,7 +190,7 @@ AS_IF([test "x$enable_ubuntu" != xno], [
 AM_CONDITIONAL([ENABLE_UBUNTU], [test "x$enable_ubuntu" != xno])
 
 # Checks for header files.
-AC_CHECK_HEADERS([locale.h stdint.h stdlib.h string.h unistd.h sys/signal.h])
+AC_CHECK_HEADERS([locale.h stdint.h stdlib.h string.h unistd.h signal.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_UINT16_T
