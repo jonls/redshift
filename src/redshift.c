@@ -30,7 +30,7 @@
 #include <locale.h>
 #include <errno.h>
 
-#ifdef HAVE_SIGNAL_H
+#if defined(HAVE_SIGNAL_H) && !defined(__WIN32__)
 # include <signal.h>
 #endif
 
@@ -231,7 +231,7 @@ typedef enum {
 } program_mode_t;
 
 
-#ifdef HAVE_SIGNAL_H
+#if defined(HAVE_SIGNAL_H) && !defined(__WIN32__)
 
 static volatile sig_atomic_t exiting = 0;
 static volatile sig_atomic_t disable = 0;
@@ -250,12 +250,12 @@ sigdisable(int signo)
 	disable = 1;
 }
 
-#else /* ! HAVE_SIGNAL_H */
+#else /* ! HAVE_SIGNAL_H || __WIN32__ */
 
 static int exiting = 0;
 static int disable = 0;
 
-#endif /* ! HAVE_SIGNAL_H */
+#endif /* ! HAVE_SIGNAL_H || __WIN32__ */
 
 
 /* Calculate color temperature for the specified solar elevation. */
@@ -1101,7 +1101,7 @@ main(int argc, char *argv[])
 		   will be exactly 6500K. */
 		float adjustment_alpha = 0.0;
 
-#ifdef HAVE_SIGNAL_H
+#if defined(HAVE_SIGNAL_H) && !defined(__WIN32__)
 		struct sigaction sigact;
 		sigset_t sigset;
 		sigemptyset(&sigset);
@@ -1118,7 +1118,7 @@ main(int argc, char *argv[])
 		sigact.sa_mask = sigset;
 		sigact.sa_flags = 0;
 		sigaction(SIGUSR1, &sigact, NULL);
-#endif /* HAVE_SIGNAL_H */
+#endif /* HAVE_SIGNAL_H && ! __WIN32__ */
 
 		/* Continously adjust color temperature */
 		int done = 0;
