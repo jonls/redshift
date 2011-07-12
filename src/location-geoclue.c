@@ -50,14 +50,20 @@ location_geoclue_init(location_geoclue_state_t *state)
 int
 location_geoclue_start(location_geoclue_state_t *state)
 {
-	GeoclueMaster *master = NULL;
-	GeoclueMasterClient *client = NULL;
-	GError *error = NULL;
-	gchar *name = NULL;
+        if (state->provider && state->provider_path) {
+		state->position = geoclue_position_new(state->provider,
+						       state->provider_path);
+        } else {
+                GeoclueMaster *master = geoclue_master_get_default();
+                GeoclueMasterClient *client = geoclue_master_create_client(master,
+                                                                           NULL, NULL);
+                GError *error = NULL;
 
-        if (!(state->provider && state->provider_path)) {
-		master = geoclue_master_get_default();
-		client = geoclue_master_create_client(master, NULL, NULL);
+                if (client == NULL) {
+                        g_printerr(_("Unable to obtain master client.\n"));
+                        g_object_unref(master);
+                        return -1;
+                }
 
 		if (!geoclue_master_client_set_requirements(client,
 							    GEOCLUE_ACCURACY_LEVEL_REGION,
@@ -68,15 +74,18 @@ location_geoclue_start(location_geoclue_state_t *state)
 				   error->message);
 			g_error_free(error);
 			g_object_unref(client);
+                        g_object_unref(master);
 
 			return -1;
 		}
 
 		state->position = geoclue_master_client_create_position(client, NULL);
-	} else {
-		state->position = geoclue_position_new(state->provider,
-						       state->provider_path);
-        }
+
+                g_object_unref(client);
+                g_object_unref(master);
+	}
+
+	gchar *name = NULL;
 
 	if (geoclue_provider_get_provider_info(GEOCLUE_PROVIDER(state->position),
 					       &name, NULL, NULL)) {
