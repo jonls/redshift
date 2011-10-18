@@ -258,29 +258,38 @@ static int disable = 0;
 #endif /* ! HAVE_SIGNAL_H || __WIN32__ */
 
 
-/* Calculate color temperature for the specified solar elevation. */
-static int
-calculate_temp(double elevation, int temp_day, int temp_night,
-	       int verbose)
+/* Print which period (night, day or transition) we're currently in. */
+static void
+print_period(double elevation)
 {
-	int temp = 0;
 	if (elevation < TRANSITION_LOW) {
-		temp = temp_night;
-		if (verbose) printf(_("Period: Night\n"));
+		printf(_("Period: Night\n"));
+	} else if (elevation < TRANSITION_HIGH) {
+		float a = (TRANSITION_LOW - elevation) /
+			(TRANSITION_LOW - TRANSITION_HIGH);
+		printf(_("Period: Transition (%.2f%% day)\n"), a*100);
+	} else {
+		printf(_("Period: Daytime\n"));
+	}
+}
+
+/* Interpolate value based on the specified solar elevation. */
+static float
+calculate_interpolated_value(double elevation, float day, float night)
+{
+	float result;
+	if (elevation < TRANSITION_LOW) {
+		result = night;
 	} else if (elevation < TRANSITION_HIGH) {
 		/* Transition period: interpolate */
 		float a = (TRANSITION_LOW - elevation) /
 			(TRANSITION_LOW - TRANSITION_HIGH);
-		temp = (1.0-a)*temp_night + a*temp_day;
-		if (verbose) {
-			printf(_("Period: Transition (%.2f%% day)\n"), a*100);
-		}
+		result = (1.0-a)*night + a*day;
 	} else {
-		temp = temp_day;
-		if (verbose) printf(_("Period: Daytime\n"));
+		result = day;
 	}
 
-	return temp;
+	return result;
 }
 
 
@@ -312,7 +321,7 @@ print_help(const char *program_name)
 	/* TRANSLATORS: help output 4
 	   `list' must not be translated
 	   no-wrap */
-	fputs(_("  -b N\t\tScreen brightness to apply (max is 1.0)\n"
+	fputs(_("  -b DAY:NIGHT\tScreen brightness to apply (between 0.1 and 1.0)\n"
                 "  -c FILE\tLoad settings from specified configuration file\n"
 		"  -g R:G:B\tAdditional gamma correction to apply\n"
 		"  -l LAT:LON\tYour current location\n"
@@ -565,6 +574,22 @@ parse_gamma_string(const char *str, float gamma[])
 	return 0;
 }
 
+/* A brightness string contains either one floating point value,
+   or two values separated by a colon. */
+static void
+parse_brightness_string(const char *str, float *bright_day, float *bright_night)
+{
+	char *s = strchr(str, ':');
+	if (s == NULL) {
+		/* Same value for day and night. */
+		*bright_day = *bright_night = atof(str);
+	} else {
+		*(s++) = '\0';
+		*bright_day = atof(str);
+		*bright_night = atof(s);
+	}
+}
+
 static const gamma_method_t *
 find_gamma_method(const char *name)
 {
@@ -618,7 +643,8 @@ main(int argc, char *argv[])
 	int temp_day = -1;
 	int temp_night = -1;
 	float gamma[3] = { NAN, NAN, NAN };
-	float brightness = NAN;
+	float brightness_day = NAN;
+	float brightness_night = NAN;
 
 	const gamma_method_t *method = NULL;
 	char *method_args = NULL;
@@ -636,7 +662,7 @@ main(int argc, char *argv[])
 	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:rt:vVx")) != -1) {
 		switch (opt) {
 		case 'b':
-			brightness = atof(optarg);
+			parse_brightness_string(optarg, &brightness_day, &brightness_night);
 			break;
 		case 'c':
 			if (config_filepath != NULL) free(config_filepath);
@@ -803,8 +829,21 @@ main(int argc, char *argv[])
 				}
 			} else if (strcasecmp(setting->name,
 					      "brightness") == 0) {
-				if (isnan(brightness)) {
-					brightness = atof(setting->value);
+				if (isnan(brightness_day)) {
+					brightness_day = atof(setting->value);
+				}
+				if (isnan(brightness_night)) {
+					brightness_night = atof(setting->value);
+				}
+			} else if (strcasecmp(setting->name,
+					      "brightness-day") == 0) {
+				if (isnan(brightness_day)) {
+					brightness_day = atof(setting->value);
+				}
+			} else if (strcasecmp(setting->name,
+					      "brightness-night") == 0) {
+				if (isnan(brightness_night)) {
+					brightness_night = atof(setting->value);
 				}
 			} else if (strcasecmp(setting->name, "gamma") == 0) {
 				if (isnan(gamma[0])) {
@@ -858,7 +897,8 @@ main(int argc, char *argv[])
 	   the config file nor on the command line. */
 	if (temp_day < 0) temp_day = DEFAULT_DAY_TEMP;
 	if (temp_night < 0) temp_night = DEFAULT_NIGHT_TEMP;
-	if (isnan(brightness)) brightness = DEFAULT_BRIGHTNESS;
+	if (isnan(brightness_day)) brightness_day = DEFAULT_BRIGHTNESS;
+	if (isnan(brightness_night)) brightness_night = DEFAULT_BRIGHTNESS;
 	if (isnan(gamma[0])) gamma[0] = gamma[1] = gamma[2] = DEFAULT_GAMMA;
 	if (transition < 0) transition = 1;
 
@@ -967,15 +1007,18 @@ main(int argc, char *argv[])
 	}
 
 	/* Brightness */
-	if (brightness < MIN_BRIGHTNESS || brightness > MAX_BRIGHTNESS) {
+	if (brightness_day < MIN_BRIGHTNESS ||
+	    brightness_day > MAX_BRIGHTNESS ||
+	    brightness_night < MIN_BRIGHTNESS ||
+	    brightness_night > MAX_BRIGHTNESS) {
 		fprintf(stderr,
-			_("Brightness value must be between %.1f and %.1f.\n"),
+			_("Brightness values must be between %.1f and %.1f.\n"),
 			MIN_BRIGHTNESS, MAX_BRIGHTNESS);
 		exit(EXIT_FAILURE);
 	}
 
 	if (verbose) {
-		printf(_("Brightness: %.2f\n"), brightness);
+		printf(_("Brightness: %.2f:%.2f\n"), brightness_day, brightness_night);
 	}
 
 	/* Gamma */
@@ -1045,10 +1088,16 @@ main(int argc, char *argv[])
 		}
 
 		/* Use elevation of sun to set color temperature */
-		int temp = calculate_temp(elevation, temp_day, temp_night,
-					  verbose);
+		int temp = (int)calculate_interpolated_value(elevation,
+							     temp_day, temp_night);
+		float brightness = calculate_interpolated_value(elevation,
+								brightness_day, brightness_night);
 
-		if (verbose) printf(_("Color temperature: %uK\n"), temp);
+		if (verbose) {
+			print_period(elevation);
+			printf(_("Color temperature: %uK\n"), temp);
+			printf(_("Brightness: %.2f\n"), brightness);
+		}
 
 		/* Adjust temperature */
 		r = method->set_temperature(&state, temp, brightness, gamma);
@@ -1064,13 +1113,13 @@ main(int argc, char *argv[])
 		if (verbose) printf(_("Color temperature: %uK\n"), temp_set);
 
 		/* Adjust temperature */
-		r = method->set_temperature(&state, temp_set, brightness, gamma);
+		r = method->set_temperature(&state, temp_set, brightness_day, gamma);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
 			method->free(&state);
 			exit(EXIT_FAILURE);
 		}
-		
+
 	}
 	break;
 	case PROGRAM_MODE_RESET:
@@ -1189,8 +1238,12 @@ main(int argc, char *argv[])
 			double elevation = solar_elevation(now, lat, lon);
 
 			/* Use elevation of sun to set color temperature */
-			int temp = calculate_temp(elevation, temp_day,
-						  temp_night, verbose);
+			int temp = (int)calculate_interpolated_value(elevation,
+								temp_day, temp_night);
+			float brightness = calculate_interpolated_value(elevation,
+								brightness_day, brightness_night);
+
+			if (verbose) print_period(elevation);
 
 			/* Ongoing short transition */
 			if (short_trans) {
@@ -1230,11 +1283,15 @@ main(int argc, char *argv[])
 			temp = adjustment_alpha*6500 +
 				(1.0-adjustment_alpha)*temp;
 
+			brightness = adjustment_alpha*1.0 +
+				(1.0-adjustment_alpha)*brightness;
+
 			/* Quit loop when done */
 			if (done && !short_trans) break;
 
 			if (verbose) {
 				printf(_("Color temperature: %uK\n"), temp);
+				printf(_("Brightness: %.2f\n"), brightness);
 			}
 
 			/* Adjust temperature */
