@@ -10,12 +10,12 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="24"
-   height="24"
+   width="22"
+   height="22"
    id="svg2837"
    version="1.1"
    inkscape:version="0.47 r22583"
-   sodipodi:docname="redshift-dark-5.svg"
+   sodipodi:docname="rd9-17.svg"
    inkscape:export-filename="/home/joern/Desktop/redshiftIconlight.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
@@ -353,17 +353,17 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="11.313708"
-     inkscape:cx="-2.4433352"
+     inkscape:cx="-2.6248555"
      inkscape:cy="11.54906"
      inkscape:document-units="px"
      inkscape:current-layer="layer5"
-     showgrid="false"
+     showgrid="true"
      showguides="false"
      inkscape:guide-bbox="true"
      inkscape:window-width="955"
      inkscape:window-height="801"
-     inkscape:window-x="174"
-     inkscape:window-y="71"
+     inkscape:window-x="297"
+     inkscape:window-y="25"
      inkscape:window-maximized="0"
      inkscape:snap-global="false">
     <sodipodi:guide
@@ -385,10 +385,12 @@
     <inkscape:grid
        type="xygrid"
        id="grid7095"
-       empspacing="5"
+       empspacing="2"
        visible="true"
        enabled="true"
-       snapvisiblegridlinesonly="true" />
+       snapvisiblegridlinesonly="true"
+       spacingx="0.5px"
+       spacingy="0.5px" />
     <sodipodi:guide
        orientation="0,1"
        position="-4.6845824,12.020815"
@@ -426,35 +428,37 @@
      inkscape:groupmode="layer"
      id="layer5"
      inkscape:label="Ebene#1"
-     style="display:inline">
-    <path
-       id="path4672-2-2"
-       style="fill:none;stroke:#000000;stroke-width:3.7;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline;opacity:0.59999999999999998"
-       d="m 11.901568,3.515032 c -3.6085296,0 -6.5338204,2.925291 -6.5338204,6.533821 0,2.308483 1.0115514,4.239217 3.021892,5.512911 0.9197379,0.58272 2.3031584,0.94774 3.4545534,0.951673 1.249176,0.0043 2.539034,-0.235058 3.569303,-0.99251 1.631571,-1.199528 3.021893,-3.170417 3.021893,-5.472074 0,-3.60853 -2.925291,-6.533821 -6.533821,-6.533821 z m 0,-1e-7 c -3.6085297,0 -6.5338204,2.9252909 -6.5338204,6.5338201 0,2.308484 1.2145131,4.350661 3.021892,5.512912 l 0.8984002,3.634437 c 0,0 0,1.306764 2.6135282,1.306764 2.613528,0 2.613528,-1.306764 2.613528,-1.306764 l 0.8984,-3.675274 c 1.79843,-1.163919 3.021892,-3.170418 3.021892,-5.472075 0,-3.6085292 -2.925291,-6.5338201 -6.53382,-6.5338201 z" />
+     style="display:inline"
+     transform="translate(0,-2)">
     <g
        id="g4255"
        transform="matrix(0.98314262,0,0,0.98314262,0.05987544,0.20244021)">
       <g
          id="g4252" />
-      <path
-         style="fill:none;stroke:#dfd8c8;stroke-width:1.99375558;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-         id="path4672"
-         d="m 12.044735,3.3693906 c -3.6704028,0 -6.6458518,2.9754492 -6.6458518,6.6458524 0,2.348066 1.2353376,4.425259 3.0737066,5.607438 l 0.9138046,3.696755 c 0,0 0,1.32917 2.6583406,1.32917 2.658341,0 2.658341,-1.32917 2.658341,-1.32917 l 0.913804,-3.738292 c 1.829267,-1.183876 3.073707,-3.224779 3.073707,-5.565901 0,-3.6704032 -2.975449,-6.6458524 -6.645852,-6.6458524 z" />
     </g>
     <path
-       style="fill:none;stroke:#dfd8c8;stroke-width:1.96014607;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       id="path4672-2-2"
+       style="opacity:0.6;fill:none;stroke:#3a3935;stroke-width:3.53497338;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       d="m 11.000001,5.8335253 c -3.0445665,0 -5.5126739,2.4681078 -5.5126739,5.5126727 0,1.947699 0.8534597,3.576685 2.5496113,4.651318 0.7759954,0.491649 1.9432055,0.799621 2.9146526,0.80294 1.053949,0.0035 2.142219,-0.198322 3.011472,-0.837395 1.376577,-1.012057 2.54961,-2.674923 2.54961,-4.616863 0,-3.0445649 -2.468108,-5.5126727 -5.512673,-5.5126727 z m 0,-10e-8 c -3.0445665,0 -5.5126739,2.4681075 -5.5126739,5.5126718 0,1.9477 1.0247013,3.670712 2.5496113,4.651319 l 0.7579925,3.066423 c 0,0 0,1.102536 2.2050701,1.102536 2.205068,0 2.205068,-1.102536 2.205068,-1.102536 l 0.757994,-3.100878 c 1.517359,-0.982013 2.54961,-2.674924 2.54961,-4.616864 0,-3.0445643 -2.468107,-5.5126718 -5.512672,-5.5126718 z" />
+    <path
+       style="fill:none;stroke:#eae3d0;stroke-width:1.51498854;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       id="path4672"
+       d="m 11,5.8335251 c -3.0445655,0 -5.5126729,2.4681075 -5.5126729,5.5126729 0,1.947699 1.0247013,3.670712 2.5496112,4.651318 l 0.7579926,3.066423 c 0,0 0,1.102535 2.2050691,1.102535 2.205069,0 2.205069,-1.102535 2.205069,-1.102535 l 0.757993,-3.100878 c 1.51736,-0.982013 2.549612,-2.674924 2.549612,-4.616863 0,-3.0445654 -2.468108,-5.5126729 -5.512674,-5.5126729 z" />
+    <path
+       style="fill:none;stroke:#eae3d0;stroke-width:1.51498854;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
        id="path4672-2"
-       d="m 11.901568,3.515032 c -3.6085296,0 -6.5338204,2.925291 -6.5338204,6.533821 0,2.308483 1.0115514,4.239217 3.021892,5.512911 0.9197379,0.58272 2.3031584,0.94774 3.4545534,0.951673 1.249176,0.0043 2.539034,-0.235058 3.569303,-0.99251 1.631571,-1.199528 3.021893,-3.170417 3.021893,-5.472074 0,-3.60853 -2.925291,-6.533821 -6.533821,-6.533821 z"
+       d="m 11.000001,5.8335253 c -3.0445665,0 -5.5126739,2.4681078 -5.5126739,5.5126727 0,1.947699 0.8534597,3.576685 2.5496113,4.651318 0.7759954,0.491649 1.9432055,0.799621 2.9146526,0.80294 1.053949,0.0035 2.142219,-0.198322 3.011472,-0.837395 1.376577,-1.012057 2.54961,-2.674923 2.54961,-4.616863 0,-3.0445649 -2.468108,-5.5126727 -5.512673,-5.5126727 z"
        sodipodi:nodetypes="csssssc" />
   </g>
   <g
      inkscape:label="Ebene 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-1028.3622)" />
+     transform="translate(0,-1030.3622)" />
   <g
      inkscape:groupmode="layer"
      id="layer4"
      inkscape:label="Ebene"
-     style="display:inline" />
+     style="display:inline"
+     transform="translate(0,-2)" />
 </svg>
