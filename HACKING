@@ -1,0 +1,3 @@
+- verbose flag is (currently) only held in redshift.c; thus, write all
+  verbose messages there
+
