@@ -70,6 +70,9 @@ location_manual_print_help(FILE *f)
 	fputs(_("  lat=N\t\tLatitude\n"
 		"  lon=N\t\tLongitude\n"), f);
 	fputs("\n", f);
+	fputs(_("Both values are expected to be floating point numbers,\n"
+		"negative values representing west / south, respectively.\n"), f);
+	fputs("\n", f);
 }
 
 int

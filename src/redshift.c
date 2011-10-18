@@ -930,6 +930,9 @@ main(int argc, char *argv[])
 			     location_providers[i].name != NULL; i++) {
 				const location_provider_t *p =
 					&location_providers[i];
+				fprintf(stderr,
+					_("Trying location provider `%s'...\n"),
+					p->name);
 				r = provider_try_start(p, &location_state,
 						       &config_state, NULL);
 				if (r < 0) {
@@ -966,6 +969,8 @@ main(int argc, char *argv[])
 		if (verbose) {
 		        /* TRANSLATORS: Append degree symbols if possible. */
 		        printf(_("Location: %f, %f\n"), lat, lon);
+			printf(_("Temperatures: %dK at day, %dK at night\n"),
+			       temp_day, temp_night);
 		}
 	
 		/* Latitude */
@@ -1314,7 +1319,7 @@ main(int argc, char *argv[])
 				}
 			}
 
-			/* Sleep for a while */
+			/* Sleep for 5 seconds or 0.1 second. */
 #ifndef _WIN32
 			if (short_trans) usleep(100000);
 			else usleep(5000000);

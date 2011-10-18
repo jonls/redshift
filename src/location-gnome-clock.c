@@ -156,7 +156,9 @@ location_gnome_clock_init(location_gnome_clock_state_t *state)
 	char *lat_str = strstr(current_city, "latitude=\"");
 	char *lon_str = strstr(current_city, "longitude=\"");
 	if (lat_str == NULL || lon_str == NULL) {
-		fputs(_("Location not specified for city.\n"), stderr);
+	        fprintf(stderr,
+			_("Location not specified for city `%s'.\n"),
+			current_city);
 		g_free(current_city);
 		return -1;
 	}
