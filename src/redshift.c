@@ -657,6 +657,13 @@ main(int argc, char *argv[])
 	int verbose = 0;
 	char *s;
 
+	/* Flush messages consistently even if redirected to a pipe or
+	   file.  Change the flush behaviour to line-buffered, without
+	   changing the actual buffers being used.
+	*/
+	setvbuf (stdout, NULL, _IOLBF, 0);
+	setvbuf (stderr, NULL, _IOLBF, 0);
+	
 	/* Parse command line arguments. */
 	int opt;
 	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:rt:vVx")) != -1) {
