@@ -226,6 +226,7 @@ static const location_provider_t location_providers[] = {
 typedef enum {
 	PROGRAM_MODE_CONTINUAL,
 	PROGRAM_MODE_ONE_SHOT,
+	PROGRAM_MODE_PRINT,
 	PROGRAM_MODE_RESET,
 	PROGRAM_MODE_MANUAL
 } program_mode_t;
@@ -333,6 +334,7 @@ print_help(const char *program_name)
 		"  -o\t\tOne shot mode (do not continously adjust"
 		" color temperature)\n"
 		"  -O TEMP\tOne shot manual mode (set color temperature)\n"
+		"  -p\t\tPrint mode (only print parameters and exit)"
 		"  -x\t\tReset mode (remove adjustment from screen)\n"
 		"  -r\t\tDisable temperature transitions\n"
 		"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"),
@@ -666,7 +668,7 @@ main(int argc, char *argv[])
 	
 	/* Parse command line arguments. */
 	int opt;
-	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:rt:vVx")) != -1) {
+	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:prt:vVx")) != -1) {
 		switch (opt) {
 		case 'b':
 			parse_brightness_string(optarg, &brightness_day, &brightness_night);
@@ -770,6 +772,9 @@ main(int argc, char *argv[])
 		case 'O':
 			mode = PROGRAM_MODE_MANUAL;
 			temp_set = atoi(optarg);
+			break;
+		case 'p':
+			mode = PROGRAM_MODE_PRINT;
 			break;
 		case 'r':
 			transition = 0;
@@ -1082,6 +1087,7 @@ main(int argc, char *argv[])
 
 	switch (mode) {
 	case PROGRAM_MODE_ONE_SHOT:
+	case PROGRAM_MODE_PRINT:
 	{
 		/* Current angular elevation of the sun */
 		double now;
@@ -1105,10 +1111,13 @@ main(int argc, char *argv[])
 		float brightness = calculate_interpolated_value(elevation,
 								brightness_day, brightness_night);
 
-		if (verbose) {
+		if (verbose || mode == PROGRAM_MODE_PRINT) {
 			print_period(elevation);
 			printf(_("Color temperature: %uK\n"), temp);
 			printf(_("Brightness: %.2f\n"), brightness);
+		}
+		if(mode == PROGRAM_MODE_PRINT) {
+			exit(EXIT_SUCCESS);
 		}
 
 		/* Adjust temperature */
