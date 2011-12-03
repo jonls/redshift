@@ -15,6 +15,7 @@
 # along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
 # Copyright (c) 2010  Francesco Marella <francesco.marella@gmail.com>
+# Copyright (c) 2011  Jon Lund Steffensen <jonlst@gmail.com>
 
 import os
 from xdg import BaseDirectory as base
@@ -22,45 +23,42 @@ from xdg import DesktopEntry as desktop
 
 REDSHIFT_DESKTOP = 'gtk-redshift.desktop'
 
+# Keys to set when enabling/disabling autostart.
+# Only first one is checked on "get".
+AUTOSTART_KEYS = (('Hidden', ('true', 'false')),
+                  ('X-GNOME-Autostart-enabled', ('false', 'true')))
+
+
+def open_autostart_file():
+    autostart_dir = base.save_config_path("autostart")
+    autostart_file = os.path.join(autostart_dir, REDSHIFT_DESKTOP)
+
+    if not os.path.exists(autostart_file):
+        desktop_files = list(base.load_data_paths("applications",
+                                                  REDSHIFT_DESKTOP))
+
+        if not desktop_files:
+            raise IOError("Installed redshift desktop file not found!")
+
+        desktop_file_path = desktop_files[0]
+
+        # Read installed file
+        dfile = desktop.DesktopEntry(desktop_file_path)
+        for key, values in AUTOSTART_KEYS:
+            dfile.set(key, values[False])
+        dfile.write(filename=autostart_file)
+    else:
+        dfile = desktop.DesktopEntry(autostart_file)
+
+    return dfile, autostart_file
 
 def get_autostart():
-    AUTOSTART_KEY = "X-GNOME-Autostart-enabled"
-    autostart_dir = base.save_config_path("autostart")
-    autostart_file = os.path.join(autostart_dir, REDSHIFT_DESKTOP)
-    if not os.path.exists(autostart_file):
-        desktop_files = list(base.load_data_paths("applications", 
-            REDSHIFT_DESKTOP))
-        if not desktop_files:
-            raise IOError("Installed redshift desktop file not found!")
-        desktop_file_path = desktop_files[0]
-        # Read installed file and modify it
-        dfile = desktop.DesktopEntry(desktop_file_path)
-        dfile.set(AUTOSTART_KEY, "false")
-        dfile.write(filename=autostart_file)
-        return False
-    else:
-        dfile = desktop.DesktopEntry(autostart_file)
-        if dfile.get(AUTOSTART_KEY) == 'false':
-            return False
-        else:
-            return True
+    dfile, path = open_autostart_file()
+    check_key, check_values = AUTOSTART_KEYS[0]
+    return dfile.get(check_key) == check_values[True]
 
 def set_autostart(active):
-    AUTOSTART_KEY = "X-GNOME-Autostart-enabled"
-    autostart_dir = base.save_config_path("autostart")
-    autostart_file = os.path.join(autostart_dir, REDSHIFT_DESKTOP)
-    if not os.path.exists(autostart_file):
-        desktop_files = list(base.load_data_paths("applications", 
-            REDSHIFT_DESKTOP))
-        if not desktop_files:
-            raise IOError("Installed redshift desktop file not found!")
-            return
-        desktop_file_path = desktop_files[0]
-        # Read installed file and modify it
-        dfile = desktop.DesktopEntry(desktop_file_path)
-    else:
-        dfile = desktop.DesktopEntry(autostart_file)
-    activestr = str(bool(active)).lower()
-    # print "Setting autostart to %s" % activestr
-    dfile.set(AUTOSTART_KEY, activestr)
-    dfile.write(filename=autostart_file)
+    dfile, path = open_autostart_file()
+    for key, values in AUTOSTART_KEYS:
+        dfile.set(key, values[active])
+    dfile.write(filename=path)
