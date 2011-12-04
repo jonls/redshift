@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2011  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #ifdef HAVE_CONFIG_H
@@ -661,11 +661,10 @@ main(int argc, char *argv[])
 
 	/* Flush messages consistently even if redirected to a pipe or
 	   file.  Change the flush behaviour to line-buffered, without
-	   changing the actual buffers being used.
-	*/
-	setvbuf (stdout, NULL, _IOLBF, 0);
-	setvbuf (stderr, NULL, _IOLBF, 0);
-	
+	   changing the actual buffers being used. */
+	setvbuf(stdout, NULL, _IOLBF, 0);
+	setvbuf(stderr, NULL, _IOLBF, 0);
+
 	/* Parse command line arguments. */
 	int opt;
 	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:prt:vVx")) != -1) {
@@ -1210,6 +1209,11 @@ main(int argc, char *argv[])
 					disabled = 0;
 				}
 				disable = 0;
+
+				if (verbose) {
+					printf("Status: %s\n", disabled ?
+					       "Disabled" : "Enabled");
+				}
 			}
 
 			/* Check to see if exit signal was caught */
