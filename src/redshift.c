@@ -1189,6 +1189,10 @@ main(int argc, char *argv[])
 		sigaction(SIGUSR1, &sigact, NULL);
 #endif /* HAVE_SIGNAL_H && ! __WIN32__ */
 
+		if (verbose) {
+			printf("Status: %s\n", "Enabled");
+		}
+
 		/* Continously adjust color temperature */
 		int done = 0;
 		int disabled = 0;
