@@ -1,3 +1,20 @@
-- verbose flag is (currently) only held in redshift.c; thus, write all
-  verbose messages there
+Build from bzr branch
+---------------------
+ $ ./bootstrap
+ $ ./configure
 
+Use `./configure --help' for options. Use `--prefix' to make an install in
+your home directory. This is necessary to test python scripts.
+
+ $ make
+
+The main redshift program can be run at this point. To test python
+scripts run:
+
+ $ make install
+
+
+Notes
+-----
+- verbose flag is (currently) only held in redshift.c; thus, write all
+  verbose messages there.
