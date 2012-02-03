@@ -40,6 +40,9 @@ import defs
 import utils
 
 
+SUSPEND_TIMER = None
+
+
 def run():
     # Internationalisation
     gettext.bindtextdomain('redshift', defs.LOCALEDIR)
@@ -64,7 +67,24 @@ def run():
             status_icon.set_from_icon_name('redshift-status-on')
             status_icon.set_tooltip('Redshift')
 
+        def is_enabled():
+            if appindicator:
+                return indicator.get_icon() == 'redshift-status-on'
+            else:
+                return status_icon.get_icon_name() == 'redshift-status-on'
+
+        def remove_suspend_timer():
+            global SUSPEND_TIMER
+            if SUSPEND_TIMER is not None:
+                glib.source_remove(SUSPEND_TIMER)
+                SUSPEND_TIMER = None
+
         def toggle_cb(widget, data=None):
+            # If the user toggles redshift, we forget about the suspend timer.
+            # Only then widget is not None.
+            if widget:
+                remove_suspend_timer()
+
             process.send_signal(signal.SIGUSR1)
             if appindicator:
                 if indicator.get_icon() == 'redshift-status-on':
@@ -76,6 +96,23 @@ def run():
                         status_icon.set_from_icon_name('redshift-status-off')
 	            else:
                         status_icon.set_from_icon_name('redshift-status-on')
+
+        def enable_cb():
+            if is_enabled():
+                return
+            # Enable redshift
+            toggle_cb(None)
+
+        def suspend_cb(widget, minutes):
+            if is_enabled():
+                # Disable redshift
+                toggle_cb(None)
+            # If "suspend" is clicked while redshift is disabled, we reenable
+            # it after the last selected timespan is over.
+            remove_suspend_timer()
+            # If redshift was already disabled we reenable it nonetheless.
+            global SUSPEND_TIMER
+            SUSPEND_TIMER = glib.timeout_add_seconds(minutes * 60, enable_cb)
 
         def autostart_cb(widget, data=None):
             utils.set_autostart(widget.get_active())
@@ -92,6 +129,16 @@ def run():
         toggle_item = gtk.MenuItem(_('Toggle'))
         toggle_item.connect('activate', toggle_cb)
         status_menu.append(toggle_item)
+
+        suspend_menu_item = gtk.MenuItem(_('Suspend for'))
+        suspend_menu = gtk.Menu()
+        for minutes, label in [(30, _('30 minutes')), (60, _('1 hour')),
+                               (120, _('2 hours'))]:
+            suspend_item = gtk.MenuItem(label)
+            suspend_item.connect('activate', suspend_cb, minutes)
+            suspend_menu.append(suspend_item)
+        suspend_menu_item.set_submenu(suspend_menu)
+        status_menu.append(suspend_menu_item)
 
         autostart_item = gtk.CheckMenuItem(_('Autostart'))
         try:
