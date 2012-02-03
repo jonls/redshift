@@ -4,14 +4,23 @@ Build from bzr branch
  $ ./configure
 
 Use `./configure --help' for options. Use `--prefix' to make an install in
-your home directory. This is necessary to test python scripts.
+your home directory. This is necessary to test python scripts. Example:
+
+ $ ./configure --prefix=$HOME/redshift/root
+
+Now, build the files:
 
  $ make
 
-The main redshift program can be run at this point. To test python
-scripts run:
+The main redshift program can be run at this point. To install to the
+prefix directory run:
 
  $ make install
+
+You can now run the python scripts. Example:
+
+ $ PYTHONHOME=$HOME/redshift/root/lib/python2.7/site-packages \
+    $HOME/redshift/root/bin/gtk-redshift
 
 
 Notes
