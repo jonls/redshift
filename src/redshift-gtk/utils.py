@@ -21,7 +21,7 @@ import os
 from xdg import BaseDirectory as base
 from xdg import DesktopEntry as desktop
 
-REDSHIFT_DESKTOP = 'gtk-redshift.desktop'
+REDSHIFT_DESKTOP = 'redshift-gtk.desktop'
 
 # Keys to set when enabling/disabling autostart.
 # Only first one is checked on "get".

@@ -20,7 +20,7 @@ prefix directory run:
 You can now run the python scripts. Example:
 
  $ PYTHONHOME=$HOME/redshift/root/lib/python2.7/site-packages \
-    $HOME/redshift/root/bin/gtk-redshift
+    $HOME/redshift/root/bin/redshift-gtk
 
 
 Notes

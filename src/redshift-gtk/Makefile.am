@@ -1,14 +1,14 @@
 
 if ENABLE_GUI
-gtk_redshift_PYTHON = \
+redshift_gtk_PYTHON = \
 	__init__.py \
 	utils.py \
 	statusicon.py
-nodist_gtk_redshift_PYTHON = \
+nodist_redshift_gtk_PYTHON = \
 	defs.py
-gtk_redshiftdir = $(pythondir)/gtk_redshift
+redshift_gtkdir = $(pythondir)/redshift_gtk
 
-dist_bin_SCRIPTS = gtk-redshift
+dist_bin_SCRIPTS = redshift-gtk
 endif
 
 EXTRA_DIST = defs.py.in

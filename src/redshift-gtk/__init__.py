@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# gtk-redshift -- GTK+ Redshift launcher script
+# __init__.py -- redshift-gtk package __init__ file
 # This file is part of Redshift.
 
 # Redshift is free software: you can redistribute it and/or modify
@@ -16,8 +15,3 @@
 # along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
 # Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
-
-
-if __name__ == '__main__':
-    from gtk_redshift.statusicon import run
-    run()

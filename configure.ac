@@ -204,7 +204,7 @@ AC_CONFIG_FILES([
 	Makefile
 	po/Makefile.in
 	src/Makefile
-	src/gtk-redshift/Makefile
+	src/redshift-gtk/Makefile
 ])
 AC_OUTPUT
 

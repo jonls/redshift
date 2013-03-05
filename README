@@ -7,7 +7,7 @@ your surroundings. This may help your eyes hurt less if you are
 working in front of the screen at night.
 
 Run `redshift -h' for help on command line options. You can run the program
-as `gtk-redshift' instead of 'redshift' for a graphical status icon.
+as `redshift-gtk' instead of 'redshift' for a graphical status icon.
 
 Website:	http://jonls.dk/redshift/
 Project page:	http://launchpad.net/redshift

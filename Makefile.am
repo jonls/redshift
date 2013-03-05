@@ -16,7 +16,7 @@ _UBUNTU_MONO_LIGHT_FILES = \
 	data/icons/ubuntu-mono-light/scalable/apps/redshift-status-off.svg
 
 _DESKTOP_FILES = \
-	data/applications/gtk-redshift.desktop
+	data/applications/redshift-gtk.desktop
 
 # Icons
 if ENABLE_GUI
