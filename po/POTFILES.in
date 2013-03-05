@@ -11,4 +11,4 @@ src/gamma-w32gdi.c
 src/location-gnome-clock.c
 src/location-manual.c
 
-src/gtk-redshift/statusicon.py
+src/redshift-gtk/statusicon.py

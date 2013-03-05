@@ -26,10 +26,10 @@ Once running, redshift currently doesn't check location providers
 again.
 
 
-gtk-redshift
+redshift-gtk
 ------------
 
-gtk-redshift is a small program written in Python that shows a status
+redshift-gtk is a small program written in Python that shows a status
 icon (what is an appindicator versus a GTK status icon?) (does it
 change the icon according to internal program state of redshift? 
 doesn't seem so) and run an instance of the "redshift" program, and

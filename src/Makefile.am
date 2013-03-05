@@ -1,5 +1,5 @@
 
-SUBDIRS = gtk-redshift
+SUBDIRS = redshift-gtk
 
 # I18n
 localedir = $(datadir)/locale
