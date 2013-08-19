@@ -36,6 +36,11 @@ typedef struct {
 } randr_crtc_state_t;
 
 typedef struct {
+	char *output;
+	int output_crtc;
+} randr_output_state_t;
+
+typedef struct {
 	xcb_connection_t *conn;
 	xcb_screen_t *screen;
 	int preferred_screen;
@@ -43,6 +48,8 @@ typedef struct {
 	int crtc_num;
 	unsigned int crtc_count;
 	randr_crtc_state_t *crtcs;
+	randr_output_state_t *outputs;
+	unsigned int output_count;
 } randr_state_t;
 
 

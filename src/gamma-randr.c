@@ -34,6 +34,7 @@
 
 #include "gamma-randr.h"
 #include "colorramp.h"
+#include "colorramp-colord.h"
 
 
 #define RANDR_VERSION_MAJOR  1
@@ -98,6 +99,8 @@ randr_start(randr_state_t *state)
 	const xcb_setup_t *setup = xcb_get_setup(state->conn);
 	xcb_screen_iterator_t iter = xcb_setup_roots_iterator(setup);
 	state->screen = NULL;
+	int current_output = 0;
+	int output_count = 0;
 
 	for (int i = 0; iter.rem > 0; i++) {
 		if (i == screen_num) {
@@ -130,7 +133,7 @@ randr_start(randr_state_t *state)
 	}
 
 	state->crtc_count = res_reply->num_crtcs;
-	state->crtcs = calloc(state->crtc_count, sizeof(randr_crtc_state_t));
+	state->crtcs = malloc(state->crtc_count*sizeof(randr_crtc_state_t));
 	if (state->crtcs == NULL) {
 		perror("malloc");
 		state->crtc_count = 0;
@@ -140,9 +143,95 @@ randr_start(randr_state_t *state)
 	xcb_randr_crtc_t *crtcs =
 		xcb_randr_get_screen_resources_current_crtcs(res_reply);
 
+	/* Count the total number of outputs so we know
+	 * how much memory to allocate for state->outputs */
+	for (int i = 0; i < state->crtc_count; i++) {
+	    xcb_randr_get_crtc_info_cookie_t crtc_info_c =
+		xcb_randr_get_crtc_info(state->conn,
+			crtcs[i],
+			XCB_CURRENT_TIME);
+	    xcb_randr_get_crtc_info_reply_t *crtc_info_r =
+		xcb_randr_get_crtc_info_reply(state->conn,
+			crtc_info_c,
+			&error);
+
+	    output_count += xcb_randr_get_crtc_info_outputs_length(crtc_info_r);
+
+	    free(crtc_info_r);
+	}
+
+	state->output_count = output_count;
+
+	/* Allocate memory for the output counter */
+	state->outputs = malloc(output_count*sizeof(randr_output_state_t));
+	if (state->outputs == NULL) {
+	    perror("malloc");
+	    return -1;
+	}
+
 	/* Save CRTC identifier in state */
 	for (int i = 0; i < state->crtc_count; i++) {
 		state->crtcs[i].crtc = crtcs[i];
+
+		xcb_randr_get_crtc_info_cookie_t crtc_info_c =
+		    xcb_randr_get_crtc_info(state->conn,
+			    crtcs[i],
+			    XCB_CURRENT_TIME);
+
+		xcb_randr_get_crtc_info_reply_t *crtc_info_r =
+		    xcb_randr_get_crtc_info_reply(state->conn,
+			    crtc_info_c,
+			    &error);
+		
+		xcb_randr_output_t *randr_outputs =
+		    xcb_randr_get_crtc_info_outputs(crtc_info_r);
+
+		/* The number of outputs connected to the CRTC */
+		int len = xcb_randr_get_crtc_info_outputs_length(crtc_info_r);
+
+		/* No outputs are connected to this CRTC. Go to the next one */
+		if (!len) {
+		    free(crtc_info_r);
+		    continue;
+		}
+
+		/* Loop through each output connected to the current CRTC */
+		for (int j = 0; j < len; j++) {
+		    xcb_randr_get_output_info_cookie_t output_info_c =
+			xcb_randr_get_output_info(state->conn,
+				randr_outputs[j],
+				XCB_CURRENT_TIME);
+		    xcb_randr_get_output_info_reply_t *output_info_r =
+			xcb_randr_get_output_info_reply(state->conn,
+				output_info_c,
+				&error);
+
+		    int stringlen =
+			xcb_randr_get_output_info_name_length(output_info_r);
+
+		    char output[stringlen + 1];
+		    strcpy(output,
+			    xcb_randr_get_output_info_name(output_info_r));
+		    /* Null terminate the string */
+		    output[stringlen] = '\0';
+
+		    /* Allocate memory for the output string in state->outputs */
+		    state->outputs[current_output].output =
+			(char *) malloc(strlen(output)*sizeof(char));
+
+		    if (state->outputs[current_output].output == NULL) {
+			perror("malloc");
+			return -1;
+		    }
+
+		    strcpy(state->outputs[current_output].output, output);
+		    state->outputs[current_output].output_crtc = i;
+
+		    current_output++;
+		    free(output_info_r);
+		}
+
+		free(crtc_info_r);
 	}
 
 	free(res_reply);
@@ -332,8 +421,23 @@ randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num, int temp,
 	uint16_t *gamma_g = &gamma_ramps[1*ramp_size];
 	uint16_t *gamma_b = &gamma_ramps[2*ramp_size];
 
+#ifdef _REDSHIFT_COLORRAMP_COLORD_H
+	for (int i = 0; i < state->output_count; i++) {
+		if (state->outputs[i].output_crtc == crtc_num) {
+		int res = colorramp_colord_fill(gamma_r, gamma_g, gamma_b,
+				ramp_size, temp, brightness, gamma,
+			state->outputs[i].output);
+			if (res == -1) {
+				colorramp_fill(gamma_r, gamma_g, gamma_b,
+					ramp_size, temp, brightness, gamma);
+			}
+		}
+	}
+#else
+
 	colorramp_fill(gamma_r, gamma_g, gamma_b, ramp_size,
 		       temp, brightness, gamma);
+#endif
 
 	/* Set new gamma ramps */
 	xcb_void_cookie_t gamma_set_cookie =
