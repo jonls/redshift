@@ -25,6 +25,7 @@ PKG_CHECK_MODULES([XCB_RANDR], [xcb-randr],
 PKG_CHECK_MODULES([GLIB], [glib-2.0 gobject-2.0], [have_glib=yes], [have_glib=no])
 PKG_CHECK_MODULES([GCONF], [gconf-2.0], [have_gconf=yes], [have_gconf=no])
 PKG_CHECK_MODULES([GEOCLUE], [geoclue], [have_geoclue=yes], [have_geoclue=no])
+PKG_CHECK_MODULES([COLORD], [colord], [have_colord=yes], [have_colord=no])
 
 AC_CHECK_HEADER([windows.h], [have_windows_h=yes], [have_windows_h=no])
 
@@ -55,7 +56,31 @@ AS_IF([test "x$enable_randr" != xno], [
 ])
 AM_CONDITIONAL([ENABLE_RANDR], [test "x$enable_randr" = xyes])
 
-# Check VidMode method 
+# Check colord method
+AC_MSG_CHECKING([whether to enable COLORD method])
+AC_ARG_ENABLE([colord], [AC_HELP_STRING([--enable-colord],
+	[enable COLORD method])],
+	[enable_colord=$enableval],[enable_colord=maybe])
+AS_IF([test "x$enable_colord" != xno], [
+	AS_IF([test $have_colord = yes], [
+		AC_DEFINE([ENABLE_COLORD], 1,
+			[Define to 1 to enable COLORD method])
+		AC_MSG_RESULT([yes])
+		enable_colord=yes
+	], [
+		AC_MSG_RESULT([missing dependencies])
+		AS_IF([test "x$enable_colord" = xyes], [
+			AC_MSG_ERROR([missing dependencies for COLORD method])
+		])
+		enable_colord=no
+	])
+], [
+	AC_MSG_RESULT([no])
+	enable_colord=no
+])
+AM_CONDITIONAL([ENABLE_COLORD], [test "x$enable_colord" = xyes])
+
+# Check VidMode method
 AC_MSG_CHECKING([whether to enable VidMode method])
 AC_ARG_ENABLE([vidmode], [AC_HELP_STRING([--enable-vidmode],
 	[enable VidMode method])],
