@@ -139,10 +139,10 @@ colorramp_fill(uint16_t *gamma_r, uint16_t *gamma_g, uint16_t *gamma_b,
 
 	for (int i = 0; i < size; i++) {
 		gamma_r[i] = pow((float)i/size, 1.0/gamma[0]) *
-			UINT16_MAX * brightness * white_point[0];
+			(UINT16_MAX+1) * brightness * white_point[0];
 		gamma_g[i] = pow((float)i/size, 1.0/gamma[1]) *
-			UINT16_MAX * brightness * white_point[1];
+			(UINT16_MAX+1) * brightness * white_point[1];
 		gamma_b[i] = pow((float)i/size, 1.0/gamma[2]) *
-			UINT16_MAX * brightness * white_point[2];
+			(UINT16_MAX+1) * brightness * white_point[2];
 	}
 }
