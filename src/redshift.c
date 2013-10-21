@@ -331,7 +331,7 @@ print_help(const char *program_name)
 		"  \t\t(Type `list' to see available providers)\n"
 		"  -m METHOD\tMethod to use to set color temperature\n"
 		"  \t\t(Type `list' to see available methods)\n"
-		"  -o\t\tOne shot mode (do not continously adjust"
+		"  -o\t\tOne shot mode (do not continuously adjust"
 		" color temperature)\n"
 		"  -O TEMP\tOne shot manual mode (set color temperature)\n"
 		"  -p\t\tPrint mode (only print parameters and exit)"
@@ -1193,7 +1193,7 @@ main(int argc, char *argv[])
 			printf("Status: %s\n", "Enabled");
 		}
 
-		/* Continously adjust color temperature */
+		/* Continuously adjust color temperature */
 		int done = 0;
 		int disabled = 0;
 		while (1) {
