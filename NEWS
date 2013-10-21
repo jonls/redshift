@@ -1,3 +1,14 @@
+
+v1.8 (2013-10-21)
+* IMPORTANT: gtk-redshift has changed name to redshift-gtk.
+* Fix crash when starting geoclue provider. (Thanks to Maks Verver)
+* Fix slight flicker int gamme ramp values (Sean Hildebrand)
+* Add redshift-gtk option to suspend for a short time period (Jendrik Seipp).
+* Add print mode (prints parameters and exits) by Vincent Breitmoser.
+* Set buffering on stdout and stderr to line-buffered.
+* Allow separate brightness for day and night (Olivier Fabre and Jeremy Erickson).
+* Fix various crashes/bugs/typos (Benjamin Kerensa and others)
+
 v1.7 (2011-07-04)
 * Add Geoclue location provider by Mathieu Trudel-Lapierre.
 * Allow brightness to be adjusted (-b).
