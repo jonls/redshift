@@ -54,14 +54,16 @@ location_geoclue_start(location_geoclue_state_t *state)
 		state->position = geoclue_position_new(state->provider,
 						       state->provider_path);
         } else {
+                GError *error = NULL;
                 GeoclueMaster *master = geoclue_master_get_default();
                 GeoclueMasterClient *client = geoclue_master_create_client(master,
-                                                                           NULL, NULL);
-                GError *error = NULL;
+                                                                           NULL, &error);
+		g_object_unref(master);
 
                 if (client == NULL) {
-                        g_printerr(_("Unable to obtain master client.\n"));
-                        g_object_unref(master);
+                        g_printerr(_("Unable to obtain master client: %s\n"),
+				   error->message);
+			g_error_free(error);
                         return -1;
                 }
 
@@ -70,11 +72,10 @@ location_geoclue_start(location_geoclue_state_t *state)
 							    0, FALSE,
 							    GEOCLUE_RESOURCE_NETWORK,
 							    &error)) {
-			g_printerr(_("Can't set requirements for master: %s"),
+			g_printerr(_("Can't set requirements for master: %s\n"),
 				   error->message);
 			g_error_free(error);
 			g_object_unref(client);
-                        g_object_unref(master);
 
 			return -1;
 		}
@@ -82,7 +83,6 @@ location_geoclue_start(location_geoclue_state_t *state)
 		state->position = geoclue_master_client_create_position(client, NULL);
 
                 g_object_unref(client);
-                g_object_unref(master);
 	}
 
 	gchar *name = NULL;
