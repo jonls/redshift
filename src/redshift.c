@@ -1168,7 +1168,7 @@ main(int argc, char *argv[])
 		/* Amount of adjustment to apply. At zero the color
 		   temperature will be exactly as calculated, and at one it
 		   will be exactly 6500K. */
-		float adjustment_alpha = 0.0;
+		double adjustment_alpha = 0.0;
 
 #if defined(HAVE_SIGNAL_H) && !defined(__WIN32__)
 		struct sigaction sigact;
