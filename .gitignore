@@ -1,0 +1,43 @@
+# Object files
+*.o
+*.ko
+
+# Libraries
+*.lib
+*.a
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+
+
+# autotools
+/autom4te.cache
+Makefile.in
+/config.*
+/ABOUT-NLS
+/aclocal.m4
+/configure
+/depcomp
+/install-sh
+/missing
+/py-compile
+
+# gettext
+/po/*.gmo
+/po/Makefile.in.in
+/po/Rules-quot
+/po/boldquot.sed
+/po/Makevars.template
+/po/en@boldquot.header
+/po/en@quot.header
+/po/insert-header.sin
+/po/quot.sed
+/po/remove-potcdate.sin
