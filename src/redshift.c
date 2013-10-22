@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2011  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2013  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #ifdef HAVE_CONFIG_H
@@ -200,7 +200,7 @@ static const location_provider_t location_providers[] = {
 #define MIN_LON  -180.0
 #define MAX_LON   180.0
 #define MIN_TEMP   1000
-#define MAX_TEMP  10000
+#define MAX_TEMP  25000
 #define MIN_BRIGHTNESS  0.1
 #define MAX_BRIGHTNESS  1.0
 #define MIN_GAMMA   0.1
@@ -208,7 +208,7 @@ static const location_provider_t location_providers[] = {
 
 /* Default values for parameters. */
 #define DEFAULT_DAY_TEMP    5500
-#define DEFAULT_NIGHT_TEMP  3700
+#define DEFAULT_NIGHT_TEMP  3500
 #define DEFAULT_BRIGHTNESS   1.0
 #define DEFAULT_GAMMA        1.0
 
@@ -996,7 +996,7 @@ main(int argc, char *argv[])
 		}
 
 		/* Color temperature at daytime */
-		if (temp_day < MIN_TEMP || temp_day >= MAX_TEMP) {
+		if (temp_day < MIN_TEMP || temp_day > MAX_TEMP) {
 			fprintf(stderr,
 				_("Temperature must be between %uK and %uK.\n"),
 				MIN_TEMP, MAX_TEMP);
@@ -1004,7 +1004,7 @@ main(int argc, char *argv[])
 		}
 	
 		/* Color temperature at night */
-		if (temp_night < MIN_TEMP || temp_night >= MAX_TEMP) {
+		if (temp_night < MIN_TEMP || temp_night > MAX_TEMP) {
 			fprintf(stderr,
 				_("Temperature must be between %uK and %uK.\n"),
 				MIN_TEMP, MAX_TEMP);
@@ -1014,7 +1014,7 @@ main(int argc, char *argv[])
 
 	if (mode == PROGRAM_MODE_MANUAL) {
 		/* Check color temperature to be set */
-		if (temp_set < MIN_TEMP || temp_set >= MAX_TEMP) {
+		if (temp_set < MIN_TEMP || temp_set > MAX_TEMP) {
 			fprintf(stderr,
 				_("Temperature must be between %uK and %uK.\n"),
 				MIN_TEMP, MAX_TEMP);
