@@ -1,4 +1,5 @@
-Build from bzr branch
+
+Build from repository
 ---------------------
  $ ./bootstrap
  $ ./configure
