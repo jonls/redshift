@@ -1,4 +1,4 @@
-/* colorramp-colord.h -- calibrated color temperature calculation header
+/* colorramp-common.h -- colorramp common files header
    This file is part of Redshift.
 
    Redshift is free software: you can redistribute it and/or modify
@@ -16,17 +16,11 @@
 
    Copyright (c) 2013  Jon Lund Steffensen <jonlst@gmail.com>
 */
-#ifndef _REDSHIFT_COLORRAMP_COLORD_H
-#define _REDSHIFT_COLORRAMP_COLORD_H
 
-#ifndef HAVE_COLORD
-		#define HAVE_COLORD 1
-#endif /* !HAVE_COLORD */
+#ifndef _REDSHIFT_COLORRAMP_COMMON_H
+#define _REDSHIFT_COLORRAMP_COMMON_H
 
-#include <stdint.h>
-#include "colorramp.h"
+extern void interpolate_color(float a, const float *c1, const float *c2, float *c);
+extern float blackbody_color[];
 
-int colorramp_calibrated_fill(uint16_t *gamma_r, uint16_t *gamma_g,
-		uint16_t *gamma_b, int size, int temp, float brightness,
-		float gamma[3], char *xrandr_name);
-#endif /* !_REDSHIFT_COLORRAMP_COLORD_H */
+#endif /* ! _REDSHIFT_COLORRAMP_COMMON_H */

@@ -11,6 +11,7 @@ bin_PROGRAMS = redshift
 redshift_SOURCES = \
 	redshift.c redshift.h \
 	colorramp.c colorramp.h \
+	colorramp-common.c colorramp-common.h \
 	config-ini.c config-ini.h \
 	location-manual.c location-manual.h \
 	solar.c solar.h \
@@ -18,7 +19,8 @@ redshift_SOURCES = \
 
 EXTRA_redshift_SOURCES = \
 	gamma-randr.c gamma-randr.h \
-	colorramp-colord.c colorramp-colord.h\
+	colorramp-colord.c colorramp-colord.h \
+	colorramp-common.c colorramp-common.h \
 	gamma-vidmode.c gamma-vidmode.h \
 	gamma-w32gdi.c gamma-w32gdi.h \
 	location-gnome-clock.c location-gnome-clock.h \
