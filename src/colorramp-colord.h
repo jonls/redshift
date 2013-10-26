@@ -16,6 +16,7 @@
 
    Copyright (c) 2013  Jon Lund Steffensen <jonlst@gmail.com>
 */
+
 #ifndef _REDSHIFT_COLORRAMP_COLORD_H
 #define _REDSHIFT_COLORRAMP_COLORD_H
 
