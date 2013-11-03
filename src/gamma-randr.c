@@ -431,6 +431,13 @@ randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num, int temp,
 				colorramp_fill(gamma_r, gamma_g, gamma_b,
 					ramp_size, temp, brightness, gamma);
 			}
+			if (res == -2) {
+				fprintf(stderr, "Gamma and brightness adjustment are ");
+				fprintf(stderr, "not supported with color calibration. ");
+				fprintf(stderr, "Turn off this monitor's color calibration ");
+				fprintf(stderr, "to enable gamma/brightness adjustment.\n");
+				return -1;
+			}
 		}
 	}
 #else

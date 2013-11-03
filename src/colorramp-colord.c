@@ -18,6 +18,7 @@
 */
 
 #include <stdint.h>
+#include <stdio.h>
 #include <math.h>
 #include <glib.h>
 #include <colord.h>
@@ -48,6 +49,11 @@ colorramp_colord_fill(uint16_t *gamma_r, uint16_t *gamma_g,
 	gboolean ret;
 	int retval = -1;
 
+	if (brightness != 0.0 || gamma[0] != 1.0 || 
+			gamma[1] != 1.0 || gamma[2] != 1.0) {
+		retval = -2;
+		goto out;
+	}
 	/* Connect to colord */
 	client = cd_client_new();
 	ret = cd_client_connect_sync(client, NULL, &error);
