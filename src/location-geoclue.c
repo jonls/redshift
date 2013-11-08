@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <geoclue/geoclue-master.h>
 #include <geoclue/geoclue-position.h>
@@ -173,13 +174,26 @@ location_geoclue_get_location(location_geoclue_state_t *state,
 	GError *error = NULL;
 	double latitude = 0, longitude = 0;
 
-	fields = geoclue_position_get_position(state->position, NULL,
-					       &latitude, &longitude, NULL,
-					       NULL, &error);
-	if (error) {
-		g_printerr(_("Could not get location: %s.\n"), error->message);
-		g_error_free(error);
-		return -1;
+	/* Due to timeouts, retry this 3 times. */
+	int retries = 4;
+	while(--retries) {
+		fields = geoclue_position_get_position(state->position, NULL,
+						       &latitude, &longitude, NULL,
+						       NULL, &error);
+		if (error) {
+			g_printerr(_("Could not get location: %s.\n"), error->message);
+			g_error_free(error);
+			return -1;
+		}
+
+		if (fields & GEOCLUE_POSITION_FIELDS_LATITUDE &&
+			fields & GEOCLUE_POSITION_FIELDS_LONGITUDE) {
+			break;
+		}
+
+		g_warning(_("Could not get location, %d retries left.\n"), retries);
+		/* Sleep for a while to let */
+		usleep(1000000);
 	}
 	
 	if (fields & GEOCLUE_POSITION_FIELDS_LATITUDE &&
