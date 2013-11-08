@@ -192,7 +192,7 @@ location_geoclue_get_location(location_geoclue_state_t *state,
 		}
 
 		g_warning(_("Could not get location, %d retries left.\n"), retries);
-		/* Sleep for a while to let */
+		/* Sleep for a while to let connectivity catch up. */
 		usleep(1000000);
 	}
 	
