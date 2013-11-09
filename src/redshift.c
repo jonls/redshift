@@ -21,6 +21,7 @@
 # include "config.h"
 #endif
 
+#include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -45,11 +46,6 @@
 #include "config-ini.h"
 #include "solar.h"
 #include "systemtime.h"
-
-
-#define MIN(x,y)  ((x) < (y) ? (x) : (y))
-#define MAX(x,y)  ((x) > (y) ? (x) : (y))
-
 
 #if !(defined(ENABLE_RANDR) ||			\
       defined(ENABLE_VIDMODE) ||		\
