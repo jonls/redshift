@@ -640,28 +640,26 @@ have_active_connections (DBusGConnection *bus, DBusGProxy *proxy)
 	                        G_TYPE_INVALID)) {
 		g_warning ("Failed to get ActiveConnections property: %s", error->message);
 		g_error_free (error);
-		return 0;
 	}
 
 	/* Make sure the ActiveConnections property is the type we expect it to be */
 	if (!G_VALUE_HOLDS (&value, DBUS_TYPE_G_ARRAY_OF_OBJECT_PATH)) {
 		g_warning ("Unexpected type returned getting ActiveConnections: %s",
 		           G_VALUE_TYPE_NAME (&value));
-		goto out;
 	}
 
 	/* Extract the active connections array from the GValue */
 	paths = g_value_get_boxed (&value);
 	if (!paths) {
 		g_warning ("Could not retrieve active connections property");
-		goto out;
 	}
 
-	if(paths->len == 0) {
-		return 0;
+	if(paths->len != 0) {
+		return 1;
 	}
 
-	return 1;
+	g_value_unset (&value);
+	return 0;
 }
 
 int
@@ -984,7 +982,7 @@ main(int argc, char *argv[])
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
 			if(!have_active_connections(bus, props_proxy)) {
-				g_warning("No network detected. Waiting for signal from NM...");
+				g_warning("No network detected.");
 				exit(EXIT_FAILURE);
 			} else {
 				printf(_("NetworkManager reports active network connection "
