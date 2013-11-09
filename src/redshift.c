@@ -975,7 +975,7 @@ main(int argc, char *argv[])
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
 			if(!have_active_connections(bus, props_proxy)) {
-				g_warning("No network detected.");
+				g_warning("No active network connection detected.");
 				exit(EXIT_FAILURE);
 			} else {
 				printf(_("NetworkManager reports active network connection "
