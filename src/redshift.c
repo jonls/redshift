@@ -625,7 +625,7 @@ find_location_provider(const char *name)
 }
 
 static int
-have_active_connections (DBusGConnection *bus, DBusGProxy *proxy)
+network_manager_connected (DBusGConnection *bus, DBusGProxy *proxy)
 {
 	GError *error = NULL;
 	GValue value = G_VALUE_INIT;
@@ -974,8 +974,9 @@ main(int argc, char *argv[])
 					       &config_state, provider_args);
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
-			if(!have_active_connections(bus, props_proxy)) {
-				g_warning("No active network connection detected.");
+			if(!network_manager_connected(bus, props_proxy)) {
+				g_warning("NetworkManager reports no network connection "
+						  "activated.");
 				exit(EXIT_FAILURE);
 			} else {
 				printf(_("NetworkManager reports active network connection "
