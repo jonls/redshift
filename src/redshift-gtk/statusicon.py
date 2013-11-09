@@ -75,7 +75,7 @@ def run():
 
         def is_connected():
             # Get latest state from NetworkManager.
-            state = proxy.Get("org.freedesktop.NetworkManager","State")
+            state = proxy.Get("org.freedesktop.NetworkManager", "State")
 
             if state == 70:
                 return True
