@@ -629,6 +629,7 @@ network_manager_connected (DBusGConnection *bus, DBusGProxy *proxy)
 {
 	GError *error = NULL;
 	GValue value = G_VALUE_INIT;
+	unsigned int state_reported;
 
 	/* Get the State property from the NM Manager object */
 	if (!dbus_g_proxy_call (proxy, "Get", &error,
@@ -647,11 +648,13 @@ network_manager_connected (DBusGConnection *bus, DBusGProxy *proxy)
 		           G_VALUE_TYPE_NAME (&value));
 	}
 
-	if (g_value_get_uint(&value) == NM_STATE_CONNECTED_GLOBAL) {
+	state_reported = g_value_get_uint(&value);
+	g_value_reset (&value);
+
+	if (state_reported == NM_STATE_CONNECTED_GLOBAL) {
 		return 1;
 	}
 
-	g_value_reset (&value);
 	return 0;
 }
 
