@@ -641,7 +641,7 @@ have_active_connections (DBusGConnection *bus, DBusGProxy *proxy)
 		g_error_free (error);
 	}
 
-	/* Make sure the ActiveConnections property is the type we expect it to be */
+	/* Make sure the State property is the type we expect it to be. */
 	if (!G_VALUE_HOLDS (&value, G_TYPE_UINT)) {
 		g_warning ("Unexpected type returned getting State: %s",
 		           G_VALUE_TYPE_NAME (&value));
