@@ -33,7 +33,6 @@
 
 #include <dbus/dbus-glib.h>
 #include <NetworkManager.h>
-#include <nm-connection.h>
 
 #if defined(HAVE_SIGNAL_H) && !defined(__WIN32__)
 # include <signal.h>
