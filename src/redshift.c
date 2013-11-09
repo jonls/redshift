@@ -31,6 +31,10 @@
 #include <locale.h>
 #include <errno.h>
 
+#include <dbus/dbus-glib.h>
+#include <NetworkManager.h>
+#include <nm-connection.h>
+
 #if defined(HAVE_SIGNAL_H) && !defined(__WIN32__)
 # include <signal.h>
 #endif
@@ -75,6 +79,8 @@
 #ifdef ENABLE_GEOCLUE
 # include "location-geoclue.h"
 #endif
+
+#define DBUS_TYPE_G_ARRAY_OF_OBJECT_PATH    (dbus_g_type_get_collection ("GPtrArray", DBUS_TYPE_G_OBJECT_PATH))
 
 
 /* Union of state data for gamma adjustment methods */
@@ -618,6 +624,45 @@ find_location_provider(const char *name)
 	return provider;
 }
 
+static int
+have_active_connections (DBusGConnection *bus, DBusGProxy *proxy)
+{
+	GError *error = NULL;
+	GValue value = G_VALUE_INIT;
+	GPtrArray *paths = NULL;
+
+	/* Get the ActiveConnections property from the NM Manager object */
+	if (!dbus_g_proxy_call (proxy, "Get", &error,
+	                        G_TYPE_STRING, NM_DBUS_INTERFACE,
+	                        G_TYPE_STRING, "ActiveConnections",
+	                        G_TYPE_INVALID,
+	                        G_TYPE_VALUE, &value,
+	                        G_TYPE_INVALID)) {
+		g_warning ("Failed to get ActiveConnections property: %s", error->message);
+		g_error_free (error);
+		return 0;
+	}
+
+	/* Make sure the ActiveConnections property is the type we expect it to be */
+	if (!G_VALUE_HOLDS (&value, DBUS_TYPE_G_ARRAY_OF_OBJECT_PATH)) {
+		g_warning ("Unexpected type returned getting ActiveConnections: %s",
+		           G_VALUE_TYPE_NAME (&value));
+		goto out;
+	}
+
+	/* Extract the active connections array from the GValue */
+	paths = g_value_get_boxed (&value);
+	if (!paths) {
+		g_warning ("Could not retrieve active connections property");
+		goto out;
+	}
+
+	if(paths->len == 0) {
+		return 0;
+	}
+
+	return 1;
+}
 
 int
 main(int argc, char *argv[])
@@ -633,6 +678,19 @@ main(int argc, char *argv[])
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
 #endif
+
+	DBusGConnection *bus;
+	DBusGProxy *props_proxy;
+
+	bus = dbus_g_bus_get (DBUS_BUS_SYSTEM, NULL);
+
+	props_proxy = dbus_g_proxy_new_for_name (bus,
+	                                         NM_DBUS_SERVICE,
+	                                         NM_DBUS_PATH,
+	                                         DBUS_INTERFACE_PROPERTIES);
+
+	g_assert (props_proxy);
+
 
 	/* Initialize settings to NULL values. */
 	char *config_filepath = NULL;
@@ -925,6 +983,13 @@ main(int argc, char *argv[])
 					       &config_state, provider_args);
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
+			if(!have_active_connections(bus, props_proxy)) {
+				g_warning("No network detected. Waiting for signal from NM...");
+				exit(EXIT_FAILURE);
+			} else {
+				printf(_("NetworkManager reports active network connection "
+						 "exists.\n"));
+			}
 			/* Try all providers, use the first that works. */
 			for (int i = 0;
 			     location_providers[i].name != NULL; i++) {
