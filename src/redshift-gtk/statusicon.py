@@ -28,6 +28,7 @@ import sys, os
 import subprocess, signal
 import gettext
 
+import pynotify
 import pygtk
 pygtk.require("2.0")
 
@@ -187,6 +188,13 @@ def run():
 
         def child_cb(pid, cond, data=None):
             sys.exit(-1)
+
+        if not is_connected():
+            pynotify.init ("Redshift")
+            connectivity = pynotify.Notification("Redshift",
+                _("No active network connection available to retrieve location "
+                "information."), "redshift")
+            connectivity.show()
 
         # Add watch on child process
         glib.child_watch_add(process.pid, child_cb)
