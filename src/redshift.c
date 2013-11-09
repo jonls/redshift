@@ -80,8 +80,6 @@
 # include "location-geoclue.h"
 #endif
 
-#define DBUS_TYPE_G_ARRAY_OF_OBJECT_PATH    (dbus_g_type_get_collection ("GPtrArray", DBUS_TYPE_G_OBJECT_PATH))
-
 
 /* Union of state data for gamma adjustment methods */
 typedef union {
