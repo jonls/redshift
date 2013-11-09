@@ -23,6 +23,7 @@ The run method will try to start an appindicator for Redshift. If the
 appindicator module isn't present it will fall back to a GTK status icon.
 '''
 
+import dbus
 import sys, os
 import subprocess, signal
 import gettext
@@ -54,6 +55,10 @@ def run():
     args.insert(0, os.path.join(defs.BINDIR, 'redshift'))
     process = subprocess.Popen(args)
 
+    bus = dbus.SystemBus()
+    proxy = bus.get_object("org.freedesktop.NetworkManager",
+            "/org/freedesktop/NetworkManager")
+
     try:
         if appindicator:
             # Create indicator
@@ -66,6 +71,15 @@ def run():
             status_icon = gtk.StatusIcon()
             status_icon.set_from_icon_name('redshift-status-on')
             status_icon.set_tooltip('Redshift')
+
+        def is_connected():
+            # Get latest state from NetworkManager.
+            state = proxy.Get("org.freedesktop.NetworkManager","State")
+
+            if state == 70:
+                return True
+
+            return False
 
         def is_enabled():
             if appindicator:
