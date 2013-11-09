@@ -191,10 +191,10 @@ def run():
 
         if not is_connected():
             pynotify.init ("Redshift")
-            connectivity = pynotify.Notification("Redshift",
+            connectivity_notification = pynotify.Notification("Redshift",
                 _("No active network connection available to retrieve location "
                 "information."), "redshift")
-            connectivity.show()
+            connectivity_notification.show()
 
         # Add watch on child process
         glib.child_watch_add(process.pid, child_cb)
