@@ -1,0 +1,16 @@
+#!/bin/sh -e
+#
+#   clean - helper script to remove files created by bootstrap script to make
+#           Debian packaging easier.
+#
+
+echo "Cleaning files created by bootstrap script..."
+
+# Clean up files created by bootstrap script.
+rm -vf ABOUT-NLS config.* configure compile depcomp install-sh missing \
+    py-compile
+rm -vf Makefile.in aclocal.m4
+rm -vf po/*.gmo po/Makefile.in.in po/Makevars.template \
+    po/Rules-quot po/*.sed po/*.header po/*.sin po/stamp-po
+rm -vf src/Makefile.in src/redshift-gtk/Makefile.in
+rm -vrf m4
