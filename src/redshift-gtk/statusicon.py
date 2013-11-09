@@ -56,8 +56,8 @@ def run():
     args.insert(0, os.path.join(defs.BINDIR, 'redshift'))
     process = subprocess.Popen(args)
 
-    bus = dbus.SystemBus()
-    proxy = bus.get_object("org.freedesktop.NetworkManager",
+    system_bus = dbus.SystemBus()
+    system_bus_proxy = system_bus.get_object("org.freedesktop.NetworkManager",
             "/org/freedesktop/NetworkManager")
 
     try:
@@ -75,9 +75,10 @@ def run():
 
         def is_connected():
             # Get latest state from NetworkManager.
-            state = proxy.Get("org.freedesktop.NetworkManager", "State")
+            nm_state = system_bus_proxy.Get("org.freedesktop.NetworkManager",
+                                            "State")
 
-            if state == 70:
+            if nm_state == 70:
                 return True
 
             return False
