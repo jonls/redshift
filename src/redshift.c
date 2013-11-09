@@ -629,36 +629,29 @@ have_active_connections (DBusGConnection *bus, DBusGProxy *proxy)
 {
 	GError *error = NULL;
 	GValue value = G_VALUE_INIT;
-	GPtrArray *paths = NULL;
 
-	/* Get the ActiveConnections property from the NM Manager object */
+	/* Get the State property from the NM Manager object */
 	if (!dbus_g_proxy_call (proxy, "Get", &error,
 	                        G_TYPE_STRING, NM_DBUS_INTERFACE,
-	                        G_TYPE_STRING, "ActiveConnections",
+	                        G_TYPE_STRING, "State",
 	                        G_TYPE_INVALID,
 	                        G_TYPE_VALUE, &value,
 	                        G_TYPE_INVALID)) {
-		g_warning ("Failed to get ActiveConnections property: %s", error->message);
+		g_warning ("Failed to get State property: %s", error->message);
 		g_error_free (error);
 	}
 
 	/* Make sure the ActiveConnections property is the type we expect it to be */
-	if (!G_VALUE_HOLDS (&value, DBUS_TYPE_G_ARRAY_OF_OBJECT_PATH)) {
-		g_warning ("Unexpected type returned getting ActiveConnections: %s",
+	if (!G_VALUE_HOLDS (&value, G_TYPE_UINT)) {
+		g_warning ("Unexpected type returned getting State: %s",
 		           G_VALUE_TYPE_NAME (&value));
 	}
 
-	/* Extract the active connections array from the GValue */
-	paths = g_value_get_boxed (&value);
-	if (!paths) {
-		g_warning ("Could not retrieve active connections property");
-	}
-
-	if(paths->len != 0) {
+	if (g_value_get_uint(&value) == NM_STATE_CONNECTED_GLOBAL) {
 		return 1;
 	}
 
-	g_value_unset (&value);
+	g_value_reset (&value);
 	return 0;
 }
 
