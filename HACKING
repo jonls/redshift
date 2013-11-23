@@ -4,6 +4,9 @@ Build from repository
  $ ./bootstrap
  $ ./configure
 
+The bootstrap script will use autotools to set up the build environment
+and create the `configure` script.
+
 Use `./configure --help' for options. Use `--prefix' to make an install in
 your home directory. This is necessary to test python scripts. Example:
 
@@ -22,6 +25,15 @@ You can now run the python scripts. Example:
 
  $ PYTHONHOME=$HOME/redshift/root/lib/python2.7/site-packages \
     $HOME/redshift/root/bin/redshift-gtk
+
+
+Depenencies
+-----------
+
+* autotools, gettext
+* libxcb, libxcb-randr (Optional, for RandR support)
+* libX11, libXxf86vm (Optional, for VidMode support)
+* geoclue (Optional, for geoclue support)
 
 
 Notes
