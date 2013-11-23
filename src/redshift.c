@@ -21,6 +21,7 @@
 # include "config.h"
 #endif
 
+#include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -29,6 +30,9 @@
 #include <math.h>
 #include <locale.h>
 #include <errno.h>
+
+#include <dbus/dbus-glib.h>
+#include <NetworkManager.h>
 
 #if defined(HAVE_SIGNAL_H) && !defined(__WIN32__)
 # include <signal.h>
@@ -45,11 +49,6 @@
 #include "config-ini.h"
 #include "solar.h"
 #include "systemtime.h"
-
-
-#define MIN(x,y)  ((x) < (y) ? (x) : (y))
-#define MAX(x,y)  ((x) > (y) ? (x) : (y))
-
 
 #if !(defined(ENABLE_RANDR) ||			\
       defined(ENABLE_VIDMODE) ||		\
@@ -622,6 +621,39 @@ find_location_provider(const char *name)
 	return provider;
 }
 
+static int
+is_network_manager_connected (DBusGConnection *bus, DBusGProxy *proxy)
+{
+	GError *error = NULL;
+	GValue value = G_VALUE_INIT;
+	unsigned int state_reported;
+
+	/* Get the State property from the NM Manager object */
+	if (!dbus_g_proxy_call (proxy, "Get", &error,
+	                        G_TYPE_STRING, NM_DBUS_INTERFACE,
+	                        G_TYPE_STRING, "State",
+	                        G_TYPE_INVALID,
+	                        G_TYPE_VALUE, &value,
+	                        G_TYPE_INVALID)) {
+		g_warning ("Failed to get State property: %s", error->message);
+		g_error_free (error);
+	}
+
+	/* Make sure the State property is the type we expect it to be. */
+	if (!G_VALUE_HOLDS (&value, G_TYPE_UINT)) {
+		g_warning ("Unexpected type returned getting State: %s",
+		           G_VALUE_TYPE_NAME (&value));
+	}
+
+	state_reported = g_value_get_uint(&value);
+	g_value_reset (&value);
+
+	if (state_reported == NM_STATE_CONNECTED_GLOBAL) {
+		return 1;
+	}
+
+	return 0;
+}
 
 int
 main(int argc, char *argv[])
@@ -637,6 +669,19 @@ main(int argc, char *argv[])
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
 #endif
+
+	DBusGConnection *bus;
+	DBusGProxy *props_proxy;
+
+	bus = dbus_g_bus_get (DBUS_BUS_SYSTEM, NULL);
+
+	props_proxy = dbus_g_proxy_new_for_name (bus,
+	                                         NM_DBUS_SERVICE,
+	                                         NM_DBUS_PATH,
+	                                         DBUS_INTERFACE_PROPERTIES);
+
+	g_assert (props_proxy);
+
 
 	/* Initialize settings to NULL values. */
 	char *config_filepath = NULL;
@@ -929,6 +974,14 @@ main(int argc, char *argv[])
 					       &config_state, provider_args);
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
+			if(!is_network_manager_connected(bus, props_proxy)) {
+				g_warning("NetworkManager reports no network connection "
+						  "activated.");
+				exit(EXIT_FAILURE);
+			} else {
+				printf(_("NetworkManager reports active network connection "
+						 "exists.\n"));
+			}
 			/* Try all providers, use the first that works. */
 			for (int i = 0;
 			     location_providers[i].name != NULL; i++) {

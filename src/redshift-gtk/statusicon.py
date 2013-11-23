@@ -23,10 +23,12 @@ The run method will try to start an appindicator for Redshift. If the
 appindicator module isn't present it will fall back to a GTK status icon.
 '''
 
+import dbus
 import sys, os
 import subprocess, signal
 import gettext
 
+import pynotify
 import pygtk
 pygtk.require("2.0")
 
@@ -54,6 +56,10 @@ def run():
     args.insert(0, os.path.join(defs.BINDIR, 'redshift'))
     process = subprocess.Popen(args)
 
+    system_bus = dbus.SystemBus()
+    system_bus_proxy = system_bus.get_object("org.freedesktop.NetworkManager",
+            "/org/freedesktop/NetworkManager")
+
     try:
         if appindicator:
             # Create indicator
@@ -66,6 +72,16 @@ def run():
             status_icon = gtk.StatusIcon()
             status_icon.set_from_icon_name('redshift-status-on')
             status_icon.set_tooltip('Redshift')
+
+        def is_connected():
+            # Get latest state from NetworkManager.
+            nm_state = system_bus_proxy.Get("org.freedesktop.NetworkManager",
+                                            "State")
+
+            if nm_state == 70:
+                return True
+
+            return False
 
         def is_enabled():
             if appindicator:
@@ -173,6 +189,13 @@ def run():
 
         def child_cb(pid, cond, data=None):
             sys.exit(-1)
+
+        if not is_connected():
+            pynotify.init ("Redshift")
+            connectivity_notification = pynotify.Notification("Redshift",
+                _("No active network connection available to retrieve location "
+                "information."), "redshift")
+            connectivity_notification.show()
 
         # Add watch on child process
         glib.child_watch_add(process.pid, child_cb)
