@@ -165,6 +165,7 @@ AC_ARG_ENABLE([gui], [AC_HELP_STRING([--enable-gui],
 AS_IF([test "x$enable_gui" != xno], [
 	AS_IF([test $have_python = yes], [
 		AC_MSG_RESULT([yes])
+		enable_gui=yes
 	], [
 		AC_MSG_RESULT([missing dependencies])
 		AS_IF([test "x$enable_gui" = xyes], [
@@ -174,6 +175,7 @@ AS_IF([test "x$enable_gui" != xno], [
 	])
 ], [
 	AC_MSG_RESULT([no])
+	enable_gui=no
 ])
 AM_CONDITIONAL([ENABLE_GUI], [test "x$enable_gui" != xno])
 
