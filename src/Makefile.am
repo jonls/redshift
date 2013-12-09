@@ -14,7 +14,8 @@ redshift_SOURCES = \
 	config-ini.c config-ini.h \
 	location-manual.c location-manual.h \
 	solar.c solar.h \
-	systemtime.c systemtime.h
+	systemtime.c systemtime.h \
+	gamma-dummy.c gamma-dummy.h
 
 EXTRA_redshift_SOURCES = \
 	gamma-randr.c gamma-randr.h \

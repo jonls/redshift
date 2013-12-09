@@ -103,11 +103,6 @@ AS_IF([test "x$enable_wingdi" != xno], [
 ])
 AM_CONDITIONAL([ENABLE_WINGDI], [test "x$enable_wingdi" = xyes])
 
-# Check that at least one method is enabled
-AS_IF([test "x$enable_randr" = xno -a "x$enable_vidmode" = xno -a "x$enable_wingdi" = xno], [
-	AC_MSG_ERROR([either RANDR, VidMode or WinGDI must be enabled])
-])
-
 # Check GNOME Clock location provider
 AC_MSG_CHECKING([whether to enable GNOME Clock location provider])
 AC_ARG_ENABLE([gnome-clock], [AC_HELP_STRING([--enable-gnome-clock],

@@ -51,11 +51,7 @@
 #define MAX(x,y)  ((x) > (y) ? (x) : (y))
 
 
-#if !(defined(ENABLE_RANDR) ||			\
-      defined(ENABLE_VIDMODE) ||		\
-      defined(ENABLE_WINGDI))
-# error "At least one of RANDR, VidMode or WinGDI must be enabled."
-#endif
+#include "gamma-dummy.h"
 
 #ifdef ENABLE_RANDR
 # include "gamma-randr.h"
@@ -133,6 +129,16 @@ static const gamma_method_t gamma_methods[] = {
 		(gamma_method_set_temperature_func *)w32gdi_set_temperature
 	},
 #endif
+	{
+		"dummy",
+		(gamma_method_init_func *)gamma_dummy_init,
+		(gamma_method_start_func *)gamma_dummy_start,
+		(gamma_method_free_func *)gamma_dummy_free,
+		(gamma_method_print_help_func *)gamma_dummy_print_help,
+		(gamma_method_set_option_func *)gamma_dummy_set_option,
+		(gamma_method_restore_func *)gamma_dummy_restore,
+		(gamma_method_set_temperature_func *)gamma_dummy_set_temperature
+	},
 	{ NULL }
 };
 
