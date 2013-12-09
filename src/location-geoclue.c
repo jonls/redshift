@@ -38,8 +38,9 @@
 int
 location_geoclue_init(location_geoclue_state_t *state)
 {
-	g_type_init();
-	
+	if (!GLIB_CHECK_VERSION(2, 36, 0)) {
+		g_type_init();
+	}
 	state->position = NULL;
 	state->provider = NULL;
 	state->provider_path = NULL;

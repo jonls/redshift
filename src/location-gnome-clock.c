@@ -68,7 +68,9 @@ find_current_city(GConfClient *client, const char *id)
 int
 location_gnome_clock_init(location_gnome_clock_state_t *state)
 {
-	g_type_init();
+	if (!GLIB_CHECK_VERSION(2, 36, 0)) {
+		g_type_init();
+	}
 
 	GConfClient *client = gconf_client_get_default();
 
