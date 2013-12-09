@@ -91,7 +91,7 @@ typedef union {
 static const gamma_method_t gamma_methods[] = {
 #ifdef ENABLE_RANDR
 	{
-		"randr",
+		"randr", 1,
 		(gamma_method_init_func *)randr_init,
 		(gamma_method_start_func *)randr_start,
 		(gamma_method_free_func *)randr_free,
@@ -103,7 +103,7 @@ static const gamma_method_t gamma_methods[] = {
 #endif
 #ifdef ENABLE_VIDMODE
 	{
-		"vidmode",
+		"vidmode", 1,
 		(gamma_method_init_func *)vidmode_init,
 		(gamma_method_start_func *)vidmode_start,
 		(gamma_method_free_func *)vidmode_free,
@@ -115,7 +115,7 @@ static const gamma_method_t gamma_methods[] = {
 #endif
 #ifdef ENABLE_WINGDI
 	{
-		"wingdi",
+		"wingdi", 1,
 		(gamma_method_init_func *)w32gdi_init,
 		(gamma_method_start_func *)w32gdi_start,
 		(gamma_method_free_func *)w32gdi_free,
@@ -126,7 +126,7 @@ static const gamma_method_t gamma_methods[] = {
 	},
 #endif
 	{
-		"dummy",
+		"dummy", 0,
 		(gamma_method_init_func *)gamma_dummy_init,
 		(gamma_method_start_func *)gamma_dummy_start,
 		(gamma_method_free_func *)gamma_dummy_free,
@@ -1067,6 +1067,8 @@ main(int argc, char *argv[])
 			/* Try all methods, use the first that works. */
 			for (int i = 0; gamma_methods[i].name != NULL; i++) {
 				const gamma_method_t *m = &gamma_methods[i];
+				if (!m->autostart) continue;
+
 				r = method_try_start(m, &state, &config_state, NULL);
 				if (r < 0) {
 					fputs(_("Trying next method...\n"), stderr);

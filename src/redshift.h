@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2013  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #ifndef _REDSHIFT_REDSHIFT_H
@@ -38,6 +38,9 @@ typedef int gamma_method_set_temperature_func(void *state, int temp,
 
 typedef struct {
 	char *name;
+
+	/* If true, this method will be tried if none is explicitly chosen. */
+	int autostart;
 
 	/* Initialize state. Options can be set between init and start. */
 	gamma_method_init_func *init;
