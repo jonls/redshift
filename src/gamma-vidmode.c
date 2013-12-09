@@ -135,12 +135,6 @@ vidmode_print_help(FILE *f)
 int
 vidmode_set_option(vidmode_state_t *state, const char *key, const char *value)
 {
-	if (key == NULL) {
-		fprintf(stderr, _("Missing value for parameter: `%s'.\n"),
-			key);
-		return -1;
-	}
-
 	if (strcasecmp(key, "screen") == 0) {
 		state->screen_num = atoi(value);
 	} else {

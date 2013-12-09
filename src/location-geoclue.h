@@ -24,9 +24,9 @@
 #include <geoclue/geoclue-position.h>
 
 typedef struct {
-	GeocluePosition *position;		/* main geoclue object */
-	const char	*provider;		/* name of a geoclue provider */
-	const char	*provider_path;		/* path of the geoclue provider */
+	GeocluePosition *position;  /* main geoclue object */
+	char *provider;             /* name of a geoclue provider */
+	char *provider_path;        /* path of the geoclue provider */
 } location_geoclue_state_t;
 
 int location_geoclue_init(location_geoclue_state_t *state);

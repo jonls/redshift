@@ -439,17 +439,30 @@ provider_try_start(const location_provider_t *provider,
 	}
 
 	/* Set provider options from command line. */
+	const char *manual_keys[] = { "lat", "lon" };
+	int i = 0;
 	while (args != NULL) {
 		char *next_arg = strchr(args, ':');
 		if (next_arg != NULL) *(next_arg++) = '\0';
 
-		char *key = NULL;
+		const char *key = args;
 		char *value = strchr(args, '=');
-		if (value != NULL) {
-			key = args;
-			*(value++) = '\0';
+		if (value == NULL) {
+			/* The options for the "manual" method can be set
+			   without keys on the command line for convencience
+			   and for backwards compatability. We add the proper
+			   keys here before calling set_option(). */
+			if (strcmp(provider->name, "manual") == 0 &&
+			    i < sizeof(manual_keys)/sizeof(manual_keys[0])) {
+				key = manual_keys[i];
+				value = args;
+			} else {
+				fprintf(stderr, _("Failed to parse option `%s'.\n"),
+					args);
+				return -1;
+			}
 		} else {
-			value = args;
+			*(value++) = '\0';
 		}
 
 		r = provider->set_option(state, key, value);
@@ -464,6 +477,7 @@ provider_try_start(const location_provider_t *provider,
 		}
 
 		args = next_arg;
+		i += 1;
 	}
 
 	/* Start provider. */
@@ -521,13 +535,14 @@ method_try_start(const gamma_method_t *method,
 		char *next_arg = strchr(args, ':');
 		if (next_arg != NULL) *(next_arg++) = '\0';
 
-		char *key = NULL;
+		const char *key = args;
 		char *value = strchr(args, '=');
-		if (value != NULL) {
-			key = args;
-			*(value++) = '\0';
+		if (value == NULL) {
+			fprintf(stderr, _("Failed to parse option `%s'.\n"),
+				args);
+			return -1;
 		} else {
-			value = args;
+			*(value++) = '\0';
 		}
 
 		r = method->set_option(state, key, value);

@@ -88,15 +88,10 @@ location_manual_set_option(location_manual_state_t *state, const char *key,
 		return -1;
 	}
 
-	if ((key == NULL && isnan(state->lat)) ||
-	    (key != NULL && strcasecmp(key, "lat") == 0)) {
+	if (strcasecmp(key, "lat") == 0) {
 		state->lat = v;
-	} else if ((key == NULL && isnan(state->lon)) ||
-		   (key != NULL && strcasecmp(key, "lon") == 0)) {
+	} else if (strcasecmp(key, "lon") == 0) {
 		state->lon = v;
-	} else if (key == NULL) {
-		fputs(_("Too many arguments.\n"), stderr);
-		return -1;
 	} else {
 		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
 		return -1;

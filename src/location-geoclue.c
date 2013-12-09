@@ -18,6 +18,7 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include <geoclue/geoclue-master.h>
@@ -104,6 +105,8 @@ void
 location_geoclue_free(location_geoclue_state_t *state)
 {
 	if (state->position != NULL) g_object_unref(state->position);
+	if (state->provider != NULL) free(state->provider);
+	if (state->provider_path != NULL) free(state->provider_path);
 }
 
 void
@@ -131,32 +134,22 @@ location_geoclue_set_option(location_geoclue_state_t *state,
 	const char *path = NULL;
 
 	/* Parse string value */
-	if (key != NULL && strcasecmp(key, "name") == 0) {
-		if (value != NULL && strcasecmp(value, "default") == 0) {
+	if (strcasecmp(key, "name") == 0) {
+		if (strcasecmp(value, "default") == 0) {
 			provider = DEFAULT_PROVIDER;
-		} else if (value != NULL) {
-			provider = value;
 		} else {
-			fputs(_("Must specify a provider `name' (or use `default').\n"), stderr);
-			return -1;
+			provider = value;
 		}
 
-		/* TODO I don't think we own the string here, should be copied. */
-		state->provider = provider;
-	} else if (key != NULL && strcasecmp(key, "path") == 0) {
+		state->provider = strdup(provider);
+	} else if (strcasecmp(key, "path") == 0) {
 		if (value != NULL && strcasecmp(value, "default") == 0) {
 			path = DEFAULT_PROVIDER_PATH;
-		} else if (value != NULL) {
-			path = value;
 		} else {
-			fputs(_("Must specify a provider `path' (or use `default').\n"), stderr);
-			return -1;
+			path = value;
 		}
 
-		/* TODO I don't think we own the string here, should be copied. */
-		state->provider_path = path;
-	} else if (key == NULL) {
-		return -1;
+		state->provider_path = strdup(path);
 	} else {
 		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
 		return -1;
