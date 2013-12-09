@@ -22,8 +22,6 @@ PKG_CHECK_MODULES([XCB], [xcb], [have_xcb=yes], [have_xcb=no])
 PKG_CHECK_MODULES([XCB_RANDR], [xcb-randr],
 	[have_xcb_randr=yes], [have_xcb_randr=no])
 
-PKG_CHECK_MODULES([GLIB], [glib-2.0 gobject-2.0], [have_glib=yes], [have_glib=no])
-PKG_CHECK_MODULES([GCONF], [gconf-2.0], [have_gconf=yes], [have_gconf=no])
 PKG_CHECK_MODULES([GEOCLUE], [geoclue], [have_geoclue=yes], [have_geoclue=no])
 
 AC_CHECK_HEADER([windows.h], [have_windows_h=yes], [have_windows_h=no])
@@ -103,29 +101,6 @@ AS_IF([test "x$enable_wingdi" != xno], [
 ])
 AM_CONDITIONAL([ENABLE_WINGDI], [test "x$enable_wingdi" = xyes])
 
-# Check GNOME Clock location provider
-AC_MSG_CHECKING([whether to enable GNOME Clock location provider])
-AC_ARG_ENABLE([gnome-clock], [AC_HELP_STRING([--enable-gnome-clock],
-	[enable GNOME Clock location provider])],
-	[enable_gnome_clock=$enableval],[enable_gnome_clock=maybe])
-AS_IF([test "x$enable_gnome_clock" != xno], [
-	AS_IF([test "x$have_glib" = "xyes" -a "x$have_gconf" = xyes], [
-		AC_DEFINE([ENABLE_GNOME_CLOCK], 1,
-			[Define to 1 to enable GNOME Clock location provider])
-		AC_MSG_RESULT([yes])
-		enable_gnome_clock=yes
-	], [
-		AC_MSG_RESULT([missing dependencies])
-		AS_IF([test "x$enable_gnome_clock" = xyes], [
-			AC_MSG_ERROR([missing dependencies for GNOME Clock location provider])
-		])
-		enable_gnome_clock=no
-	])
-], [
-	AC_MSG_RESULT([no])
-	enable_gnome_clock=no
-])
-AM_CONDITIONAL([ENABLE_GNOME_CLOCK], [test "x$enable_gnome_clock" = xyes])
 
 # Check Geoclue location provider
 AC_MSG_CHECKING([whether to enable Geoclue location provider])
@@ -220,7 +195,6 @@ echo "
     WinGDI:		${enable_wingdi}
 
     Location providers:
-    GNOME Clock:	${enable_gnome_clock}
     Geoclue:		${enable_geoclue}
 
     GUI:		${enable_gui}
