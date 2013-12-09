@@ -33,6 +33,9 @@ SYSTEMD_USER_UNIT_IN_FILES = \
 	data/systemd/redshift.service.in \
 	data/systemd/redshift-gtk.service.in
 
+DBUS_SERVICE_IN_FILES = \
+	data/dbus-1/services/dk.jonls.redshift.Redshift.service.in
+
 
 # Icons
 if ENABLE_GUI
@@ -78,6 +81,16 @@ $(systemduserunit_DATA): $(SYSTEMD_USER_UNIT_IN_FILES) Makefile
 		sed -e "s|\@bindir\@|$(bindir)|g" $< > $@
 
 
+# D-Bus service file
+if ENABLE_DBUS
+dbus_servicedir = @datadir@/dbus-1/services
+dbus_service_DATA = $(DBUS_SERVICE_IN_FILES:.service.in=.service)
+endif
+
+$(dbus_service_DATA): $(DBUS_SERVICE_IN_FILES) Makefile
+	$(AM_V_GEN)$(MKDIR_P) $(@D) && \
+		sed -e "s|\@libexecdir\@|$(libexecdir)|" $< > $@
+
 
 EXTRA_DIST = \
 	$(EXTRA_ROOTDOC_FILES) \
@@ -85,9 +98,11 @@ EXTRA_DIST = \
 	$(_UBUNTU_MONO_DARK_FILES) \
 	$(_UBUNTU_MONO_LIGHT_FILES) \
 	$(_DESKTOP_FILES) \
-	$(SYSTEMD_USER_UNIT_IN_FILES)
+	$(SYSTEMD_USER_UNIT_IN_FILES) \
+	$(DBUS_SERVICE_IN_FILES)
 
-CLEANFILES = $(systemduserunit_DATA)
+CLEANFILES = $(systemduserunit_DATA) \
+	$(dbus_service_DATA)
 
 
 # Update PO translations

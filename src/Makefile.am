@@ -8,6 +8,11 @@ AM_CPPFLAGS = -DLOCALEDIR=\"$(localedir)\"
 # redshift Program
 bin_PROGRAMS = redshift
 
+# redshift-dbus Program
+if ENABLE_DBUS
+libexec_PROGRAMS = redshift-dbus
+endif
+
 redshift_SOURCES = \
 	redshift.c redshift.h \
 	colorramp.c colorramp.h \
@@ -17,6 +22,12 @@ redshift_SOURCES = \
 	systemtime.c systemtime.h \
 	gamma-dummy.c gamma-dummy.h
 
+redshift_dbus_SOURCES = \
+	redshift-dbus.c \
+	colorramp.c colorramp.h \
+	solar.c solar.h \
+	gamma-dummy.c gamma-dummy.h
+
 EXTRA_redshift_SOURCES = \
 	gamma-drm.c gamma-drm.h \
 	gamma-randr.c gamma-randr.h \
@@ -24,29 +35,47 @@ EXTRA_redshift_SOURCES = \
 	gamma-w32gdi.c gamma-w32gdi.h \
 	location-geoclue.c location-geoclue.h
 
-AM_CFLAGS =
-redshift_LDADD = @LIBINTL@
+
 EXTRA_DIST =
+
+
+redshift_CFLAGS =
+redshift_LDADD = @LIBINTL@
+redshift_dbus_CFLAGS = $(GLIB_CFLAGS) $(GDBUS_CFLAGS)
+redshift_dbus_LDADD = $(GLIB_LIBS) $(GDBUS_LIBS)
+
 
 if ENABLE_DRM
 redshift_SOURCES += gamma-drm.c gamma-drm.h
-AM_CFLAGS += $(DRM_CFLAGS)
+redshift_CFLAGS += $(DRM_CFLAGS)
 redshift_LDADD += \
 	$(DRM_LIBS) $(DRM_CFLAGS)
 endif
 
 if ENABLE_RANDR
 redshift_SOURCES += gamma-randr.c gamma-randr.h
-AM_CFLAGS += $(XCB_CFLAGS) $(XCB_RANDR_CFLAGS)
+redshift_CFLAGS += $(XCB_CFLAGS) $(XCB_RANDR_CFLAGS)
 redshift_LDADD += \
+	$(XCB_LIBS) $(XCB_CFLAGS) \
+	$(XCB_RANDR_LIBS) $(XCB_RANDR_CFLAGS)
+
+redshift_dbus_SOURCES += gamma-randr.c gamma-randr.h
+redshift_dbus_CFLAGS += $(XCB_CFLAGS) $(XCB_RANDR_CFLAGS)
+redshift_dbus_LDADD += \
 	$(XCB_LIBS) $(XCB_CFLAGS) \
 	$(XCB_RANDR_LIBS) $(XCB_RANDR_CFLAGS)
 endif
 
 if ENABLE_VIDMODE
 redshift_SOURCES += gamma-vidmode.c gamma-vidmode.h
-AM_CFLAGS += $(X11_CFLAGS) $(XF86VM_CFLAGS)
+redshift_CFLAGS += $(X11_CFLAGS) $(XF86VM_CFLAGS)
 redshift_LDADD += \
+	$(X11_LIBS) $(X11_CFLAGS) \
+	$(XF86VM_LIBS) $(XF86VM_CFLAGS)
+
+redshift_dbus_SOURCES += gamma-vidmode.c gamma-vidmode.h
+redshift_dbus_CFLAGS += $(X11_CFLAGS) $(XF86VM_CFLAGS)
+redshift_dbus_LDADD += \
 	$(X11_LIBS) $(X11_CFLAGS) \
 	$(XF86VM_LIBS) $(XF86VM_CFLAGS)
 endif
@@ -59,10 +88,12 @@ endif
 
 if ENABLE_GEOCLUE
 redshift_SOURCES += location-geoclue.c location-geoclue.h
-AM_CFLAGS += \
-	$(GEOCLUE_CFLAGS) $(GEOCLUE_LIBS) \
-	$(GLIB_CFLAGS) $(GLIB_LIBS)
+redshift_CFLAGS += $(GEOCLUE_CFLAGS)
 redshift_LDADD += \
 	$(GEOCLUE_LIBS) $(GEOCLUE_CFLAGS)
-	$(GLIB_LIBS) $(GLIB_CFLAGS)
+
+redshift_dbus_SOURCES += location-geoclue.c location-geoclue.h
+redshift_dbus_CFLAGS += $(GEOCLUE_CFLAGS)
+redshift_dbus_LDADD += \
+	$(GEOCLUE_LIBS) $(GEOCLUE_CFLAGS)
 endif
