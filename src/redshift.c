@@ -926,9 +926,9 @@ main(int argc, char *argv[])
 	   try all providers until one that works is found. */
 	location_state_t location_state;
 
-	/* Location is not needed for reset mode
-	   or for manual temperature setting. */
-	if (mode != PROGRAM_MODE_RESET && mode != PROGRAM_MODE_MANUAL) {
+	/* Location is not needed for reset mode and manual mode. */
+	if (mode != PROGRAM_MODE_RESET &&
+	    mode != PROGRAM_MODE_MANUAL) {
 		if (provider != NULL) {
 			/* Use provider specified on command line. */
 			r = provider_try_start(provider, &location_state,
@@ -1062,31 +1062,34 @@ main(int argc, char *argv[])
 	   try all methods until one that works is found. */
 	gamma_state_t state;
 
-	if (method != NULL) {
-		/* Use method specified on command line. */
-		r = method_try_start(method, &state, &config_state,
-				     method_args);
-		if (r < 0) exit(EXIT_FAILURE);
-	} else {
-		/* Try all methods, use the first that works. */
-		for (int i = 0; gamma_methods[i].name != NULL; i++) {
-			const gamma_method_t *m = &gamma_methods[i];
-			r = method_try_start(m, &state, &config_state, NULL);
-			if (r < 0) {
-				fputs(_("Trying next method...\n"), stderr);
-				continue;
+	/* Gamma adjustment not needed for print mode */
+	if (mode != PROGRAM_MODE_PRINT) {
+		if (method != NULL) {
+			/* Use method specified on command line. */
+			r = method_try_start(method, &state, &config_state,
+					     method_args);
+			if (r < 0) exit(EXIT_FAILURE);
+		} else {
+			/* Try all methods, use the first that works. */
+			for (int i = 0; gamma_methods[i].name != NULL; i++) {
+				const gamma_method_t *m = &gamma_methods[i];
+				r = method_try_start(m, &state, &config_state, NULL);
+				if (r < 0) {
+					fputs(_("Trying next method...\n"), stderr);
+					continue;
+				}
+
+				/* Found method that works. */
+				printf(_("Using method `%s'.\n"), m->name);
+				method = m;
+				break;
 			}
 
-			/* Found method that works. */
-			printf(_("Using method `%s'.\n"), m->name);
-			method = m;
-			break;
-		}
-
-		/* Failure if no methods were successful at this point. */
-		if (method == NULL) {
-			fputs(_("No more methods to try.\n"), stderr);
-			exit(EXIT_FAILURE);
+			/* Failure if no methods were successful at this point. */
+			if (method == NULL) {
+				fputs(_("No more methods to try.\n"), stderr);
+				exit(EXIT_FAILURE);
+			}
 		}
 	}
 
@@ -1121,7 +1124,8 @@ main(int argc, char *argv[])
 			printf(_("Color temperature: %uK\n"), temp);
 			printf(_("Brightness: %.2f\n"), brightness);
 		}
-		if(mode == PROGRAM_MODE_PRINT) {
+
+		if (mode == PROGRAM_MODE_PRINT) {
 			exit(EXIT_SUCCESS);
 		}
 
