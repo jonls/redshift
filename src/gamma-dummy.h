@@ -32,7 +32,7 @@ int gamma_dummy_set_option(void *state, const char *key, const char *value);
 
 void gamma_dummy_restore(void *state);
 int gamma_dummy_set_temperature(void *state, int temp, float brightness,
-				float gamma[3]);
+				const float gamma[3]);
 
 
 #endif /* ! _REDSHIFT_GAMMA_DUMMY_H */

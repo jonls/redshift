@@ -130,7 +130,7 @@ w32gdi_restore(w32gdi_state_t *state)
 
 int
 w32gdi_set_temperature(w32gdi_state_t *state, int temp, float brightness,
-		       float gamma[3])
+		       const float gamma[3])
 {
 	BOOL r;
 

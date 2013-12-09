@@ -39,7 +39,7 @@ int w32gdi_set_option(w32gdi_state_t *state, const char *key,
 
 void w32gdi_restore(w32gdi_state_t *state);
 int w32gdi_set_temperature(w32gdi_state_t *state, int temp, float brightness,
-			   float gamma[3]);
+			   const float gamma[3]);
 
 
 #endif /* ! _REDSHIFT_GAMMA_W32GDI_H */

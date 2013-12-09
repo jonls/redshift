@@ -170,7 +170,7 @@ vidmode_restore(vidmode_state_t *state)
 
 int
 vidmode_set_temperature(vidmode_state_t *state, int temp, float brightness,
-			float gamma[3])
+			const float gamma[3])
 {
 	int r;
 

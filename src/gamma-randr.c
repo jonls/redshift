@@ -301,7 +301,7 @@ randr_set_option(randr_state_t *state, const char *key, const char *value)
 
 static int
 randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num, int temp,
-			       float brightness, float gamma[3])
+			       float brightness, const float gamma[3])
 {
 	xcb_generic_error_t *error;
 	
@@ -356,7 +356,7 @@ randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num, int temp,
 
 int
 randr_set_temperature(randr_state_t *state, int temp, float brightness,
-		      float gamma[3])
+		      const float gamma[3])
 {
 	int r;
 

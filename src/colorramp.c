@@ -282,7 +282,7 @@ interpolate_color(float a, const float *c1, const float *c2, float *c)
 
 void
 colorramp_fill(uint16_t *gamma_r, uint16_t *gamma_g, uint16_t *gamma_b,
-	       int size, int temp, float brightness, float gamma[3])
+	       int size, int temp, float brightness, const float gamma[3])
 {
 	/* Approximate white point */
 	float white_point[3];

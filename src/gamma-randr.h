@@ -55,7 +55,7 @@ int randr_set_option(randr_state_t *state, const char *key, const char *value);
 
 void randr_restore(randr_state_t *state);
 int randr_set_temperature(randr_state_t *state, int temp, float brightness,
-			  float gamma[3]);
+			  const float gamma[3]);
 
 
 #endif /* ! _REDSHIFT_GAMMA_RANDR_H */
