@@ -24,6 +24,9 @@
 #include <geoclue/geoclue-master.h>
 #include <geoclue/geoclue-position.h>
 
+#include <glib.h>
+#include <glib-object.h>
+
 #include "location-geoclue.h"
 
 #ifdef ENABLE_NLS
@@ -39,8 +42,10 @@
 int
 location_geoclue_init(location_geoclue_state_t *state)
 {
+#if !GLIB_CHECK_VERSION(2, 35, 0)
 	g_type_init();
-	
+#endif
+
 	state->position = NULL;
 	state->provider = NULL;
 	state->provider_path = NULL;
