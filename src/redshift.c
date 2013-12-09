@@ -334,7 +334,7 @@ print_help(const char *program_name)
 		"  -o\t\tOne shot mode (do not continuously adjust"
 		" color temperature)\n"
 		"  -O TEMP\tOne shot manual mode (set color temperature)\n"
-		"  -p\t\tPrint mode (only print parameters and exit)"
+		"  -p\t\tPrint mode (only print parameters and exit)\n"
 		"  -x\t\tReset mode (remove adjustment from screen)\n"
 		"  -r\t\tDisable temperature transitions\n"
 		"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"),
