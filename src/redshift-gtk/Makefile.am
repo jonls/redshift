@@ -17,5 +17,5 @@ CLEANFILES = defs.py
 
 # Local python definitions
 defs.py: defs.py.in
-	sed -e "s|\@bindir\@|$(bindir)|g" \
+	$(AM_V_GEN)sed -e "s|\@bindir\@|$(bindir)|g" \
 		-e "s|\@localedir\@|$(localedir)|g" $< > $@
