@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-# Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
+# Copyright (c) 2013  Jon Lund Steffensen <jonlst@gmail.com>
 
 
 '''GUI status icon for Redshift.
@@ -27,12 +27,9 @@ import sys, os
 import subprocess, signal
 import gettext
 
-import pygtk
-pygtk.require("2.0")
-
-import gtk, glib
+from gi.repository import Gtk, GLib
 try:
-    import appindicator
+    from gi.repository import AppIndicator3 as appindicator
 except ImportError:
     appindicator = None
 
@@ -57,15 +54,15 @@ def run():
     try:
         if appindicator:
             # Create indicator
-            indicator = appindicator.Indicator('redshift',
-                                               'redshift-status-on',
-                                               appindicator.CATEGORY_APPLICATION_STATUS)
-            indicator.set_status(appindicator.STATUS_ACTIVE)
+            indicator = appindicator.Indicator.new('redshift',
+                                                   'redshift-status-on',
+                                                   appindicator.IndicatorCategory.APPLICATION_STATUS)
+            indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
         else:
             # Create status icon
-            status_icon = gtk.StatusIcon()
+            status_icon = Gtk.StatusIcon()
             status_icon.set_from_icon_name('redshift-status-on')
-            status_icon.set_tooltip('Redshift')
+            status_icon.set_tooltip_text('Redshift')
 
         def is_enabled():
             if appindicator:
@@ -76,7 +73,7 @@ def run():
         def remove_suspend_timer():
             global SUSPEND_TIMER
             if SUSPEND_TIMER is not None:
-                glib.source_remove(SUSPEND_TIMER)
+                GLib.source_remove(SUSPEND_TIMER)
                 SUSPEND_TIMER = None
 
         def toggle_cb(widget, data=None):
@@ -112,7 +109,7 @@ def run():
             remove_suspend_timer()
             # If redshift was already disabled we reenable it nonetheless.
             global SUSPEND_TIMER
-            SUSPEND_TIMER = glib.timeout_add_seconds(minutes * 60, enable_cb)
+            SUSPEND_TIMER = GLib.timeout_add_seconds(minutes * 60, enable_cb)
 
         def autostart_cb(widget, data=None):
             utils.set_autostart(widget.get_active())
@@ -120,27 +117,27 @@ def run():
         def destroy_cb(widget, data=None):
             if not appindicator:
                 status_icon.set_visible(False)
-            gtk.main_quit()
+            Gtk.main_quit()
             return False
 
         # Create popup menu
-        status_menu = gtk.Menu()
+        status_menu = Gtk.Menu()
 
-        toggle_item = gtk.MenuItem(_('Toggle'))
+        toggle_item = Gtk.MenuItem(_('Toggle'))
         toggle_item.connect('activate', toggle_cb)
         status_menu.append(toggle_item)
 
-        suspend_menu_item = gtk.MenuItem(_('Suspend for'))
-        suspend_menu = gtk.Menu()
+        suspend_menu_item = Gtk.MenuItem(_('Suspend for'))
+        suspend_menu = Gtk.Menu()
         for minutes, label in [(30, _('30 minutes')), (60, _('1 hour')),
                                (120, _('2 hours'))]:
-            suspend_item = gtk.MenuItem(label)
+            suspend_item = Gtk.MenuItem(label)
             suspend_item.connect('activate', suspend_cb, minutes)
             suspend_menu.append(suspend_item)
         suspend_menu_item.set_submenu(suspend_menu)
         status_menu.append(suspend_menu_item)
 
-        autostart_item = gtk.CheckMenuItem(_('Autostart'))
+        autostart_item = Gtk.CheckMenuItem(_('Autostart'))
         try:
             autostart_item.set_active(utils.get_autostart())
         except IOError as strerror:
@@ -151,7 +148,7 @@ def run():
         finally:
             status_menu.append(autostart_item)
 
-        quit_item = gtk.ImageMenuItem(gtk.STOCK_QUIT)
+        quit_item = Gtk.ImageMenuItem(_('Quit'))
         quit_item.connect('activate', destroy_cb)
         status_menu.append(quit_item)
 
@@ -163,8 +160,9 @@ def run():
         else:
             def popup_menu_cb(widget, button, time, data=None):
                 status_menu.show_all()
-                status_menu.popup(None, None, gtk.status_icon_position_menu,
-                                  button, time, status_icon)
+                status_menu.popup(None, None,
+                                  Gtk.StatusIcon.position_menu,
+                                  status_icon, button, time)
 
             # Connect signals for status icon and show
             status_icon.connect('activate', toggle_cb)
@@ -175,10 +173,10 @@ def run():
             sys.exit(-1)
 
         # Add watch on child process
-        glib.child_watch_add(process.pid, child_cb)
+        GLib.child_watch_add(process.pid, child_cb)
 
         # Run main loop
-        gtk.main()
+        Gtk.main()
 
     except KeyboardInterrupt:
         # Ignore user interruption
