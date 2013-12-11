@@ -2,6 +2,11 @@
 SUBDIRS = src po
 ACLOCAL_AMFLAGS = -I m4
 
+EXTRA_ROOTDOC_FILES = \
+	HACKING \
+	DESIGN \
+	README-colorramp
+
 _HICOLOR_FILES = \
 	data/icons/hicolor/scalable/apps/redshift.svg \
 	data/icons/hicolor/scalable/apps/redshift-status-on.svg \
@@ -17,6 +22,7 @@ _UBUNTU_MONO_LIGHT_FILES = \
 
 _DESKTOP_FILES = \
 	data/applications/redshift-gtk.desktop
+
 
 # Icons
 if ENABLE_GUI
@@ -43,6 +49,7 @@ endif
 dist_man1_MANS = redshift.1
 
 EXTRA_DIST = \
+	$(EXTRA_ROOTDOC_FILES) \
 	$(_HICOLOR_FILES) \
 	$(_UBUNTU_MONO_DARK_FILES) \
 	$(_UBUNTU_MONO_LIGHT_FILES) \
