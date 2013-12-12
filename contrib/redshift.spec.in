@@ -29,7 +29,7 @@ Summary: GTK integration for Redshift
 Group: Applications/System
 BuildRequires: python2
 BuildRequires: desktop-file-utils
-Requires: pygtk2
+Requires: pygobject3-base
 Requires: pyxdg
 Requires: %{name} = %{version}-%{release}
 Obsoletes: gtk-redshift < %{version}-%{release}
@@ -42,7 +42,7 @@ temperature adjustment program.
 %setup -q
 
 %build
-%configure --enable-gui --enable-geoclue --disable-gnome-clock --enable-randr --enable-vidmode
+%configure --enable-gui --enable-geoclue --enable-randr --enable-vidmode
 make %{?_smp_mflags} V=1
 
 %install
