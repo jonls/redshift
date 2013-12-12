@@ -58,15 +58,15 @@ AM_CONDITIONAL([ENABLE_RANDR], [test "x$enable_randr" = xyes])
 
 # Check colord method
 AC_MSG_CHECKING([whether to enable colord])
-AC_ARG_ENABLE([colord], [AC_HELP_STRING([--disable-colord],
-	      [do not include colord CMS support])],,
-	      [enable_colord=yes])
+	AC_ARG_ENABLE([colord], [AC_HELP_STRING([--enable-colord],
+	[do not include colord CMS support])],,
+	[enable_colord=maybe])
 AS_IF([test "x$enable_colord" != xno], [
-       AS_IF([test $have_colord = yes], [
-	      AC_DEFINE([ENABLE_COLORD], 1,
+	AS_IF([test $have_colord = yes], [
+		AC_DEFINE([ENABLE_COLORD], 1,
 			[Define to 1 to enable colord])
-	      AC_MSG_RESULT([yes])
-	      enable_colord=yes
+		AC_MSG_RESULT([yes])
+		enable_colord=yes
 	], [
 		AC_MSG_RESULT([missing dependencies])
 		AS_IF([test "x$enable_colord" = xyes], [
