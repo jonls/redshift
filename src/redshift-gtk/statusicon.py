@@ -24,11 +24,13 @@ appindicator module isn't present it will fall back to a GTK status icon.
 '''
 
 import sys, os
-import signal, fcntl
+import signal
 import re
 import gettext
 
-from gi.repository import Gdk, Gtk, GLib
+from gi.repository import Gdk, Gtk, GLib, GObject
+from gi.repository import Gio
+
 try:
     from gi.repository import AppIndicator3 as appindicator
 except ImportError:
@@ -40,27 +42,93 @@ from . import utils
 _ = gettext.gettext
 
 
-def sigterm_handler(signal, frame):
-    sys.exit()
+class RedshiftController(GObject.GObject):
+    __gsignals__ = {
+        'inhibit-changed': (GObject.SIGNAL_RUN_FIRST, None, (bool,)),
+        'temperature-changed': (GObject.SIGNAL_RUN_FIRST, None, (int,)),
+        'period-changed': (GObject.SIGNAL_RUN_FIRST, None, (str,)),
+        'location-changed': (GObject.SIGNAL_RUN_FIRST, None, (float, float))
+        }
+
+    def __init__(self, name):
+        GObject.GObject.__init__(self)
+
+        # Connect to Redshift DBus service
+        bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
+        self._redshift = Gio.DBusProxy.new_sync(bus, Gio.DBusProxyFlags.NONE, None,
+                                                'dk.jonls.redshift.Redshift',
+                                                '/dk/jonls/redshift/Redshift',
+                                                'dk.jonls.redshift.Redshift', None)
+        self._redshift_props = Gio.DBusProxy.new_sync(bus, Gio.DBusProxyFlags.NONE, None,
+                                                      'dk.jonls.redshift.Redshift',
+                                                      '/dk/jonls/redshift/Redshift',
+                                                      'org.freedesktop.DBus.Properties', None)
+
+        self._name = name
+        self._cookie = None
+
+        # Setup signals to property changes
+        self._redshift.connect('g-properties-changed', self._property_change_cb)
+
+    def _property_change_cb(self, proxy, props, invalid, data=None):
+        # Cast to python dict as 'in' keyword is broken for GLib dict
+        props = dict(props)
+        if 'Inhibited' in props:
+            self.emit('inhibit-changed', props['Inhibited'])
+        if 'Temperature' in props:
+            self.emit('temperature-changed', props['Temperature'])
+        if 'Period' in props:
+            self.emit('period-changed', props['Period'])
+        if 'CurrentLatitude' in props and 'CurrentLongitude' in props:
+            self.emit('location-changed', props['CurrentLatitude'], props['CurrentLongitude'])
+
+    @property
+    def cookie(self):
+        if self._cookie is None:
+            self._cookie = self._redshift.AcquireCookie('(s)', self._name)
+        return self._cookie
+
+    def release_cookie(self):
+        if self._cookie is not None:
+            self._redshift.ReleaseCookie('(i)', self._cookie)
+        self._cookie = None
+
+    def __del__(self):
+        self.release_cookie()
+
+    @property
+    def elevation(self):
+        return self._redshift.GetElevation()
+
+    @property
+    def inhibited(self):
+        return self._redshift_props.Get('(ss)', 'dk.jonls.redshift.Redshift', 'Inhibited')
+
+    @property
+    def temperature(self):
+        return self._redshift_props.Get('(ss)', 'dk.jonls.redshift.Redshift', 'Temperature')
+
+    @property
+    def period(self):
+        return self._redshift_props.Get('(ss)', 'dk.jonls.redshift.Redshift', 'Period')
+
+    @property
+    def location(self):
+        lat = self._redshift_props.Get('(ss)', 'dk.jonls.redshift.Redshift', 'CurrentLatitude')
+        lon = self._redshift_props.Get('(ss)', 'dk.jonls.redshift.Redshift', 'CurrentLongitude')
+        return (lat, lon)
+
+    def set_inhibit(self, inhibit):
+        if inhibit:
+            self._redshift.Inhibit('(i)', self.cookie)
+        else:
+            self._redshift.Uninhibit('(i)', self.cookie)
 
 
 class RedshiftStatusIcon(object):
-    def __init__(self, args=[]):
-        # Initialize state variables
-        self._status = False
-        self._temperature = 0
-        self._period = 'Unknown'
-        self._location = (0.0, 0.0)
-
-        # Install TERM signal handler
-        signal.signal(signal.SIGTERM, sigterm_handler)
-
-        # Start redshift with arguments
-        args.insert(0, os.path.join(defs.BINDIR, 'redshift'))
-        if '-v' not in args:
-            args.append('-v')
-
-        self.start_child_process(args)
+    def __init__(self):
+        # Initialize controller
+        self._controller = RedshiftController('redshift-gtk')
 
         if appindicator:
             # Create indicator
@@ -149,6 +217,18 @@ class RedshiftStatusIcon(object):
 
         self.info_dialog.connect('response', self.response_info_cb)
 
+        # Setup signals to property changes
+        self._controller.connect('inhibit-changed', self.inhibit_change_cb)
+        self._controller.connect('period-changed', self.period_change_cb)
+        self._controller.connect('temperature-changed', self.temperature_change_cb)
+        self._controller.connect('location-changed', self.location_change_cb)
+
+        # Set info box text
+        self.change_inhibited(self._controller.inhibited)
+        self.change_period(self._controller.period)
+        self.change_temperature(self._controller.temperature)
+        self.change_location(self._controller.location)
+
         if appindicator:
             self.status_menu.show_all()
 
@@ -163,34 +243,8 @@ class RedshiftStatusIcon(object):
         # Initialize suspend timer
         self.suspend_timer = None
 
-        # Handle child input
-        class InputBuffer(object):
-            lines = []
-            buf = ''
-        self.input_buffer = InputBuffer()
-        self.error_buffer = InputBuffer()
-
-        # Set non blocking
-        fcntl.fcntl(self.process[2], fcntl.F_SETFL,
-                    fcntl.fcntl(self.process[2], fcntl.F_GETFL) | os.O_NONBLOCK)
-
-        # Add watch on child process
-        GLib.child_watch_add(GLib.PRIORITY_DEFAULT, self.process[0], self.child_cb)
-        GLib.io_add_watch(self.process[2], GLib.PRIORITY_DEFAULT, GLib.IO_IN,
-                          self.child_data_cb, (True, self.input_buffer))
-        GLib.io_add_watch(self.process[3], GLib.PRIORITY_DEFAULT, GLib.IO_IN,
-                          self.child_data_cb, (False, self.error_buffer))
-
         # Notify desktop that startup is complete
         Gdk.notify_startup_complete()
-
-    def start_child_process(self, args):
-        # Start child process with C locale so we can parse the output
-        env = os.environ.copy()
-        env['LANG'] = env['LANGUAGE'] = env['LC_ALL'] = env['LC_MESSAGES'] = 'C'
-        self.process = GLib.spawn_async(args, envp=['{}={}'.format(k,v) for k, v in env.items()],
-                                        flags=GLib.SPAWN_DO_NOT_REAP_CHILD,
-                                        standard_output=True, standard_error=True)
 
     def remove_suspend_timer(self):
         if self.suspend_timer is not None:
@@ -198,19 +252,15 @@ class RedshiftStatusIcon(object):
             self.suspend_timer = None
 
     def suspend_cb(self, item, minutes):
-        if self.is_enabled():
-            self.child_toggle_status()
-
-        # If "suspend" is clicked while redshift is disabled, we reenable
-        # it after the last selected timespan is over.
+        # Inhibit
+        self._controller.set_inhibit(True)
         self.remove_suspend_timer()
 
         # If redshift was already disabled we reenable it nonetheless.
         self.suspend_timer = GLib.timeout_add_seconds(minutes * 60, self.reenable_cb)
 
     def reenable_cb(self):
-        if not self.is_enabled():
-            self.child_toggle_status()
+        self._controller.set_inhibit(False)
 
     def popup_menu_cb(self, widget, button, time, data=None):
         self.status_menu.show_all()
@@ -219,13 +269,14 @@ class RedshiftStatusIcon(object):
 
     def toggle_cb(self, widget, data=None):
         self.remove_suspend_timer()
-        self.child_toggle_status()
+        self._controller.set_inhibit(not self._controller.inhibited)
 
     def toggle_item_cb(self, widget, data=None):
         # Only toggle if a change from current state was requested
-        if self.is_enabled() != widget.get_active():
+        active = not self._controller.inhibited
+        if active != widget.get_active():
             self.remove_suspend_timer()
-            self.child_toggle_status()
+            self._controller.set_inhibit(not self._controller.inhibited)
 
     # Info dialog callbacks
     def show_info_cb(self, widget, data=None):
@@ -237,41 +288,46 @@ class RedshiftStatusIcon(object):
     def update_status_icon(self):
         # Update status icon
         if appindicator:
-            if self.is_enabled():
+            if not self._controller.inhibited:
                 self.indicator.set_icon('redshift-status-on')
             else:
                 self.indicator.set_icon('redshift-status-off')
         else:
-            if self.is_enabled():
+            if not self._controller.inhibited:
                 self.status_icon.set_from_icon_name('redshift-status-on')
             else:
                 self.status_icon.set_from_icon_name('redshift-status-off')
 
-    # Status update functions. Called when child process indicates a
-    # change in state.
-    def change_status(self, status):
-        self._status = status
 
+    # State update functions
+    def inhibit_change_cb(self, controller, inhibit):
+        self.change_inhibited(inhibit)
+
+    def period_change_cb(self, controller, period):
+        self.change_period(period)
+
+    def temperature_change_cb(self, controller, temperature):
+        self.change_temperature(temperature)
+
+    def location_change_cb(self, controller, lat, lon):
+        self.change_location((lat, lon))
+
+
+    # Update interface
+    def change_inhibited(self, inhibited):
         self.update_status_icon()
-        self.toggle_item.set_active(self.is_enabled())
-        self.status_label.set_markup('<b>{}:</b> {}'.format(_('Status'),
-                                                            _('Enabled') if status else _('Disabled')))
+        self.toggle_item.set_active(not inhibited)
+        self.status_label.set_markup(_('<b>Status:</b> {}').format(_('Disabled') if inhibited else _('Enabled')))
 
     def change_temperature(self, temperature):
-        self._temperature = temperature
-        self.temperature_label.set_markup('<b>{}:</b> {}K'.format(_('Color temperature'), temperature))
+        self.temperature_label.set_markup(_('<b>Color temperature:</b> {}K').format(temperature))
 
     def change_period(self, period):
-        self._period = period
-        self.period_label.set_markup('<b>{}:</b> {}'.format(_('Period'), period))
+        self.period_label.set_markup(_('<b>Period:</b> {}').format(period))
 
     def change_location(self, location):
-        self._location = location
-        self.location_label.set_markup('<b>{}:</b> {}, {}'.format(_('Location'), *location))
+        self.location_label.set_markup(_('<b>Location:</b> {}, {}').format(*location))
 
-
-    def is_enabled(self):
-        return self._status
 
     def autostart_cb(self, widget, data=None):
         utils.set_autostart(widget.get_active())
@@ -282,67 +338,22 @@ class RedshiftStatusIcon(object):
         Gtk.main_quit()
         return False
 
-    def child_toggle_status(self):
-        os.kill(self.process[0], signal.SIGUSR1)
-
-    def child_cb(self, pid, cond, data=None):
-        sys.exit(-1)
-
-    def child_key_change_cb(self, key, value):
-        if key == 'Status':
-            self.change_status(value != 'Disabled')
-        elif key == 'Color temperature':
-            self.change_temperature(int(value.rstrip('K'), 10))
-        elif key == 'Period':
-            self.change_period(value)
-        elif key == 'Location':
-            self.change_location(tuple(float(x) for x in value.split(', ')))
-
-    def child_stdout_line_cb(self, line):
-        if line:
-            m = re.match(r'([\w ]+): (.+)', line)
-            if m:
-                key = m.group(1)
-                value = m.group(2)
-                self.child_key_change_cb(key, value)
-
-    def child_data_cb(self, f, cond, data):
-        stdout, ib = data
-        ib.buf += os.read(f, 256).decode('utf-8')
-
-        # Split input at line break
-        while True:
-            first, sep, last = ib.buf.partition('\n')
-            if sep == '':
-                break
-            ib.buf = last
-            ib.lines.append(first)
-            if stdout:
-                self.child_stdout_line_cb(first)
-
-        return True
-
-    def termwait(self):
-        os.kill(self.process[0], signal.SIGINT)
-        os.waitpid(self.process[0], 0)
+def sigterm_handler(signal, frame):
+    sys.exit(0)
 
 
 def run():
     utils.setproctitle('redshift-gtk')
+
+    # Install TERM signal handler
+    signal.signal(signal.SIGTERM, sigterm_handler)
 
     # Internationalisation
     gettext.bindtextdomain('redshift', defs.LOCALEDIR)
     gettext.textdomain('redshift')
 
     # Create status icon
-    s = RedshiftStatusIcon(sys.argv[1:])
+    s = RedshiftStatusIcon()
 
-    try:
-        # Run main loop
-        Gtk.main()
-    except KeyboardInterrupt:
-        # Ignore user interruption
-        pass
-    finally:
-        # Always terminate redshift
-        s.termwait()
+    # Run main loop
+    Gtk.main()
