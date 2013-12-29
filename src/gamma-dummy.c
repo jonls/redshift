@@ -27,8 +27,6 @@
 # define _(s) s
 #endif
 
-#include "gamma-randr.h"
-
 
 int
 gamma_dummy_init(void *state)
