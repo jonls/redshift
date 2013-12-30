@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # redshift-gtk -- GTK+ Redshift launcher script
 # This file is part of Redshift.
 
@@ -17,6 +17,10 @@
 
 # Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
 
+import sys
+
+# Some non-standard install paths may need to be added
+sys.path.append('@pythondir@')
 
 if __name__ == '__main__':
     from redshift_gtk.statusicon import run

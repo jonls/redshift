@@ -34,8 +34,8 @@ try:
 except ImportError:
     appindicator = None
 
-import defs
-import utils
+from . import defs
+from . import utils
 
 _ = gettext.gettext
 
@@ -99,7 +99,7 @@ class RedshiftStatusIcon(object):
         try:
             autostart_item.set_active(utils.get_autostart())
         except IOError as strerror:
-            print strerror
+            print(strerror)
             autostart_item.set_property('sensitive', False)
         else:
             autostart_item.connect('toggled', self.autostart_cb)
@@ -185,7 +185,7 @@ class RedshiftStatusIcon(object):
         # Start child process with C locale so we can parse the output
         env = os.environ.copy()
         env['LANG'] = env['LANGUAGE'] = env['LC_ALL'] = env['LC_MESSAGES'] = 'C'
-        self.process = GLib.spawn_async(args, envp=['{}={}'.format(k,v) for k, v in env.iteritems()],
+        self.process = GLib.spawn_async(args, envp=['{}={}'.format(k,v) for k, v in env.items()],
                                         flags=GLib.SPAWN_DO_NOT_REAP_CHILD,
                                         standard_output=True, standard_error=True)
 
@@ -299,7 +299,7 @@ class RedshiftStatusIcon(object):
 
     def child_data_cb(self, f, cond, data):
         stdout, ib = data
-        ib.buf += os.read(f, 256)
+        ib.buf += os.read(f, 256).decode('utf-8')
 
         # Split input at line break
         sep = True

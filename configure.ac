@@ -27,7 +27,7 @@ PKG_CHECK_MODULES([GEOCLUE], [geoclue], [have_geoclue=yes], [have_geoclue=no])
 AC_CHECK_HEADER([windows.h], [have_windows_h=yes], [have_windows_h=no])
 
 # Check for Python
-AM_PATH_PYTHON([2.6], [have_python=yes], [have_python=no])
+AM_PATH_PYTHON([3.3], [have_python=yes], [have_python=no])
 
 # Check RANDR method
 AC_MSG_CHECKING([whether to enable RANDR method])
