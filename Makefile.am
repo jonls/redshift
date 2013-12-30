@@ -2,6 +2,8 @@
 SUBDIRS = src po
 ACLOCAL_AMFLAGS = -I m4
 
+UPDATE_ICON_CACHE = gtk-update-icon-cache -f -t $(datadir)/icons/hicolor || :
+
 EXTRA_ROOTDOC_FILES = \
 	HACKING \
 	DESIGN \
@@ -43,6 +45,14 @@ endif
 if ENABLE_GUI
 desktopdir = @datadir@/applications
 desktop_DATA = $(_DESKTOP_FILES)
+endif
+
+if ENABLE_GUI
+install-data-hook:
+	$(UPDATE_ICON_CACHE);
+
+uninstall-hook:
+	$(UPDATE_ICON_CACHE);
 endif
 
 # man page
