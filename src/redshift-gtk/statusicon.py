@@ -34,8 +34,8 @@ try:
 except ImportError:
     appindicator = None
 
-import defs
-import utils
+from . import defs
+from . import utils
 
 _ = gettext.gettext
 
@@ -78,28 +78,28 @@ class RedshiftStatusIcon(object):
         self.status_menu = Gtk.Menu()
 
         # Add toggle action
-        toggle_item = Gtk.MenuItem(_('Toggle'))
+        toggle_item = Gtk.MenuItem.new_with_label(_('Toggle'))
         toggle_item.connect('activate', self.toggle_cb)
         self.status_menu.append(toggle_item)
 
         # Add suspend menu
-        suspend_menu_item = Gtk.MenuItem(_('Suspend for'))
+        suspend_menu_item = Gtk.MenuItem.new_with_label(_('Suspend for'))
         suspend_menu = Gtk.Menu()
         for minutes, label in [(30, _('30 minutes')),
                                (60, _('1 hour')),
                                (120, _('2 hours'))]:
-            suspend_item = Gtk.MenuItem(label)
+            suspend_item = Gtk.MenuItem.new_with_label(label)
             suspend_item.connect('activate', self.suspend_cb, minutes)
             suspend_menu.append(suspend_item)
         suspend_menu_item.set_submenu(suspend_menu)
         self.status_menu.append(suspend_menu_item)
 
         # Add autostart option
-        autostart_item = Gtk.CheckMenuItem(_('Autostart'))
+        autostart_item = Gtk.CheckMenuItem.new_with_label(_('Autostart'))
         try:
             autostart_item.set_active(utils.get_autostart())
         except IOError as strerror:
-            print strerror
+            print(strerror)
             autostart_item.set_property('sensitive', False)
         else:
             autostart_item.connect('toggled', self.autostart_cb)
@@ -107,19 +107,19 @@ class RedshiftStatusIcon(object):
             self.status_menu.append(autostart_item)
 
         # Add info action
-        info_item = Gtk.MenuItem(_('Info'))
+        info_item = Gtk.MenuItem.new_with_label(_('Info'))
         info_item.connect('activate', self.show_info_cb)
         self.status_menu.append(info_item)
 
         # Add quit action
-        quit_item = Gtk.ImageMenuItem(_('Quit'))
+        quit_item = Gtk.ImageMenuItem.new_with_label(_('Quit'))
         quit_item.connect('activate', self.destroy_cb)
         self.status_menu.append(quit_item)
 
         # Create info dialog
-        self.info_dialog = Gtk.Dialog(_('Info'),
-                                      None, 0,
-                                      (_('Close'), Gtk.ResponseType.CLOSE))
+        self.info_dialog = Gtk.Dialog()
+        self.info_dialog.set_title(_('Info'))
+        self.info_dialog.add_button(_('Close'), Gtk.ButtonsType.CLOSE)
         self.info_dialog.set_resizable(False)
         self.info_dialog.set_property('border-width', 6)
 
@@ -175,17 +175,17 @@ class RedshiftStatusIcon(object):
                     fcntl.fcntl(self.process[2], fcntl.F_GETFL) | os.O_NONBLOCK)
 
         # Add watch on child process
-        GLib.child_watch_add(self.process[0], self.child_cb)
-        GLib.io_add_watch(self.process[2], GLib.IO_IN,
+        GLib.child_watch_add(GLib.PRIORITY_DEFAULT, self.process[0], self.child_cb)
+        GLib.io_add_watch(self.process[2], GLib.PRIORITY_DEFAULT, GLib.IO_IN,
                           self.child_data_cb, (True, self.input_buffer))
-        GLib.io_add_watch(self.process[3], GLib.IO_IN,
+        GLib.io_add_watch(self.process[3], GLib.PRIORITY_DEFAULT, GLib.IO_IN,
                           self.child_data_cb, (False, self.error_buffer))
 
     def start_child_process(self, args):
         # Start child process with C locale so we can parse the output
         env = os.environ.copy()
         env['LANG'] = env['LANGUAGE'] = env['LC_ALL'] = env['LC_MESSAGES'] = 'C'
-        self.process = GLib.spawn_async(args, envp=['{}={}'.format(k,v) for k, v in env.iteritems()],
+        self.process = GLib.spawn_async(args, envp=['{}={}'.format(k,v) for k, v in env.items()],
                                         flags=GLib.SPAWN_DO_NOT_REAP_CHILD,
                                         standard_output=True, standard_error=True)
 
@@ -299,7 +299,7 @@ class RedshiftStatusIcon(object):
 
     def child_data_cb(self, f, cond, data):
         stdout, ib = data
-        ib.buf += os.read(f, 256)
+        ib.buf += os.read(f, 256).decode('utf-8')
 
         # Split input at line break
         sep = True

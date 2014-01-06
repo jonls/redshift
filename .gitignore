@@ -16,11 +16,13 @@
 *.exe
 *.out
 *.app
-
+src/redshift*
 
 # autotools
 /autom4te.cache
 Makefile.in
+Makefile
+stamp-h1
 /config.*
 /ABOUT-NLS
 /aclocal.m4
@@ -29,8 +31,18 @@ Makefile.in
 /install-sh
 /missing
 /py-compile
+/compile
+*.deps/
+/m4/
+
+# generated files
+src/redshift-gtk/defs.py
+src/redshift-gtk/redshift-gtk
+contrib/redshift.spec
 
 # gettext
+/po/POTFILES
+/po/stamp-po
 /po/*.gmo
 /po/Makefile.in.in
 /po/Rules-quot
