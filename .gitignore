@@ -16,7 +16,7 @@
 *.exe
 *.out
 *.app
-src/redshift*
+#src/redshift*
 
 # autotools
 /autom4te.cache
