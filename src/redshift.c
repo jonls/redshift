@@ -187,7 +187,7 @@ static const location_provider_t location_providers[] = {
 #define MIN_TEMP   1000
 #define MAX_TEMP  25000
 #define MIN_BRIGHTNESS  0.1
-#define MAX_BRIGHTNESS  1.0
+#define MAX_BRIGHTNESS  1.5
 #define MIN_GAMMA   0.1
 #define MAX_GAMMA  10.0
 

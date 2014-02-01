@@ -21,6 +21,8 @@
 #include <stdint.h>
 #include <math.h>
 
+#define min(x,y)  ((x) < (y) ? (x) : (y))
+
 
 /* Whitepoint values for temperatures at 100K intervals.
    These will be interpolated for the actual temperature.
@@ -292,11 +294,11 @@ colorramp_fill(uint16_t *gamma_r, uint16_t *gamma_g, uint16_t *gamma_b,
 			  &blackbody_color[temp_index+3], white_point);
 
 	for (int i = 0; i < size; i++) {
-		gamma_r[i] = pow((float)i/size, 1.0/gamma[0]) *
-			(UINT16_MAX+1) * brightness * white_point[0];
-		gamma_g[i] = pow((float)i/size, 1.0/gamma[1]) *
-			(UINT16_MAX+1) * brightness * white_point[1];
-		gamma_b[i] = pow((float)i/size, 1.0/gamma[2]) *
-			(UINT16_MAX+1) * brightness * white_point[2];
+		gamma_r[i] = min(pow((float)i/size, 1.0/gamma[0]) *
+			(UINT16_MAX+1) * brightness * white_point[0], UINT16_MAX);
+		gamma_g[i] = min(pow((float)i/size, 1.0/gamma[1]) *
+			(UINT16_MAX+1) * brightness * white_point[1], UINT16_MAX);
+		gamma_b[i] = min(pow((float)i/size, 1.0/gamma[2]) *
+			(UINT16_MAX+1) * brightness * white_point[2], UINT16_MAX);
 	}
 }
