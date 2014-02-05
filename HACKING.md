@@ -27,14 +27,14 @@ You can now run the python scripts. Example:
     $HOME/redshift/root/bin/redshift-gtk
 
 
-Depenencies
+Dependencies
 -----------
 
 * autotools, gettext
 * libxcb, libxcb-randr (Optional, for RandR support)
 * libX11, libXxf86vm (Optional, for VidMode support)
-* geoclue (Optional, for geoclue support)
-
+* BOTH geoclue and libgeoclue (Optional, for geoclue support)
+* gir1.2-appindicator (Optional, for redshift-gtk support)
 
 Notes
 -----
