@@ -22,6 +22,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#ifndef _WIN32
+# include <pwd.h>
+# include <unistd.h>
+#endif
 
 #include "config-ini.h"
 
@@ -59,6 +63,14 @@ open_config_file(const char *filepath)
 			snprintf(cp, sizeof(cp),
 				 "%s/.config/redshift.conf", env);
 			filepath = cp;
+#ifndef _WIN32
+		} else {
+			struct passwd *pwd = getpwuid(getuid());
+			char *home = pwd->pw_dir;
+			snprintf(cp, sizeof(cp),
+				 "%s/.config/redshift.conf", home);
+			filepath = cp;
+#endif
 		}
 
 		if (filepath != NULL) {
