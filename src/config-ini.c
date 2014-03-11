@@ -82,16 +82,43 @@ open_config_file(const char *filepath)
 				 "%s/.config/redshift.conf", home);
 			if (!stat(cp, &attr))
 				filepath = cp;
-#endif
 		}
+		if (filepath == NULL && (env = getenv("XDG_CONFIG_DIRS")) != NULL &&
+		    env[0] != '\0') {
+			int conf_dirs_len = strlen(env);
+			int conf_dir_ptr = 0;
+			char *conf_dir = alloca((conf_dirs_len + 1) * sizeof(char));
+			int i;
+			for (i = 0; i < conf_dirs_len; i++) {
+				char c = env[i];
+				if (c == ':' || c == '\0') {
+					conf_dir[conf_dir_ptr] = '\0';
+					conf_dir_ptr = 0;
+					if (conf_dir[0] != '\0') {	
+						snprintf(cp, sizeof(cp),
+							 "%s/redshift.conf", conf_dir);
+						if (!stat(cp, &attr)) {
+							filepath = cp;
+							break;
+						}
+					}
+				} else
+					conf_dir[conf_dir_ptr++] = c;
+			}
+		}
+		if (filepath == NULL) {
+			snprintf(cp, sizeof(cp),
+				 "%s/redshift.conf", "/etc");
+			if (!stat(cp, &attr))
+				filepath = cp;
+		}
+#endif
 
 		if (filepath != NULL) {
 			f = fopen(filepath, "r");
 			if (f != NULL) return f;
 			else if (f == NULL && errno != ENOENT) return NULL;
 		}
-
-		/* TODO look in getenv("XDG_CONFIG_DIRS") */
 	} else {
 		f = fopen(filepath, "r");
 		if (f == NULL) {
