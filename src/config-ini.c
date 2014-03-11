@@ -22,9 +22,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #ifndef _WIN32
 # include <pwd.h>
-# include <unistd.h>
 #endif
 
 #include "config-ini.h"
@@ -48,28 +50,38 @@ open_config_file(const char *filepath)
 	if (filepath == NULL) {
 		char cp[MAX_CONFIG_PATH];
 		char *env;
+		struct stat attr;
 
-		if ((env = getenv("XDG_CONFIG_HOME")) != NULL &&
+		if (filepath == NULL && (env = getenv("XDG_CONFIG_HOME")) != NULL &&
 		    env[0] != '\0') {
 			snprintf(cp, sizeof(cp), "%s/redshift.conf", env);
-			filepath = cp;
+			if (!stat(cp, &attr))
+				filepath = cp;
+		}
 #ifdef _WIN32
-		} else if ((env = getenv("localappdata")) != NULL && env[0] != '\0') {
+		if (filepath == NULL && (env = getenv("localappdata")) != NULL &&
+		    env[0] != '\0') {
 			snprintf(cp, sizeof(cp),
 				 "%s\\redshift.conf", env);
-			filepath = cp;
+			if (!stat(cp, &attr))
+				filepath = cp;
+		}
 #endif
-		} else if ((env = getenv("HOME")) != NULL && env[0] != '\0') {
+		if (filepath == NULL && (env = getenv("HOME")) != NULL &&
+		    env[0] != '\0') {
 			snprintf(cp, sizeof(cp),
 				 "%s/.config/redshift.conf", env);
-			filepath = cp;
+			if (!stat(cp, &attr))
+				filepath = cp;
+		}
 #ifndef _WIN32
-		} else {
+		if (filepath == NULL) {
 			struct passwd *pwd = getpwuid(getuid());
 			char *home = pwd->pw_dir;
 			snprintf(cp, sizeof(cp),
 				 "%s/.config/redshift.conf", home);
-			filepath = cp;
+			if (!stat(cp, &attr))
+				filepath = cp;
 #endif
 		}
 
