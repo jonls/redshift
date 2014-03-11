@@ -73,6 +73,12 @@ open_config_file(const char *filepath)
 				 "%s/.config/redshift.conf", env);
 			if (!stat(cp, &attr))
 				filepath = cp;
+			else {
+				snprintf(cp, sizeof(cp),
+					 "%s/.redshift.conf", env);
+				if (!stat(cp, &attr))
+					filepath = cp;
+			}
 		}
 #ifndef _WIN32
 		if (filepath == NULL) {
@@ -82,6 +88,12 @@ open_config_file(const char *filepath)
 				 "%s/.config/redshift.conf", home);
 			if (!stat(cp, &attr))
 				filepath = cp;
+			else {
+				snprintf(cp, sizeof(cp),
+					 "%s/.redshift.conf", env);
+				if (!stat(cp, &attr))
+					filepath = cp;
+			}
 		}
 		if (filepath == NULL && (env = getenv("XDG_CONFIG_DIRS")) != NULL &&
 		    env[0] != '\0') {
