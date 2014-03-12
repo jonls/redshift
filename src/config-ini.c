@@ -48,42 +48,38 @@ open_config_file(const char *filepath)
 	FILE *f = NULL;
 
 	if (filepath == NULL) {
+		FILE *f = NULL;
 		char cp[MAX_CONFIG_PATH];
 		char *env;
-		struct stat attr;
 
-		if (filepath == NULL && (env = getenv("XDG_CONFIG_HOME")) != NULL &&
+		if (f == NULL && (env = getenv("XDG_CONFIG_HOME")) != NULL &&
 		    env[0] != '\0') {
 			snprintf(cp, sizeof(cp), "%s/redshift.conf", env);
-			if (!stat(cp, &attr))
-				filepath = cp;
+			f = fopen(cp, "r");
 		}
 #ifdef _WIN32
-		if (filepath == NULL && (env = getenv("localappdata")) != NULL &&
+		if (f == NULL && (env = getenv("localappdata")) != NULL &&
 		    env[0] != '\0') {
 			snprintf(cp, sizeof(cp),
 				 "%s\\redshift.conf", env);
-			if (!stat(cp, &attr))
-				filepath = cp;
+			f = fopen(cp, "r");
 		}
 #endif
-		if (filepath == NULL && (env = getenv("HOME")) != NULL &&
+		if (f == NULL && (env = getenv("HOME")) != NULL &&
 		    env[0] != '\0') {
 			snprintf(cp, sizeof(cp),
 				 "%s/.config/redshift.conf", env);
-			if (!stat(cp, &attr))
-				filepath = cp;
+			f = fopen(cp, "r");
 		}
 #ifndef _WIN32
-		if (filepath == NULL) {
+		if (f == NULL) {
 			struct passwd *pwd = getpwuid(getuid());
 			char *home = pwd->pw_dir;
 			snprintf(cp, sizeof(cp),
 				 "%s/.config/redshift.conf", home);
-			if (!stat(cp, &attr))
-				filepath = cp;
+			f = fopen(cp, "r");
 		}
-		if (filepath == NULL && (env = getenv("XDG_CONFIG_DIRS")) != NULL &&
+		if (f == NULL && (env = getenv("XDG_CONFIG_DIRS")) != NULL &&
 		    env[0] != '\0') {
 			int conf_dirs_len = strlen(env);
 			int conf_dir_ptr = 0;
@@ -97,28 +93,21 @@ open_config_file(const char *filepath)
 					if (conf_dir[0] != '\0') {	
 						snprintf(cp, sizeof(cp),
 							 "%s/redshift.conf", conf_dir);
-						if (!stat(cp, &attr)) {
-							filepath = cp;
+						if ((f = fopen(cp, "r")) != NULL)
 							break;
-						}
 					}
 				} else
 					conf_dir[conf_dir_ptr++] = c;
 			}
 		}
-		if (filepath == NULL) {
+		if (f == NULL) {
 			snprintf(cp, sizeof(cp),
 				 "%s/redshift.conf", "/etc");
-			if (!stat(cp, &attr))
-				filepath = cp;
+			f = fopen(cp, "r");
 		}
 #endif
 
-		if (filepath != NULL) {
-			f = fopen(filepath, "r");
-			if (f != NULL) return f;
-			else if (f == NULL && errno != ENOENT) return NULL;
-		}
+		return f;
 	} else {
 		f = fopen(filepath, "r");
 		if (f == NULL) {
