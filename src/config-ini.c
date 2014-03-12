@@ -22,6 +22,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#ifndef _WIN32
+# include <pwd.h>
+#endif
 
 #include "config-ini.h"
 
@@ -42,32 +48,66 @@ open_config_file(const char *filepath)
 	FILE *f = NULL;
 
 	if (filepath == NULL) {
+		FILE *f = NULL;
 		char cp[MAX_CONFIG_PATH];
 		char *env;
 
-		if ((env = getenv("XDG_CONFIG_HOME")) != NULL &&
+		if (f == NULL && (env = getenv("XDG_CONFIG_HOME")) != NULL &&
 		    env[0] != '\0') {
 			snprintf(cp, sizeof(cp), "%s/redshift.conf", env);
-			filepath = cp;
+			f = fopen(cp, "r");
+		}
 #ifdef _WIN32
-		} else if ((env = getenv("localappdata")) != NULL && env[0] != '\0') {
+		if (f == NULL && (env = getenv("localappdata")) != NULL &&
+		    env[0] != '\0') {
 			snprintf(cp, sizeof(cp),
 				 "%s\\redshift.conf", env);
-			filepath = cp;
+			f = fopen(cp, "r");
+		}
 #endif
-		} else if ((env = getenv("HOME")) != NULL && env[0] != '\0') {
+		if (f == NULL && (env = getenv("HOME")) != NULL &&
+		    env[0] != '\0') {
 			snprintf(cp, sizeof(cp),
 				 "%s/.config/redshift.conf", env);
-			filepath = cp;
+			f = fopen(cp, "r");
 		}
-
-		if (filepath != NULL) {
-			f = fopen(filepath, "r");
-			if (f != NULL) return f;
-			else if (f == NULL && errno != ENOENT) return NULL;
+#ifndef _WIN32
+		if (f == NULL) {
+			struct passwd *pwd = getpwuid(getuid());
+			char *home = pwd->pw_dir;
+			snprintf(cp, sizeof(cp),
+				 "%s/.config/redshift.conf", home);
+			f = fopen(cp, "r");
 		}
+		if (f == NULL && (env = getenv("XDG_CONFIG_DIRS")) != NULL &&
+		    env[0] != '\0') {
+			int conf_dirs_len = strlen(env);
+			int conf_dir_ptr = 0;
+			char *conf_dir = alloca((conf_dirs_len + 1) * sizeof(char));
+			int i;
+			for (i = 0; i < conf_dirs_len; i++) {
+				char c = env[i];
+				if (c == ':' || c == '\0') {
+					conf_dir[conf_dir_ptr] = '\0';
+					conf_dir_ptr = 0;
+					if (conf_dir[0] != '\0') {	
+						snprintf(cp, sizeof(cp),
+							 "%s/redshift.conf", conf_dir);
+						if ((f = fopen(cp, "r")) != NULL)
+							break;
+					}
+				} else
+					conf_dir[conf_dir_ptr++] = c;
+			}
+		}
+		if (f == NULL) {
+			snprintf(cp, sizeof(cp),
+				 "%s/redshift.conf", "/etc");
+			f = fopen(cp, "r");
+		}
+#endif
 
-		/* TODO look in getenv("XDG_CONFIG_DIRS") */
+		return f;
 	} else {
 		f = fopen(filepath, "r");
 		if (f == NULL) {

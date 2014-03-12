@@ -39,6 +39,7 @@ stamp-h1
 src/redshift-gtk/defs.py
 src/redshift-gtk/redshift-gtk
 contrib/redshift.spec
+src/redshift
 
 # gettext
 /po/POTFILES
