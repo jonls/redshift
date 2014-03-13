@@ -47,6 +47,15 @@ open_config_file(const char *filepath)
 {
 	FILE *f = NULL;
 
+	/* If a path is not specified (filepath is NULL) then
+	   the configuration file is searched for in the directories
+	   specified by the XDG Base Directory Specification
+	   <http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html>.
+
+	   If HOME is not set, getpwuid() is consulted for the home directory. On
+	   windows platforms the %localappdata% is used in place of XDG_CONFIG_HOME.
+	*/
+
 	if (filepath == NULL) {
 		FILE *f = NULL;
 		char cp[MAX_CONFIG_PATH];
@@ -57,6 +66,7 @@ open_config_file(const char *filepath)
 			snprintf(cp, sizeof(cp), "%s/redshift.conf", env);
 			f = fopen(cp, "r");
 		}
+
 #ifdef _WIN32
 		if (f == NULL && (env = getenv("localappdata")) != NULL &&
 		    env[0] != '\0') {
@@ -72,6 +82,7 @@ open_config_file(const char *filepath)
 			f = fopen(cp, "r");
 		}
 #ifndef _WIN32
+
 		if (f == NULL) {
 			struct passwd *pwd = getpwuid(getuid());
 			char *home = pwd->pw_dir;
@@ -79,27 +90,28 @@ open_config_file(const char *filepath)
 				 "%s/.config/redshift.conf", home);
 			f = fopen(cp, "r");
 		}
+
 		if (f == NULL && (env = getenv("XDG_CONFIG_DIRS")) != NULL &&
 		    env[0] != '\0') {
-			int conf_dirs_len = strlen(env);
-			int conf_dir_ptr = 0;
-			char *conf_dir = alloca((conf_dirs_len + 1) * sizeof(char));
-			int i;
-			for (i = 0; i < conf_dirs_len; i++) {
-				char c = env[i];
-				if (c == ':' || c == '\0') {
-					conf_dir[conf_dir_ptr] = '\0';
-					conf_dir_ptr = 0;
-					if (conf_dir[0] != '\0') {	
-						snprintf(cp, sizeof(cp),
-							 "%s/redshift.conf", conf_dir);
-						if ((f = fopen(cp, "r")) != NULL)
-							break;
-					}
-				} else
-					conf_dir[conf_dir_ptr++] = c;
+			char *begin = env;
+			while (1) {
+				char *end = strchr(begin, ':');
+				if (end == NULL) end = strchr(begin, '\0');
+
+				int len = end - begin;
+				if (len > 0) {
+					snprintf(cp, sizeof(cp),
+						 "%.*s/redshift.conf", len, begin);
+
+					f = fopen(cp, "r");
+					if (f != NULL) break;
+				}
+
+				if (end[0] == '\0') break;
+				begin = end + 1;
 			}
 		}
+
 		if (f == NULL) {
 			snprintf(cp, sizeof(cp),
 				 "%s/redshift.conf", "/etc");
