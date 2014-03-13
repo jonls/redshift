@@ -268,15 +268,19 @@ config_ini_free(config_ini_state_t *state)
 
 	while (section != NULL) {
 		config_ini_setting_t *setting = section->settings;
+		config_ini_section_t *section_prev = section;
 
 		while (setting != NULL) {
+			config_ini_setting_t *setting_prev = setting;
 			free(setting->name);
 			free(setting->value);
 			setting = setting->next;
+			free(setting_prev);
 		}
 
 		free(section->name);
 		section = section->next;
+		free(section_prev);
 	}
 }
 
