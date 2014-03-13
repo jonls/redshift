@@ -1089,6 +1089,8 @@ main(int argc, char *argv[])
 		}
 	}
 
+	config_ini_free(&config_state);
+
 	switch (mode) {
 	case PROGRAM_MODE_ONE_SHOT:
 	case PROGRAM_MODE_PRINT:
