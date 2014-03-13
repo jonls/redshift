@@ -1247,10 +1247,12 @@ main(int argc, char *argv[])
 			}
 
 			/* Skip over transition if transitions are disabled */
+			int set_adjustments = 0;
 			if (!transition) {
 				if (short_trans_delta) {
 					adjustment_alpha = short_trans_delta < 0 ? 0.0 : 1.0;
 					short_trans_delta = 0;
+					set_adjustments = 1;
 				}
 			}
 
@@ -1270,11 +1272,11 @@ main(int argc, char *argv[])
 				/* Calculate alpha */
 				adjustment_alpha += short_trans_delta * 0.1 /
 					(float)short_trans_len;
-				
+
 				/* Stop transition when done */
 				if (adjustment_alpha <= 0.0 || adjustment_alpha >= 1.0)
 					short_trans_delta = 0;
-				
+
 				/* Clamp alpha value */
 				adjustment_alpha =
 					MAX(0.0, MIN(adjustment_alpha, 1.0));
@@ -1297,7 +1299,7 @@ main(int argc, char *argv[])
 			}
 
 			/* Adjust temperature */
-			if (!disabled || short_trans_delta) {
+			if (!disabled || short_trans_delta || set_adjustments) {
 				r = method->set_temperature(&state,
 							    temp, brightness,
 							    gamma);
