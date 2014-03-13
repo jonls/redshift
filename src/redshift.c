@@ -1182,20 +1182,14 @@ main(int argc, char *argv[])
 	break;
 	case PROGRAM_MODE_CONTINUAL:
 	{
-		/* Transition state */
-		double short_trans_end = 0;
-		int short_trans = 0;
-		int short_trans_done = 0;
-
 		/* Make an initial transition from 6500K */
-		int short_trans_create = 1;
-		int short_trans_begin = 1;
+		int short_trans_delta = -1;
 		int short_trans_len = 10;
 
 		/* Amount of adjustment to apply. At zero the color
 		   temperature will be exactly as calculated, and at one it
 		   will be exactly 6500K. */
-		double adjustment_alpha = 0.0;
+		double adjustment_alpha = 1.0;
 
 #if defined(HAVE_SIGNAL_H) && !defined(__WIN32__)
 		struct sigaction sigact;
@@ -1226,19 +1220,15 @@ main(int argc, char *argv[])
 		while (1) {
 			/* Check to see if disable signal was caught */
 			if (disable) {
-				short_trans_create = 1;
 				short_trans_len = 2;
 				if (!disabled) {
 					/* Transition to disabled state */
-					short_trans_begin = 0;
-					adjustment_alpha = 1.0;
-					disabled = 1;
+					short_trans_delta = 1;
 				} else {
 					/* Transition back to enabled */
-					short_trans_begin = 1;
-					adjustment_alpha = 0.0;
-					disabled = 0;
+					short_trans_delta = -1;
 				}
+				disabled = !disabled;
 				disable = 0;
 
 				if (verbose) {
@@ -1252,15 +1242,14 @@ main(int argc, char *argv[])
 				if (done) {
 					/* On second signal stop the
 					   ongoing transition */
-					short_trans = 0;
+					short_trans_delta = 0;
+					adjustment_alpha = 0.0;
 				} else {
 					if (!disabled) {
 						/* Make a short transition
 						   back to 6500K */
-						short_trans_create = 1;
-						short_trans_begin = 0;
+						short_trans_delta = 1;
 						short_trans_len = 2;
-						adjustment_alpha = 1.0;
 					}
 
 					done = 1;
@@ -1278,15 +1267,13 @@ main(int argc, char *argv[])
 				exit(EXIT_FAILURE);
 			}
 
-			/* Set up a new transition */
-			if (short_trans_create) {
-				if (transition) {
-					short_trans_end = now;
-					short_trans_end += short_trans_len;
-					short_trans = 1;
-					short_trans_create = 0;
-				} else {
-					short_trans_done = 1;
+			/* Skip over transition if transitions are disabled */
+			int set_adjustments = 0;
+			if (!transition) {
+				if (short_trans_delta) {
+					adjustment_alpha = short_trans_delta < 0 ? 0.0 : 1.0;
+					short_trans_delta = 0;
+					set_adjustments = 1;
 				}
 			}
 
@@ -1302,36 +1289,20 @@ main(int argc, char *argv[])
 			if (verbose) print_period(elevation);
 
 			/* Ongoing short transition */
-			if (short_trans) {
-				double start = now;
-				double end = short_trans_end;
-
-				if (start > end) {
-					/* Transisiton done */
-					short_trans = 0;
-					short_trans_done = 1;
-				}
-
+			if (short_trans_delta) {
 				/* Calculate alpha */
-				adjustment_alpha = (end - start) /
+				adjustment_alpha += short_trans_delta * 0.1 /
 					(float)short_trans_len;
-				if (!short_trans_begin) {
-					adjustment_alpha =
-						1.0 - adjustment_alpha;
+
+				/* Stop transition when done */
+				if (adjustment_alpha <= 0.0 ||
+				    adjustment_alpha >= 1.0) {
+					short_trans_delta = 0;
 				}
 
 				/* Clamp alpha value */
 				adjustment_alpha =
 					MAX(0.0, MIN(adjustment_alpha, 1.0));
-			}
-
-			/* Handle end of transition */
-			if (short_trans_done) {
-				if (disabled) {
-					/* Restore saved gamma ramps */
-					method->restore(&state);
-				}
-				short_trans_done = 0;
 			}
 
 			/* Interpolate between 6500K and calculated
@@ -1343,7 +1314,7 @@ main(int argc, char *argv[])
 				(1.0-adjustment_alpha)*brightness;
 
 			/* Quit loop when done */
-			if (done && !short_trans) break;
+			if (done && !short_trans_delta) break;
 
 			if (verbose) {
 				printf(_("Color temperature: %uK\n"), temp);
@@ -1351,7 +1322,7 @@ main(int argc, char *argv[])
 			}
 
 			/* Adjust temperature */
-			if (!disabled || short_trans) {
+			if (!disabled || short_trans_delta || set_adjustments) {
 				r = method->set_temperature(&state,
 							    temp, brightness,
 							    gamma);
@@ -1365,10 +1336,10 @@ main(int argc, char *argv[])
 
 			/* Sleep for 5 seconds or 0.1 second. */
 #ifndef _WIN32
-			if (short_trans) usleep(100000);
+			if (short_trans_delta) usleep(100000);
 			else usleep(5000000);
 #else /* ! _WIN32 */
-			if (short_trans) Sleep(100);
+			if (short_trans_delta) Sleep(100);
 			else Sleep(5000);
 #endif /* ! _WIN32 */
 		}
