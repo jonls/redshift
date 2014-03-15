@@ -27,6 +27,7 @@
 #include <unistd.h>
 #ifndef _WIN32
 # include <pwd.h>
+# include <sys/wait.h>
 #endif
 
 #include "config-ini.h"
@@ -130,6 +131,84 @@ open_config_file(const char *filepath)
 
 	return f;
 }
+
+
+#ifndef _WIN32
+static char*
+config_ini_spawn(char* command)
+{
+	int read_write[2];
+	pid_t pid;
+
+	if (pipe(read_write)) {
+		perror("pipe");
+		return NULL;
+	}
+
+	pid = fork();
+	if (pid == (pid_t)-1) {
+		perror("fork");
+		close(read_write[0]);
+		close(read_write[1]);
+		return NULL;
+	}
+
+	if (pid) {
+		char* output = NULL;
+		int status;
+		FILE* ch;
+
+		waitpid(pid, &status, WUNTRACED);
+		if (!WIFEXITED(status) || WEXITSTATUS(status)) {
+			close(read_write[0]);
+			close(read_write[1]);
+			return NULL;
+		}
+
+		if ((ch = fdopen(read_write[0], "r")) != NULL) {
+			int size = 128;
+			output = malloc(size * sizeof(char));
+			if (output == NULL)
+				perror("malloc");
+
+			*output = '\n';
+			while (output != NULL) {
+				if (fgets(output, size, ch) == NULL || *output == '\n') {
+					free(output);
+					output = NULL;
+				}
+				else if (output[strlen(output) - 1] != '\n') {
+					output = realloc(output, (size <<= 1) * sizeof(char));
+					if (output == NULL)
+						perror("malloc");
+				}
+				else {
+					output[strlen(output) - 1] = '\0';
+					break;
+				}
+			}
+		}
+
+		/* I do not know if both of the two first are required, but it cannot hurt */
+		if (ch) fclose(ch);
+		close(read_write[0]);
+		close(read_write[1]);
+
+		return output;
+	} else {
+		if (read_write[1] != STDOUT_FILENO) {
+			close(STDOUT_FILENO);
+			dup2(read_write[1], STDOUT_FILENO);
+		}
+		execlp("sh", "sh", "-c", command, NULL);
+		perror("execlp");
+		abort();
+	}
+
+	/* This really should not happen */
+	return NULL;
+}
+#endif
 
 int
 config_ini_init(config_ini_state_t *state, const char *filepath)
@@ -253,6 +332,23 @@ config_ini_init(config_ini_state_t *state, const char *filepath)
 			}
 
 			memcpy(setting->value, value, value_len);
+
+			/* Evaluate value */
+			#ifndef _WIN32
+			if (strlen(setting->value) > 3 &&
+			    strstr(setting->value, "$(") &&
+			    setting->value[strlen(setting->value) - 1] == ')') {
+				char* old_value = setting->value;
+				char* command = strstr(setting->value, "$(");
+				setting->value[strlen(setting->value) - 1] = '\0';
+				command[0] = '\0';
+				setting->value = config_ini_spawn(command + 2);
+				if (setting->value == NULL)
+					setting->value = old_value;
+				else
+					free(old_value);
+			} 
+			#endif
 		}
 	}
 
