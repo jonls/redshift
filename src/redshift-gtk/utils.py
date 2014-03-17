@@ -17,7 +17,9 @@
 # Copyright (c) 2010  Francesco Marella <francesco.marella@gmail.com>
 # Copyright (c) 2011  Jon Lund Steffensen <jonlst@gmail.com>
 
+import ctypes
 import os
+import sys
 from xdg import BaseDirectory as base
 from xdg import DesktopEntry as desktop
 
@@ -62,3 +64,15 @@ def set_autostart(active):
     for key, values in AUTOSTART_KEYS:
         dfile.set(key, values[active])
     dfile.write(filename=path)
+
+
+def setproctitle(title):
+    try:
+        libc = ctypes.cdll.LoadLibrary("libc.so.6")
+    except OSError:
+        return
+    buf = ctypes.create_string_buffer(title.encode(sys.getdefaultencoding()))
+    try:
+        libc.prctl(15, ctypes.byref(buf), 0, 0, 0)
+    except AttributeError:
+        return  # Strange libc, just skip this
