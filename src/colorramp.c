@@ -291,12 +291,11 @@ colorramp_fill(uint16_t *gamma_r, uint16_t *gamma_g, uint16_t *gamma_b,
 	interpolate_color(alpha, &blackbody_color[temp_index],
 			  &blackbody_color[temp_index+3], white_point);
 
+#define F(Y, C)  pow((Y) * brightness * white_point[C], 1.0/gamma[C])
+
 	for (int i = 0; i < size; i++) {
-		gamma_r[i] = pow((float)i/size, 1.0/gamma[0]) *
-			(UINT16_MAX+1) * brightness * white_point[0];
-		gamma_g[i] = pow((float)i/size, 1.0/gamma[1]) *
-			(UINT16_MAX+1) * brightness * white_point[1];
-		gamma_b[i] = pow((float)i/size, 1.0/gamma[2]) *
-			(UINT16_MAX+1) * brightness * white_point[2];
+		gamma_r[i] = F((float)i/size, 0) * (UINT16_MAX+1);
+		gamma_g[i] = F((float)i/size, 1) * (UINT16_MAX+1);
+		gamma_b[i] = F((float)i/size, 2) * (UINT16_MAX+1);
 	}
 }
