@@ -67,12 +67,23 @@ def set_autostart(active):
 
 
 def setproctitle(title):
-    try:
-        libc = ctypes.cdll.LoadLibrary("libc.so.6")
-    except OSError:
-        return
-    buf = ctypes.create_string_buffer(title.encode(sys.getdefaultencoding()))
-    try:
-        libc.prctl(15, ctypes.byref(buf), 0, 0, 0)
-    except AttributeError:
-        return  # Strange libc, just skip this
+    title_bytes = title.encode(sys.getdefaultencoding(), 'replace')
+    buf = ctypes.create_string_buffer(title_bytes)
+    if 'linux' in sys.platform:
+        try:
+            libc = ctypes.cdll.LoadLibrary("libc.so.6")
+        except OSError:
+            return
+        try:
+            libc.prctl(15, buf, 0, 0, 0)
+        except AttributeError:
+            return  # Strange libc, just skip this
+    elif 'bsd' in sys.platform:
+        try:
+            libc = ctypes.cdll.LoadLibrary("libc.so.7")
+        except OSError:
+            return
+        try:
+            libc.setproctitle(ctypes.create_string_buffer(b"-%s"), buf)
+        except AttributeError:
+            return
