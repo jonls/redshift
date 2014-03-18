@@ -27,10 +27,10 @@ This package provides the base program.
 %package -n %{name}-gtk
 Summary: GTK integration for Redshift
 Group: Applications/System
-BuildRequires: python2
+BuildRequires: python3-devel >= 3.3
 BuildRequires: desktop-file-utils
-Requires: pygobject3-base
-Requires: pyxdg
+Requires: python3-gobject
+Requires: python3-pyxdg
 Requires: %{name} = %{version}-%{release}
 Obsoletes: gtk-redshift < %{version}-%{release}
 
@@ -72,7 +72,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %files -n %{name}-gtk
 %defattr(-,root,root,-)
 %{_bindir}/redshift-gtk
-%{python_sitelib}/*
+%{python3_sitelib}/redshift_gtk/
 %{_datadir}/icons/hicolor/scalable/apps/redshift*.svg
 %{_datadir}/applications/redshift-gtk.desktop
 
