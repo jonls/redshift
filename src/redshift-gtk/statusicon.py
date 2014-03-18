@@ -316,7 +316,10 @@ class RedshiftStatusIcon(object):
         os.kill(self.process[0], signal.SIGINT)
         os.waitpid(self.process[0], 0)
 
+
 def run():
+    utils.setproctitle('redshift-gtk')
+
     # Internationalisation
     gettext.bindtextdomain('redshift', defs.LOCALEDIR)
     gettext.textdomain('redshift')
