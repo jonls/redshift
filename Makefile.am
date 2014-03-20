@@ -2,6 +2,10 @@
 SUBDIRS = src po
 ACLOCAL_AMFLAGS = -I m4
 
+# Install systemd user unit files locally for distcheck
+DISTCHECK_CONFIGURE_FLAGS = \
+	--with-systemduserunitdir=$$dc_install_base/$(systemduserunitdir)
+
 UPDATE_ICON_CACHE = gtk-update-icon-cache -f -t $(datadir)/icons/hicolor || :
 
 EXTRA_ROOTDOC_FILES = \
@@ -24,6 +28,10 @@ _UBUNTU_MONO_LIGHT_FILES = \
 
 _DESKTOP_FILES = \
 	data/applications/redshift-gtk.desktop
+
+SYSTEMD_USER_UNIT_IN_FILES = \
+	data/systemd/redshift.service.in \
+	data/systemd/redshift-gtk.service.in
 
 
 # Icons
@@ -55,15 +63,32 @@ uninstall-hook:
 	$(UPDATE_ICON_CACHE);
 endif
 
+
 # man page
 dist_man1_MANS = redshift.1
+
+
+# Systemd service files
+if ENABLE_SYSTEMD
+systemduserunit_DATA = $(SYSTEMD_USER_UNIT_IN_FILES:.service.in=.service)
+endif
+
+$(systemduserunit_DATA): $(SYSTEMD_USER_UNIT_IN_FILES) Makefile
+	$(AM_V_GEN)$(MKDIR_P) $(@D) && \
+		sed -e "s|\@bindir\@|$(bindir)|g" $< > $@
+
+
 
 EXTRA_DIST = \
 	$(EXTRA_ROOTDOC_FILES) \
 	$(_HICOLOR_FILES) \
 	$(_UBUNTU_MONO_DARK_FILES) \
 	$(_UBUNTU_MONO_LIGHT_FILES) \
-	$(_DESKTOP_FILES)
+	$(_DESKTOP_FILES) \
+	$(SYSTEMD_USER_UNIT_IN_FILES)
+
+CLEANFILES = $(systemduserunit_DATA)
+
 
 # Update PO translations
 .PHONY: update-po
