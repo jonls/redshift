@@ -9,10 +9,16 @@ and create the `configure` script.
 
 Use `./configure --help' for options. Use `--prefix' to make an install in
 your home directory. This is necessary to test python scripts. The systemd
-user unit dir should be set to avoid writing to the system location. Example:
+user unit directory should be set to avoid writing to the system location.
+
+Systemd will look for the unit files in `~/.config/systemd/user` so this
+directory can be used as a target if the unit files will be used. Otherwise
+the location can be set to `no` to disable the systemd files.
+
+Example:
 
  $ ./configure --prefix=$HOME/redshift/root \
-   --with-systemduserunitdir=$HOME/redshift/root/lib/systemd/user
+   --with-systemduserunitdir=$HOME/.config/systemd/user
 
 Now, build the files:
 
