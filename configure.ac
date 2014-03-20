@@ -161,25 +161,24 @@ AS_IF([test "x$enable_ubuntu" != xno], [
 ])
 AM_CONDITIONAL([ENABLE_UBUNTU], [test "x$enable_ubuntu" != xno])
 
+
 # Check for systemd
 PKG_PROG_PKG_CONFIG
 AC_MSG_CHECKING([Directory to install systemd user unit files])
 AC_ARG_WITH([systemduserunitdir],
-            [AC_HELP_STRING([--with-systemduserunitdir],
+            [AS_HELP_STRING([--with-systemduserunitdir=<dir>],
                             [Directory for systemd user unit files])],
-            [], [with_systemduserunitdir=no])
-# If no path is given, use pkg-config
-AS_IF([test "x$with_systemduserunitdir" == xyes],
-      [AC_SUBST([systemduserunitdir],
-                [$($PKG_CONFIG --variable=systemduserunitdir systemd)])],
-      [AC_SUBST([systemduserunitdir],
-                [$with_systemduserunitdir])]
-     )
-AC_MSG_RESULT([$systemduserunitdir])
-AS_IF([test -n "$with_systemduserunitdir" -a "x$with_systemduserunitdir" != xno],
-      [enable_systemd=yes],
-      [enable_systemd=no])
+            [], [with_systemduserunitdir=$($PKG_CONFIG --variable=systemduserunitdir systemd)])
+AS_IF([test -n "$with_systemduserunitdir" -a "x$with_systemduserunitdir" != xno], [
+	AC_SUBST([systemduserunitdir], [$with_systemduserunitdir])
+	AC_MSG_RESULT([$systemduserunitdir])
+	enable_systemd=yes
+], [
+	AC_MSG_RESULT([not enabled])
+	enable_systemd=no
+])
 AM_CONDITIONAL([ENABLE_SYSTEMD], [test "x$enable_systemd" != xno])
+
 
 # Checks for header files.
 AC_CHECK_HEADERS([locale.h stdint.h stdlib.h string.h unistd.h signal.h])
@@ -220,5 +219,5 @@ echo "
 
     GUI:		${enable_gui}
     Ubuntu icons:	${enable_ubuntu}
-    systemd unit path:	${systemduserunitdir}
+    systemd units:	${enable_systemd} ${systemduserunitdir}
 "

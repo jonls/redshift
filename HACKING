@@ -8,9 +8,11 @@ The bootstrap script will use autotools to set up the build environment
 and create the `configure` script.
 
 Use `./configure --help' for options. Use `--prefix' to make an install in
-your home directory. This is necessary to test python scripts. Example:
+your home directory. This is necessary to test python scripts. The systemd
+user unit dir should be set to avoid writing to the system location. Example:
 
- $ ./configure --prefix=$HOME/redshift/root
+ $ ./configure --prefix=$HOME/redshift/root \
+   --with-systemduserunitdir=$HOME/redshift/root/lib/systemd/user
 
 Now, build the files:
 
