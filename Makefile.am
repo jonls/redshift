@@ -25,6 +25,8 @@ _UBUNTU_MONO_LIGHT_FILES = \
 _DESKTOP_FILES = \
 	data/applications/redshift-gtk.desktop
 
+_SYSTEMD_USER_UNIT_FILES = \
+	data/systemd/redshift.service.in
 
 # Icons
 if ENABLE_GUI
@@ -40,6 +42,10 @@ ubuntu_mono_light_icon_DATA = $(_UBUNTU_MONO_LIGHT_FILES)
 endif
 endif
 
+# Systemd service files
+if ENABLE_SYSTEMD
+systemduserunit_DATA = data/systemd/redshift.service
+endif
 
 # Desktop file
 if ENABLE_GUI
@@ -63,7 +69,13 @@ EXTRA_DIST = \
 	$(_HICOLOR_FILES) \
 	$(_UBUNTU_MONO_DARK_FILES) \
 	$(_UBUNTU_MONO_LIGHT_FILES) \
-	$(_DESKTOP_FILES)
+	$(_DESKTOP_FILES) \
+	$(_SYSTEMD_USER_UNIT_FILES)
+
+CLEANFILES = data/systemd/redshift.service
+
+data/systemd/redshift.service: data/systemd/redshift.service.in
+	$(AM_V_GEN)sed -e "s|\@bindir\@|$(bindir)|g" $< > $@
 
 # Update PO translations
 .PHONY: update-po
