@@ -30,7 +30,8 @@ _DESKTOP_FILES = \
 	data/applications/redshift-gtk.desktop
 
 SYSTEMD_USER_UNIT_IN_FILES = \
-	data/systemd/redshift.service.in
+	data/systemd/redshift.service.in \
+	data/systemd/redshift-gtk.service.in
 
 
 # Icons
