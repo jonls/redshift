@@ -27,6 +27,7 @@ import sys, os
 import signal, fcntl
 import re
 import gettext
+import threading
 
 from gi.repository import Gtk, GLib
 try:
@@ -77,10 +78,13 @@ class RedshiftStatusIcon(object):
         # Create popup menu
         self.status_menu = Gtk.Menu()
 
+        # Add non-reentrant semaphore to, in a thread-safe way, stop change_status from calling toggle_cb with action
+        self.toggle_semaphore = threading.Semaphore()
+
         # Add toggle action
-        toggle_item = Gtk.MenuItem.new_with_label(_('Toggle'))
-        toggle_item.connect('activate', self.toggle_cb)
-        self.status_menu.append(toggle_item)
+        self.toggle_item = Gtk.CheckMenuItem.new_with_label(_('Enabled'))
+        self.toggle_item.connect('activate', self.toggle_cb)
+        self.status_menu.append(self.toggle_item)
 
         # Add suspend menu
         suspend_menu_item = Gtk.MenuItem.new_with_label(_('Suspend for'))
@@ -215,8 +219,10 @@ class RedshiftStatusIcon(object):
                                self.status_icon, button, time)
 
     def toggle_cb(self, widget, data=None):
-        self.remove_suspend_timer()
-        self.child_toggle_status()
+        if self.toggle_semaphore.acquire(blocking = False):
+            self.remove_suspend_timer()
+            self.child_toggle_status()
+            self.toggle_semaphore.release()
 
     # Info dialog callbacks
     def show_info_cb(self, widget, data=None):
@@ -243,8 +249,10 @@ class RedshiftStatusIcon(object):
     def change_status(self, status):
         self._status = status
 
-        # TODO make toggle_item a checkbox and follow the state like the icon.
         self.update_status_icon()
+        self.toggle_semaphore.acquire()
+        self.toggle_item.set_active(self.is_enabled())
+        self.toggle_semaphore.release()
         self.status_label.set_markup('<b>{}:</b> {}'.format(_('Status'),
                                                             _('Enabled') if status else _('Disabled')))
 

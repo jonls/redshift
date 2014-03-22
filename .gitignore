@@ -1,3 +1,7 @@
+# Backup files
+*~
+\#*\#
+
 # Object files
 *.o
 *.ko
@@ -40,6 +44,7 @@ src/redshift-gtk/defs.py
 src/redshift-gtk/redshift-gtk
 contrib/redshift.spec
 src/redshift
+src/redshift-gtk/__pycache__/
 
 # gettext
 /po/POTFILES
