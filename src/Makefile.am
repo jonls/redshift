@@ -3,7 +3,7 @@ SUBDIRS = redshift-gtk
 
 # I18n
 localedir = $(datadir)/locale
-INCLUDES = -DLOCALEDIR=\"$(localedir)\"
+AM_CPPFLAGS = -DLOCALEDIR=\"$(localedir)\"
 
 # redshift Program
 bin_PROGRAMS = redshift
