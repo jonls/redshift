@@ -58,11 +58,11 @@ I've been mostly consistent with the naming throughout the source code
 (I hope).
 
 First adjustment methods: There is "randr" which is the preferred
-because it has some features that are lacking in "vidmode" (IIRC it
-has to do with multiple monitors). Both are APIs in the X server that
-allow for manipulation of gamma ramps, which is what Redshift uses to
-change the screen color temperature. There's also "wingdi" which is
-for the Windows version.
+because it has support for multiple outputs per X screen whic is lacking
+in "vidmode". Both are APIs in the X server that allow for manipulation
+of gamma ramps, which is what Redshift uses to change the screen color
+temperature. There's also "wingdi" which is for the Windows version,
+and "drm" which allows manipulation of gamma ramps in a TTY in Linux.
 
 Then there are location providers: "manual", "gnome-clock" and
 "geoclue". Some time ago there was only one way to specify the
