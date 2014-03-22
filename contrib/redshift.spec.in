@@ -7,9 +7,11 @@ License: GPLv3+
 URL: http://jonls.dk/redshift/
 Source0: http://launchpad.net/redshift/trunk/%{version}/+download/%{name}-%{version}.tar.bz2
 BuildRequires: gettext-devel
-BuildRequires: libXrandr-devel
+BuildRequires: libX11-devel
 BuildRequires: libXxf86vm-devel
+BuildRequires: libxcb-devel
 BuildRequires: geoclue-devel
+BuildRequires: systemd
 
 %description
 Redshift adjusts the color temperature of your screen according to your
@@ -42,7 +44,7 @@ temperature adjustment program.
 %setup -q
 
 %build
-%configure --enable-gui --enable-geoclue --enable-randr --enable-vidmode
+%configure --enable-gui --enable-geoclue --enable-randr --enable-vidmode --with-systemduserunitdir=%{_userunitdir}
 make %{?_smp_mflags} V=1
 
 %install
@@ -68,6 +70,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %doc COPYING NEWS README README-colorramp
 %{_bindir}/redshift
 %{_mandir}/man1/*
+%{_userunitdir}/*
 
 %files -n %{name}-gtk
 %defattr(-,root,root,-)
@@ -99,7 +102,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 - Change default geoclue provider from Ubuntu GeoIP to Hostip
 - Remove manual Ubuntu icons uninstall
 
-* Sun Feb 28 2011 Milos Komarcevic <kmilos@gmail.com> - 1.6-3
+* Mon Feb 28 2011 Milos Komarcevic <kmilos@gmail.com> - 1.6-3
 - Fix for clock applet detection (#661145)
 - Require pyxdg explicitly (#675804)
 
