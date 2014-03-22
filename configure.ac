@@ -16,6 +16,7 @@ AC_PROG_CC_C99
 AM_GNU_GETTEXT_VERSION([0.17])
 AM_GNU_GETTEXT([external])
 
+PKG_CHECK_MODULES([DRM], [libdrm], [have_drm=yes], [have_drm=no])
 PKG_CHECK_MODULES([X11], [x11], [have_x11=yes], [have_x11=no])
 PKG_CHECK_MODULES([XF86VM], [xxf86vm], [have_xf86vm=yes], [have_xf86vm=no])
 PKG_CHECK_MODULES([XCB], [xcb], [have_xcb=yes], [have_xcb=no])
@@ -28,6 +29,30 @@ AC_CHECK_HEADER([windows.h], [have_windows_h=yes], [have_windows_h=no])
 
 # Check for Python
 AM_PATH_PYTHON([3.3], [have_python=yes], [have_python=no])
+
+# Check DRM method
+AC_MSG_CHECKING([whether to enable DRM method])
+AC_ARG_ENABLE([drm], [AC_HELP_STRING([--enable-drm],
+	[enable DRM method])],
+	[enable_drm=$enableval],[enable_drm=maybe])
+AS_IF([test "x$enable_drm" != xno], [
+	AS_IF([test $have_drm = yes], [
+		AC_DEFINE([ENABLE_DRM], 1,
+			[Define to 1 to enable DRM method])
+		AC_MSG_RESULT([yes])
+		enable_drm=yes
+	], [
+		AC_MSG_RESULT([missing dependencies])
+		AS_IF([test "x$enable_drm" = xyes], [
+			AC_MSG_ERROR([missing dependencies for DRM method])
+		])
+		enable_drm=no
+	])
+], [
+	AC_MSG_RESULT([no])
+	enable_drm=no
+])
+AM_CONDITIONAL([ENABLE_DRM], [test "x$enable_drm" = xyes])
 
 # Check RANDR method
 AC_MSG_CHECKING([whether to enable RANDR method])
@@ -191,6 +216,7 @@ echo "
     ldflags:		${LDFLAGS}
 
     Adjustment methods:
+    DRM:		${enable_drm}
     RANDR:		${enable_randr}
     VidMode:		${enable_vidmode}
     WinGDI:		${enable_wingdi}

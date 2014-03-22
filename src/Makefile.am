@@ -18,6 +18,7 @@ redshift_SOURCES = \
 	gamma-dummy.c gamma-dummy.h
 
 EXTRA_redshift_SOURCES = \
+	gamma-drm.c gamma-drm.h \
 	gamma-randr.c gamma-randr.h \
 	gamma-vidmode.c gamma-vidmode.h \
 	gamma-w32gdi.c gamma-w32gdi.h \
@@ -26,6 +27,13 @@ EXTRA_redshift_SOURCES = \
 AM_CFLAGS =
 redshift_LDADD = @LIBINTL@
 EXTRA_DIST =
+
+if ENABLE_DRM
+redshift_SOURCES += gamma-drm.c gamma-drm.h
+AM_CFLAGS += $(DRM_CFLAGS)
+redshift_LDADD += \
+	$(DRM_LIBS) $(DRM_CFLAGS)
+endif
 
 if ENABLE_RANDR
 redshift_SOURCES += gamma-randr.c gamma-randr.h
