@@ -70,6 +70,7 @@ gamma_dummy_set_option(void *state, const char *key, const char *value, int sect
 {
 	(void) state;
 	(void) section;
+
 	if (strcasecmp(key, "gamma") == 0) {
 		float gamma[3];
 		if (parse_gamma_string(value, gamma) < 0) {

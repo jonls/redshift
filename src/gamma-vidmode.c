@@ -266,7 +266,10 @@ vidmode_set_option(vidmode_state_t *state, const char *key, const char *value, i
 				fprintf(stderr, _("Valid screens are [0-%d].\n"),
 					state->screen_count - 1);
 			} else {
-				fprintf(stderr, _("Only screen 0 exists.\n"));
+				fprintf(stderr, _("Only screen 0 exists, did you mean CRTC %d?\n"),
+					screen_num);
+				fprintf(stderr,
+					_("If so, you need to use `randr' instead of `vidmode'.\n"));
 			}
 			fprintf(stderr, "Invalid screen.\n");
 			return -1;

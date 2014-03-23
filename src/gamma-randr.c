@@ -166,7 +166,8 @@ randr_start(randr_state_t *state)
 				fprintf(stderr, _("Valid screens are [0-%d].\n"),
 					screen_count - 1);
 			} else {
-				fprintf(stderr, _("Only screen 0 exists.\n"));
+				fprintf(stderr, _("Only screen 0 exists, did you mean CRTC %d?\n"),
+					screen_num);
 			}
 			fprintf(stderr, "Invalid screen.\n");
 			goto fail;
