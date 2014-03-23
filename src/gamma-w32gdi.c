@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifndef WINVER
 # define WINVER  0x0500
@@ -35,6 +36,7 @@
 
 #include "gamma-w32gdi.h"
 #include "colorramp.h"
+#include "redshift.h"
 
 #define GAMMA_RAMP_SIZE  256
 
@@ -43,6 +45,12 @@ int
 w32gdi_init(w32gdi_state_t *state)
 {
 	state->saved_ramps = NULL;
+	state->gamma[0] = DEFAULT_GAMMA;
+	state->gamma[1] = DEFAULT_GAMMA;
+	state->gamma[2] = DEFAULT_GAMMA;
+	state->gamma_r = NULL;
+	state->gamma_g = NULL;
+	state->gamma_b = NULL;
 
 	return 0;
 }
@@ -86,6 +94,18 @@ w32gdi_start(w32gdi_state_t *state)
 	/* Release device context */
 	ReleaseDC(NULL, hDC);
 
+	/* Allocate space for gamma ramps */
+	WORD* gamma_ramps = malloc(3*GAMMA_RAMP_SIZE*sizeof(WORD));
+	if (gamma_ramps == NULL) {
+		perror("malloc");
+		ReleaseDC(NULL, hDC);
+		return -1;
+	}
+
+	state->gamma_r = gamma_ramps;
+	state->gamma_g = state->gamma_r + GAMMA_RAMP_SIZE;
+	state->gamma_b = state->gamma_g + GAMMA_RAMP_SIZE;
+
 	return 0;
 }
 
@@ -94,6 +114,7 @@ w32gdi_free(w32gdi_state_t *state)
 {
 	/* Free saved ramps */
 	free(state->saved_ramps);
+	free(state->gamma_r);
 }
 
 
@@ -105,9 +126,32 @@ w32gdi_print_help(FILE *f)
 }
 
 int
-w32gdi_set_option(w32gdi_state_t *state, const char *key, const char *value)
+w32gdi_set_option(w32gdi_state_t *state, const char *key, const char *value, int section)
 {
-	return -1;
+	if (strcasecmp(key, "gamma") == 0) {
+		float gamma[3];
+		if (parse_gamma_string(value, gamma) < 0) {
+			fputs(_("Malformed gamma setting.\n"),
+			      stderr);
+			return -1;
+		}
+		if (gamma[0] < MIN_GAMMA || gamma[0] > MAX_GAMMA ||
+		    gamma[1] < MIN_GAMMA || gamma[1] > MAX_GAMMA ||
+		    gamma[2] < MIN_GAMMA || gamma[2] > MAX_GAMMA) {
+			fprintf(stderr,
+				_("Gamma value must be between %.1f and %.1f.\n"),
+				MIN_GAMMA, MAX_GAMMA);
+			return -1;
+		}
+		state->gamma[0] = gamma[0];
+		state->gamma[1] = gamma[1];
+		state->gamma[2] = gamma[2];
+	} else {
+		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
+		return -1;
+	}
+
+	return 0;
 }
 
 void
@@ -129,8 +173,7 @@ w32gdi_restore(w32gdi_state_t *state)
 }
 
 int
-w32gdi_set_temperature(w32gdi_state_t *state, int temp, float brightness,
-		       const float gamma[3])
+w32gdi_set_temperature(w32gdi_state_t *state, int temp, float brightness)
 {
 	BOOL r;
 
@@ -142,33 +185,20 @@ w32gdi_set_temperature(w32gdi_state_t *state, int temp, float brightness,
 	}
 
 	/* Create new gamma ramps */
-	WORD *gamma_ramps = malloc(3*GAMMA_RAMP_SIZE*sizeof(WORD));
-	if (gamma_ramps == NULL) {
-		perror("malloc");
-		ReleaseDC(NULL, hDC);
-		return -1;
-	}
-
-	WORD *gamma_r = &gamma_ramps[0*GAMMA_RAMP_SIZE];
-	WORD *gamma_g = &gamma_ramps[1*GAMMA_RAMP_SIZE];
-	WORD *gamma_b = &gamma_ramps[2*GAMMA_RAMP_SIZE];
-
-	colorramp_fill(gamma_r, gamma_g, gamma_b, GAMMA_RAMP_SIZE,
-		       temp, brightness, gamma);
+	colorramp_fill(state->gamma_r, state->gamma_g, state->gamma_b,
+		       GAMMA_RAMP_SIZE, temp, brightness, state->gamma);
 
 	/* Set new gamma ramps */
-	r = SetDeviceGammaRamp(hDC, gamma_ramps);
+	r = SetDeviceGammaRamp(hDC, state->gamma_r);
 	if (!r) {
 		/* TODO it happens that SetDeviceGammaRamp returns FALSE on
 		   occasions where the adjustment seems to be successful.
 		   Does this only happen with multiple monitors connected? */
 		fputs(_("Unable to set gamma ramps.\n"), stderr);
-		free(gamma_ramps);
+		free(state->gamma_r);
 		ReleaseDC(NULL, hDC);
 		return -1;
 	}
-
-	free(gamma_ramps);
 
 	/* Release device context */
 	ReleaseDC(NULL, hDC);
