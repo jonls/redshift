@@ -17,8 +17,8 @@
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
-#ifndef _REDSHIFT_LOCATION_MANUAL_H
-#define _REDSHIFT_LOCATION_MANUAL_H
+#ifndef REDSHIFT_LOCATION_MANUAL_H
+#define REDSHIFT_LOCATION_MANUAL_H
 
 #include <stdio.h>
 
@@ -41,4 +41,4 @@ int location_manual_get_location(location_manual_state_t *state, float *lat,
 				 float *lon);
 
 
-#endif /* ! _REDSHIFT_LOCATION_MANUAL_H */
+#endif /* ! REDSHIFT_LOCATION_MANUAL_H */

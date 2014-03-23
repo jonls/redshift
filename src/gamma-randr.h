@@ -17,8 +17,8 @@
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
-#ifndef _REDSHIFT_GAMMA_RANDR_H
-#define _REDSHIFT_GAMMA_RANDR_H
+#ifndef REDSHIFT_GAMMA_RANDR_H
+#define REDSHIFT_GAMMA_RANDR_H
 
 #include <stdio.h>
 #include <stdint.h>
@@ -58,4 +58,4 @@ int randr_set_temperature(randr_state_t *state, int temp, float brightness,
 			  const float gamma[3]);
 
 
-#endif /* ! _REDSHIFT_GAMMA_RANDR_H */
+#endif /* ! REDSHIFT_GAMMA_RANDR_H */

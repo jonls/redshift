@@ -17,8 +17,8 @@
    Copyright (c) 2010  Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>
 */
 
-#ifndef _REDSHIFT_LOCATION_GEOCLUE_H
-#define _REDSHIFT_LOCATION_GEOCLUE_H
+#ifndef REDSHIFT_LOCATION_GEOCLUE_H
+#define REDSHIFT_LOCATION_GEOCLUE_H
 
 #include <stdio.h>
 #include <geoclue/geoclue-position.h>
@@ -41,4 +41,4 @@ int location_geoclue_get_location(location_geoclue_state_t *state,
 				  float *lat, float *lon);
 
 
-#endif /* ! _REDSHIFT_LOCATION_GEOCLUE_H */
+#endif /* ! REDSHIFT_LOCATION_GEOCLUE_H */

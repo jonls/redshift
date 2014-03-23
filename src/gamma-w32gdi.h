@@ -17,8 +17,8 @@
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
-#ifndef _REDSHIFT_GAMMA_W32GDI_H
-#define _REDSHIFT_GAMMA_W32GDI_H
+#ifndef REDSHIFT_GAMMA_W32GDI_H
+#define REDSHIFT_GAMMA_W32GDI_H
 
 #include <windows.h>
 #include <wingdi.h>
@@ -42,4 +42,4 @@ int w32gdi_set_temperature(w32gdi_state_t *state, int temp, float brightness,
 			   const float gamma[3]);
 
 
-#endif /* ! _REDSHIFT_GAMMA_W32GDI_H */
+#endif /* ! REDSHIFT_GAMMA_W32GDI_H */

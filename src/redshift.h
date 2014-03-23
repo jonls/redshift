@@ -17,8 +17,8 @@
    Copyright (c) 2013  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
-#ifndef _REDSHIFT_REDSHIFT_H
-#define _REDSHIFT_REDSHIFT_H
+#ifndef REDSHIFT_REDSHIFT_H
+#define REDSHIFT_REDSHIFT_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -91,4 +91,4 @@ typedef struct {
 } location_provider_t;
 
 
-#endif /* ! _REDSHIFT_REDSHIFT_H */
+#endif /* ! REDSHIFT_REDSHIFT_H */

@@ -17,8 +17,8 @@
    Copyright (c) 2013  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
-#ifndef _REDSHIFT_GAMMA_DUMMY_H
-#define _REDSHIFT_GAMMA_DUMMY_H
+#ifndef REDSHIFT_GAMMA_DUMMY_H
+#define REDSHIFT_GAMMA_DUMMY_H
 
 #include "redshift.h"
 
@@ -35,4 +35,4 @@ int gamma_dummy_set_temperature(void *state, int temp, float brightness,
 				const float gamma[3]);
 
 
-#endif /* ! _REDSHIFT_GAMMA_DUMMY_H */
+#endif /* ! REDSHIFT_GAMMA_DUMMY_H */

@@ -17,8 +17,8 @@
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
-#ifndef _REDSHIFT_SYSTEMTIME_H
-#define _REDSHIFT_SYSTEMTIME_H
+#ifndef REDSHIFT_SYSTEMTIME_H
+#define REDSHIFT_SYSTEMTIME_H
 
 #ifndef _WIN32
 # include <time.h>
@@ -29,4 +29,4 @@
 
 int systemtime_get_time(double *now);
 
-#endif /* ! _REDSHIFT_SYSTEMTIME_H */
+#endif /* ! REDSHIFT_SYSTEMTIME_H */

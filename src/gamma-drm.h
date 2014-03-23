@@ -17,8 +17,8 @@
    Copyright (c) 2014  Mattias Andrée <maandree@member.fsf.org>
 */
 
-#ifndef _REDSHIFT_GAMMA_DRM_H
-#define _REDSHIFT_GAMMA_DRM_H
+#ifndef REDSHIFT_GAMMA_DRM_H
+#define REDSHIFT_GAMMA_DRM_H
 
 #include <stdint.h>
 
@@ -55,4 +55,4 @@ void drm_restore(drm_state_t *state);
 int drm_set_temperature(drm_state_t *state, int temp, float brightness, const float gamma[3]);
 
 
-#endif /* ! _REDSHIFT_GAMMA_DRM_H */
+#endif /* ! REDSHIFT_GAMMA_DRM_H */

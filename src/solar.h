@@ -17,8 +17,8 @@
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
-#ifndef _SOLAR_H
-#define _SOLAR_H
+#ifndef REDSHIFT_SOLAR_H
+#define REDSHIFT_SOLAR_H
 
 #include "time.h"
 
@@ -48,4 +48,4 @@ typedef enum {
 double solar_elevation(double date, double lat, double lon);
 void solar_table_fill(double date, double lat, double lon, double *table);
 
-#endif /* ! _SOLAR_H */
+#endif /* ! REDSHIFT_SOLAR_H */

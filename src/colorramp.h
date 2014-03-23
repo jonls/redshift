@@ -17,12 +17,12 @@
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
-#ifndef _REDSHIFT_COLORRAMP_H
-#define _REDSHIFT_COLORRAMP_H
+#ifndef REDSHIFT_COLORRAMP_H
+#define REDSHIFT_COLORRAMP_H
 
 #include <stdint.h>
 
 void colorramp_fill(uint16_t *gamma_r, uint16_t *gamma_g, uint16_t *gamma_b,
 		    int size, int temp, float brightness, const float gamma[3]);
 
-#endif /* ! _REDSHIFT_COLORRAMP_H */
+#endif /* ! REDSHIFT_COLORRAMP_H */
