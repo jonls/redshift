@@ -58,7 +58,7 @@ I've been mostly consistent with the naming throughout the source code
 (I hope).
 
 First adjustment methods: There is "randr" which is the preferred
-because it has support for multiple outputs per X screen whic is lacking
+because it has support for multiple outputs per X screen which is lacking
 in "vidmode". Both are APIs in the X server that allow for manipulation
 of gamma ramps, which is what Redshift uses to change the screen color
 temperature. There's also "wingdi" which is for the Windows version,
