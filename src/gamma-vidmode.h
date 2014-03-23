@@ -26,10 +26,27 @@
 #include <X11/Xlib.h>
 
 typedef struct {
-	Display *display;
 	int screen_num;
 	int ramp_size;
 	uint16_t *saved_ramps;
+	float gamma[3];
+	uint16_t *gamma_r;
+	uint16_t *gamma_g;
+	uint16_t *gamma_b;
+} vidmode_screen_state_t;
+
+typedef struct {
+	int screen_num;
+	float gamma[3];
+} vidmode_selection_t;
+
+typedef struct {
+	Display *display;
+	int selection_count;
+	vidmode_selection_t *selections;
+	int screen_count;
+	int screens_used;
+	vidmode_screen_state_t *screens;
 } vidmode_state_t;
 
 
@@ -39,11 +56,10 @@ void vidmode_free(vidmode_state_t *state);
 
 void vidmode_print_help(FILE *f);
 int vidmode_set_option(vidmode_state_t *state, const char *key,
-		       const char *value);
+		       const char *value, int section);
 
 void vidmode_restore(vidmode_state_t *state);
-int vidmode_set_temperature(vidmode_state_t *state, int temp, float brightness,
-			    const float gamma[3]);
+int vidmode_set_temperature(vidmode_state_t *state, int temp, float brightness);
 
 
 #endif /* ! REDSHIFT_GAMMA_VIDMODE_H */
