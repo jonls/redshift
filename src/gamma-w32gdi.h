@@ -26,7 +26,7 @@
 
 typedef struct {
 	WORD *saved_ramps;
-	float gamma[];
+	float gamma[3];
 	WORD *gamma_r;
 	WORD *gamma_g;
 	WORD *gamma_b;
@@ -42,7 +42,8 @@ int w32gdi_set_option(w32gdi_state_t *state, const char *key,
 		      const char *value, int section);
 
 void w32gdi_restore(w32gdi_state_t *state);
-int w32gdi_set_temperature(w32gdi_state_t *state, int temp, float brightness);
+int w32gdi_set_temperature(w32gdi_state_t *state, int temp, float brightness,
+			   int calibrations);
 
 
 #endif /* ! REDSHIFT_GAMMA_W32GDI_H */

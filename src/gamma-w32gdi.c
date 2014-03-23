@@ -173,7 +173,7 @@ w32gdi_restore(w32gdi_state_t *state)
 }
 
 int
-w32gdi_set_temperature(w32gdi_state_t *state, int temp, float brightness)
+w32gdi_set_temperature(w32gdi_state_t *state, int temp, float brightness, int calibrations)
 {
 	BOOL r;
 
@@ -185,8 +185,17 @@ w32gdi_set_temperature(w32gdi_state_t *state, int temp, float brightness)
 	}
 
 	/* Create new gamma ramps */
+	uint16_t *saved_gamma_r = NULL;
+	uint16_t *saved_gamma_g = NULL;
+	uint16_t *saved_gamma_b = NULL;
+	if (calibrations) {
+		saved_gamma_r = &state->saved_ramps[0*GAMMA_RAMP_SIZE];
+		saved_gamma_g = &state->saved_ramps[1*GAMMA_RAMP_SIZE];
+		saved_gamma_b = &state->saved_ramps[2*GAMMA_RAMP_SIZE];
+	}
 	colorramp_fill(state->gamma_r, state->gamma_g, state->gamma_b,
-		       GAMMA_RAMP_SIZE, temp, brightness, state->gamma);
+		       GAMMA_RAMP_SIZE, temp, brightness, state->gamma,
+		       saved_gamma_r, saved_gamma_g, saved_gamma_b);
 
 	/* Set new gamma ramps */
 	r = SetDeviceGammaRamp(hDC, state->gamma_r);

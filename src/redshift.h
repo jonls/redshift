@@ -62,7 +62,7 @@ typedef int gamma_method_set_option_func(void *state, const char *key,
 					 const char *value, int section);
 typedef void gamma_method_restore_func(void *state);
 typedef int gamma_method_set_temperature_func(void *state, int temp,
-					      float brightness);
+					      float brightness, int calibrations);
 
 typedef struct {
 	char *name;

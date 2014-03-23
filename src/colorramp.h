@@ -23,6 +23,7 @@
 #include <stdint.h>
 
 void colorramp_fill(uint16_t *gamma_r, uint16_t *gamma_g, uint16_t *gamma_b,
-		    int size, int temp, float brightness, const float gamma[3]);
+		    int size, int temp, float brightness, const float gamma[3],
+		    uint16_t *calib_r, uint16_t *calib_g, uint16_t *calib_b);
 
 #endif /* ! REDSHIFT_COLORRAMP_H */

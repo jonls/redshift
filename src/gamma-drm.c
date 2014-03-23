@@ -244,7 +244,7 @@ drm_start(drm_state_t *state)
 		}
 		/* Valgrind complains about us reading uninitialize memory if we just use malloc. */
 		crtc->saved_gamma_r = calloc(3 * crtc->gamma_size, sizeof(uint16_t));
-		crtc->saved_gamma_g = crtc->saved_gamma_r + crtc->gamma_size;
+ 		crtc->saved_gamma_g = crtc->saved_gamma_r + crtc->gamma_size;
 		crtc->saved_gamma_b = crtc->saved_gamma_g + crtc->gamma_size;
 		if (crtc->saved_gamma_r == NULL) {
 			perror("malloc");
@@ -413,7 +413,7 @@ drm_set_option(drm_state_t *state, const char *key, const char *value, int secti
 }
 
 int
-drm_set_temperature(drm_state_t *state, int temp, float brightness)
+drm_set_temperature(drm_state_t *state, int temp, float brightness, int calibrations)
 {
 	int card_num;
 
@@ -426,8 +426,12 @@ drm_set_temperature(drm_state_t *state, int temp, float brightness)
 				continue;
 
 			/* Fill gamma ramp and apply. */
+			uint16_t *saved_gamma_r = calibrations ? crtc->saved_gamma_r : NULL;
+			uint16_t *saved_gamma_g = calibrations ? crtc->saved_gamma_g : NULL;
+			uint16_t *saved_gamma_b = calibrations ? crtc->saved_gamma_b : NULL;
 			colorramp_fill(crtc->gamma_r, crtc->gamma_g, crtc->gamma_b,
-				       crtc->gamma_size, temp, brightness, crtc->gamma);
+				       crtc->gamma_size, temp, brightness, crtc->gamma,
+				       saved_gamma_r, saved_gamma_g, saved_gamma_b);
 			drmModeCrtcSetGamma(card->fd, crtc->crtc_id, crtc->gamma_size,
 					    crtc->gamma_r, crtc->gamma_g, crtc->gamma_b);
 

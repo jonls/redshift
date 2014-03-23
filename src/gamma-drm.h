@@ -68,7 +68,7 @@ void drm_print_help(FILE *f);
 int drm_set_option(drm_state_t *state, const char *key, const char *value, int section);
 
 void drm_restore(drm_state_t *state);
-int drm_set_temperature(drm_state_t *state, int temp, float brightness);
+int drm_set_temperature(drm_state_t *state, int temp, float brightness, int calibrations);
 
 
 #endif /* ! REDSHIFT_GAMMA_DRM_H */

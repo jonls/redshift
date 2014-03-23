@@ -313,6 +313,7 @@ print_help(const char *program_name)
 		"  -o\t\tOne shot mode (do not continuously adjust"
 		" color temperature)\n"
 		"  -O TEMP\tOne shot manual mode (set color temperature)\n"
+		"  -P\t\tPreserve current calibrations\n"
 		"  -p\t\tPrint mode (only print parameters and exit)\n"
 		"  -x\t\tReset mode (remove adjustment from screen)\n"
 		"  -r\t\tDisable temperature transitions\n"
@@ -667,6 +668,7 @@ main(int argc, char *argv[])
 	const location_provider_t *provider = NULL;
 	char *provider_args = NULL;
 
+	int preserve_calibrations = -1;
 	int transition = -1;
 	program_mode_t mode = PROGRAM_MODE_CONTINUAL;
 	int verbose = 0;
@@ -680,7 +682,7 @@ main(int argc, char *argv[])
 
 	/* Parse command line arguments. */
 	int opt;
-	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:prt:vVx")) != -1) {
+	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:pPrt:vVx")) != -1) {
 		float _gamma[3];
 		switch (opt) {
 		case 'b':
@@ -790,6 +792,9 @@ main(int argc, char *argv[])
 		case 'p':
 			mode = PROGRAM_MODE_PRINT;
 			break;
+		case 'P':
+			preserve_calibrations = 1;
+			break;
 		case 'r':
 			transition = 0;
 			break;
@@ -852,6 +857,11 @@ main(int argc, char *argv[])
 					      "transition") == 0) {
 				if (transition < 0) {
 					transition = !!atoi(setting->value);
+				}
+			} else if (strcasecmp(setting->name,
+					      "preserve-calibrations") == 0) {
+				if (preserve_calibrations < 0) {
+					preserve_calibrations = !!atoi(setting->value);
 				}
 			} else if (strcasecmp(setting->name,
 					      "brightness") == 0) {
@@ -919,6 +929,7 @@ main(int argc, char *argv[])
 	if (isnan(brightness_day)) brightness_day = DEFAULT_BRIGHTNESS;
 	if (isnan(brightness_night)) brightness_night = DEFAULT_BRIGHTNESS;
 	if (transition < 0) transition = 1;
+	if (preserve_calibrations < 0) preserve_calibrations = 0;
 
 	float lat = NAN;
 	float lon = NAN;
@@ -1128,7 +1139,7 @@ main(int argc, char *argv[])
 		}
 
 		/* Adjust temperature */
-		r = method->set_temperature(&state, temp, brightness);
+		r = method->set_temperature(&state, temp, brightness, preserve_calibrations);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
 			method->free(&state);
@@ -1141,7 +1152,7 @@ main(int argc, char *argv[])
 		if (verbose) printf(_("Color temperature: %uK\n"), temp_set);
 
 		/* Adjust temperature */
-		r = method->set_temperature(&state, temp_set, brightness_day);
+		r = method->set_temperature(&state, temp_set, brightness_day, preserve_calibrations);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
 			method->free(&state);
@@ -1153,7 +1164,7 @@ main(int argc, char *argv[])
 	case PROGRAM_MODE_RESET:
 	{
 		/* Reset screen */
-		r = method->set_temperature(&state, NEUTRAL_TEMP, 1.0);
+		r = method->set_temperature(&state, NEUTRAL_TEMP, 1.0, preserve_calibrations);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
 			method->free(&state);
@@ -1334,7 +1345,8 @@ main(int argc, char *argv[])
 			/* Adjust temperature */
 			if (!disabled || short_trans) {
 				r = method->set_temperature(&state,
-							    temp, brightness);
+							    temp, brightness,
+							    preserve_calibrations);
 				if (r < 0) {
 					fputs(_("Temperature adjustment"
 						" failed.\n"), stderr);

@@ -70,6 +70,7 @@ gamma_dummy_set_option(void *state, const char *key, const char *value, int sect
 {
 	(void) state;
 	(void) section;
+
 	if (strcasecmp(key, "gamma") == 0) {
 		float gamma[3];
 		if (parse_gamma_string(value, gamma) < 0) {
@@ -94,10 +95,11 @@ gamma_dummy_set_option(void *state, const char *key, const char *value, int sect
 }
 
 int
-gamma_dummy_set_temperature(void *state, int temp, float brightness)
+gamma_dummy_set_temperature(void *state, int temp, float brightness, int calibrations)
 {
 	(void) state;
 	(void) brightness;
+	(void) calibrations;
 	printf(_("Temperature: %i\n"), temp);
 	return 0;
 }

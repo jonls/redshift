@@ -491,7 +491,7 @@ randr_set_option(randr_state_t *state, const char *key, const char *value, int s
 
 static int
 randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num, int temp,
-			       float brightness)
+			       float brightness, int calibrations)
 {
 	randr_crtc_state_t *crtc = &state->crtcs[crtc_num];
 	xcb_generic_error_t *error;
@@ -499,8 +499,17 @@ randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num, int temp,
 	unsigned int ramp_size = crtc->ramp_size;
 
 	/* Create new gamma ramps */
+	uint16_t *saved_gamma_r = NULL;
+	uint16_t *saved_gamma_g = NULL;
+	uint16_t *saved_gamma_b = NULL;
+	if (calibrations) {
+		saved_gamma_r = &crtc->saved_ramps[0*crtc->ramp_size];
+		saved_gamma_g = &crtc->saved_ramps[1*crtc->ramp_size];
+		saved_gamma_b = &crtc->saved_ramps[2*crtc->ramp_size];
+	}
 	colorramp_fill(crtc->gamma_r, crtc->gamma_g, crtc->gamma_b,
-		       ramp_size, temp, brightness, crtc->gamma);
+		       ramp_size, temp, brightness, crtc->gamma,
+		       saved_gamma_r, saved_gamma_g, saved_gamma_b);
 
 	/* Set new gamma ramps */
 	xcb_void_cookie_t gamma_set_cookie =
@@ -519,13 +528,13 @@ randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num, int temp,
 }
 
 int
-randr_set_temperature(randr_state_t *state, int temp, float brightness)
+randr_set_temperature(randr_state_t *state, int temp, float brightness, int calibrations)
 {
 	int r;
 
 	for (int i = 0; i < state->crtcs_used; i++) {
-		r = randr_set_temperature_for_crtc(state, i,
-						   temp, brightness);
+		r = randr_set_temperature_for_crtc(state, i, temp,
+						   brightness, calibrations);
 		if (r < 0) return -1;
 	}
 

@@ -59,7 +59,8 @@ int vidmode_set_option(vidmode_state_t *state, const char *key,
 		       const char *value, int section);
 
 void vidmode_restore(vidmode_state_t *state);
-int vidmode_set_temperature(vidmode_state_t *state, int temp, float brightness);
+int vidmode_set_temperature(vidmode_state_t *state, int temp, float brightness,
+			    int calibrations);
 
 
 #endif /* ! REDSHIFT_GAMMA_VIDMODE_H */
