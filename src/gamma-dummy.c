@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef ENABLE_NLS
 # include <libintl.h>
@@ -26,6 +27,8 @@
 #else
 # define _(s) s
 #endif
+
+#include "redshift.h"
 
 
 int
@@ -59,15 +62,33 @@ gamma_dummy_print_help(FILE *f)
 }
 
 int
-gamma_dummy_set_option(void *state, const char *key, const char *value)
+gamma_dummy_set_option(void *state, const char *key, const char *value, int section)
 {
-	fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
-	return -1;
+	if (strcasecmp(key, "gamma") == 0) {
+		float gamma[3];
+		if (parse_gamma_string(value, gamma) < 0) {
+			fputs(_("Malformed gamma setting.\n"),
+			      stderr);
+			return -1;
+		}
+		if (gamma[0] < MIN_GAMMA || gamma[0] > MAX_GAMMA ||
+		    gamma[1] < MIN_GAMMA || gamma[1] > MAX_GAMMA ||
+		    gamma[2] < MIN_GAMMA || gamma[2] > MAX_GAMMA) {
+			fprintf(stderr,
+				_("Gamma value must be between %.1f and %.1f.\n"),
+				MIN_GAMMA, MAX_GAMMA);
+			return -1;
+		}
+	} else {
+		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
+		return -1;
+	}
+
+	return 0;
 }
 
 int
-gamma_dummy_set_temperature(void *state, int temp, float brightness,
-			    const float gamma[3])
+gamma_dummy_set_temperature(void *state, int temp, float brightness)
 {
 	printf(_("Temperature: %i\n"), temp);
 	return 0;
