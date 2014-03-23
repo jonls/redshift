@@ -218,6 +218,7 @@ static volatile sig_atomic_t disable = 0;
 static void
 sigexit(int signo)
 {
+	(void) signo;
 	exiting = 1;
 }
 
@@ -225,6 +226,7 @@ sigexit(int signo)
 static void
 sigdisable(int signo)
 {
+	(void) signo;
 	disable = 1;
 }
 
@@ -424,7 +426,7 @@ provider_try_start(const location_provider_t *provider,
 			   and for backwards compatability. We add the proper
 			   keys here before calling set_option(). */
 			if (strcmp(provider->name, "manual") == 0 &&
-			    i < sizeof(manual_keys)/sizeof(manual_keys[0])) {
+			    (unsigned)i < sizeof(manual_keys)/sizeof(manual_keys[0])) {
 				key = manual_keys[i];
 				value = args;
 			} else {
