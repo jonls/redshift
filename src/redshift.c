@@ -860,7 +860,8 @@ main(int argc, char *argv[])
 				}
 			} else if (strcasecmp(setting->name,
 					      "preserve-calibrations") == 0) {
-				if (preserve_calibrations < 0) {
+				if (preserve_calibrations < 0 &&
+				    mode == PROGRAM_MODE_CONTINUAL) {
 					preserve_calibrations = !!atoi(setting->value);
 				}
 			} else if (strcasecmp(setting->name,
