@@ -152,6 +152,20 @@ AS_IF([test "x$enable_geoclue" != xno], [
 AM_CONDITIONAL([ENABLE_GEOCLUE], [test "x$enable_geoclue" = xyes])
 
 
+# Check for interprocess communication
+AC_MSG_CHECKING([whether to enable interprocess communication])
+AC_ARG_ENABLE([ipc], [AC_HELP_STRING([--enable-ipc],
+	[enable interprocess communication])],
+        [enable_ipc=$enableval],[enable_ipc=yes])
+AS_IF([test "x$enable_ipc" != xno], [
+        AC_MSG_RESULT([yes])
+], [
+        AC_MSG_RESULT([no])
+])
+AM_CONDITIONAL([ENABLE_IPC], [test "x$enable_ipc" = xyes])
+
+
+
 # Check for GUI status icon
 AC_MSG_CHECKING([whether to enable GUI status icon])
 AC_ARG_ENABLE([gui], [AC_HELP_STRING([--enable-gui],
@@ -243,6 +257,7 @@ echo "
     Location providers:
     Geoclue:		${enable_geoclue}
 
+    IPC:		${enable_ipc}
     GUI:		${enable_gui}
     Ubuntu icons:	${enable_ubuntu}
     systemd units:	${enable_systemd} ${systemduserunitdir}

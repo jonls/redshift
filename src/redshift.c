@@ -76,6 +76,10 @@
 # include "location-geoclue.h"
 #endif
 
+#ifdef ENABLE_IPC
+# include "service.h"
+#endif
+
 
 /* Union of state data for gamma adjustment methods */
 typedef union {
@@ -261,6 +265,12 @@ static int exiting = 0;
 static int disable = 0;
 
 #endif /* ! HAVE_SIGNAL_H || __WIN32__ */
+
+
+int temp_day = -1;
+int temp_night = -1;
+float brightness_day = NAN;
+float brightness_night = NAN;
 
 
 /* Print which period (night, day or transition) we're currently in. */
@@ -661,11 +671,7 @@ main(int argc, char *argv[])
 	char *config_filepath = NULL;
 
 	int temp_set = -1;
-	int temp_day = -1;
-	int temp_night = -1;
 	float gamma[3] = { NAN, NAN, NAN };
-	float brightness_day = NAN;
-	float brightness_night = NAN;
 
 	const gamma_method_t *method = NULL;
 	char *method_args = NULL;
@@ -1220,6 +1226,9 @@ main(int argc, char *argv[])
 			printf("Status: %s\n", "Enabled");
 		}
 
+#ifdef ENABLE_IPC
+		service_start();
+#endif
 		/* Continuously adjust color temperature */
 		int done = 0;
 		int disabled = 0;
@@ -1254,6 +1263,10 @@ main(int argc, char *argv[])
 					   ongoing transition */
 					short_trans = 0;
 				} else {
+#ifdef ENABLE_IPC
+					service_close();
+#endif
+
 					if (!disabled) {
 						/* Make a short transition
 						   back to 6500K */
