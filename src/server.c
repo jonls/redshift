@@ -170,8 +170,9 @@ server_start(socket_callback_func *callback)
 
 	address.sun_family = AF_UNIX;
 	snprintf(path, MAX_SOCKET_PATH,
-		 "/dev/shm/.redshift-socket-%i-%s", getuid(),
-		 getenv("DISPLAY") ? getenv("DISPLAY") : "");
+		 "/dev/shm/.redshift-socket-%i-%s:%s", getuid(),
+		 getenv("DISPLAY") ? getenv("DISPLAY") : ""),
+		 getenv("REDSHIFT_ID") ? getenv("REDSHIFT_ID") : "");
 	strcpy(address.sun_path, path);
 	unlink(path);
 

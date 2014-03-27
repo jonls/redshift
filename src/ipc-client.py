@@ -6,7 +6,8 @@ import socket
 import threading
 
 display = os.environ["DISPLAY"] if "DISPLAY" in os.environ else ""
-path = "/dev/shm/.redshift-socket-%i-%s" % (os.getuid(), display)
+redshift_id = os.environ["REDSHIFT_ID"] if "REDSHIFT_ID" in os.environ else ""
+path = "/dev/shm/.redshift-socket-%i-%s:%s" % (os.getuid(), display, redshift_id)
 
 socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 socket.connect(path)
