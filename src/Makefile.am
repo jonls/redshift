@@ -22,10 +22,13 @@ EXTRA_redshift_SOURCES = \
 	gamma-randr.c gamma-randr.h \
 	gamma-vidmode.c gamma-vidmode.h \
 	gamma-w32gdi.c gamma-w32gdi.h \
-	location-geoclue.c location-geoclue.h
+	location-geoclue.c location-geoclue.h \
+	server.c server.h \
+	service.c service.h
 
 AM_CFLAGS =
 redshift_LDADD = @LIBINTL@
+redshift_LDFLAGS =
 EXTRA_DIST =
 
 if ENABLE_DRM
@@ -62,4 +65,10 @@ redshift_SOURCES += location-geoclue.c location-geoclue.h
 AM_CFLAGS += $(GEOCLUE_CFLAGS) $(GEOCLUE_LIBS)
 redshift_LDADD += \
 	$(GEOCLUE_LIBS) $(GEOCLUE_CFLAGS)
+endif
+
+if ENABLE_IPC
+redshift_SOURCES += server.c server.h service.c service.h
+AM_CFLAGS += -DENABLE_IPC
+redshift_LDFLAGS += -pthread
 endif
