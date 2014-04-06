@@ -9,14 +9,14 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
 "POT-Creation-Date: 2013-12-12 01:12-0500\n"
 "PO-Revision-Date: 2011-03-24 20:25+0000\n"
-"Last-Translator: Fran Diéguez <frandieguez@ubuntu.com>\n"
+"Last-Translator: Fran Diéguez <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
-"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-25 04:56+0000\n"
-"X-Generator: Launchpad (build 12559)\n"
+"X-Launchpad-Export-Date: 2014-04-06 17:36+0000\n"
+"X-Generator: Launchpad (build 16976)\n"
+"Language: gl\n"
 
 #: src/redshift.c:252
 #, c-format
@@ -52,14 +52,11 @@ msgstr "A temperatura da cor móstrase dacordo á hora do día.\n"
 #. TRANSLATORS: help output 3
 #. no-wrap
 #: src/redshift.c:302
-#, fuzzy
 msgid ""
 "  -h\t\tDisplay this help message\n"
 "  -v\t\tVerbose output\n"
 "  -V\t\tShow program version\n"
 msgstr ""
-"  -h\t\tMostra esta mensaxe de axuda\n"
-"  -v\t\tSaída detallada\n"
 
 #. TRANSLATORS: help output 4
 #. `list' must not be translated
@@ -164,9 +161,9 @@ msgid "Try `-l %s:help' for more information.\n"
 msgstr "Probe `-l %s:help' para máis información.\n"
 
 #: src/redshift.c:439 src/redshift.c:520
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse option `%s'.\n"
-msgstr "Produciuse un fallo ao estabelecer a opción %s\n"
+msgstr ""
 
 #: src/redshift.c:466
 #, c-format
@@ -225,9 +222,9 @@ msgid "Unknown configuration setting `%s'.\n"
 msgstr "Axuste de configuración desconñecido `%s'.\n"
 
 #: src/redshift.c:938
-#, fuzzy, c-format
+#, c-format
 msgid "Trying location provider `%s'...\n"
-msgstr "Probando o seguinte fornecedor...\n"
+msgstr ""
 
 #: src/redshift.c:943
 msgid "Trying next provider...\n"
@@ -273,9 +270,9 @@ msgid "Temperature must be between %uK and %uK.\n"
 msgstr "A temperatura debe estar entre %uK e %uK.\n"
 
 #: src/redshift.c:1031
-#, fuzzy, c-format
+#, c-format
 msgid "Brightness values must be between %.1f and %.1f.\n"
-msgstr "A latitude debe estar entre %.1f e %.1f.\n"
+msgstr ""
 
 #: src/redshift.c:1037
 #, c-format
@@ -442,9 +439,9 @@ msgid "Unable to set gamma ramps.\n"
 msgstr ""
 
 #: src/location-geoclue.c:70
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to obtain master client: %s\n"
-msgstr "Imposíbele ler a hora do sistema.\n"
+msgstr ""
 
 #: src/location-geoclue.c:81
 #, c-format
@@ -452,9 +449,9 @@ msgid "Can't set requirements for master: %s\n"
 msgstr ""
 
 #: src/location-geoclue.c:98
-#, fuzzy, c-format
+#, c-format
 msgid "Started Geoclue provider `%s'.\n"
-msgstr "Probando o seguinte fornecedor...\n"
+msgstr ""
 
 #: src/location-geoclue.c:101
 msgid "Could not find a usable Geoclue provider.\n"
@@ -571,22 +568,13 @@ msgid "Disabled"
 msgstr ""
 
 #: src/redshift-gtk/statusicon.py:253
-#, fuzzy
 msgid "Color temperature"
-msgstr "Temperatura da color: %uK\n"
+msgstr ""
 
 #: src/redshift-gtk/statusicon.py:257
-#, fuzzy
 msgid "Period"
-msgstr "Período: Noite\n"
+msgstr ""
 
 #: src/redshift-gtk/statusicon.py:261
-#, fuzzy
 msgid "Location"
-msgstr "Localización: %f, %f\n"
-
-#~ msgid "Missing value for parameter: `%s'.\n"
-#~ msgstr "Falta o valor para o parámetro: `%s'.\n"
-
-#~ msgid "Too many arguments.\n"
-#~ msgstr "Demasiados argumentos.\n"
+msgstr ""

@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
 "POT-Creation-Date: 2013-12-12 01:12-0500\n"
-"PO-Revision-Date: 2010-10-31 16:00+0000\n"
-"Last-Translator: Michał Kułach <p.irx.07@gmail.com>\n"
+"PO-Revision-Date: 2011-08-02 23:35+0000\n"
+"Last-Translator: Michał Kułach <michalkulach@gmail.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
-"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-11-01 05:18+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2014-04-06 17:36+0000\n"
+"X-Generator: Launchpad (build 16976)\n"
+"Language: pl\n"
 
 #: src/redshift.c:252
 #, c-format
@@ -52,20 +52,19 @@ msgstr "Ustawia temperaturę barwową ekranu, w zależności od pory dnia.\n"
 #. TRANSLATORS: help output 3
 #. no-wrap
 #: src/redshift.c:302
-#, fuzzy
 msgid ""
 "  -h\t\tDisplay this help message\n"
 "  -v\t\tVerbose output\n"
 "  -V\t\tShow program version\n"
 msgstr ""
-"  -h\t\tWyświetla tę wiadomość pomocy\n"
-"  -v\t\tRozszerzone wyjście\n"
+"  -h\t\tWyświetla tę pomoc\n"
+"  -v\t\tUszczegóławia wyjście programu\n"
+"  -V\t\tWypisuje wersję programu\n"
 
 #. TRANSLATORS: help output 4
 #. `list' must not be translated
 #. no-wrap
 #: src/redshift.c:310
-#, fuzzy
 msgid ""
 "  -b DAY:NIGHT\tScreen brightness to apply (between 0.1 and 1.0)\n"
 "  -c FILE\tLoad settings from specified configuration file\n"
@@ -82,18 +81,6 @@ msgid ""
 "  -r\t\tDisable temperature transitions\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
-"  -c PLIK\tZaładuj ustawienia z podanego pliku konfiguracyjnego\n"
-"  -g R:G:B\tDodatkowa korekcja gamma\n"
-"  -l SZER:DŁ\tTwoja obecna lokalizacja\n"
-"  -l DOSTAWCA\tWybierz dostawcę automatycznych aktualizacji lokalizacji\n"
-"  \t\t(Wpisz `list' aby uzyskać listę dostępnych dostawców)\n"
-"  -m METODA\tMetoda używana do ustawienia temperatury barwowej\n"
-"  \t\t(Wpisz `list' aby uzyskać listę dostępnych metod)\n"
-"  -o\t\tTryb jednorazowy (nie dostosowuje temperatury barwowej w sposób "
-"ciągły)\n"
-"  -x\t\tTryb resetowania (usuwa korektę temperatury barwowej)\n"
-"  -r\t\tWyłącz temperatury przejściowe\n"
-"  -t DZIEŃ:NOC\tTemperatura barwowa użyta dla dnia/nocy\n"
 
 #. TRANSLATORS: help output 5
 #: src/redshift.c:330
@@ -176,9 +163,9 @@ msgid "Try `-l %s:help' for more information.\n"
 msgstr "Spróbuj `-l %s:help' aby uzyskać więcej informacji.\n"
 
 #: src/redshift.c:439 src/redshift.c:520
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse option `%s'.\n"
-msgstr "Ustawienie opcji %s nie powiodło się.\n"
+msgstr ""
 
 #: src/redshift.c:466
 #, c-format
@@ -237,9 +224,9 @@ msgid "Unknown configuration setting `%s'.\n"
 msgstr "Nieznane ustawienie konfiguracji `%s'.\n"
 
 #: src/redshift.c:938
-#, fuzzy, c-format
+#, c-format
 msgid "Trying location provider `%s'...\n"
-msgstr "Nieznany dostawca lokalizacji `%s'.\n"
+msgstr ""
 
 #: src/redshift.c:943
 msgid "Trying next provider...\n"
@@ -285,9 +272,9 @@ msgid "Temperature must be between %uK and %uK.\n"
 msgstr "Temperatura barwowa musi być pomiędzy %uK i %uK.\n"
 
 #: src/redshift.c:1031
-#, fuzzy, c-format
+#, c-format
 msgid "Brightness values must be between %.1f and %.1f.\n"
-msgstr "Wartość gammy musi być pomiędzy %.1f i %.1f.\n"
+msgstr ""
 
 #: src/redshift.c:1037
 #, c-format
@@ -335,7 +322,7 @@ msgstr "Temperatura barwowa: %uK\n"
 #: src/redshift.c:1121 src/redshift.c:1329
 #, c-format
 msgid "Brightness: %.2f\n"
-msgstr ""
+msgstr "Jasność: %.2f\n"
 
 #: src/redshift.c:1131 src/redshift.c:1144 src/redshift.c:1156
 #: src/redshift.c:1338
@@ -456,9 +443,9 @@ msgid "Unable to set gamma ramps.\n"
 msgstr "Nie udało się ustawić gamma ramp.\n"
 
 #: src/location-geoclue.c:70
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to obtain master client: %s\n"
-msgstr "Nie udało się odczytać czasu systemowego.\n"
+msgstr ""
 
 #: src/location-geoclue.c:81
 #, c-format
@@ -466,9 +453,9 @@ msgid "Can't set requirements for master: %s\n"
 msgstr ""
 
 #: src/location-geoclue.c:98
-#, fuzzy, c-format
+#, c-format
 msgid "Started Geoclue provider `%s'.\n"
-msgstr "Uruchomienie dostawcy %s nie powiodło się.\n"
+msgstr ""
 
 #: src/location-geoclue.c:101
 msgid "Could not find a usable Geoclue provider.\n"
@@ -479,9 +466,8 @@ msgid "Try setting name and path to specify which to use.\n"
 msgstr ""
 
 #: src/location-geoclue.c:120
-#, fuzzy
 msgid "Use the location as discovered by a Geoclue provider.\n"
-msgstr "Użycie lokalizacji ustawionej w aplecie zegara GNOME.\n"
+msgstr ""
 
 #. TRANSLATORS: Geoclue help output
 #. left column must not be translated
@@ -588,37 +574,13 @@ msgid "Disabled"
 msgstr ""
 
 #: src/redshift-gtk/statusicon.py:253
-#, fuzzy
 msgid "Color temperature"
-msgstr "Temperatura barwowa: %uK\n"
+msgstr ""
 
 #: src/redshift-gtk/statusicon.py:257
-#, fuzzy
 msgid "Period"
-msgstr "Pora: Noc\n"
+msgstr ""
 
 #: src/redshift-gtk/statusicon.py:261
-#, fuzzy
 msgid "Location"
-msgstr "Lokalizacja: %f°, %f°\n"
-
-#~ msgid "Missing value for parameter: `%s'.\n"
-#~ msgstr "Brakuje wartości dla parametru: `%s'.\n"
-
-#~ msgid "Error reading city list: `%s'.\n"
-#~ msgstr "Błąd wczytywania listy miast: `%s'.\n"
-
-#~ msgid "Cannot list GNOME panel applets.\n"
-#~ msgstr "Nie można wyświetlić listy apletów panelu GNOME.\n"
-
-#~ msgid "No clock applet was found.\n"
-#~ msgstr "Nie znaleziono apletu zegara.\n"
-
-#~ msgid "No city selected as current city.\n"
-#~ msgstr "Nie wybrano żadnego miasta jako obecne miasto.\n"
-
-#~ msgid "Location not specified for city.\n"
-#~ msgstr "Nie określono lokalizacji dla miasta.\n"
-
-#~ msgid "Too many arguments.\n"
-#~ msgstr "Zbyt wiele argumentów.\n"
+msgstr ""
