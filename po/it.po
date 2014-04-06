@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
 "POT-Creation-Date: 2013-12-12 01:12-0500\n"
-"PO-Revision-Date: 2010-11-16 20:33+0000\n"
+"PO-Revision-Date: 2012-01-27 15:04+0000\n"
 "Last-Translator: Andrea Amoroso <andrea.amoroso@alice.it>\n"
 "Language-Team: Italian <it@li.org>\n"
-"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-11-17 04:58+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2014-04-06 17:36+0000\n"
+"X-Generator: Launchpad (build 16976)\n"
+"Language: it\n"
 
 #: src/redshift.c:252
 #, c-format
@@ -54,20 +54,19 @@ msgstr ""
 #. TRANSLATORS: help output 3
 #. no-wrap
 #: src/redshift.c:302
-#, fuzzy
 msgid ""
 "  -h\t\tDisplay this help message\n"
 "  -v\t\tVerbose output\n"
 "  -V\t\tShow program version\n"
 msgstr ""
 "  -h\t\tMostra questo messaggio di aiuto\n"
-"  -v\t\tOutput verboso\n"
+"  -v\t\tOutput dettagliato\n"
+"  -V\t\tMostra versione del programma\n"
 
 #. TRANSLATORS: help output 4
 #. `list' must not be translated
 #. no-wrap
 #: src/redshift.c:310
-#, fuzzy
 msgid ""
 "  -b DAY:NIGHT\tScreen brightness to apply (between 0.1 and 1.0)\n"
 "  -c FILE\tLoad settings from specified configuration file\n"
@@ -84,19 +83,6 @@ msgid ""
 "  -r\t\tDisable temperature transitions\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
-"  -c FILE\t Carica impostazioni da uno specifico file di configurazione\n"
-"  -g R:G:B\tCorrezione aggiuntiva da applicare alla gamma\n"
-"  -l LAT:LON\tLa tua posizione attuale\n"
-"  -l PROVIDER\tSeleziona il provider per gli aggiornamenti della "
-"localizzazione automatica\n"
-"  \t\t(Digita 'list' per vedere i provider disponibili)\n"
-"  -m METHOD\tMetodo da usare per impostare per la temperature del colore\n"
-"  \t\t(Digita 'list' per vedere i metodi disponibili)\n"
-"  -o\t\tModalità one shot (non aggiorna continuamente la temperatura del "
-"colore)\n"
-"  -x\t\tModalità reset (rimuovi l'aggiustamento dallo schermo)\n"
-"  -r\t\tDisabilita la transizione della temperatura\n"
-"  -t DAY:NIGHT\tTemperatura del colore da impostare di giorno/notte\n"
 
 #. TRANSLATORS: help output 5
 #: src/redshift.c:330
@@ -140,7 +126,8 @@ msgstr "Metodi di correzione disponibili:\n"
 
 #: src/redshift.c:360
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
-msgstr "Specificare opzioni separate dai due punti con `-m METODO:OPZIONI'.\n"
+msgstr ""
+"Specificare opzioni separate dai due punti con `-m METODO:OPZIONI'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:363
@@ -180,9 +167,9 @@ msgid "Try `-l %s:help' for more information.\n"
 msgstr "Provare `-l %s:help' per maggiori informazioni.\n"
 
 #: src/redshift.c:439 src/redshift.c:520
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse option `%s'.\n"
-msgstr "Impossibile impostare l'opzione %s.\n"
+msgstr ""
 
 #: src/redshift.c:466
 #, c-format
@@ -241,9 +228,9 @@ msgid "Unknown configuration setting `%s'.\n"
 msgstr "Opzioni di configurazione sconosciute '%s'.\n"
 
 #: src/redshift.c:938
-#, fuzzy, c-format
+#, c-format
 msgid "Trying location provider `%s'...\n"
-msgstr "Provider posizionale sconosciuto `%s'.\n"
+msgstr ""
 
 #: src/redshift.c:943
 msgid "Trying next provider...\n"
@@ -289,9 +276,9 @@ msgid "Temperature must be between %uK and %uK.\n"
 msgstr "La temperatura deve essere compresa tra %uK e %uK.\n"
 
 #: src/redshift.c:1031
-#, fuzzy, c-format
+#, c-format
 msgid "Brightness values must be between %.1f and %.1f.\n"
-msgstr "Il valore gamma deve essere compreso tra %.1f e %.1f.\n"
+msgstr ""
 
 #: src/redshift.c:1037
 #, c-format
@@ -339,7 +326,7 @@ msgstr "Temperatura di colore: %uK\n"
 #: src/redshift.c:1121 src/redshift.c:1329
 #, c-format
 msgid "Brightness: %.2f\n"
-msgstr ""
+msgstr "Luminosità: %.2f\n"
 
 #: src/redshift.c:1131 src/redshift.c:1144 src/redshift.c:1156
 #: src/redshift.c:1338
@@ -460,9 +447,9 @@ msgid "Unable to set gamma ramps.\n"
 msgstr "Impossibile impostare la scala dei gamma.\n"
 
 #: src/location-geoclue.c:70
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to obtain master client: %s\n"
-msgstr "Impossibile leggere l'orario di sistema.\n"
+msgstr ""
 
 #: src/location-geoclue.c:81
 #, c-format
@@ -470,9 +457,9 @@ msgid "Can't set requirements for master: %s\n"
 msgstr ""
 
 #: src/location-geoclue.c:98
-#, fuzzy, c-format
+#, c-format
 msgid "Started Geoclue provider `%s'.\n"
-msgstr "Impossibile avviare il provider %s.\n"
+msgstr ""
 
 #: src/location-geoclue.c:101
 msgid "Could not find a usable Geoclue provider.\n"
@@ -483,9 +470,8 @@ msgid "Try setting name and path to specify which to use.\n"
 msgstr ""
 
 #: src/location-geoclue.c:120
-#, fuzzy
 msgid "Use the location as discovered by a Geoclue provider.\n"
-msgstr "Usa la posizione impostata nell'applet Orologio di Gnome.\n"
+msgstr ""
 
 #. TRANSLATORS: Geoclue help output
 #. left column must not be translated
@@ -593,37 +579,13 @@ msgid "Disabled"
 msgstr ""
 
 #: src/redshift-gtk/statusicon.py:253
-#, fuzzy
 msgid "Color temperature"
-msgstr "Temperatura di colore: %uK\n"
+msgstr ""
 
 #: src/redshift-gtk/statusicon.py:257
-#, fuzzy
 msgid "Period"
-msgstr "Periodo: Notte\n"
+msgstr ""
 
 #: src/redshift-gtk/statusicon.py:261
-#, fuzzy
 msgid "Location"
-msgstr "Posizione geografica: %f, %f\n"
-
-#~ msgid "Missing value for parameter: `%s'.\n"
-#~ msgstr "Valore mancante per il parametro: `%s'.\n"
-
-#~ msgid "Error reading city list: `%s'.\n"
-#~ msgstr "Errore nella lettura della lista delle città: `%s'.\n"
-
-#~ msgid "Cannot list GNOME panel applets.\n"
-#~ msgstr "Impossibile listare gli applet GNOME.\n"
-
-#~ msgid "No clock applet was found.\n"
-#~ msgstr "Non è stata trovata nessuna applet orologio.\n"
-
-#~ msgid "No city selected as current city.\n"
-#~ msgstr "Nessuna città selezionata come città corrente.\n"
-
-#~ msgid "Location not specified for city.\n"
-#~ msgstr "Posizione non specificata per la città.\n"
-
-#~ msgid "Too many arguments.\n"
-#~ msgstr "Troppi argomenti.\n"
+msgstr ""

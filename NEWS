@@ -1,4 +1,21 @@
 
+v1.9 (2014-04-06)
+* Use improved color scheme provided by Ingo Thies.
+* Add drm driver which will apply adjustments on linux consoles
+  (Mattias Andrée).
+* Remove deprecated GNOME clock location provider.
+* Set proc title for redshift-gtk (Linux/BSD) (Philipp Hagemeister).
+* Show current temperature, location and status in GUI.
+* Add systemd user unit files so that redshift can be used with
+  systemd as a session manager (Henry de Valence).
+* Use checkbox to toggle Redshift in GUI (Mattias Andrée).
+* Gamma correction is applied after brightness and temperature
+  (Mattias Andrée).
+* Use XDG Base Directory Specification when looking for configuration
+  file (Mattias Andrée).
+* Load config from %LOCALAPPDATA%\redshift.conf on Windows (TingPing).
+* Add RPM spec for Fedora in contrib.
+
 v1.8 (2013-10-21)
 * IMPORTANT: gtk-redshift has changed name to redshift-gtk.
 * Fix crash when starting geoclue provider. (Thanks to Maks Verver)

@@ -9,15 +9,15 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
 "POT-Creation-Date: 2013-12-12 01:12-0500\n"
-"PO-Revision-Date: 2011-05-01 14:20+0000\n"
-"Last-Translator: Ivan Ysh <Unknown>\n"
+"PO-Revision-Date: 2014-03-19 22:07+0000\n"
+"Last-Translator: Jon Lund Steffensen <Unknown>\n"
 "Language-Team: Russian <ru@li.org>\n"
-"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-02 04:48+0000\n"
-"X-Generator: Launchpad (build 12758)\n"
+"X-Launchpad-Export-Date: 2014-04-06 17:36+0000\n"
+"X-Generator: Launchpad (build 16976)\n"
+"Language: ru\n"
 
 #: src/redshift.c:252
 #, c-format
@@ -53,20 +53,19 @@ msgstr "Установка температуры цвета дисплея со
 #. TRANSLATORS: help output 3
 #. no-wrap
 #: src/redshift.c:302
-#, fuzzy
 msgid ""
 "  -h\t\tDisplay this help message\n"
 "  -v\t\tVerbose output\n"
 "  -V\t\tShow program version\n"
 msgstr ""
 "  -h\t\tПоказать это сообщение\n"
-"  -v\t\tПодробный вывод\n"
+"  -v\t\tВывод на экран информации о работе приложения\n"
+"  -V\t\tПоказать версию приложения\n"
 
 #. TRANSLATORS: help output 4
 #. `list' must not be translated
 #. no-wrap
 #: src/redshift.c:310
-#, fuzzy
 msgid ""
 "  -b DAY:NIGHT\tScreen brightness to apply (between 0.1 and 1.0)\n"
 "  -c FILE\tLoad settings from specified configuration file\n"
@@ -83,18 +82,6 @@ msgid ""
 "  -r\t\tDisable temperature transitions\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
-"  -g R:G:B\tПрименить дополнительную коррекцию гаммы\n"
-"  -l LAT:LON\tВаше текущее местоположение\n"
-"  -l PROVIDER\tВыберите источник для автоматической коррекции "
-"местоположения\n"
-"  \t\t(Укажите опцию `list' чтобы увидеть возможные варианты)\n"
-"  -m METHOD\tМетод для коррекции температуры цвета\n"
-"  \t\t(Укажите опцию `list' чтобы увидеть возможные варианты)\n"
-"  -o\t\tОдноразовая коррекция (не выполнять непрерывную коррекцию "
-"температуры)\n"
-"  -x\t\tСброс (отменить выполненную коррекцию цвета)\n"
-"  -r\t\tЗапретить изменение температуры\n"
-"  -t DAY:NIGHT\tТемпература цвета для дня/ночи\n"
 
 #. TRANSLATORS: help output 5
 #: src/redshift.c:330
@@ -175,9 +162,9 @@ msgid "Try `-l %s:help' for more information.\n"
 msgstr "Попробуйте `-l %s:help' для получения дополнительной информации.\n"
 
 #: src/redshift.c:439 src/redshift.c:520
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse option `%s'.\n"
-msgstr "Не удалось установить опцию %s\n"
+msgstr ""
 
 #: src/redshift.c:466
 #, c-format
@@ -220,7 +207,7 @@ msgstr "Неизвестный источник информации `%s'.\n"
 #: src/redshift.c:756 src/redshift.c:876
 #, c-format
 msgid "Unknown adjustment method `%s'.\n"
-msgstr ""
+msgstr "Неизвестный метод настройки `%s'.\n"
 
 #: src/redshift.c:784
 msgid "Malformed temperature argument.\n"
@@ -228,7 +215,7 @@ msgstr "Некорректное значение температуры цве�
 
 #: src/redshift.c:864
 msgid "Malformed gamma setting.\n"
-msgstr ""
+msgstr "Неправильные настройки гаммы.\n"
 
 #: src/redshift.c:899
 #, c-format
@@ -236,9 +223,9 @@ msgid "Unknown configuration setting `%s'.\n"
 msgstr "Неизвестный параметр конфигурации `%s'.\n"
 
 #: src/redshift.c:938
-#, fuzzy, c-format
+#, c-format
 msgid "Trying location provider `%s'...\n"
-msgstr "Неизвестный источник информации `%s'.\n"
+msgstr ""
 
 #: src/redshift.c:943
 msgid "Trying next provider...\n"
@@ -284,9 +271,9 @@ msgid "Temperature must be between %uK and %uK.\n"
 msgstr "Температура должна быть между %uK и %uK.\n"
 
 #: src/redshift.c:1031
-#, fuzzy, c-format
+#, c-format
 msgid "Brightness values must be between %.1f and %.1f.\n"
-msgstr "Возможные значения гаммы: %.1f - %.1f.\n"
+msgstr ""
 
 #: src/redshift.c:1037
 #, c-format
@@ -334,7 +321,7 @@ msgstr "Температура цвета: %uK\n"
 #: src/redshift.c:1121 src/redshift.c:1329
 #, c-format
 msgid "Brightness: %.2f\n"
-msgstr ""
+msgstr "Яркость: %.2f\n"
 
 #: src/redshift.c:1131 src/redshift.c:1144 src/redshift.c:1156
 #: src/redshift.c:1338
@@ -351,7 +338,8 @@ msgstr "Некорректный параметр в конфигурацион�
 
 #: src/config-ini.c:162
 msgid "Assignment outside section in config file.\n"
-msgstr "Некорректное значение за пределами секции в конфигурационном файле.\n"
+msgstr ""
+"Некорректное значение за пределами секции в конфигурационном файле.\n"
 
 #: src/gamma-randr.c:69 src/gamma-randr.c:126 src/gamma-randr.c:165
 #: src/gamma-randr.c:191 src/gamma-randr.c:248 src/gamma-randr.c:340
@@ -455,9 +443,9 @@ msgid "Unable to set gamma ramps.\n"
 msgstr "Невозможно установить параметры корректировки цвета.\n"
 
 #: src/location-geoclue.c:70
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to obtain master client: %s\n"
-msgstr "Невозможно прочесть системное время.\n"
+msgstr ""
 
 #: src/location-geoclue.c:81
 #, c-format
@@ -465,9 +453,9 @@ msgid "Can't set requirements for master: %s\n"
 msgstr ""
 
 #: src/location-geoclue.c:98
-#, fuzzy, c-format
+#, c-format
 msgid "Started Geoclue provider `%s'.\n"
-msgstr "Ошибка обращения к источнику местоположения%s.\n"
+msgstr ""
 
 #: src/location-geoclue.c:101
 msgid "Could not find a usable Geoclue provider.\n"
@@ -478,9 +466,8 @@ msgid "Try setting name and path to specify which to use.\n"
 msgstr ""
 
 #: src/location-geoclue.c:120
-#, fuzzy
 msgid "Use the location as discovered by a Geoclue provider.\n"
-msgstr "Использовать местоположение, указанное в апплете Gnome Clock\n"
+msgstr ""
 
 #. TRANSLATORS: Geoclue help output
 #. left column must not be translated
@@ -587,84 +574,13 @@ msgid "Disabled"
 msgstr ""
 
 #: src/redshift-gtk/statusicon.py:253
-#, fuzzy
 msgid "Color temperature"
-msgstr "Температура цвета: %uK\n"
+msgstr ""
 
 #: src/redshift-gtk/statusicon.py:257
-#, fuzzy
 msgid "Period"
-msgstr "Период: Ночь\n"
+msgstr ""
 
 #: src/redshift-gtk/statusicon.py:261
-#, fuzzy
 msgid "Location"
-msgstr "Местоположение: %f°, %f°\n"
-
-#~ msgid "Missing value for parameter: `%s'.\n"
-#~ msgstr "Отсутствует значение для параметра: `%s'.\n"
-
-#~ msgid "Error reading city list: `%s'.\n"
-#~ msgstr "Ошибка обращения к списку городов: `%s'.\n"
-
-#~ msgid "Cannot list GNOME panel applets.\n"
-#~ msgstr "Не удалось обнаружить апплеты панели GNOME.\n"
-
-#~ msgid "No clock applet was found.\n"
-#~ msgstr "Апплет часов не найден.\n"
-
-#~ msgid "No city selected as current city.\n"
-#~ msgstr "Ни один город не выбран в качестве текущего.\n"
-
-#~ msgid "Location not specified for city.\n"
-#~ msgstr "Для города не указано местоположение.\n"
-
-#~ msgid "Too many arguments.\n"
-#~ msgstr "Слишком много аргументов.\n"
-
-#~ msgid "Unknown method `%s'.\n"
-#~ msgstr "Неизвестный метод «%s».\n"
-
-#~ msgid "Unknown parameter `%c'.\n"
-#~ msgstr "Неизвестный параметр «%c».\n"
-
-#~ msgid "Trying other method...\n"
-#~ msgstr "Пробую другой метод...\n"
-
-#~ msgid "Initialization of RANDR failed.\n"
-#~ msgstr "Инициализация RANDR не удалась.\n"
-
-#~ msgid "Initialization of VidMode failed.\n"
-#~ msgstr "Инициализация VidMode не удалась.\n"
-
-#~ msgid ""
-#~ "  -g R:G:B\tAdditional gamma correction to apply\n"
-#~ "  -l LAT:LON\tYour current location\n"
-#~ "  -m METHOD\tMethod to use to set color temperature (randr or vidmode)\n"
-#~ "  -o\t\tOne shot mode (do not continuously adjust color temperature)\n"
-#~ "  -r\t\tDisable initial temperature transition\n"
-#~ "  -s SCREEN\tX screen to apply adjustments to\n"
-#~ "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
-#~ msgstr ""
-#~ "  -g R:G:B\tДополнительная гамма-коррекция\n"
-#~ "  -l ШИР:ДОЛ\tВаше текущее местоположение\n"
-#~ "  -m МЕТОД\tМетод коррекции (randr или vidmode)\n"
-#~ "  -o\t\tОднократная коррекция\n"
-#~ "  -r\t\tВыключить начальное плавное изменение цветовой температуры\n"
-#~ "  -s ЭКРАН\tЭкран X, к которому применять коррекцию\n"
-#~ "  -t ДЕНЬ:НОЧЬ\tЦветовая температура для ночного/дневного времени\n"
-
-#~ msgid "Try `--help' for more information.\n"
-#~ msgstr "Воспользуйтесь «--help» для получения дополнительной информации.\n"
-
-#~ msgid "Trying other provider...\n"
-#~ msgstr "Использовать другого поставщика...\n"
-
-#~ msgid "Malformed location argument.\n"
-#~ msgstr "Некорректно указано местоположение.\n"
-
-#~ msgid "RANDR method was not enabled at compile time.\n"
-#~ msgstr "Метод RANDR был отключен во время компиляции.\n"
-
-#~ msgid "VidMode method was not enabled at compile time.\n"
-#~ msgstr "Метод VidMode был отключен во время компиляции.\n"
+msgstr ""

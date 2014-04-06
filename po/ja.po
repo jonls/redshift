@@ -1,37 +1,36 @@
-# Hebrew translation for redshift
-# Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
+# Japanese translation for redshift
+# Copyright (c) 2013 Rosetta Contributors and Canonical Ltd 2013
 # This file is distributed under the same license as the redshift package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
-"Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2013-12-12 01:12-0500\n"
-"PO-Revision-Date: 2010-08-18 21:19+0000\n"
-"Last-Translator: Jon Lund Steffensen <Unknown>\n"
-"Language-Team: Hebrew <he@li.org>\n"
+"PO-Revision-Date: 2013-03-21 03:45+0000\n"
+"Last-Translator: Nobuto MURATA <nobuto@nobuto-murata.org>\n"
+"Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2014-04-06 17:36+0000\n"
 "X-Generator: Launchpad (build 16976)\n"
-"Language: he\n"
 
 #: src/redshift.c:252
 #, c-format
 msgid "Period: Night\n"
-msgstr "תקופה: לילה\n"
+msgstr ""
 
 #: src/redshift.c:256
 #, c-format
 msgid "Period: Transition (%.2f%% day)\n"
-msgstr "תקופה: מעבר (%.2f%% יום)‏\n"
+msgstr ""
 
 #: src/redshift.c:258
 #, c-format
 msgid "Period: Daytime\n"
-msgstr "תקופה: יום\n"
+msgstr ""
 
 #. TRANSLATORS: help output 1
 #. LAT is latitude, LON is longitude,
@@ -41,13 +40,13 @@ msgstr "תקופה: יום\n"
 #: src/redshift.c:290
 #, c-format
 msgid "Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
-msgstr "שימוש: %s -l רוחב:אורך -t יום:לילה [אפהשרויות...]‏\n"
+msgstr ""
 
 #. TRANSLATORS: help output 2
 #. no-wrap
 #: src/redshift.c:296
 msgid "Set color temperature of display according to time of day.\n"
-msgstr "הגדר את טמפרטורת צבעי המסך לפי שעת היום.\n"
+msgstr ""
 
 #. TRANSLATORS: help output 3
 #. no-wrap
@@ -121,7 +120,7 @@ msgstr ""
 
 #: src/redshift.c:369
 msgid "Available location providers:\n"
-msgstr "ספקים מקומיים זמינים:\n"
+msgstr ""
 
 #: src/redshift.c:375
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
@@ -176,7 +175,7 @@ msgstr ""
 #: src/redshift.c:545
 #, c-format
 msgid "Failed to start adjustment method %s.\n"
-msgstr "כשל בתחילת שיטת הזזה %s.‏\n"
+msgstr ""
 
 #: src/redshift.c:682
 msgid "Malformed gamma argument.\n"
@@ -184,12 +183,12 @@ msgstr ""
 
 #: src/redshift.c:684 src/redshift.c:786 src/redshift.c:805
 msgid "Try `-h' for more information.\n"
-msgstr "תנסה \"-h\" לקבלת מידע נוסף.\n"
+msgstr ""
 
 #: src/redshift.c:725 src/redshift.c:890
 #, c-format
 msgid "Unknown location provider `%s'.\n"
-msgstr "ספק מיקום \"%s\" לא מוכר.\n"
+msgstr ""
 
 #. TRANSLATORS: This refers to the method
 #. used to adjust colors e.g VidMode
@@ -218,20 +217,20 @@ msgstr ""
 
 #: src/redshift.c:943
 msgid "Trying next provider...\n"
-msgstr "מנסה ספק הבא...\n"
+msgstr ""
 
 #: src/redshift.c:949
 #, c-format
 msgid "Using provider `%s'.\n"
-msgstr "משתמש בספק \"%s\".‏\n"
+msgstr ""
 
 #: src/redshift.c:957
 msgid "No more location providers to try.\n"
-msgstr "אין ספקי מיקום נוספים לנסות.\n"
+msgstr ""
 
 #: src/redshift.c:966
 msgid "Unable to get location from provider.\n"
-msgstr "לא ניתן לקבל מיקום מהספק.\n"
+msgstr ""
 
 #. TRANSLATORS: Append degree symbols if possible.
 #: src/redshift.c:975
@@ -511,7 +510,7 @@ msgstr ""
 
 #: src/redshift-gtk/statusicon.py:81
 msgid "Toggle"
-msgstr ""
+msgstr "切り替え"
 
 #: src/redshift-gtk/statusicon.py:86
 msgid "Suspend for"

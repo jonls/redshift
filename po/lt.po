@@ -11,12 +11,12 @@ msgstr ""
 "PO-Revision-Date: 2010-10-18 01:51+0000\n"
 "Last-Translator: Jon Lund Steffensen <Unknown>\n"
 "Language-Team: Lithuanian <lt@li.org>\n"
-"Language: lt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-10-19 05:04+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2014-04-06 17:36+0000\n"
+"X-Generator: Launchpad (build 16976)\n"
+"Language: lt\n"
 
 #: src/redshift.c:252
 #, c-format
@@ -52,14 +52,11 @@ msgstr "Monitoriaus spalvų temperatūros nustatymas pagal paros laiką.\n"
 #. TRANSLATORS: help output 3
 #. no-wrap
 #: src/redshift.c:302
-#, fuzzy
 msgid ""
 "  -h\t\tDisplay this help message\n"
 "  -v\t\tVerbose output\n"
 "  -V\t\tShow program version\n"
 msgstr ""
-"  -h\t\tParodo šį pagalbos pranešimą\n"
-"  -v\t\tDaugiažodė išvestis\n"
 
 #. TRANSLATORS: help output 4
 #. `list' must not be translated
@@ -160,9 +157,9 @@ msgid "Try `-l %s:help' for more information.\n"
 msgstr "Norėdami gauti daugiau informacijos, mėginkite „-l %s:help“.\n"
 
 #: src/redshift.c:439 src/redshift.c:520
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse option `%s'.\n"
-msgstr "Nepavyko nustatyti parametro %s.\n"
+msgstr ""
 
 #: src/redshift.c:466
 #, c-format
@@ -221,9 +218,9 @@ msgid "Unknown configuration setting `%s'.\n"
 msgstr ""
 
 #: src/redshift.c:938
-#, fuzzy, c-format
+#, c-format
 msgid "Trying location provider `%s'...\n"
-msgstr "Nežinomas vietos tiekėjas „%s“.\n"
+msgstr ""
 
 #: src/redshift.c:943
 msgid "Trying next provider...\n"
@@ -269,9 +266,9 @@ msgid "Temperature must be between %uK and %uK.\n"
 msgstr "Temperatūra turi būti tarp %uK ir %uK.\n"
 
 #: src/redshift.c:1031
-#, fuzzy, c-format
+#, c-format
 msgid "Brightness values must be between %.1f and %.1f.\n"
-msgstr "Gamos reikšmė turi būti tarp %.1f ir %.1f.\n"
+msgstr ""
 
 #: src/redshift.c:1037
 #, c-format
@@ -440,9 +437,9 @@ msgid "Unable to set gamma ramps.\n"
 msgstr "Nepavyko nustatyti gamos lentelių.\n"
 
 #: src/location-geoclue.c:70
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to obtain master client: %s\n"
-msgstr "Nepavyko perskaityti sistemos laiko.\n"
+msgstr ""
 
 #: src/location-geoclue.c:81
 #, c-format
@@ -450,9 +447,9 @@ msgid "Can't set requirements for master: %s\n"
 msgstr ""
 
 #: src/location-geoclue.c:98
-#, fuzzy, c-format
+#, c-format
 msgid "Started Geoclue provider `%s'.\n"
-msgstr "Nepavyko paleisti tiekėjo %s.\n"
+msgstr ""
 
 #: src/location-geoclue.c:101
 msgid "Could not find a usable Geoclue provider.\n"
@@ -463,9 +460,8 @@ msgid "Try setting name and path to specify which to use.\n"
 msgstr ""
 
 #: src/location-geoclue.c:120
-#, fuzzy
 msgid "Use the location as discovered by a Geoclue provider.\n"
-msgstr "Naudoti GNOME laikrodžio programėlėje nustatytą vietą.\n"
+msgstr ""
 
 #. TRANSLATORS: Geoclue help output
 #. left column must not be translated
@@ -572,37 +568,13 @@ msgid "Disabled"
 msgstr ""
 
 #: src/redshift-gtk/statusicon.py:253
-#, fuzzy
 msgid "Color temperature"
-msgstr "Spalvų temperatūra: %uK\n"
+msgstr ""
 
 #: src/redshift-gtk/statusicon.py:257
-#, fuzzy
 msgid "Period"
-msgstr "Periodas: naktis\n"
+msgstr ""
 
 #: src/redshift-gtk/statusicon.py:261
-#, fuzzy
 msgid "Location"
-msgstr "Vieta: %f, %f\n"
-
-#~ msgid "Missing value for parameter: `%s'.\n"
-#~ msgstr "Trūksta reikšmės parametrui: „%s“.\n"
-
-#~ msgid "Error reading city list: `%s'.\n"
-#~ msgstr "Klaida skaitant miestų sąrašą: „%s“.\n"
-
-#~ msgid "Cannot list GNOME panel applets.\n"
-#~ msgstr "Nepavyko išvesti GNOME skydelio elementų sąrašo.\n"
-
-#~ msgid "No clock applet was found.\n"
-#~ msgstr "Nepavyko rasti laikrodžio programėlės.\n"
-
-#~ msgid "No city selected as current city.\n"
-#~ msgstr "Nė vienas miestas nepasirinktas kaip dabartinis miestas.\n"
-
-#~ msgid "Location not specified for city.\n"
-#~ msgstr "Miestui nenurodyta vieta.\n"
-
-#~ msgid "Too many arguments.\n"
-#~ msgstr "Per daug argumentų.\n"
+msgstr ""
