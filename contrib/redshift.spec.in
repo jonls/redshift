@@ -5,7 +5,7 @@ Summary: Adjusts the color temperature of your screen according to time of day
 Group: Applications/System
 License: GPLv3+
 URL: http://jonls.dk/redshift/
-Source0: http://launchpad.net/redshift/trunk/%{version}/+download/%{name}-%{version}.tar.bz2
+Source0: http://launchpad.net/redshift/trunk/%{version}/+download/%{name}-%{version}.tar.xz
 BuildRequires: gettext-devel
 BuildRequires: libX11-devel
 BuildRequires: libXxf86vm-devel
@@ -29,7 +29,7 @@ This package provides the base program.
 %package -n %{name}-gtk
 Summary: GTK integration for Redshift
 Group: Applications/System
-BuildRequires: python3-devel >= 3.3
+BuildRequires: python3-devel >= 3.2
 BuildRequires: desktop-file-utils
 Requires: python3-gobject
 Requires: python3-pyxdg
@@ -80,6 +80,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/applications/redshift-gtk.desktop
 
 %changelog
+* Sun Apr 6 2014 Jon Lund Steffensen <jonlst@gmail.com> - 1.9-1
+- Update to 1.9
+
 * Wed Dec 11 2013 Jon Lund Steffensen <jonlst@gmail.com> - 1.8-1
 - Update to 1.8
 
