@@ -6,28 +6,29 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2013-12-12 01:12-0500\n"
+"Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
+"POT-Creation-Date: 2014-04-06 21:20+0200\n"
 "PO-Revision-Date: 2013-05-04 08:35+0000\n"
 "Last-Translator: Ravi Kumar <Unknown>\n"
 "Language-Team: Hindi <hi@li.org>\n"
+"Language: hi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2014-04-06 17:36+0000\n"
 "X-Generator: Launchpad (build 16976)\n"
 
-#: src/redshift.c:252
+#: src/redshift.c:271
 #, c-format
 msgid "Period: Night\n"
 msgstr "अवधि: रात\n"
 
-#: src/redshift.c:256
+#: src/redshift.c:275
 #, c-format
 msgid "Period: Transition (%.2f%% day)\n"
 msgstr ""
 
-#: src/redshift.c:258
+#: src/redshift.c:277
 #, c-format
 msgid "Period: Daytime\n"
 msgstr "अवधि: दिन\n"
@@ -37,20 +38,20 @@ msgstr "अवधि: दिन\n"
 #. DAY is temperature at daytime,
 #. NIGHT is temperature at night
 #. no-wrap
-#: src/redshift.c:290
+#: src/redshift.c:309
 #, c-format
 msgid "Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
 msgstr ""
 
 #. TRANSLATORS: help output 2
 #. no-wrap
-#: src/redshift.c:296
+#: src/redshift.c:315
 msgid "Set color temperature of display according to time of day.\n"
 msgstr "दिन के समय के अनुसार डिस्प्ले का रंग सेट करे.\n"
 
 #. TRANSLATORS: help output 3
 #. no-wrap
-#: src/redshift.c:302
+#: src/redshift.c:321
 msgid ""
 "  -h\t\tDisplay this help message\n"
 "  -v\t\tVerbose output\n"
@@ -63,7 +64,7 @@ msgstr ""
 #. TRANSLATORS: help output 4
 #. `list' must not be translated
 #. no-wrap
-#: src/redshift.c:310
+#: src/redshift.c:329
 msgid ""
 "  -b DAY:NIGHT\tScreen brightness to apply (between 0.1 and 1.0)\n"
 "  -c FILE\tLoad settings from specified configuration file\n"
@@ -82,7 +83,7 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: help output 5
-#: src/redshift.c:330
+#: src/redshift.c:349
 #, c-format
 msgid ""
 "The neutral temperature is %uK. Using this value will not\n"
@@ -93,7 +94,7 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: help output 6
-#: src/redshift.c:340
+#: src/redshift.c:359
 #, c-format
 msgid ""
 "Default values:\n"
@@ -103,43 +104,43 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: help output 7
-#: src/redshift.c:348
+#: src/redshift.c:367
 #, c-format
 msgid "Please report bugs to <%s>\n"
 msgstr "कृपया बग की रिपोर्ट <%s> काे करे\n"
 
-#: src/redshift.c:354
+#: src/redshift.c:373
 msgid "Available adjustment methods:\n"
 msgstr "उपलब्ध समायोजन तरीके:\n"
 
-#: src/redshift.c:360
+#: src/redshift.c:379
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
 msgstr ""
 
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:363
+#: src/redshift.c:382
 msgid "Try `-m METHOD:help' for help.\n"
 msgstr "मदद के लिए `-m METHOD:help' का प्रयास करें.\n"
 
-#: src/redshift.c:369
+#: src/redshift.c:388
 msgid "Available location providers:\n"
 msgstr ""
 
-#: src/redshift.c:375
+#: src/redshift.c:394
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
 msgstr ""
 
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:378
+#: src/redshift.c:397
 msgid "Try `-l PROVIDER:help' for help.\n"
 msgstr "मदद के लिए `-l PROVIDER:help' का प्रयास करें.\n"
 
-#: src/redshift.c:391 src/redshift.c:483
+#: src/redshift.c:410 src/redshift.c:502
 #, c-format
 msgid "Initialization of %s failed.\n"
 msgstr "%s के प्रारंभिकीकरण असफल.\n"
 
-#: src/redshift.c:406 src/redshift.c:450 src/redshift.c:498 src/redshift.c:530
+#: src/redshift.c:425 src/redshift.c:469 src/redshift.c:517 src/redshift.c:549
 #, c-format
 msgid "Failed to set %s option.\n"
 msgstr "%s विकल्प सेट करने में विफल.\n"
@@ -147,188 +148,250 @@ msgstr "%s विकल्प सेट करने में विफल.\n"
 #. TRANSLATORS: `help' must not be
 #. translated.
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:411 src/redshift.c:453
+#: src/redshift.c:430 src/redshift.c:472
 #, c-format
 msgid "Try `-l %s:help' for more information.\n"
 msgstr "अधिक जानकारी के लिए `-l %s:help'.\n"
 
-#: src/redshift.c:439 src/redshift.c:520
+#: src/redshift.c:458 src/redshift.c:539
 #, c-format
 msgid "Failed to parse option `%s'.\n"
 msgstr ""
 
-#: src/redshift.c:466
+#: src/redshift.c:485
 #, c-format
 msgid "Failed to start provider %s.\n"
 msgstr "प्रदाता %s को आरंभ करने में विफल.\n"
 
 #. TRANSLATORS: `help' must not be
 #. translated.
-#: src/redshift.c:503
+#: src/redshift.c:522
 #, c-format
 msgid "Try `-m %s:help' for more information.\n"
 msgstr ""
 
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:533
+#: src/redshift.c:552
 #, c-format
 msgid "Try -m %s:help' for more information.\n"
 msgstr ""
 
-#: src/redshift.c:545
+#: src/redshift.c:564
 #, c-format
 msgid "Failed to start adjustment method %s.\n"
 msgstr ""
 
-#: src/redshift.c:682
+#: src/redshift.c:701
 msgid "Malformed gamma argument.\n"
 msgstr ""
 
-#: src/redshift.c:684 src/redshift.c:786 src/redshift.c:805
+#: src/redshift.c:703 src/redshift.c:805 src/redshift.c:824
 msgid "Try `-h' for more information.\n"
 msgstr ""
 
-#: src/redshift.c:725 src/redshift.c:890
+#: src/redshift.c:744 src/redshift.c:909
 #, c-format
 msgid "Unknown location provider `%s'.\n"
 msgstr ""
 
 #. TRANSLATORS: This refers to the method
 #. used to adjust colors e.g VidMode
-#: src/redshift.c:756 src/redshift.c:876
+#: src/redshift.c:775 src/redshift.c:895
 #, c-format
 msgid "Unknown adjustment method `%s'.\n"
 msgstr ""
 
-#: src/redshift.c:784
+#: src/redshift.c:803
 msgid "Malformed temperature argument.\n"
 msgstr ""
 
-#: src/redshift.c:864
+#: src/redshift.c:883
 msgid "Malformed gamma setting.\n"
 msgstr ""
 
-#: src/redshift.c:899
+#: src/redshift.c:918
 #, c-format
 msgid "Unknown configuration setting `%s'.\n"
 msgstr ""
 
-#: src/redshift.c:938
+#: src/redshift.c:957
 #, c-format
 msgid "Trying location provider `%s'...\n"
 msgstr ""
 
-#: src/redshift.c:943
+#: src/redshift.c:962
 msgid "Trying next provider...\n"
 msgstr ""
 
-#: src/redshift.c:949
+#: src/redshift.c:968
 #, c-format
 msgid "Using provider `%s'.\n"
 msgstr ""
 
-#: src/redshift.c:957
+#: src/redshift.c:976
 msgid "No more location providers to try.\n"
 msgstr ""
 
-#: src/redshift.c:966
+#: src/redshift.c:985
 msgid "Unable to get location from provider.\n"
 msgstr ""
 
 #. TRANSLATORS: Append degree symbols if possible.
-#: src/redshift.c:975
+#: src/redshift.c:994
 #, c-format
 msgid "Location: %f, %f\n"
 msgstr ""
 
-#: src/redshift.c:976
+#: src/redshift.c:995
 #, c-format
 msgid "Temperatures: %dK at day, %dK at night\n"
 msgstr ""
 
-#: src/redshift.c:984
+#: src/redshift.c:1003
 #, c-format
 msgid "Latitude must be between %.1f and %.1f.\n"
 msgstr ""
 
-#: src/redshift.c:993
+#: src/redshift.c:1012
 #, c-format
 msgid "Longitude must be between %.1f and %.1f.\n"
 msgstr ""
 
-#: src/redshift.c:1001 src/redshift.c:1009 src/redshift.c:1019
+#: src/redshift.c:1020 src/redshift.c:1028 src/redshift.c:1038
 #, c-format
 msgid "Temperature must be between %uK and %uK.\n"
 msgstr ""
 
-#: src/redshift.c:1031
+#: src/redshift.c:1050
 #, c-format
 msgid "Brightness values must be between %.1f and %.1f.\n"
 msgstr ""
 
-#: src/redshift.c:1037
+#: src/redshift.c:1056
 #, c-format
 msgid "Brightness: %.2f:%.2f\n"
 msgstr ""
 
-#: src/redshift.c:1045
+#: src/redshift.c:1064
 #, c-format
 msgid "Gamma value must be between %.1f and %.1f.\n"
 msgstr ""
 
-#: src/redshift.c:1051
+#: src/redshift.c:1070
 #, c-format
 msgid "Gamma: %.3f, %.3f, %.3f\n"
 msgstr ""
 
-#: src/redshift.c:1074
+#: src/redshift.c:1093
 msgid "Trying next method...\n"
 msgstr ""
 
-#: src/redshift.c:1079
+#: src/redshift.c:1098
 #, c-format
 msgid "Using method `%s'.\n"
 msgstr ""
 
-#: src/redshift.c:1086
+#: src/redshift.c:1105
 msgid "No more methods to try.\n"
 msgstr ""
 
-#: src/redshift.c:1100 src/redshift.c:1254
+#: src/redshift.c:1121 src/redshift.c:1275
 msgid "Unable to read system time.\n"
 msgstr ""
 
 #. TRANSLATORS: Append degree symbol if possible.
-#: src/redshift.c:1109
+#: src/redshift.c:1130
 #, c-format
 msgid "Solar elevation: %f\n"
 msgstr ""
 
-#: src/redshift.c:1120 src/redshift.c:1139 src/redshift.c:1328
+#: src/redshift.c:1141 src/redshift.c:1160 src/redshift.c:1349
 #, c-format
 msgid "Color temperature: %uK\n"
 msgstr ""
 
-#: src/redshift.c:1121 src/redshift.c:1329
+#: src/redshift.c:1142 src/redshift.c:1350
 #, c-format
 msgid "Brightness: %.2f\n"
 msgstr ""
 
-#: src/redshift.c:1131 src/redshift.c:1144 src/redshift.c:1156
-#: src/redshift.c:1338
+#: src/redshift.c:1152 src/redshift.c:1165 src/redshift.c:1177
+#: src/redshift.c:1359
 msgid "Temperature adjustment failed.\n"
 msgstr ""
 
-#: src/config-ini.c:115
+#: src/config-ini.c:167
 msgid "Malformed section header in config file.\n"
 msgstr ""
 
-#: src/config-ini.c:151
+#: src/config-ini.c:203
 msgid "Malformed assignment in config file.\n"
 msgstr ""
 
-#: src/config-ini.c:162
+#: src/config-ini.c:214
 msgid "Assignment outside section in config file.\n"
+msgstr ""
+
+#: src/gamma-drm.c:78
+#, c-format
+msgid "Failed to get DRM mode resources\n"
+msgstr ""
+
+#: src/gamma-drm.c:88 src/gamma-randr.c:303
+#, c-format
+msgid "CRTC %d does not exist. "
+msgstr ""
+
+#: src/gamma-drm.c:91 src/gamma-randr.c:306
+#, c-format
+msgid "Valid CRTCs are [0-%d].\n"
+msgstr ""
+
+#: src/gamma-drm.c:94 src/gamma-randr.c:309
+#, c-format
+msgid "Only CRTC 0 exists.\n"
+msgstr ""
+
+#: src/gamma-drm.c:132
+#, c-format
+msgid "CRTC %i lost, skipping\n"
+msgstr ""
+
+#: src/gamma-drm.c:138
+#, c-format
+msgid ""
+"Could not get gamma ramp size for CRTC %i\n"
+"on graphics card %i, ignoring device.\n"
+msgstr ""
+
+#: src/gamma-drm.c:151
+#, c-format
+msgid ""
+"DRM could not read gamma ramps on CRTC %i on\n"
+"graphics card %i, ignoring device.\n"
+msgstr ""
+
+#: src/gamma-drm.c:214
+msgid "Adjust gamma ramps with Direct Rendering Manager.\n"
+msgstr ""
+
+#. TRANSLATORS: DRM help output
+#. left column must not be translated
+#: src/gamma-drm.c:219
+msgid ""
+"  card=N\tGraphics card to apply adjustments to\n"
+"  crtc=N\tCRTC to apply adjustments to\n"
+msgstr ""
+
+#: src/gamma-drm.c:232
+#, c-format
+msgid "CRTC must be a non-negative integer\n"
+msgstr ""
+
+#: src/gamma-drm.c:236 src/gamma-randr.c:289 src/gamma-vidmode.c:141
+#: src/location-geoclue.c:159 src/location-manual.c:96
+#, c-format
+msgid "Unknown method parameter: `%s'.\n"
 msgstr ""
 
 #: src/gamma-randr.c:69 src/gamma-randr.c:126 src/gamma-randr.c:165
@@ -367,27 +430,6 @@ msgstr ""
 msgid ""
 "  screen=N\tX screen to apply adjustments to\n"
 "  crtc=N\tCRTC to apply adjustments to\n"
-msgstr ""
-
-#: src/gamma-randr.c:289 src/gamma-vidmode.c:141 src/location-geoclue.c:159
-#: src/location-manual.c:96
-#, c-format
-msgid "Unknown method parameter: `%s'.\n"
-msgstr ""
-
-#: src/gamma-randr.c:303
-#, c-format
-msgid "CRTC %d does not exist. "
-msgstr ""
-
-#: src/gamma-randr.c:306
-#, c-format
-msgid "Valid CRTCs are [0-%d].\n"
-msgstr ""
-
-#: src/gamma-randr.c:309
-#, c-format
-msgid "Only CRTC 0 exists.\n"
 msgstr ""
 
 #: src/gamma-vidmode.c:48 src/gamma-vidmode.c:69 src/gamma-vidmode.c:78
@@ -511,8 +553,8 @@ msgstr ""
 msgid "Malformed argument.\n"
 msgstr ""
 
-#: src/redshift-gtk/statusicon.py:81
-msgid "Toggle"
+#: src/redshift-gtk/statusicon.py:81 src/redshift-gtk/statusicon.py:251
+msgid "Enabled"
 msgstr ""
 
 #: src/redshift-gtk/statusicon.py:86
@@ -535,7 +577,7 @@ msgstr ""
 msgid "Autostart"
 msgstr ""
 
-#: src/redshift-gtk/statusicon.py:110 src/redshift-gtk/statusicon.py:120
+#: src/redshift-gtk/statusicon.py:110 src/redshift-gtk/statusicon.py:121
 msgid "Info"
 msgstr ""
 
@@ -547,26 +589,22 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: src/redshift-gtk/statusicon.py:248
+#: src/redshift-gtk/statusicon.py:250
 msgid "Status"
 msgstr ""
 
-#: src/redshift-gtk/statusicon.py:249
-msgid "Enabled"
-msgstr ""
-
-#: src/redshift-gtk/statusicon.py:249
+#: src/redshift-gtk/statusicon.py:251
 msgid "Disabled"
 msgstr ""
 
-#: src/redshift-gtk/statusicon.py:253
+#: src/redshift-gtk/statusicon.py:255
 msgid "Color temperature"
 msgstr ""
 
-#: src/redshift-gtk/statusicon.py:257
+#: src/redshift-gtk/statusicon.py:259
 msgid "Period"
 msgstr ""
 
-#: src/redshift-gtk/statusicon.py:261
+#: src/redshift-gtk/statusicon.py:263
 msgid "Location"
 msgstr ""
