@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([redshift], [1.8], [https://github.com/jonls/redshift/issues])
+AC_INIT([redshift], [1.9], [https://github.com/jonls/redshift/issues])
 AC_CONFIG_SRCDIR([src/redshift.c])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([foreign subdir-objects dist-xz])
@@ -28,7 +28,7 @@ PKG_CHECK_MODULES([GEOCLUE], [geoclue], [have_geoclue=yes], [have_geoclue=no])
 AC_CHECK_HEADER([windows.h], [have_windows_h=yes], [have_windows_h=no])
 
 # Check for Python
-AM_PATH_PYTHON([3.3], [have_python=yes], [have_python=no])
+AM_PATH_PYTHON([3.2], [have_python=yes], [have_python=no])
 
 # Check DRM method
 AC_MSG_CHECKING([whether to enable DRM method])
@@ -164,7 +164,7 @@ AS_IF([test "x$enable_gui" != xno], [
 	], [
 		AC_MSG_RESULT([missing dependencies])
 		AS_IF([test "x$enable_gui" = xyes], [
-			AC_MSG_ERROR([GUI status icon script requires Python 2.6])
+			AC_MSG_ERROR([GUI status icon script requires Python])
 		])
 		enable_gui=no
 	])
