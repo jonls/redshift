@@ -22,6 +22,7 @@ EXTRA_redshift_SOURCES = \
 	gamma-randr.c gamma-randr.h \
 	gamma-vidmode.c gamma-vidmode.h \
 	gamma-w32gdi.c gamma-w32gdi.h \
+	fake-w32gdi.c fake-w32gdi.h \
 	location-geoclue.c location-geoclue.h
 
 AM_CFLAGS =
@@ -53,7 +54,11 @@ endif
 
 if ENABLE_WINGDI
 redshift_SOURCES += gamma-w32gdi.c gamma-w32gdi.h
+if FAKE_W32GDI
+redshift_SOURCES += fake-w32gdi.c fake-w32gdi.h
+else
 redshift_LDADD += -lgdi32
+endif
 endif
 
 

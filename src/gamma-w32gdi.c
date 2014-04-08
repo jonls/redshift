@@ -17,14 +17,22 @@
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 
 #ifndef WINVER
 # define WINVER  0x0500
 #endif
-#include <windows.h>
-#include <wingdi.h>
+#ifdef FAKE_W32GDI
+#  include "fake-w32gdi.h"
+#else
+#  include <windows.h>
+#  include <wingdi.h>
+#endif
 
 #ifdef ENABLE_NLS
 # include <libintl.h>
