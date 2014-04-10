@@ -33,15 +33,24 @@ typedef struct {
 	xcb_randr_crtc_t crtc;
 	unsigned int ramp_size;
 	uint16_t *saved_ramps;
+	float gamma[3];
+	uint16_t *gamma_r;
+	uint16_t *gamma_g;
+	uint16_t *gamma_b;
 } randr_crtc_state_t;
 
 typedef struct {
-	xcb_connection_t *conn;
-	xcb_screen_t *screen;
-	int preferred_screen;
 	int screen_num;
 	int crtc_num;
-	unsigned int crtc_count;
+	float gamma[3];
+} randr_selection_t;
+
+typedef struct {
+	xcb_connection_t *conn;
+	int selection_count;
+	randr_selection_t *selections;
+	int preferred_screen;
+	int crtcs_used;
 	randr_crtc_state_t *crtcs;
 } randr_state_t;
 
@@ -51,11 +60,12 @@ int randr_start(randr_state_t *state);
 void randr_free(randr_state_t *state);
 
 void randr_print_help(FILE *f);
-int randr_set_option(randr_state_t *state, const char *key, const char *value);
+int randr_set_option(randr_state_t *state, const char *key,
+		     const char *value, int section);
 
 void randr_restore(randr_state_t *state);
 int randr_set_temperature(randr_state_t *state, int temp, float brightness,
-			  const float gamma[3]);
+			  int calibrations);
 
 
 #endif /* ! REDSHIFT_GAMMA_RANDR_H */
