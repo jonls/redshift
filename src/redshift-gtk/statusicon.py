@@ -79,7 +79,7 @@ class RedshiftStatusIcon(object):
 
         # Add toggle action
         self.toggle_item = Gtk.CheckMenuItem.new_with_label(_('Enabled'))
-        self.toggle_item.connect('activate', self.toggle_cb)
+        self.toggle_item.connect('activate', self.toggle_item_cb)
         self.status_menu.append(self.toggle_item)
 
         # Add suspend menu
@@ -215,6 +215,10 @@ class RedshiftStatusIcon(object):
                                self.status_icon, button, time)
 
     def toggle_cb(self, widget, data=None):
+        self.remove_suspend_timer()
+        self.child_toggle_status()
+
+    def toggle_item_cb(self, widget, data=None):
         # Only toggle if a change from current state was requested
         if self.is_enabled() != widget.get_active():
             self.remove_suspend_timer()
