@@ -57,6 +57,7 @@ location_manual_start(location_manual_state_t *state)
 void
 location_manual_free(location_manual_state_t *state)
 {
+	(void) state;
 }
 
 void
