@@ -30,17 +30,33 @@ typedef struct {
 	int crtc_num;
 	int crtc_id;
 	int gamma_size;
-	uint16_t* r_gamma;
-	uint16_t* g_gamma;
-	uint16_t* b_gamma;
+	uint16_t *saved_gamma_r;
+	uint16_t *saved_gamma_g;
+	uint16_t *saved_gamma_b;
+	float gamma[3];
+	uint16_t *gamma_r;
+	uint16_t *gamma_g;
+	uint16_t *gamma_b;
 } drm_crtc_state_t;
+
+typedef struct {
+	int fd;
+	drmModeRes *res;
+	int crtcs_used;
+	drm_crtc_state_t *crtcs;
+} drm_card_state_t;
 
 typedef struct {
 	int card_num;
 	int crtc_num;
-	int fd;
-	drmModeRes* res;
-	drm_crtc_state_t* crtcs;
+	float gamma[3];
+} drm_selection_t;
+
+typedef struct {
+	int selection_count;
+	drm_selection_t *selections;
+	int card_count;
+	drm_card_state_t *cards;
 } drm_state_t;
 
 
@@ -49,10 +65,10 @@ int drm_start(drm_state_t *state);
 void drm_free(drm_state_t *state);
 
 void drm_print_help(FILE *f);
-int drm_set_option(drm_state_t *state, const char *key, const char *value);
+int drm_set_option(drm_state_t *state, const char *key, const char *value, int section);
 
 void drm_restore(drm_state_t *state);
-int drm_set_temperature(drm_state_t *state, int temp, float brightness, const float gamma[3]);
+int drm_set_temperature(drm_state_t *state, int temp, float brightness);
 
 
 #endif /* ! REDSHIFT_GAMMA_DRM_H */
