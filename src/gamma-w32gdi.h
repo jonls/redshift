@@ -20,8 +20,16 @@
 #ifndef REDSHIFT_GAMMA_W32GDI_H
 #define REDSHIFT_GAMMA_W32GDI_H
 
-#include <windows.h>
-#include <wingdi.h>
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#ifdef FAKE_W32GDI
+#  include "fake-w32gdi.h"
+#else
+#  include <windows.h>
+#  include <wingdi.h>
+#endif
 
 
 typedef struct {
