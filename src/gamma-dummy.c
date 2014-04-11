@@ -31,6 +31,12 @@
 #endif
 
 
+int
+gamma_dummy_auto()
+{
+	return 1;
+}
+
 
 static int
 gamma_dummy_set_ramps(gamma_server_state_t *state, gamma_crtc_state_t *crtc, gamma_ramps_t ramps)

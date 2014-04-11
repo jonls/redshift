@@ -36,6 +36,13 @@
 #include <X11/extensions/xf86vmode.h>
 
 
+int
+vidmode_auto()
+{
+	return getenv("DISPLAY") && *getenv("DISPLAY");
+}
+
+
 static void
 vidmode_free_site(void *data)
 {

@@ -35,6 +35,8 @@
 #endif
 
 
+int w32gdi_auto(void);
+
 int w32gdi_init(gamma_server_state_t *state);
 int w32gdi_start(gamma_server_state_t *state);
 
