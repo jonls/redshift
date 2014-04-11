@@ -67,9 +67,13 @@ location_geoclue_start(location_geoclue_state_t *state)
 		g_object_unref(master);
 
                 if (client == NULL) {
-                        g_printerr(_("Unable to obtain master client: %s\n"),
-				   error->message);
-			g_error_free(error);
+			if (error != NULL) {
+                        	g_printerr(_("Unable to obtain master client: %s\n"),
+					   error->message);
+				g_error_free(error);
+			} else {
+                        	g_printerr(_("Unable to obtain master client\n"));
+			}
                         return -1;
                 }
 
@@ -78,9 +82,13 @@ location_geoclue_start(location_geoclue_state_t *state)
 							    0, FALSE,
 							    GEOCLUE_RESOURCE_NETWORK,
 							    &error)) {
-			g_printerr(_("Can't set requirements for master: %s\n"),
-				   error->message);
-			g_error_free(error);
+			if (error != NULL) {
+				g_printerr(_("Can't set requirements for master: %s\n"),
+					   error->message);
+				g_error_free(error);
+			} else {
+				g_printerr(_("Can't set requirements for master\n"));
+			}
 			g_object_unref(client);
 
 			return -1;
