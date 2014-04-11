@@ -1,4 +1,4 @@
-/* gamma-common.c -- Gamma adjustment method common functionallity source
+/* gamma-common.c -- Gamma adjustment method common functionality source
    This file is part of Redshift.
 
    Redshift is free software: you can redistribute it and/or modify

@@ -1,4 +1,4 @@
-/* gamma-common.h -- Gamma adjustment method common functionallity header
+/* gamma-common.h -- Gamma adjustment method common functionality header
    This file is part of Redshift.
 
    Redshift is free software: you can redistribute it and/or modify
@@ -70,7 +70,6 @@ typedef int gamma_set_ramps_func(gamma_server_state_t *state, gamma_crtc_state_t
 
 typedef int gamma_set_option_func(gamma_server_state_t *state,
 				  const char *key, char *value, ssize_t section);
-
 
 
 
@@ -149,6 +148,9 @@ struct gamma_server_state {
 	gamma_invalid_partition_func *invalid_partition;
 	/* Function that applies a gamma ramp. */
 	gamma_set_ramps_func *set_ramps;
+	/* Function that parses options not unrecognised by the
+	   common infrastructure. Negative on failure, zero on success
+	   and positive if the key was not unrecognised. */
 	gamma_set_option_func *set_option;
 };
 
