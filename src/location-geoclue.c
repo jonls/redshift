@@ -60,6 +60,10 @@ location_geoclue_start(location_geoclue_state_t *state)
 		state->position = geoclue_position_new(state->provider,
 						       state->provider_path);
         } else {
+		if (getenv("DISPLAY") == NULL || *getenv("DISPLAY") == '\0') {
+			/* TODO This (hack) should be removed when GeoClue has been patched. */
+			putenv("DISPLAY=:0");
+		}
                 GError *error = NULL;
                 GeoclueMaster *master = geoclue_master_get_default();
                 GeoclueMasterClient *client = geoclue_master_create_client(master,
