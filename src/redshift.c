@@ -87,7 +87,12 @@
 static const gamma_method_t gamma_methods[] = {
 #ifdef ENABLE_DRM
 	{
-		"drm", 0,
+		"drm",
+#if defined(ENABLE_RANDR) || defined(ENABLE_VIDMODE)
+		0,
+#else
+		1,
+#endif
 		(gamma_method_init_func *)drm_init,
 		(gamma_method_start_func *)drm_start,
 		(gamma_method_print_help_func *)drm_print_help
