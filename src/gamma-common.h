@@ -27,6 +27,13 @@
 
 
 
+enum gamma_selection_hook {
+	before_site,
+	before_partition,
+	before_crtc
+};
+
+
 /* Prototypes for the structures,
    this is required because the structures
    and the function typedef:s depends
@@ -70,6 +77,9 @@ typedef int gamma_set_ramps_func(gamma_server_state_t *state, gamma_crtc_state_t
 
 typedef int gamma_set_option_func(gamma_server_state_t *state,
 				  const char *key, char *value, ssize_t section);
+
+typedef int gamma_parse_selection_func(gamma_server_state_t *state, gamma_site_state_t *site,
+				       gamma_selection_state_t *selection, enum gamma_selection_hook when);
 
 
 
@@ -116,6 +126,12 @@ struct gamma_site_state {
 
 /* CRTC selection state. */
 struct gamma_selection_state {
+	/* Adjustment method implementation specific selection details.
+	   This must not be a numberical value casted a pointer, that
+	   will most probably cause segmentation violation when it is
+	   duplicated. */
+	void *data;
+	size_t sizeof_data;
 	/* The CRTC and partition (e.g. screen) indices. */
 	ssize_t crtc;
 	ssize_t partition;
@@ -152,6 +168,12 @@ struct gamma_server_state {
 	   common infrastructure. Negative on failure, zero on success
 	   and positive if the key was not unrecognised. */
 	gamma_set_option_func *set_option;
+	/* Function that evaluates and resolves adjustment method
+	   implementation specific selection details. It is done
+	   here rather than in `set_option` to ensure that the order
+	   the options are specified does not change the behaviour
+	   or the program. */
+	gamma_parse_selection_func *parse_selection;
 };
 
 
@@ -230,7 +252,7 @@ int parse_gamma_string(char *str, float gamma[3]);
 /* Perform update on relevent selections. */
 #define on_selections(INSTRUCTION)							\
 	if (section >= 0) {								\
-		gamma_selection_state_t *sel = state->selections + section;		\
+		gamma_selection_state_t *sel = state->selections + (size_t)section;	\
 		INSTRUCTION								\
 	} else {									\
 		gamma_selection_state_t *sel = state->selections;			\

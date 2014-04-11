@@ -53,6 +53,7 @@ gamma_init(gamma_server_state_t *state)
 	}
 
 	/* Defaults selection. */
+	state->selections->data = NULL;
 	state->selections->crtc = -1;
 	state->selections->partition = -1;
 	state->selections->site = NULL;
@@ -74,9 +75,12 @@ gamma_free_selections(gamma_server_state_t *state)
 	size_t i;
 
 	/* Free data in each selection. */
-	for (i = 0; i < state->selections_made; i++)
+	for (i = 0; i < state->selections_made; i++) {
+		if (state->selections[i].data != NULL)
+			free(state->selections[i].data);
 		if (state->selections[i].site != NULL)
 			free(state->selections[i].site);
+	}
 	state->selections_made = 0;
 
 	/* Free the selection array. */
@@ -209,7 +213,11 @@ next_partition:
 	}
 	if (site_i == iterator->state->sites_used)
 		return 0;
-	if (iterator->state->sites[site_i].partitions[partition_i].used == 0) {
+	if (iterator->state->sites[site_i].partitions[partition_i].used == 0 ||
+	    iterator->state->sites[site_i].partitions[partition_i].crtcs_used == 0) {
+		/* Because of `state->parse_selection` it is possible to have
+		   a partition that is initalise but not used. This is when
+		   used ≠ 0 but crtcs_used = 0. */
 		partition_i += 1;
 		goto next_partition;
 	}
@@ -262,6 +270,12 @@ gamma_resolve_selections(gamma_server_state_t *state)
 		size_t site_index;
 		size_t partition_start;
 		size_t partition_end;
+
+		/* Run site selection hook. */
+		if (selection->data != NULL) {
+			r = state->parse_selection(state, NULL, selection, before_site);
+			if (r < 0) return r;
+		}
 
 		/* Find matching already opened site. */
 		site_index = gamma_find_site(state, selection->site);
@@ -316,6 +330,12 @@ gamma_resolve_selections(gamma_server_state_t *state)
 			site = state->sites + site_index;
 		}
 
+		/* Run partition selection hook. */
+		if (selection->data != NULL) {
+			r = state->parse_selection(state, site, selection, before_partition);
+			if (r < 0) return r;
+		}
+
 		/* Select partitions. */
 		if (selection->partition >= (ssize_t)(site->partitions_available)) {
 			state->invalid_partition(site, (size_t)(selection->partition));
@@ -335,6 +355,12 @@ gamma_resolve_selections(gamma_server_state_t *state)
 			}
 
 			partition->used = 1;
+		}
+
+		/* Run CRTC selection hook. */
+		if (selection->data != NULL) {
+			r = state->parse_selection(state, site, selection, before_crtc);
+			if (r < 0) return r;
 		}
 
 		/* Open CRTCs. */
@@ -559,6 +585,16 @@ gamma_set_option(gamma_server_state_t *state, const char *key, char *value, ssiz
 				perror("strdup");
 				return -1;
 			}
+		}
+		if (state->selections->data != NULL) {
+			state->selections[section].data = malloc(state->selections->sizeof_data);
+			if (state->selections[section].data == NULL) {
+				perror("malloc");
+				return -1;
+			}
+			memcpy(state->selections[section].data,
+			       state->selections->data,
+			       state->selections->sizeof_data);
 		}
 
 		/* Increment this last, so we do not get segfault on error. */
