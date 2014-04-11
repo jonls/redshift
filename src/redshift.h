@@ -52,10 +52,7 @@ typedef void gamma_method_print_help_func(FILE *f);
 typedef struct {
 	char *name;
 
-	/* If true, this method will be tried if none is explicitly chosen. */
-	int autostart;
-	/* Checked only if autostart is false, if evaluated to true,
-	   this method will be tried if none is explicitly chosen. */
+	/* If evaluated to true, this method will be tried if none is explicitly chosen. */
 	gamma_method_auto_func *autostart_test;
 
 	/* Initialize state. Options can be set between init and start. */

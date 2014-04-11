@@ -84,9 +84,9 @@
 
 
 /* Gamma adjustment method structs */
-#define __method(NAME, METHOD, AUTO)						\
+#define __method(NAME, METHOD)							\
 	{									\
-		NAME, AUTO,							\
+		NAME, 								\
 		(gamma_method_auto_func *)            METHOD##_auto,		\
 		(gamma_method_init_func *)            METHOD##_init,		\
 		(gamma_method_start_func *)           METHOD##_start,		\
@@ -94,22 +94,18 @@
 	}
 static const gamma_method_t gamma_methods[] = {
 #ifdef ENABLE_DRM
-# if defined(ENABLE_RANDR) || defined(ENABLE_VIDMODE)
-	__method("drm", drm, 0),
-# else
-	__method("drm", drm, 1),
-# endif
+	__method("drm", drm),
 #endif
 #ifdef ENABLE_RANDR
-	__method("randr", randr, 1),
+	__method("randr", randr),
 #endif
 #ifdef ENABLE_VIDMODE
-	__method("vidmode", vidmode, 1),
+	__method("vidmode", vidmode),
 #endif
 #ifdef ENABLE_WINGDI
-	__method("wingdi", w32gdi, 1),
+	__method("wingdi", w32gdi),
 #endif
-	__method("dummy", gamma_dummy, 0),
+	__method("dummy", gamma_dummy),
 	{ NULL }
 };
 #undef __method
@@ -1043,7 +1039,7 @@ main(int argc, char *argv[])
 			/* Try all methods, use the first that works. */
 			for (int i = 0; gamma_methods[i].name != NULL; i++) {
 				const gamma_method_t *m = &gamma_methods[i];
-				if (!m->autostart && !m->autostart_test())
+				if (!m->autostart_test())
 					continue;
 
 				r = method_try_start(m, &state, &config_state, NULL,
