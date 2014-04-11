@@ -225,5 +225,17 @@ int gamma_set_option(gamma_server_state_t *state, const char *key, char *value, 
    or three values separated by colon. */
 int parse_gamma_string(char *str, float gamma[3]);
 
+/* Perform update on relevent selections. */
+#define on_selections(INSTRUCTION)							\
+	if (section >= 0) {								\
+		gamma_selection_state_t *sel = state->selections + section;		\
+		INSTRUCTION								\
+	} else {									\
+		gamma_selection_state_t *sel = state->selections;			\
+		gamma_selection_state_t *sel_end = sel + state->selections_made;	\
+		for (; sel != sel_end; sel++)						\
+			INSTRUCTION							\
+	}
+
 
 #endif /* ! REDSHIFT_GAMMA_COMMON_H */

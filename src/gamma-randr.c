@@ -303,12 +303,7 @@ randr_set_option(gamma_server_state_t *state, const char *key, char *value, ssiz
 			fprintf(stderr, _("Screen must be `all' or a non-negative integer.\n"));
 			return -1;
 		}
-		if (section >= 0) {
-			state->selections[section].partition = screen;
-		} else {
-			for (size_t i = 0; i < state->selections_made; i++)
-				state->selections[i].partition = screen;
-		}
+		on_selections({ sel->partition = screen; });
 		return 0;
 	} else if (strcasecmp(key, "crtc") == 0) {
 		ssize_t crtc = strcasecmp(value, "all") ? (ssize_t)atoi(value) : -1;
@@ -317,25 +312,14 @@ randr_set_option(gamma_server_state_t *state, const char *key, char *value, ssiz
 			fprintf(stderr, _("CRTC must be `all' or a non-negative integer.\n"));
 			return -1;
 		}
-		if (section >= 0) {
-			state->selections[section].crtc = crtc;
-		} else {
-			for (size_t i = 0; i < state->selections_made; i++)
-				state->selections[i].crtc = crtc;
-		}
+		on_selections({ sel->crtc = crtc; });
 		return 0;
 	} else if (strcasecmp(key, "display") == 0) {
-		if (section >= 0) {
-			state->selections[section].site = strdup(value);
-			if (state->selections[section].site == NULL)
+		on_selections({
+			sel->site = strdup(value);
+			if (sel->site == NULL)
 				goto strdup_fail;
-		} else {
-			for (size_t i = 0; i < state->selections_made; i++) {
-				state->selections[i].site = strdup(value);
-				if (state->selections[i].site == NULL)
-					goto strdup_fail;
-			}
-		}
+		});
 		return 0;
 	}
 	return 1;

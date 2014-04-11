@@ -180,12 +180,7 @@ w32gdi_set_option(gamma_server_state_t *state, const char *key, char *value, ssi
 			fprintf(stderr, _("CRTC must be `all' or a non-negative integer.\n"));
 			return -1;
 		}
-		if (section >= 0) {
-			state->selections[section].crtc = crtc;
-		} else {
-			for (size_t i = 0; i < state->selections_made; i++)
-				state->selections[i].crtc = crtc;
-		}
+		on_selections({ sel->crtc = crtc; });
 		return 0;
 	}
 	return 1;
