@@ -441,7 +441,8 @@ randr_test_edid(xcb_connection_t *connection, xcb_randr_output_t output, xcb_ato
 
 static int
 randr_parse_selection(gamma_server_state_t *state, gamma_site_state_t *site,
-		      gamma_selection_state_t *selection, enum gamma_selection_hook when) {
+		      gamma_selection_state_t *selection, enum gamma_selection_hook when)
+{
 	(void) state;
 
 	if (when != before_crtc)

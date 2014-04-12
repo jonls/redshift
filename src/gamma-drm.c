@@ -100,6 +100,7 @@ drm_open_partition(gamma_server_state_t *state, gamma_site_state_t *site,
 	data->fd = -1;
 	data->res = NULL;
 	data->index = partition;
+	data->connectors = NULL;
 	partition_out->data = data;
 
 	/* Acquire access to a graphics card. */
@@ -308,9 +309,157 @@ drm_set_option(gamma_server_state_t *state, const char *key, char *value, ssize_
 		}
 		on_selections({ sel->crtc = crtc; });
 		return 0;
+	} else if (strcasecmp(key, "edid") == 0) {
+		uint32_t edid_length = (uint32_t)(strlen(value));
+		if (edid_length == 0 || edid_length % 2 != 0) {
+			fputs(_("Malformated EDID, should be nonempty even-length hexadecimal.\n"), stderr);
+			return -1;
+		}
+		if (edid_length > MAX_EDID_LENGTH * 2) {
+			fprintf(stderr, _("EDID was too long, it may not be longer than %i characters.\n"),
+				MAX_EDID_LENGTH * 2);
+			return -1;
+		}
+#define __range(LOWER, TEST, UPPER)  ((LOWER) <= (TEST) && (TEST) <= (UPPER))
+		/* Convert EDID to raw byte format, from hexadecimal. */
+		unsigned char edid[MAX_EDID_LENGTH];
+		for (uint32_t i = 0; i < edid_length; i += 2) {
+			char a = value[i];
+			char b = value[i + 1];
+			if (__range('0', a, '9'))
+				edid[i >> 1] = (unsigned char)((a & 15) << 4);
+			else if (__range('a', a | ('a' ^ 'A'), 'f')) {
+				a += 9; /* ('a' & 15) == 1*/
+				edid[i >> 1] = (unsigned char)((a & 15) << 4);
+			} else {
+				fputs(_("Malformated EDID, should be nonempty even-length hexadecimal.\n"),
+				      stderr);
+				return -1;
+			}
+			if (__range('0', b, '9'))
+				edid[i >> 1] |= (unsigned char)(b & 15);
+			else if (__range('a', b | ('a' ^ 'A'), 'f')) {
+				b += 9;
+				edid[i >> 1] |= (unsigned char)(b & 15);
+			} else {
+				fputs(_("Malformated EDID, should be nonempty even-length hexadecimal.\n"),
+				      stderr);
+				return -1;
+			}
+		}
+		edid_length /= 2;
+#undef __range
+		on_selections({
+			drm_selection_data_t *sel_data = sel->data;
+			if (sel_data == NULL) {
+				sel_data = sel->data = malloc(sizeof(drm_selection_data_t));
+				if (sel_data == NULL) {
+					perror("malloc");
+					return -1;
+				}
+			}
+			sel_data->edid_length = edid_length;
+			memcpy(sel_data->edid, edid, (size_t)edid_length);
+		});
+		return 0;
 	}
 	return 1;
 }
+
+static int
+drm_parse_selection(gamma_server_state_t *state, gamma_site_state_t *site,
+		    gamma_selection_state_t *selection, enum gamma_selection_hook when)
+{
+	(void) state;
+
+	if (when != before_crtc)
+		return 0;
+
+	drm_selection_data_t *selection_data = selection->data;
+	unsigned char *edid_seeked = selection_data->edid;
+	uint32_t edid_length = selection_data->edid_length;
+
+	gamma_partition_state_t *card_start;
+	gamma_partition_state_t *card_end;
+	if (selection->partition >= 0) {
+		card_start = site->partitions + selection->partition;
+		card_end = card_start + 1;
+	} else {
+		card_start = site->partitions;
+		card_end = card_start + site->partitions_available;
+	}
+
+	for (gamma_partition_state_t *card = card_start; card != card_end; card++) {
+		drm_card_data_t *card_data = card->data;
+		int fd = card_data->fd;
+		drmModeRes *res = card_data->res;
+		ssize_t cconnector_n = res->count_connectors;
+
+		if (card_data->connectors == NULL) {
+			card_data->connectors = malloc((size_t)cconnector_n * sizeof(drmModeConnector *));
+			if (card_data->connectors == NULL) {
+				perror("malloc");
+				return -1;
+			}
+
+			for (ssize_t connector_i = 0; connector_i < cconnector_n; connector_i++) {
+				card_data->connectors[connector_i] =
+					drmModeGetConnector(fd, res->connectors[connector_i]);
+			}
+		}
+
+		for (ssize_t connector_i = 0; connector_i < cconnector_n; connector_i++) {
+			drmModeConnector *connector = card_data->connectors[connector_i];
+
+			if (connector->connection != DRM_MODE_CONNECTED)
+			  /* This is required to avoid segmentation violation,
+			     connector->count_props is non zero just because the
+			     there is not connection, and we cannot reproperaties
+			     when there is no connection .*/
+				continue;
+
+			int prop_n = connector->count_props;
+
+			for (int prop_i = 0; prop_i < prop_n; prop_i++) {
+				drmModePropertyRes *prop;
+				drmModePropertyBlobRes *blob;
+
+				prop = drmModeGetProperty(fd, connector->props[prop_i]);
+				if (!strcmp("EDID", prop->name)) {
+					uint64_t blob_id = connector->prop_values[prop_i];
+					blob = drmModeGetPropertyBlob(fd, (uint32_t)blob_id);
+					uint32_t length = blob->length;
+					unsigned char *value = blob->data;
+
+					if ((length == edid_length) &&
+					    !memcmp(value, edid_seeked, (size_t)length)) {
+						drmModeEncoder* encoder =
+							drmModeGetEncoder(fd, connector->encoder_id);
+						uint32_t crtc_id = encoder->crtc_id;
+						int crtc;
+
+						for (crtc = 0; crtc < res->count_crtcs; crtc++)
+							if (res->crtcs[crtc] == crtc_id)
+								break;
+
+						selection->crtc = crtc;
+						selection->partition = (ssize_t)(card - card_end);
+
+						drmModeFreeEncoder(encoder);
+						drmModeFreeProperty(prop);
+						drmModeFreePropertyBlob(blob);
+						return crtc < res->count_crtcs ? 0 : -1;
+					}
+					drmModeFreePropertyBlob(blob);
+				}
+				drmModeFreeProperty(prop);
+			}
+		}
+	}
+
+	return -1;
+}
+
 
 int
 drm_init(gamma_server_state_t *state)
@@ -319,14 +468,16 @@ drm_init(gamma_server_state_t *state)
 	r = gamma_init(state);
 	if (r != 0) return r;
 
-	state->free_partition_data = drm_free_partition;
-	state->free_crtc_data      = drm_free_crtc;
-	state->open_site           = drm_open_site;
-	state->open_partition      = drm_open_partition;
-	state->open_crtc           = drm_open_crtc;
-	state->invalid_partition   = drm_invalid_partition;
-	state->set_ramps           = drm_set_ramps;
-	state->set_option          = drm_set_option;
+	state->selections->sizeof_data = sizeof(drm_selection_data_t);
+	state->free_partition_data     = drm_free_partition;
+	state->free_crtc_data          = drm_free_crtc;
+	state->open_site               = drm_open_site;
+	state->open_partition          = drm_open_partition;
+	state->open_crtc               = drm_open_crtc;
+	state->invalid_partition       = drm_invalid_partition;
+	state->set_ramps               = drm_set_ramps;
+	state->set_option              = drm_set_option;
+	state->parse_selection         = drm_parse_selection;
 
 	return 0;
 }
@@ -334,7 +485,33 @@ drm_init(gamma_server_state_t *state)
 int
 drm_start(gamma_server_state_t *state)
 {
-	return gamma_resolve_selections(state);
+	int r = gamma_resolve_selections(state);
+
+	/* Release connectors acquried in drm_parse_selection */
+	size_t s, p, c, n;
+	gamma_site_state_t *site;
+	gamma_partition_state_t *partition;
+	drm_card_data_t *card;
+	drmModeConnector** connectors;
+	for (s = 0; s < state->sites_used; s++) {
+		site = state->sites + s;
+		for (p = 0; p < site->partitions_available; p++) {
+			partition = site->partitions + p;
+			if (partition->used == 0)
+				continue;
+			card = partition->data;
+			connectors = card->connectors;
+			if (connectors != NULL) {
+				n = (size_t)(card->res->count_connectors);
+				for (c = 0; c < n; c++)
+					drmModeFreeConnector(connectors[c]);
+				free(connectors);
+				card->connectors = NULL;
+			}
+		}
+	}
+
+	return r;
 }
 
 void
@@ -345,7 +522,8 @@ drm_print_help(FILE *f)
 
 	/* TRANSLATORS: DRM help output
 	   left column must not be translated */
-	fputs(_("  card=N\tGraphics card to apply adjustments to\n"
-		"  crtc=N\tCRTC to apply adjustments to\n"), f);
+	fputs(_("  crtc=N\tCRTC to apply adjustments to\n"
+		"  edid=VALUE\tThe EDID of the monitor to apply adjustments to\n"
+		"  card=N\tGraphics card to apply adjustments to\n"), f);
 	fputs("\n", f);
 }
