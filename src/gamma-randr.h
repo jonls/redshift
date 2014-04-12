@@ -30,10 +30,23 @@
 #include <xcb/randr.h>
 
 
+/* EDID version 1.0 through 1.4 define it as 128 bytes long, but
+   version 2.0 define it as 256 bytes long. However, version 2.0
+   is rare(?) and has been deprecated and replaced by version 1.3. */
+#ifndef MAX_EDID_LENGTH
+#define MAX_EDID_LENGTH 256
+#endif
+
+
 typedef struct {
 	xcb_screen_t screen;
 	xcb_randr_crtc_t *crtcs;
 } randr_screen_data_t;
+
+typedef struct {
+	unsigned char edid[MAX_EDID_LENGTH];
+	int edid_length;
+} randr_selection_data_t;
 
 
 int randr_init(gamma_server_state_t *state);

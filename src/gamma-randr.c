@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <alloca.h>
 
 #ifdef ENABLE_NLS
 # include <libintl.h>
@@ -321,11 +322,262 @@ randr_set_option(gamma_server_state_t *state, const char *key, char *value, ssiz
 				goto strdup_fail;
 		});
 		return 0;
+	} else if (strcasecmp(key, "edid") == 0) {
+		int edid_length = (int)(strlen(value));
+		if (edid_length == 0 || edid_length % 2 != 0) {
+			fputs(_("Malformated EDID, should be nonempty even-length hexadecimal.\n"), stderr);
+			return -1;
+		}
+		if (edid_length > MAX_EDID_LENGTH * 2) {
+			fprintf(stderr, _("EDID was too long, it may not be longer than %i characters.\n"),
+				MAX_EDID_LENGTH * 2);
+			return -1;
+		}
+#define __range(LOWER, TEST, UPPER)  ((LOWER) <= (TEST) && (TEST) <= (UPPER))
+		/* Convert EDID to raw byte format, from hexadecimal. */
+		unsigned char edid[MAX_EDID_LENGTH];
+		for (int i = 0; i < edid_length; i += 2) {
+			char a = value[i];
+			char b = value[i + 1];
+			if (__range('0', a, '9'))
+				edid[i >> 1] = (unsigned char)((a & 15) << 4);
+			else if (__range('a', a | ('a' ^ 'A'), 'f')) {
+				a += 9; /* ('a' & 15) == 1*/
+				edid[i >> 1] = (unsigned char)((a & 15) << 4);
+			} else {
+				fputs(_("Malformated EDID, should be nonempty even-length hexadecimal.\n"),
+				      stderr);
+				return -1;
+			}
+			if (__range('0', b, '9'))
+				edid[i >> 1] |= (unsigned char)(b & 15);
+			else if (__range('a', b | ('a' ^ 'A'), 'f')) {
+				b += 9;
+				edid[i >> 1] |= (unsigned char)(b & 15);
+			} else {
+				fputs(_("Malformated EDID, should be nonempty even-length hexadecimal.\n"),
+				      stderr);
+				return -1;
+			}
+		}
+		edid_length /= 2;
+#undef __range
+		on_selections({
+			randr_selection_data_t *sel_data = sel->data;
+			if (sel_data == NULL) {
+				sel_data = sel->data = malloc(sizeof(randr_selection_data_t));
+				if (sel_data == NULL) {
+					perror("malloc");
+					return -1;
+				}
+			}
+			sel_data->edid_length = edid_length;
+			memcpy(sel_data->edid, edid, (size_t)edid_length);
+		});
+		return 0;
 	}
 	return 1;
 
 strdup_fail:
 	perror("strdup");
+	return -1;
+}
+
+
+static int
+randr_test_edid(xcb_connection_t *connection, xcb_randr_output_t output, xcb_atom_t atom,
+		gamma_selection_state_t *selection, xcb_randr_crtc_t *crtcs, int crtc_n,
+		xcb_randr_crtc_t output_crtc)
+{
+	randr_selection_data_t *selection_data = selection->data;
+	unsigned char *edid_seeked = selection_data->edid;
+	int edid_length = selection_data->edid_length;
+
+	xcb_randr_get_output_property_cookie_t val_cookie;
+	xcb_randr_get_output_property_reply_t *val_reply;
+	xcb_generic_error_t *error;
+
+	/* Acquire the property's value, we know that it is either 128 bytes
+	   or 256 bytes long, and we have a limit defined in gamma-randr.h. */
+	val_cookie = xcb_randr_get_output_property(connection, output, atom,
+						   XCB_GET_PROPERTY_TYPE_ANY,
+						   0, MAX_EDID_LENGTH, 0, 0);
+
+	val_reply = xcb_randr_get_output_property_reply(connection, val_cookie, &error);
+
+	if (error) {
+		fprintf(stderr, _("`%s' returned error %d\n"),
+			"RANDR Get Output Property", error->error_code);
+		return -1;
+	}
+
+	unsigned char* value = xcb_randr_get_output_property_data(val_reply);
+	int length = xcb_randr_get_output_property_data_length(val_reply);
+
+	/* Compare found EDID against seeked EDID. */
+	if ((length == edid_length) && !memcmp(value, edid_seeked, (size_t)length)) {
+		int crtc;
+
+		/* Find CRTC index. */
+		for (crtc = 0; crtc < crtc_n; crtc++)
+			if (crtcs[crtc] == output_crtc)
+				break;
+
+		free(val_reply);
+
+		if (crtc < crtc_n) {
+			selection->crtc = (ssize_t)crtc;
+		} else {
+			fputs(_("Monitor is not connected."), stderr);
+			return -1;
+		}
+
+		return 0;
+	}
+	free(val_reply);
+	return 1;
+}
+
+
+static int
+randr_parse_selection(gamma_server_state_t *state, gamma_site_state_t *site,
+		      gamma_selection_state_t *selection, enum gamma_selection_hook when) {
+	(void) state;
+
+	if (when != before_crtc)
+		return 0;
+
+	xcb_connection_t *connection = site->data;
+
+	/* Select screen to look in, only one will be used. */
+	gamma_partition_state_t *screen_start;
+	gamma_partition_state_t *screen_end;
+	if (selection->partition >= 0) {
+		screen_start = site->partitions + selection->partition;
+		screen_end = screen_start + 1;
+	} else {
+		screen_start = site->partitions;
+		screen_end = screen_start + site->partitions_available;
+	}
+
+	for (gamma_partition_state_t *screen = screen_start; screen != screen_end; screen++) {
+		if (screen->used == 0)
+			continue;
+		randr_screen_data_t *screen_data = screen->data;
+
+		xcb_randr_get_screen_resources_current_cookie_t res_cookie;
+		xcb_randr_get_screen_resources_current_reply_t *res_reply;
+		xcb_generic_error_t *error;
+
+		/* Acquire information about the screen. */
+		res_cookie = xcb_randr_get_screen_resources_current(connection, screen_data->screen.root);
+		res_reply = xcb_randr_get_screen_resources_current_reply(connection, res_cookie, &error);
+
+		if (error) {
+			fprintf(stderr, _("`%s' returned error %d\n"),
+				"RANDR Get Screen Resources Current",
+				error->error_code);
+			return -1;
+		}
+
+		xcb_randr_output_t *outputs = xcb_randr_get_screen_resources_current_outputs(res_reply);
+
+		/* Iterate over all connectors to and look for one that is connected
+		   and whose monitor is has matching extended display identification data. */
+		for (int output_i = 0; output_i < res_reply->num_outputs; output_i++) {
+			xcb_randr_get_output_info_cookie_t out_cookie;
+			xcb_randr_get_output_info_reply_t *out_reply;
+
+			/* Acquire information about the output. */
+			out_cookie = xcb_randr_get_output_info(connection, outputs[output_i],
+							       res_reply->config_timestamp);
+			out_reply = xcb_randr_get_output_info_reply(connection, out_cookie, &error);
+
+			if (error) {
+				fprintf(stderr, _("`%s' returned error %d\n"),
+					"RANDR Get Output Information",
+					error->error_code);
+				free(res_reply);
+				return -1;
+			}
+
+			/* Check connection status. */
+			if (out_reply->connection != XCB_RANDR_CONNECTION_CONNECTED) {
+				free(out_reply);
+				continue;
+			}
+
+			xcb_randr_list_output_properties_cookie_t prop_cookie;
+			xcb_randr_list_output_properties_reply_t *prop_reply;
+			xcb_atom_t *atoms;
+			xcb_atom_t *atoms_end;
+
+			/* Acquire a list of all properties of the output. */
+			prop_cookie = xcb_randr_list_output_properties(connection, outputs[output_i]);
+			prop_reply = xcb_randr_list_output_properties_reply(connection, prop_cookie, &error);
+
+			if (error) {
+				fprintf(stderr, _("`%s' returned error %d\n"),
+					"RANDR List Output Properties",
+					error->error_code);
+				free(out_reply);
+				free(res_reply);
+				return -1;
+			}
+
+			atoms = xcb_randr_list_output_properties_atoms(prop_reply);
+			atoms_end = atoms + xcb_randr_list_output_properties_atoms_length(prop_reply);
+
+			for (; atoms != atoms_end; atoms++) {
+				xcb_get_atom_name_cookie_t atom_name_cookie;
+				xcb_get_atom_name_reply_t *atom_name_reply;
+				char *atom_name;
+				char *atom_name_;
+				int atom_name_len;
+
+				/* Aqcuire the atom name. */
+				atom_name_cookie = xcb_get_atom_name(connection, *atoms);
+				atom_name_reply = xcb_get_atom_name_reply(connection, atom_name_cookie, &error);
+
+				if (error) {
+					fprintf(stderr, _("`%s' returned error %d\n"),
+						"RANDR Get Atom Name",
+						error->error_code);
+					free(prop_reply);
+					free(out_reply);
+					free(res_reply);
+					return -1;
+				}
+
+				atom_name_ = xcb_get_atom_name_name(atom_name_reply);
+				atom_name_len = xcb_get_atom_name_name_length(atom_name_reply);
+
+				/* NUL-terminate the atom name. */
+				atom_name = alloca(((size_t)atom_name_len + 1) * sizeof(char));
+				memcpy(atom_name, atom_name_, (size_t)atom_name_len * sizeof(char));
+				*(atom_name + atom_name_len) = 0;
+
+				if (!strcmp(atom_name, "EDID")) {
+					int r = randr_test_edid(connection, outputs[output_i], *atoms,
+								selection, screen_data->crtcs,
+								(int)(screen->crtcs_available),
+								out_reply->crtc);
+					if (r != 1) {
+						free(atom_name_reply);
+						free(prop_reply);
+						free(out_reply);
+						free(res_reply);
+						selection->partition = (ssize_t)(screen - screen_start);
+						return r;
+					}
+				}
+				free(atom_name_reply);
+			}
+			free(prop_reply);
+			free(out_reply);
+		}
+		free(res_reply);
+	}
 	return -1;
 }
 
@@ -337,16 +589,18 @@ randr_init(gamma_server_state_t *state)
 	r = gamma_init(state);
 	if (r != 0) return r;
 
-	state->selections->site    = getenv("DISPLAY") ? strdup(getenv("DISPLAY")) : NULL;
-	state->free_site_data      = randr_free_site;
-	state->free_partition_data = randr_free_partition;
-	state->free_crtc_data      = randr_free_crtc;
-	state->open_site           = randr_open_site;
-	state->open_partition      = randr_open_partition;
-	state->open_crtc           = randr_open_crtc;
-	state->invalid_partition   = randr_invalid_partition;
-	state->set_ramps           = randr_set_ramps;
-	state->set_option          = randr_set_option;
+	state->selections->sizeof_data = sizeof(randr_selection_data_t);
+	state->selections->site        = getenv("DISPLAY") ? strdup(getenv("DISPLAY")) : NULL;
+	state->free_site_data          = randr_free_site;
+	state->free_partition_data     = randr_free_partition;
+	state->free_crtc_data          = randr_free_crtc;
+	state->open_site               = randr_open_site;
+	state->open_partition          = randr_open_partition;
+	state->open_crtc               = randr_open_crtc;
+	state->invalid_partition       = randr_invalid_partition;
+	state->set_ramps               = randr_set_ramps;
+	state->set_option              = randr_set_option;
+	state->parse_selection         = randr_parse_selection;
 
 	if (getenv("DISPLAY") != NULL && state->selections->site == NULL) {
 		perror("strdup");
@@ -371,6 +625,7 @@ randr_print_help(FILE *f)
 	/* TRANSLATORS: RANDR help output
 	   left column must not be translated */
 	fputs(_("  crtc=N\tCRTC to apply adjustments to\n"
+		"  edid=VALUE\tThe EDID of the monitor to apply adjustments to\n"
 		"  screen=N\tX screen to apply adjustments to\n"
 		"  display=NAME\tX display to apply adjustments to\n"), f);
 	fputs("\n", f);
