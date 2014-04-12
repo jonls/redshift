@@ -132,6 +132,8 @@ struct gamma_selection_state {
 	   duplicated. */
 	void *data;
 	size_t sizeof_data;
+	/* Whether the selection can be ignored if it fails. */
+	int ignorable;
 	/* The CRTC and partition (e.g. screen) indices. */
 	ssize_t crtc;
 	ssize_t partition;
