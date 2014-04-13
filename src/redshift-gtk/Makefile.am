@@ -8,7 +8,7 @@ nodist_redshift_gtk_PYTHON = \
 	defs.py
 redshift_gtkdir = $(pythondir)/redshift_gtk
 
-dist_bin_SCRIPTS = redshift-gtk
+bin_SCRIPTS = redshift-gtk
 endif
 
 EXTRA_DIST = defs.py.in redshift-gtk.in
