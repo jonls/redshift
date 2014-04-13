@@ -59,7 +59,10 @@ endif
 
 if ENABLE_GEOCLUE
 redshift_SOURCES += location-geoclue.c location-geoclue.h
-AM_CFLAGS += $(GEOCLUE_CFLAGS) $(GEOCLUE_LIBS)
+AM_CFLAGS += \
+	$(GEOCLUE_CFLAGS) $(GEOCLUE_LIBS) \
+	$(GLIB_CFLAGS) $(GLIB_LIBS)
 redshift_LDADD += \
 	$(GEOCLUE_LIBS) $(GEOCLUE_CFLAGS)
+	$(GLIB_LIBS) $(GLIB_CFLAGS)
 endif

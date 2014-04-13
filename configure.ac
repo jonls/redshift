@@ -17,12 +17,14 @@ AM_GNU_GETTEXT_VERSION([0.17])
 AM_GNU_GETTEXT([external])
 
 PKG_CHECK_MODULES([DRM], [libdrm], [have_drm=yes], [have_drm=no])
+
 PKG_CHECK_MODULES([X11], [x11], [have_x11=yes], [have_x11=no])
 PKG_CHECK_MODULES([XF86VM], [xxf86vm], [have_xf86vm=yes], [have_xf86vm=no])
 PKG_CHECK_MODULES([XCB], [xcb], [have_xcb=yes], [have_xcb=no])
 PKG_CHECK_MODULES([XCB_RANDR], [xcb-randr],
 	[have_xcb_randr=yes], [have_xcb_randr=no])
 
+PKG_CHECK_MODULES([GLIB], [glib-2.0 gobject-2.0], [have_glib=yes], [have_glib=no])
 PKG_CHECK_MODULES([GEOCLUE], [geoclue], [have_geoclue=yes], [have_geoclue=no])
 
 AC_CHECK_HEADER([windows.h], [have_windows_h=yes], [have_windows_h=no])
@@ -133,7 +135,7 @@ AC_ARG_ENABLE([geoclue], [AC_HELP_STRING([--enable-geoclue],
 	[enable Geoclue location provider])],
 	[enable_geoclue=$enableval],[enable_geoclue=maybe])
 AS_IF([test "x$enable_geoclue" != xno], [
-	AS_IF([test "x$have_geoclue" = xyes], [
+	AS_IF([test "x$have_geoclue" = xyes -a "x$have_glib" = xyes], [
 		AC_DEFINE([ENABLE_GEOCLUE], 1,
 			[Define to 1 to enable Geoclue location provider])
 		AC_MSG_RESULT([yes])
