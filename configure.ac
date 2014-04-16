@@ -29,6 +29,8 @@ PKG_CHECK_MODULES([GEOCLUE], [geoclue], [have_geoclue=yes], [have_geoclue=no])
 
 AC_CHECK_HEADER([windows.h], [have_windows_h=yes], [have_windows_h=no])
 
+AC_CHECK_HEADER([CoreGraphics/CGDirectDisplay.h], [have_cgdirectdisplay_h=yes], [have_cgdirectdisplay_h=no])
+
 # Check for Python
 AM_PATH_PYTHON([3.2], [have_python=yes], [have_python=no])
 
@@ -103,6 +105,45 @@ AS_IF([test "x$enable_vidmode" != xno], [
 	enable_vidmode=no
 ])
 AM_CONDITIONAL([ENABLE_VIDMODE], [test "x$enable_vidmode" = xyes])
+
+# Check for fake Quartz
+AC_MSG_CHECKING([whether to enable fake Quartz])
+AC_ARG_ENABLE([fakequartz], [AC_HELP_STRING([--enable-fakequartz],
+	[enable fake Quartz])],
+        [enable_fakequartz=$enableval],[enable_fakequartz=no])
+AS_IF([test "x$enable_fakequartz" != xno], [
+	AC_DEFINE([FAKE_QUARTZ], 1,
+		[Define to 1 to enable Quartz method])
+        AC_MSG_RESULT([yes])
+	enable_fakequartz=yes
+], [
+        AC_MSG_RESULT([no])
+])
+AM_CONDITIONAL([FAKE_QUARTZ], [test "x$enable_fakequartz" != xno])
+
+# Check Quartz method
+AC_MSG_CHECKING([whether to enable Quartz method])
+AC_ARG_ENABLE([quartz], [AC_HELP_STRING([--enable-quartz],
+	[enable Quartz method])],
+	[enable_quartz=$enableval],[enable_quartz=maybe])
+AS_IF([test "x$enable_quartz" != xno], [
+	AS_IF([test $have_cgdirectdisplay_h = yes -o $enable_fakequartz = yes], [
+		AC_DEFINE([ENABLE_QUARTZ], 1,
+			[Define to 1 to enable Quartz method])
+		AC_MSG_RESULT([yes])
+		enable_quartz=yes
+	], [
+		AC_MSG_RESULT([missing dependencies])
+		AS_IF([test "x$enable_quartz" = xyes], [
+			AC_MSG_ERROR([missing CoreGraphics framework for Quartz method])
+		])
+		enable_quartz=no
+	])
+], [
+	AC_MSG_RESULT([no])
+	enable_quartz=no
+])
+AM_CONDITIONAL([ENABLE_QUARTZ], [test "x$enable_quartz" = xyes])
 
 # Check for fake Windows GDI
 AC_MSG_CHECKING([whether to enable fake WinGDI])
@@ -256,6 +297,7 @@ echo "
     RANDR:		${enable_randr}
     VidMode:		${enable_vidmode}
     WinGDI:		${enable_wingdi}
+    Quartz:		${enable_quartz}
 
     Location providers:
     Geoclue:		${enable_geoclue}

@@ -24,12 +24,15 @@ EXTRA_redshift_SOURCES = \
 	gamma-drm.c gamma-drm.h \
 	gamma-randr.c gamma-randr.h \
 	gamma-vidmode.c gamma-vidmode.h \
+	gamma-quartz.c gamma-quartz.h \
+	fake-quartz.c fake-quartz.h \
 	gamma-w32gdi.c gamma-w32gdi.h \
 	fake-w32gdi.c fake-w32gdi.h \
 	location-geoclue.c location-geoclue.h
 
 AM_CFLAGS =
 redshift_LDADD = @LIBINTL@
+redshift_LDFLAGS =
 EXTRA_DIST =
 
 if ENABLE_DRM
@@ -53,6 +56,15 @@ AM_CFLAGS += $(X11_CFLAGS) $(XF86VM_CFLAGS)
 redshift_LDADD += \
 	$(X11_LIBS) $(X11_CFLAGS) \
 	$(XF86VM_LIBS) $(XF86VM_CFLAGS)
+endif
+
+if ENABLE_QUARTZ
+redshift_SOURCES += gamma-quartz.c gamma-quartz.h
+if FAKE_QUARTZ
+redshift_SOURCES += fake-quartz.c fake-quartz.h
+else
+redshift_LDFLAGS += -framework CoreGraphics
+endif
 endif
 
 if ENABLE_WINGDI
