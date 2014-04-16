@@ -175,7 +175,8 @@ CGGetOnlineDisplayList(uint32_t max_size, CGDirectDisplayID *displays_out, uint3
 		}
 	}
 
-	for (uint32_t i = 0; (i < max_size) && (i < crtc_count); i++)
+	uint32_t i;
+	for (i = 0; (i < max_size) && (i < crtc_count); i++)
 		*(displays_out + i) = (CGDirectDisplayID)i;
 
 	*count_out = i;
@@ -253,6 +254,7 @@ CGGetDisplayTransferByTable(CGDirectDisplayID display, uint32_t gamma_size, CGGa
 		blue[i]  = (CGGammaValue)(b_int[i]) / UINT16_MAX;
 	}
 
+	free(gamma_reply);
 	return kCGErrorSuccess;
 }
 
