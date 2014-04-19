@@ -289,7 +289,7 @@ class RedshiftStatusIcon(object):
         if key == 'Status':
             self.change_status(value != 'Disabled')
         elif key == 'Color temperature':
-            self.change_temperature(int(value[:-1], 10))
+            self.change_temperature(int(value.rstrip('K'), 10))
         elif key == 'Period':
             self.change_period(value)
         elif key == 'Location':
@@ -308,9 +308,10 @@ class RedshiftStatusIcon(object):
         ib.buf += os.read(f, 256).decode('utf-8')
 
         # Split input at line break
-        sep = True
-        while sep != '':
+        while True:
             first, sep, last = ib.buf.partition('\n')
+            if sep == '':
+                break
             ib.buf = last
             ib.lines.append(first)
             if stdout:
