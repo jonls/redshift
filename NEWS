@@ -1,4 +1,13 @@
 
+v1.9.1 (2014-04-20)
+* Fix: Do not distribute redshift-gtk, only redshift-gtk.in.
+* Fix: Geoclue support should pull in Glib as dependency.
+* geoclue: Fix segfault when error is NULL (Mattias Andrée).
+* geoclue: Set DISPLAY=:0 to work around issue when outside X
+  (Mattias Andrée).
+* redshift-gtk: Fix crash when toggling state using the status icon.
+* redshift-gtk: Fix line splitting logic (Maks Verver).
+
 v1.9 (2014-04-06)
 * Use improved color scheme provided by Ingo Thies.
 * Add drm driver which will apply adjustments on linux consoles
@@ -15,6 +24,8 @@ v1.9 (2014-04-06)
   file (Mattias Andrée).
 * Load config from %LOCALAPPDATA%\redshift.conf on Windows (TingPing).
 * Add RPM spec for Fedora in contrib.
+* redshift-gtk has been ported to Python3 and new PyGObject bindings
+  for Python.
 
 v1.8 (2013-10-21)
 * IMPORTANT: gtk-redshift has changed name to redshift-gtk.
