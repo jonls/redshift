@@ -85,10 +85,22 @@ open_config_file(const char *filepath)
 
 		if (f == NULL) {
 			struct passwd *pwd = getpwuid(getuid());
-			char *home = pwd->pw_dir;
-			snprintf(cp, sizeof(cp),
-				 "%s/.config/redshift.conf", home);
-			f = fopen(cp, "r");
+			if (pwd != NULL) {
+				char *home = pwd->pw_dir;
+				if ((home != NULL) && (*home != '\0')) {
+					snprintf(cp, sizeof(cp),
+						 "%s/.config/redshift.conf", home);
+					f = fopen(cp, "r");
+				} else {
+					fprintf(stderr, _("It appear as if you are homeless."));
+				}
+			} else if (errno) {
+				perror("getpwuid");
+			} else {
+				fprintf(stderr, _("It appear as if you do not exist."));
+				/* errno can either be set to any number of error codes,
+				   or be zero if the user does not have a passwd entry. */
+			}
 		}
 
 		if (f == NULL && (env = getenv("XDG_CONFIG_DIRS")) != NULL &&
