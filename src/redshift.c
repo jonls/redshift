@@ -1043,7 +1043,7 @@ main(int argc, char *argv[])
 		}
 	
 		/* Solar elevations */
-		if (transition_low > transition_high) {
+		if (transition_low >= transition_high) {
 		        fprintf(stderr,
 		                _("Solar elevation must be higher at night than at daytime.\n"),
 		                MIN_LAT, MAX_LAT);
