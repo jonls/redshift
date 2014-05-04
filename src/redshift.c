@@ -1351,7 +1351,7 @@ main(int argc, char *argv[])
 			}
 
 			/* Adjust temperature */
-			if (!disabled || short_trans) {
+			if (!disabled || (short_trans && !short_trans_done)) {
 				r = method->set_temperature(&state,
 							    temp, brightness,
 							    gamma);
