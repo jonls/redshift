@@ -44,7 +44,7 @@ You can now run the python script. Example:
 $ $HOME/redshift/root/bin/redshift-gtk
 ```
 
-Depenencies
+Dependencies
 -----------
 
 * autotools, gettext
