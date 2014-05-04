@@ -262,16 +262,20 @@ static int disable = 0;
 
 #endif /* ! HAVE_SIGNAL_H || __WIN32__ */
 
+/* Transition settings. */
+static float transition_low = TRANSITION_LOW;
+static float transition_high = TRANSITION_HIGH;
+
 
 /* Print which period (night, day or transition) we're currently in. */
 static void
 print_period(double elevation)
 {
-	if (elevation < TRANSITION_LOW) {
+	if (elevation < transition_low) {
 		printf(_("Period: Night\n"));
-	} else if (elevation < TRANSITION_HIGH) {
-		float a = (TRANSITION_LOW - elevation) /
-			(TRANSITION_LOW - TRANSITION_HIGH);
+	} else if (elevation < transition_high) {
+		float a = (transition_low - elevation) /
+			(transition_low - transition_high);
 		printf(_("Period: Transition (%.2f%% day)\n"), a*100);
 	} else {
 		printf(_("Period: Daytime\n"));
@@ -283,12 +287,12 @@ static float
 calculate_interpolated_value(double elevation, float day, float night)
 {
 	float result;
-	if (elevation < TRANSITION_LOW) {
+	if (elevation < transition_low) {
 		result = night;
-	} else if (elevation < TRANSITION_HIGH) {
+	} else if (elevation < transition_high) {
 		/* Transition period: interpolate */
-		float a = (TRANSITION_LOW - elevation) /
-			(TRANSITION_LOW - TRANSITION_HIGH);
+		float a = (transition_low - elevation) /
+			(transition_low - transition_high);
 		result = (1.0-a)*night + a*day;
 	} else {
 		result = day;
@@ -875,6 +879,12 @@ main(int argc, char *argv[])
 				if (isnan(brightness_night)) {
 					brightness_night = atof(setting->value);
 				}
+			} else if (strcasecmp(setting->name,
+					      "elevation-high") == 0) {
+				transition_high = atof(setting->value);
+			} else if (strcasecmp(setting->name,
+					      "elevation-low") == 0) {
+				transition_low = atof(setting->value);
 			} else if (strcasecmp(setting->name, "gamma") == 0) {
 				if (isnan(gamma[0])) {
 					r = parse_gamma_string(setting->value,
@@ -994,8 +1004,11 @@ main(int argc, char *argv[])
 		        printf(_("Location: %f, %f\n"), lat, lon);
 			printf(_("Temperatures: %dK at day, %dK at night\n"),
 			       temp_day, temp_night);
+		        /* TRANSLATORS: Append degree symbols if possible. */
+			printf(_("Solar elevations: day above %.1f, night below %.1f\n"),
+			       transition_high, transition_low);
 		}
-	
+
 		/* Latitude */
 		if (lat < MIN_LAT || lat > MAX_LAT) {
 		        /* TRANSLATORS: Append degree symbols if possible. */
@@ -1028,6 +1041,14 @@ main(int argc, char *argv[])
 				_("Temperature must be between %uK and %uK.\n"),
 				MIN_TEMP, MAX_TEMP);
 			exit(EXIT_FAILURE);
+		}
+
+		/* Solar elevations */
+		if (transition_high < transition_low) {
+		        fprintf(stderr,
+		                _("High transition elevation cannot be lower than"
+				  " the low transition elevation.\n"));
+		        exit(EXIT_FAILURE);
 		}
 	}
 
