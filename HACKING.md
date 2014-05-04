@@ -44,14 +44,17 @@ You can now run the python script. Example:
 $ $HOME/redshift/root/bin/redshift-gtk
 ```
 
-Depenencies
------------
+Dependencies
+------------
 
 * autotools, gettext
 * libdrm (Optional, for DRM support)
 * libxcb, libxcb-randr (Optional, for RandR support)
 * libX11, libXxf86vm (Optional, for VidMode support)
 * geoclue (Optional, for geoclue support)
+
+* python3, pygobject, pyxdg (Optional, for GUI support)
+* appindicator (Optional, for Ubuntu-style GUI status icon)
 
 
 Creating a new release
