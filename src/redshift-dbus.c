@@ -28,6 +28,9 @@
 #include <glib/gprintf.h>
 #include <gio/gio.h>
 
+#include <geoclue/geoclue-master.h>
+#include <geoclue/geoclue-position.h>
+
 #include "redshift.h"
 #include "solar.h"
 
@@ -415,6 +418,31 @@ screen_update_restart(GDBusConnection *conn)
 }
 
 
+/* Emit signal that current position changed */
+static void
+emit_position_changed(GDBusConnection *conn, gdouble lat, gdouble lon)
+{
+	/* Signal change in location */
+	GError *local_error = NULL;
+	GVariantBuilder *builder = g_variant_builder_new(G_VARIANT_TYPE_ARRAY);
+	g_variant_builder_add(builder, "{sv}", "CurrentLatitude",
+			      g_variant_new_double(lat));
+	g_variant_builder_add(builder, "{sv}", "CurrentLongitude",
+			      g_variant_new_double(lon));
+
+	g_dbus_connection_emit_signal(conn, NULL,
+				      REDSHIFT_OBJECT_PATH,
+				      "org.freedesktop.DBus.Properties",
+				      "PropertiesChanged",
+				      g_variant_new("(sa{sv}as)",
+						    REDSHIFT_INTERFACE_NAME,
+						    builder,
+						    NULL),
+				      &local_error);
+	g_assert_no_error(local_error);
+}
+
+
 /* DBus service functions */
 static void
 handle_method_call(GDBusConnection *conn,
@@ -616,21 +644,7 @@ handle_method_call(GDBusConnection *conn,
 		forced_lon = lon;
 
 		/* Signal change in location */
-		GError *local_error = NULL;
-		GVariantBuilder *builder = g_variant_builder_new(G_VARIANT_TYPE_ARRAY);
-		g_variant_builder_add(builder, "{sv}", "CurrentLatitude", g_variant_new_double(forced_lat));
-		g_variant_builder_add(builder, "{sv}", "CurrentLongitude", g_variant_new_double(forced_lon));
-
-		g_dbus_connection_emit_signal(conn, NULL,
-					      obj_path,
-					      "org.freedesktop.DBus.Properties",
-					      "PropertiesChanged",
-					      g_variant_new("(sa{sv}as)",
-							    interface_name,
-							    builder,
-							    NULL),
-					      &local_error);
-		g_assert_no_error(local_error);
+		emit_position_changed(conn, forced_lat, forced_lon);
 
 		screen_update_restart(conn);
 
@@ -656,21 +670,7 @@ handle_method_call(GDBusConnection *conn,
 			screen_update_restart(conn);
 
 			/* Signal change in location */
-			GError *local_error = NULL;
-			GVariantBuilder *builder = g_variant_builder_new(G_VARIANT_TYPE_ARRAY);
-			g_variant_builder_add(builder, "{sv}", "CurrentLatitude", g_variant_new_double(latitude));
-			g_variant_builder_add(builder, "{sv}", "CurrentLongitude", g_variant_new_double(longitude));
-
-			g_dbus_connection_emit_signal(conn, NULL,
-						      obj_path,
-						      "org.freedesktop.DBus.Properties",
-						      "PropertiesChanged",
-						      g_variant_new("(sa{sv}as)",
-								    interface_name,
-								    builder,
-								    NULL),
-						      &local_error);
-			g_assert_no_error(local_error);
+			emit_position_changed(conn, latitude, longitude);
 		}
 
 		g_dbus_method_invocation_return_value(invocation, NULL);
@@ -698,11 +698,11 @@ handle_get_property(GDBusConnection *conn,
 	} else if (g_strcmp0(prop_name, "Temperature") == 0) {
 		ret = g_variant_new_uint32(temperature);
 	} else if (g_strcmp0(prop_name, "CurrentLatitude") == 0) {
-		double lat = latitude;
+		gdouble lat = latitude;
 		if (forced_location_cookie != 0) lat = forced_lat;
 		ret = g_variant_new_double(lat);
 	} else if (g_strcmp0(prop_name, "CurrentLongitude") == 0) {
-		double lon = longitude;
+		gdouble lon = longitude;
 		if (forced_location_cookie != 0) lon = forced_lon;
 		ret = g_variant_new_double(lon);
 	} else if (g_strcmp0(prop_name, "TemperatureDay") == 0) {
@@ -787,6 +787,129 @@ handle_set_property(GDBusConnection *conn,
 	return *error == NULL;
 }
 
+
+/* Handle position change callbacks */
+static void
+geoclue_position_changed_cb(GeocluePosition *position,
+			    GeocluePositionFields fields,
+			    int timestamp,
+			    gdouble lat,
+			    gdouble lon,
+			    gdouble altitude,
+			    GeoclueAccuracy *accuracy,
+			    gpointer data)
+{
+	GDBusConnection *conn = G_DBUS_CONNECTION(data);
+
+	if (fields & GEOCLUE_POSITION_FIELDS_LATITUDE &&
+	    fields & GEOCLUE_POSITION_FIELDS_LONGITUDE) {
+		g_print("Position changed: %f, %f\n", lat, lon);
+
+		latitude = lat;
+		longitude = lon;
+
+		if (forced_location_cookie == 0) {
+			emit_position_changed(conn, latitude, longitude);
+		}
+	} else {
+		g_print("Latitude and longitude not available.\n");
+	}
+}
+
+/* Initialize Geoclue position provider */
+static int
+init_geoclue_position(GDBusConnection *conn)
+{
+	/* Obtain Geoclue Client */
+	GError *error = NULL;
+	GeoclueMaster *master = geoclue_master_get_default();
+	GeoclueMasterClient *client =
+		geoclue_master_create_client(master, NULL, &error);
+	g_object_unref(master);
+
+	if (client == NULL) {
+		if (error != NULL) {
+			g_printerr("Unable to obtain master client: %s\n",
+				   error->message);
+			g_error_free(error);
+		} else {
+			g_printerr("Unable to obtain master client\n");
+		}
+		return -1;
+	}
+
+	/* Set requirements for client */
+	gboolean ret =
+		geoclue_master_client_set_requirements(client,
+						       GEOCLUE_ACCURACY_LEVEL_REGION,
+						       0, FALSE,
+						       GEOCLUE_RESOURCE_NETWORK,
+						       &error);
+	if (!ret) {
+		if (error != NULL) {
+			g_printerr("Can't set requirements for master: %s\n",
+				   error->message);
+			g_error_free(error);
+		} else {
+			g_printerr("Can't set requirements for master\n");
+		}
+		g_object_unref(client);
+
+		return -1;
+	}
+
+	/* Obtain the actual position provider */
+	GeocluePosition *position =
+		geoclue_master_client_create_position(client, NULL);
+	g_object_unref(client);
+
+	gchar *provider_name = NULL;
+
+	ret = geoclue_provider_get_provider_info(GEOCLUE_PROVIDER(position),
+						 &provider_name, NULL, NULL);
+	if (ret) {
+		g_print("Started Geoclue provider: %s.\n", provider_name);
+		g_free(provider_name);
+	} else {
+		g_printerr("Could not find a usable Geoclue provider.\n");
+		return -1;
+	}
+
+	/* Obtain position */
+	GeocluePositionFields fields;
+	gdouble lat, lon;
+
+	fields = geoclue_position_get_position(position, NULL,
+					       &lat, &lon, NULL,
+					       NULL, &error);
+	if (error) {
+		g_printerr("Could not get location: %s.\n", error->message);
+		g_error_free(error);
+		return -1;
+	}
+
+	if (fields & GEOCLUE_POSITION_FIELDS_LATITUDE &&
+	    fields & GEOCLUE_POSITION_FIELDS_LONGITUDE) {
+		g_print("According to the geoclue provider"
+			" we're at: %.2f, %.2f\n",
+			lat, lon);
+		latitude = lat;
+		longitude = lon;
+
+		if (forced_location_cookie == 0) {
+			emit_position_changed(conn, latitude, longitude);
+		}
+	} else {
+		g_warning("Provider does not have a valid location available.");
+	}
+
+	g_signal_connect(G_OBJECT(position), "position-changed",
+			 G_CALLBACK(geoclue_position_changed_cb), conn);
+
+	return 0;
+}
+
+
 static const GDBusInterfaceVTable interface_vtable = {
 	handle_method_call,
 	handle_get_property,
@@ -808,6 +931,10 @@ on_bus_acquired(GDBusConnection *conn,
 								  NULL, NULL,
 								  NULL);
 	g_assert(registration_id > 0);
+
+	/* Initialize Geoclue position provider */
+	int r = init_geoclue_position(conn);
+	if (r < 0) exit(EXIT_FAILURE);
 
 	/* Start screen update timer */
 	screen_update_restart(conn);

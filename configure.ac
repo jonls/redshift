@@ -160,7 +160,7 @@ AC_ARG_ENABLE([dbus], [AC_HELP_STRING([--enable-dbus],
 	[enable DBus service])],
 	[enable_dbus=$enableval],[enable_dbus=no])
 AS_IF([test "x$enable_dbus" != xno], [
-	AS_IF([test "x$have_glib" = xyes -a "x$have_gio" = xyes], [
+	AS_IF([test "x$have_glib" = xyes -a "x$have_gio" = xyes -a "x$have_geoclue" = xyes], [
 		AC_DEFINE([ENABLE_DBUS], 1,
 			[Define to 1 to enable DBus service])
 		AC_MSG_RESULT([yes])

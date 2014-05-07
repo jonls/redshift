@@ -41,8 +41,12 @@ EXTRA_DIST =
 
 redshift_CFLAGS =
 redshift_LDADD = @LIBINTL@
-redshift_dbus_CFLAGS = $(GLIB_CFLAGS) $(GDBUS_CFLAGS)
-redshift_dbus_LDADD = $(GLIB_LIBS) $(GDBUS_LIBS)
+redshift_dbus_CFLAGS = \
+	$(GLIB_CFLAGS) $(GDBUS_CFLAGS) \
+	$(GEOCLUE_CFLAGS)
+redshift_dbus_LDADD = \
+	$(GLIB_LIBS) $(GDBUS_LIBS) \
+	$(GEOCLUE_LIBS)
 
 
 if ENABLE_DRM
@@ -90,10 +94,5 @@ if ENABLE_GEOCLUE
 redshift_SOURCES += location-geoclue.c location-geoclue.h
 redshift_CFLAGS += $(GEOCLUE_CFLAGS)
 redshift_LDADD += \
-	$(GEOCLUE_LIBS) $(GEOCLUE_CFLAGS)
-
-redshift_dbus_SOURCES += location-geoclue.c location-geoclue.h
-redshift_dbus_CFLAGS += $(GEOCLUE_CFLAGS)
-redshift_dbus_LDADD += \
 	$(GEOCLUE_LIBS) $(GEOCLUE_CFLAGS)
 endif
