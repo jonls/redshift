@@ -92,12 +92,14 @@ open_config_file(const char *filepath)
 						 "%s/.config/redshift.conf", home);
 					f = fopen(cp, "r");
 				} else {
-					fprintf(stderr, _("It appear as if you are homeless."));
+					fprintf(stderr, _("Cannot determine your home directory, "
+							  "it is from the system's user table.\n"));
 				}
 			} else if (errno) {
 				perror("getpwuid");
 			} else {
-				fprintf(stderr, _("It appear as if you do not exist."));
+				fprintf(stderr, _("Cannot determine your home directory, "
+						  "your user ID is missing from the system's user table.\n"));
 				/* errno can either be set to any number of error codes,
 				   or be zero if the user does not have a passwd entry. */
 			}
