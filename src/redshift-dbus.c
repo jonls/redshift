@@ -874,7 +874,11 @@ init_geoclue_position(GDBusConnection *conn)
 		return -1;
 	}
 
-	/* Obtain position */
+	/* Try to obtain the position. At this point we have successfully
+	   acquired a position provider so even if we cannot get a
+	   position, we can wait and see if a position becomes avaiable later.
+	   This is often the case if redshift-dbus is started right when the
+	   user logs in. */
 	GeocluePositionFields fields;
 	gdouble lat, lon;
 
@@ -884,7 +888,6 @@ init_geoclue_position(GDBusConnection *conn)
 	if (error) {
 		g_printerr("Could not get location: %s.\n", error->message);
 		g_error_free(error);
-		return -1;
 	}
 
 	if (fields & GEOCLUE_POSITION_FIELDS_LATITUDE &&
