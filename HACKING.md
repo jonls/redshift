@@ -71,6 +71,7 @@ note are:
 * Avoid Yoda conditions; they make the logic unnecessarily hard to comprehend.
 * Avoid multiline if-statements without braces; either use a single line or add
   the braces.
+* Use only C-style comments (`/* */`).
 
 
 Creating a pull request
@@ -133,6 +134,31 @@ Also remember to check before release that
 
 * Windows build is ok
 * Build files for distributions are updated
+
+
+Build Fedora RPMs
+-----------------
+
+Run `make dist-xz` and copy the `.tar.xz` file to `~/rpmbuild/SOURCES`. Then run
+
+``` shell
+$ rpmbuild -ba contrib/redshift.spec
+```
+
+If successful this will place RPMs in `~/rpmbuild/RPMS`.
+
+
+Cross-compile for Windows
+-------------------------
+
+Install MinGW and run `configure` using the following command line. Use
+`i686-w64-migw32` as host for 32-bit builds.
+
+``` shell
+$ ./configure --disable-drm --disable-randr --disable-vidmode --enable-wingdi \
+  --disable-geoclue --disable-gui --disable-ubuntu \
+  --host=x86_64-w64-mingw32
+```
 
 
 Notes
