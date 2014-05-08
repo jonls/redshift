@@ -25,6 +25,7 @@
 #include <stdio.h>
 
 #include <glib.h>
+#include <glib/gstdio.h>
 #include <gio/gio.h>
 
 #include <geoclue/geoclue-master.h>
@@ -787,6 +788,75 @@ handle_set_property(GDBusConnection *conn,
 }
 
 
+/* Save position state */
+static void
+save_position_state()
+{
+	/* Probably should use STATE directory when that
+	   is standardized in the XDG spec. */
+	char *path = g_build_filename(g_get_user_data_dir(),
+				      "redshift", "position", NULL);
+	FILE *state = g_fopen(path, "w");
+	if (state == NULL) {
+		/* Try to create the directory */
+		char *path_dir = g_path_get_dirname(path);
+		gint r = g_mkdir_with_parents(path_dir, S_IRWXU);
+		if (r == 0) {
+			state = g_fopen(path, "w");
+		}
+		g_free(path_dir);
+	}
+
+	g_free(path);
+
+	if (state != NULL) {
+		g_fprintf(state, "%f\n%f\n", latitude, longitude);
+		fclose(state);
+	}
+}
+
+/* Restore saved position state */
+static void
+restore_position_state()
+{
+	/* Probably should use STATE directory when that
+	   is standardized in the XDG spec. */
+	char *path = g_build_filename(g_get_user_data_dir(),
+				      "redshift", "position", NULL);
+	FILE *state = g_fopen(path, "r");
+
+	g_free(path);
+
+	if (state != NULL) {
+		gdouble lat, lon;
+		char buffer[64];
+
+		/* Read latitude */
+		char *r = fgets(buffer, sizeof(buffer), state);
+		if (r == NULL) {
+			fclose(state);
+			return;
+		}
+
+		lat = g_ascii_strtod(buffer, NULL);
+
+		/* Read longitude */
+		r = fgets(buffer, sizeof(buffer), state);
+		if (r == NULL) {
+			fclose(state);
+			return;
+		}
+
+		lon = g_ascii_strtod(buffer, NULL);
+
+		g_print("Restored position %.2f, %.2f\n", lat, lon);
+
+		latitude = lat;
+		longitude = lon;
+	}
+}
+
+
 /* Handle position change callbacks */
 static void
 geoclue_position_changed_cb(GeocluePosition *position,
@@ -806,6 +876,7 @@ geoclue_position_changed_cb(GeocluePosition *position,
 
 		latitude = lat;
 		longitude = lon;
+		save_position_state();
 
 		if (forced_location_cookie == 0) {
 			emit_position_changed(conn, latitude, longitude);
@@ -897,6 +968,7 @@ init_geoclue_position(GDBusConnection *conn)
 			lat, lon);
 		latitude = lat;
 		longitude = lon;
+		save_position_state();
 
 		if (forced_location_cookie == 0) {
 			emit_position_changed(conn, latitude, longitude);
@@ -966,6 +1038,9 @@ main(int argc, char *argv[])
 #if !GLIB_CHECK_VERSION(2, 35, 0)
 	g_type_init();
 #endif
+
+	/* Restore position state from last run */
+	restore_position_state();
 
 	/* Create hash table for cookies */
 	cookies = g_hash_table_new(NULL, NULL);
