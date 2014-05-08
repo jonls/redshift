@@ -21,8 +21,8 @@
 #define REDSHIFT_SYSTEMTIME_H
 
 #ifdef __MACH__
-int systemtime_init(void);
-int systemtime_close(void);
+void systemtime_init(void);
+void systemtime_close(void);
 #endif
 
 int systemtime_get_time(double *now);

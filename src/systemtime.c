@@ -35,13 +35,13 @@
 #ifdef __MACH__
 static clock_serv_t cclock;
 
-int
+void
 systemtime_init(void)
 {
 	host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
 }
 
-int
+void
 systemtime_close(void)
 {
 	mach_port_deallocate(mach_task_self(), cclock);
