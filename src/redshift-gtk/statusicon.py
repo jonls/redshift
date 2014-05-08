@@ -28,7 +28,7 @@ import signal, fcntl
 import re
 import gettext
 
-from gi.repository import Gtk, GLib
+from gi.repository import Gdk, Gtk, GLib
 try:
     from gi.repository import AppIndicator3 as appindicator
 except ImportError:
@@ -180,6 +180,9 @@ class RedshiftStatusIcon(object):
                           self.child_data_cb, (True, self.input_buffer))
         GLib.io_add_watch(self.process[3], GLib.PRIORITY_DEFAULT, GLib.IO_IN,
                           self.child_data_cb, (False, self.error_buffer))
+
+        # Notify desktop that startup is complete
+        Gdk.notify_startup_complete()
 
     def start_child_process(self, args):
         # Start child process with C locale so we can parse the output
