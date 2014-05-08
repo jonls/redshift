@@ -23,21 +23,18 @@
 # include <time.h>
 #endif
 
+#ifdef __MACH__
+# include <mach/clock.h>
+# include <mach/mach.h>
+#endif
+
 #include "systemtime.h"
 
 int
 systemtime_get_time(double *t)
 {
-#ifndef _WIN32
-	struct timespec now;
-	int r = clock_gettime(CLOCK_REALTIME, &now);
-	if (r < 0) {
-		perror("clock_gettime");
-		return -1;
-	}
 
-	*t = now.tv_sec + (now.tv_nsec / 1000000000.0);
-#else /* _WIN32 */
+#ifdef _WIN32
 	FILETIME now;
 	ULARGE_INTEGER i;
 	GetSystemTimeAsFileTime(&now);
@@ -46,7 +43,31 @@ systemtime_get_time(double *t)
 
 	/* FILETIME is tenths of microseconds since 1601-01-01 UTC */
 	*t = (i.QuadPart / 10000000.0) - 11644473600.0;
-#endif /* _WIN32 */
+
+#else
+	struct timespec now;
+
+	#ifdef __MACH__ // OS X does not have clock_gettime, use clock_get_time
+		clock_serv_t cclock;
+		mach_timespec_t mts;
+		host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+		clock_get_time(cclock, &mts);
+		mach_port_deallocate(mach_task_self(), cclock);
+		now.tv_sec = mts.tv_sec;
+		now.tv_nsec = mts.tv_nsec;
+		
+	#else // Regular Linux
+		int r = clock_gettime(CLOCK_REALTIME, &now);
+		if (r < 0) {
+			perror("clock_gettime");
+			return -1;
+		}
+
+		*t = now.tv_sec + (now.tv_nsec / 1000000000.0);
+
+	#endif
+
+#endif
 
 	return 0;
 }
