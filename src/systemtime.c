@@ -15,6 +15,7 @@
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2014  Shawn Patrick Rice <shawn.rice@fake.com>
 */
 
 #include <stdio.h>
@@ -33,40 +34,31 @@
 int
 systemtime_get_time(double *t)
 {
-
-#ifdef _WIN32
+#if defined(_WIN32) /* Windows. */
 	FILETIME now;
 	ULARGE_INTEGER i;
 	GetSystemTimeAsFileTime(&now);
 	i.LowPart = now.dwLowDateTime;
 	i.HighPart = now.dwHighDateTime;
-
 	/* FILETIME is tenths of microseconds since 1601-01-01 UTC */
 	*t = (i.QuadPart / 10000000.0) - 11644473600.0;
 
-#else
-	struct timespec now;
-
-	#ifdef __MACH__ // OS X does not have clock_gettime, use clock_get_time
-		clock_serv_t cclock;
-		mach_timespec_t mts;
-		host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
-		clock_get_time(cclock, &mts);
-		mach_port_deallocate(mach_task_self(), cclock);
-		now.tv_sec = mts.tv_sec;
-		now.tv_nsec = mts.tv_nsec;
+#elif defined(__MACH__) /* OS X */
+	clock_serv_t cclock;
+	mach_timespec_t now;
+	host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+	clock_get_time(cclock, &now);
+	mach_port_deallocate(mach_task_self(), cclock);
+	*t = now.tv_sec + (now.tv_nsec / 1000000000.0);
 		
-	#else // Regular Linux
-		int r = clock_gettime(CLOCK_REALTIME, &now);
-		if (r < 0) {
-			perror("clock_gettime");
-			return -1;
-		}
-
-		*t = now.tv_sec + (now.tv_nsec / 1000000000.0);
-
-	#endif
-
+#else /* SUSv2, POSIX.1-2001  (Linux and FreeBSD). */
+	struct timespec now;
+	int r = clock_gettime(CLOCK_REALTIME, &now);
+	if (r < 0) {
+		perror("clock_gettime");
+		return -1;
+	}
+	*t = now.tv_sec + (now.tv_nsec / 1000000000.0);
 #endif
 
 	return 0;
