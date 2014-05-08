@@ -31,6 +31,24 @@
 
 #include "systemtime.h"
 
+
+#ifdef __MACH__
+static clock_serv_t cclock;
+
+int
+systemtime_init(void)
+{
+	host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+}
+
+int
+systemtime_close(void)
+{
+	mach_port_deallocate(mach_task_self(), cclock);
+}
+#endif
+
+
 int
 systemtime_get_time(double *t)
 {
@@ -44,11 +62,8 @@ systemtime_get_time(double *t)
 	*t = (i.QuadPart / 10000000.0) - 11644473600.0;
 
 #elif defined(__MACH__) /* OS X */
-	clock_serv_t cclock;
 	mach_timespec_t now;
-	host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
 	clock_get_time(cclock, &now);
-	mach_port_deallocate(mach_task_self(), cclock);
 	*t = now.tv_sec + (now.tv_nsec / 1000000000.0);
 		
 #else /* SUSv2, POSIX.1-2001  (Linux and FreeBSD). */

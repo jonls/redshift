@@ -20,12 +20,10 @@
 #ifndef REDSHIFT_SYSTEMTIME_H
 #define REDSHIFT_SYSTEMTIME_H
 
-#ifndef _WIN32
-# include <time.h>
-#else
-# include <windows.h>
+#ifdef __MACH__
+int systemtime_init(void);
+int systemtime_close(void);
 #endif
-
 
 int systemtime_get_time(double *now);
 

@@ -1096,6 +1096,10 @@ main(int argc, char *argv[])
 	case PROGRAM_MODE_ONE_SHOT:
 	case PROGRAM_MODE_PRINT:
 	{
+#ifdef __MACH__
+		systemtime_init();
+#endif
+
 		/* Current angular elevation of the sun */
 		double now;
 		r = systemtime_get_time(&now);
@@ -1135,6 +1139,10 @@ main(int argc, char *argv[])
 			gamma_free(&state);
 			exit(EXIT_FAILURE);
 		}
+
+#ifdef __MACH__
+		systemtime_close();
+#endif
 	}
 	break;
 	case PROGRAM_MODE_MANUAL:
@@ -1195,6 +1203,10 @@ main(int argc, char *argv[])
 		if (verbose) {
 			printf("Status: %s\n", "Enabled");
 		}
+
+#ifdef __MACH__
+		systemtime_init();
+#endif
 
 		/* Continuously adjust color temperature */
 		int done = 0;
@@ -1326,6 +1338,10 @@ main(int argc, char *argv[])
 
 		/* Restore saved gamma ramps */
 		gamma_restore(&state);
+
+#ifdef __MACH__
+		systemtime_close();
+#endif
 	}
 	break;
 	}
