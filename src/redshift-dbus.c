@@ -25,7 +25,6 @@
 #include <stdio.h>
 
 #include <glib.h>
-#include <glib/gprintf.h>
 #include <gio/gio.h>
 
 #include <geoclue/geoclue-master.h>
@@ -259,8 +258,8 @@ update_elevation()
 
 	elevation = solar_elevation(time, lat, lon);
 
-	g_printf("Location: %f, %f\n", lat, lon);
-	g_printf("Elevation: %f\n", elevation);
+	g_print("Location: %f, %f\n", lat, lon);
+	g_print("Elevation: %f\n", elevation);
 }
 
 /* Update temperature from elevation */
@@ -348,7 +347,7 @@ screen_update_cb(gpointer data)
 		}
 	}
 
-	g_printf("Temperature: %u\n", temperature);
+	g_print("Temperature: %u\n", temperature);
 
 	/* Signal if temperature has changed */
 	if (prev_temp != temperature ||
@@ -389,7 +388,7 @@ screen_update_cb(gpointer data)
 			g_source_remove(trans_timer);
 		}
 
-		g_printf("Create short transition: %u -> %u\n", temp_now, temperature);
+		g_print("Create short transition: %u -> %u\n", temp_now, temperature);
 		trans_temp_start = temp_now;
 		trans_length = 40 - trans_time;
 		trans_time = 0;
@@ -459,7 +458,7 @@ handle_method_call(GDBusConnection *conn,
 		const gchar *program;
 		g_variant_get(parameters, "(&s)", &program);
 
-		g_printf("AcquireCookie for `%s'.\n", program);
+		g_print("AcquireCookie for `%s'.\n", program);
 
 		g_hash_table_insert(cookies, GINT_TO_POINTER(cookie), g_strdup(program));
 		g_dbus_method_invocation_return_value(invocation,
@@ -476,7 +475,7 @@ handle_method_call(GDBusConnection *conn,
 			return;
 		}
 
-		g_printf("ReleaseCookie for `%s'.\n", program);
+		g_print("ReleaseCookie for `%s'.\n", program);
 
 		/* Remove all rules enforced by program */
 		gboolean found = FALSE;
@@ -519,7 +518,7 @@ handle_method_call(GDBusConnection *conn,
 			screen_update_restart(conn);
 		}
 
-		g_printf("Inhibit for `%s'.\n", program);
+		g_print("Inhibit for `%s'.\n", program);
 
 		g_dbus_method_invocation_return_value(invocation, NULL);
 	} else if (g_strcmp0(method_name, "Uninhibit") == 0) {
@@ -540,7 +539,7 @@ handle_method_call(GDBusConnection *conn,
 			screen_update_restart(conn);
 		}
 
-		g_printf("Uninhibit for `%s'.\n", program);
+		g_print("Uninhibit for `%s'.\n", program);
 
 		g_dbus_method_invocation_return_value(invocation, NULL);
 	} else if (g_strcmp0(method_name, "EnforceTemperature") == 0) {
@@ -581,7 +580,7 @@ handle_method_call(GDBusConnection *conn,
 
 		screen_update_restart(conn);
 
-		g_printf("EnforceTemperature for `%s'.\n", program);
+		g_print("EnforceTemperature for `%s'.\n", program);
 
 		g_dbus_method_invocation_return_value(invocation, NULL);
 	} else if (g_strcmp0(method_name, "UnenforceTemperature") == 0) {
@@ -597,7 +596,7 @@ handle_method_call(GDBusConnection *conn,
 			return;
 		}
 
-		g_printf("UnenforceTemperature for `%s'.\n", program);
+		g_print("UnenforceTemperature for `%s'.\n", program);
 
 		int index = priority ? 1 : 0;
 
@@ -648,7 +647,7 @@ handle_method_call(GDBusConnection *conn,
 
 		screen_update_restart(conn);
 
-		g_printf("EnforceLocation for `%s'.\n", program);
+		g_print("EnforceLocation for `%s'.\n", program);
 
 		g_dbus_method_invocation_return_value(invocation, NULL);
 	} else if (g_strcmp0(method_name, "UnenforceLocation") == 0) {
@@ -663,7 +662,7 @@ handle_method_call(GDBusConnection *conn,
 			return;
 		}
 
-		g_printf("UnenforceLocation for `%s'.\n", program);
+		g_print("UnenforceLocation for `%s'.\n", program);
 
 		if (forced_location_cookie == cookie) {
 			forced_location_cookie = 0;
@@ -922,7 +921,7 @@ on_bus_acquired(GDBusConnection *conn,
 		const gchar *name,
 		gpointer data)
 {
-	g_fprintf(stderr, "Bus acquired: `%s'.\n", name);
+	g_printerr("Bus acquired: `%s'.\n", name);
 
 	guint registration_id = g_dbus_connection_register_object(conn,
 								  REDSHIFT_OBJECT_PATH,
@@ -945,7 +944,7 @@ on_name_acquired(GDBusConnection *conn,
 		 const gchar *name,
 		 gpointer data)
 {
-	g_fprintf(stderr, "Name acquired: `%s'.\n", name);
+	g_printerr("Name acquired: `%s'.\n", name);
 }
 
 static void
@@ -953,7 +952,7 @@ on_name_lost(GDBusConnection *conn,
 	     const gchar *name,
 	     gpointer data)
 {
-	g_fprintf(stderr, "Name lost: `%s'.\n", name);
+	g_printerr("Name lost: `%s'.\n", name);
 	exit(EXIT_FAILURE);
 }
 
@@ -982,7 +981,7 @@ main(int argc, char *argv[])
 		if (r < 0) continue;
 
 		current_method = m;
-		g_printf("Using method `%s'.\n", current_method->name);
+		g_print("Using method `%s'.\n", current_method->name);
 		break;
 	}
 
