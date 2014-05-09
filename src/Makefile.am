@@ -63,7 +63,9 @@ redshift_SOURCES += gamma-quartz.c gamma-quartz.h
 if FAKE_QUARTZ
 redshift_SOURCES += fake-quartz.c fake-quartz.h
 else
-redshift_LDFLAGS += -framework CoreGraphics
+redshift_LDFLAGS += -I/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreGraphics.framework/Versions/A/Headers \
+                    -F/System/Library/Frameworks/ApplicationServices.framework \
+                    -framework ApplicationServices
 endif
 endif
 
