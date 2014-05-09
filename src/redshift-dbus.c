@@ -45,10 +45,6 @@
 
 #include "gamma-dummy.h"
 
-#ifdef ENABLE_GEOCLUE
-# include "location-geoclue.h"
-#endif
-
 
 /* Union of state data for gamma adjustment methods */
 union {
