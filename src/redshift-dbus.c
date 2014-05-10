@@ -29,9 +29,6 @@
 #include <glib-unix.h>
 #include <gio/gio.h>
 
-#include <geoclue/geoclue-master.h>
-#include <geoclue/geoclue-position.h>
-
 #include "redshift.h"
 #include "solar.h"
 
@@ -190,6 +187,10 @@ static gdouble forced_lon = 0.0;
 
 /* Screen update timer */
 static guint screen_update_timer = 0;
+
+/* Geoclue proxy objects */
+static GDBusProxy *geoclue_manager = NULL;
+static GDBusProxy *geoclue_client = NULL;
 
 
 /* DBus service definition */
@@ -856,126 +857,166 @@ restore_position_state()
 
 /* Handle position change callbacks */
 static void
-geoclue_position_changed_cb(GeocluePosition *position,
-			    GeocluePositionFields fields,
-			    int timestamp,
-			    gdouble lat,
-			    gdouble lon,
-			    gdouble altitude,
-			    GeoclueAccuracy *accuracy,
-			    gpointer data)
+geoclue_client_signal_cb(GDBusProxy *client,
+			 gchar *sender_name,
+			 gchar *signal_name,
+			 GVariant *parameters,
+			 gpointer *data)
 {
 	GDBusConnection *conn = G_DBUS_CONNECTION(data);
 
-	if (fields & GEOCLUE_POSITION_FIELDS_LATITUDE &&
-	    fields & GEOCLUE_POSITION_FIELDS_LONGITUDE) {
-		g_print("Position changed: %f, %f\n", lat, lon);
+	/* Only handle LocationUpdated signals */
+	if (g_strcmp0(signal_name, "LocationUpdated") != 0) {
+		return;
+	}
 
-		latitude = lat;
-		longitude = lon;
-		save_position_state();
+	/* Obtain location path */
+	const gchar *location_path;
+	g_variant_get_child(parameters, 1, "&o", &location_path);
 
-		if (forced_location_cookie == 0) {
-			emit_position_changed(conn, latitude, longitude);
-		}
-	} else {
-		g_print("Latitude and longitude not available.\n");
+	/* Obtain location */
+	GError *error = NULL;
+	GDBusProxy *location =
+		g_dbus_proxy_new_for_bus_sync(G_BUS_TYPE_SYSTEM,
+					      G_DBUS_PROXY_FLAGS_NONE,
+					      NULL,
+					      "org.freedesktop.GeoClue2",
+					      location_path,
+					      "org.freedesktop.GeoClue2.Location",
+					      NULL, &error);
+	if (location == NULL) {
+		g_printerr("Unable to obtain location: %s.\n",
+			   error->message);
+		g_error_free(error);
+		return;
+	}
+
+	/* Read location properties */
+	GVariant *lat_v = g_dbus_proxy_get_cached_property(location,
+							   "Latitude");
+	gdouble lat = g_variant_get_double(lat_v);
+
+	GVariant *lon_v = g_dbus_proxy_get_cached_property(location,
+							   "Longitude");
+	gdouble lon = g_variant_get_double(lon_v);
+
+	/* Save position */
+	latitude = lat;
+	longitude = lon;
+	save_position_state();
+
+	g_print("Position from Geoclue: %.2f, %.2f\n", lat, lon);
+
+	if (forced_location_cookie == 0) {
+		emit_position_changed(conn, latitude, longitude);
 	}
 }
 
-/* Initialize Geoclue position provider */
+/* Initialize Geoclue position client */
 static int
 init_geoclue_position(GDBusConnection *conn)
 {
-	/* Obtain Geoclue Client */
+	/* Obtain Geoclue Manager */
 	GError *error = NULL;
-	GeoclueMaster *master = geoclue_master_get_default();
-	GeoclueMasterClient *client =
-		geoclue_master_create_client(master, NULL, &error);
-	g_object_unref(master);
-
-	if (client == NULL) {
-		if (error != NULL) {
-			g_printerr("Unable to obtain master client: %s\n",
-				   error->message);
-			g_error_free(error);
-		} else {
-			g_printerr("Unable to obtain master client\n");
-		}
-		return -1;
-	}
-
-	/* Set requirements for client */
-	gboolean ret =
-		geoclue_master_client_set_requirements(client,
-						       GEOCLUE_ACCURACY_LEVEL_REGION,
-						       0, FALSE,
-						       GEOCLUE_RESOURCE_NETWORK,
-						       &error);
-	if (!ret) {
-		if (error != NULL) {
-			g_printerr("Can't set requirements for master: %s\n",
-				   error->message);
-			g_error_free(error);
-		} else {
-			g_printerr("Can't set requirements for master\n");
-		}
-		g_object_unref(client);
-
-		return -1;
-	}
-
-	/* Obtain the actual position provider */
-	GeocluePosition *position =
-		geoclue_master_client_create_position(client, NULL);
-	g_object_unref(client);
-
-	gchar *provider_name = NULL;
-
-	ret = geoclue_provider_get_provider_info(GEOCLUE_PROVIDER(position),
-						 &provider_name, NULL, NULL);
-	if (ret) {
-		g_print("Started Geoclue provider: %s.\n", provider_name);
-		g_free(provider_name);
-	} else {
-		g_printerr("Could not find a usable Geoclue provider.\n");
-		return -1;
-	}
-
-	/* Try to obtain the position. At this point we have successfully
-	   acquired a position provider so even if we cannot get a
-	   position, we can wait and see if a position becomes avaiable later.
-	   This is often the case if redshift-dbus is started right when the
-	   user logs in. */
-	GeocluePositionFields fields;
-	gdouble lat, lon;
-
-	fields = geoclue_position_get_position(position, NULL,
-					       &lat, &lon, NULL,
-					       NULL, &error);
-	if (error) {
-		g_printerr("Could not get location: %s.\n", error->message);
+	geoclue_manager =
+		g_dbus_proxy_new_for_bus_sync(G_BUS_TYPE_SYSTEM,
+					      G_DBUS_PROXY_FLAGS_NONE,
+					      NULL,
+					      "org.freedesktop.GeoClue2",
+					      "/org/freedesktop/GeoClue2/Manager",
+					      "org.freedesktop.GeoClue2.Manager",
+					      NULL, &error);
+	if (geoclue_manager == NULL) {
+		g_printerr("Unable to obtain Geoclue Manager: %s.\n",
+			   error->message);
 		g_error_free(error);
+		return -1;
 	}
 
-	if (fields & GEOCLUE_POSITION_FIELDS_LATITUDE &&
-	    fields & GEOCLUE_POSITION_FIELDS_LONGITUDE) {
-		g_print("According to the geoclue provider"
-			" we're at: %.2f, %.2f\n",
-			lat, lon);
-		latitude = lat;
-		longitude = lon;
-		save_position_state();
-
-		if (forced_location_cookie == 0) {
-			emit_position_changed(conn, latitude, longitude);
-		}
-	} else {
-		g_warning("Provider does not have a valid location available.");
+	/* Obtain Geoclue Client path */
+	error = NULL;
+	GVariant *client_path_v =
+		g_dbus_proxy_call_sync(geoclue_manager,
+				       "GetClient",
+				       NULL,
+				       G_DBUS_CALL_FLAGS_NONE,
+				       -1, NULL, &error);
+	if (client_path_v == NULL) {
+		g_printerr("Unable to obtain Geoclue client path: %s.\n",
+			   error->message);
+		g_error_free(error);
+		g_object_unref(geoclue_manager);
+		return -1;
 	}
 
-	g_signal_connect(G_OBJECT(position), "position-changed",
-			 G_CALLBACK(geoclue_position_changed_cb), conn);
+	const gchar *client_path;
+	g_variant_get(client_path_v, "(&o)", &client_path);
+
+	/* Obtain GeoClue client */
+	error = NULL;
+	geoclue_client =
+		g_dbus_proxy_new_for_bus_sync(G_BUS_TYPE_SYSTEM,
+					      G_DBUS_PROXY_FLAGS_NONE,
+					      NULL,
+					      "org.freedesktop.GeoClue2",
+					      client_path,
+					      "org.freedesktop.GeoClue2.Client",
+					      NULL, &error);
+	if (geoclue_client == NULL) {
+		g_printerr("Unable to obtain Geoclue Client: %s.\n",
+			   error->message);
+		g_error_free(error);
+		g_variant_unref(client_path_v);
+		g_object_unref(geoclue_manager);
+		return -1;
+	}
+
+	g_variant_unref(client_path_v);
+
+	/* Set distance threshold */
+	error = NULL;
+	GVariant *ret_v =
+		g_dbus_proxy_call_sync(geoclue_client,
+				       "org.freedesktop.DBus.Properties.Set",
+				       g_variant_new("(ssv)",
+						     "org.freedesktop.GeoClue2.Client",
+						     "DistanceThreshold",
+						     g_variant_new("u", 10000)),
+				       G_DBUS_CALL_FLAGS_NONE,
+				       -1, NULL, &error);
+	if (ret_v == NULL) {
+		g_printerr("Unable to set distance threshold: %s.\n",
+			   error->message);
+		g_error_free(error);
+		g_object_unref(geoclue_client);
+		g_object_unref(geoclue_manager);
+		return -1;
+	}
+
+	g_variant_unref(ret_v);
+
+	/* Attach signal callback to client */
+	g_signal_connect(geoclue_client, "g-signal",
+			 G_CALLBACK(geoclue_client_signal_cb),
+			 conn);
+
+	/* Start Geoclue client */
+	error = NULL;
+	ret_v = g_dbus_proxy_call_sync(geoclue_client,
+				       "Start",
+				       NULL,
+				       G_DBUS_CALL_FLAGS_NONE,
+				       -1, NULL, &error);
+	if (ret_v == NULL) {
+		g_printerr("Unable to start Geoclue client: %s.\n",
+			   error->message);
+		g_error_free(error);
+		g_object_unref(geoclue_client);
+		g_object_unref(geoclue_manager);
+		return -1;
+	}
+
+	g_variant_unref(ret_v);
 
 	return 0;
 }
@@ -1100,6 +1141,8 @@ main(int argc, char *argv[])
 
 	/* Clean up */
 	g_bus_unown_name(owner_id);
+	g_object_unref(geoclue_client);
+	g_object_unref(geoclue_manager);
 
 	g_print("Restoring gamma ramps.\n");
 
