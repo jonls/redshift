@@ -26,6 +26,7 @@
 
 #include <glib.h>
 #include <glib/gstdio.h>
+#include <glib-unix.h>
 #include <gio/gio.h>
 
 #include <geoclue/geoclue-master.h>
@@ -1028,6 +1029,16 @@ on_name_lost(GDBusConnection *conn,
 }
 
 
+/* Handle termination signal */
+static gboolean
+term_signal_cb(gpointer data)
+{
+	GMainLoop *loop = (GMainLoop *)data;
+	g_main_loop_quit(loop);
+	return TRUE;
+}
+
+
 int
 main(int argc, char *argv[])
 {
@@ -1077,13 +1088,22 @@ main(int argc, char *argv[])
 					NULL,
 					NULL);
 
-	/* Start main loop */
+	/* Create main loop */
 	GMainLoop *mainloop = g_main_loop_new(NULL, FALSE);
+
+	/* Attach signal handler for termination */
+	g_unix_signal_add(SIGTERM, term_signal_cb, mainloop);
+	g_unix_signal_add(SIGINT, term_signal_cb, mainloop);
+
+	/* Start main loop */
 	g_main_loop_run(mainloop);
 
 	/* Clean up */
 	g_bus_unown_name(owner_id);
 
+	g_print("Restoring gamma ramps.\n");
+
+	/* Restore gamma ramps */
 	if (current_method != NULL) {
 		current_method->restore(&gamma_state);
 		current_method->free(&gamma_state);
