@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <errno.h>
 
 #ifdef ENABLE_NLS
 # include <libintl.h>
@@ -46,8 +47,9 @@ randr_init(randr_state_t *state)
 {
 	/* Initialize state. */
 	state->screen_num = -1;
-	state->crtc_num = -1;
+	state->crtc_num = NULL;
 
+	state->crtc_num_count = 0;
 	state->crtc_count = 0;
 	state->crtcs = NULL;
 
@@ -263,6 +265,7 @@ randr_free(randr_state_t *state)
 		free(state->crtcs[i].saved_ramps);
 	}
 	free(state->crtcs);
+	free(state->crtc_num);
 
 	/* Close connection */
 	xcb_disconnect(state->conn);
@@ -277,7 +280,7 @@ randr_print_help(FILE *f)
 	/* TRANSLATORS: RANDR help output
 	   left column must not be translated */
 	fputs(_("  screen=N\t\tX screen to apply adjustments to\n"
-		"  crtc=N\t\tCRTC to apply adjustments to\n"
+		"  crtc=N\tList of comma separated CRTCs to apply adjustments to\n"
 		"  preserve={0,1}\tWhether existing gamma should be"
 		" preserved\n"),
 	      f);
@@ -290,7 +293,50 @@ randr_set_option(randr_state_t *state, const char *key, const char *value)
 	if (strcasecmp(key, "screen") == 0) {
 		state->screen_num = atoi(value);
 	} else if (strcasecmp(key, "crtc") == 0) {
-		state->crtc_num = atoi(value);
+		char *tail;
+
+		/* Check how many crtcs are configured */
+		const char *local_value = value;
+		while (1) {
+			errno = 0;
+			int parsed = strtol(local_value, &tail, 0);
+			if (parsed == 0 && (errno != 0 ||
+					    tail == local_value)) {
+				fprintf(stderr, _("Unable to read screen"
+						  " number: `%s'.\n"), value);
+				return -1;
+			} else {
+				state->crtc_num_count += 1;
+			}
+			local_value = tail;
+
+			if (*local_value == ',') {
+				local_value += 1;
+			} else if (*local_value == '\0') {
+				break;
+			}
+		}
+
+		/* Configure all given crtcs */
+		state->crtc_num = calloc(state->crtc_num_count, sizeof(int));
+		local_value = value;
+		for (int i = 0; i < state->crtc_num_count; i++) {
+			errno = 0;
+			int parsed = strtol(local_value, &tail, 0);
+			if (parsed == 0 && (errno != 0 ||
+					    tail == local_value)) {
+				return -1;
+			} else {
+				state->crtc_num[i] = parsed;
+			}
+			local_value = tail;
+
+			if (*local_value == ',') {
+				local_value += 1;
+			} else if (*local_value == '\0') {
+				break;
+			}
+		}
 	} else if (strcasecmp(key, "preserve") == 0) {
 		state->preserve = atoi(value);
 	} else {
@@ -309,7 +355,7 @@ randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num,
 
 	if (crtc_num >= state->crtc_count || crtc_num < 0) {
 		fprintf(stderr, _("CRTC %d does not exist. "),
-			state->crtc_num);
+			crtc_num);
 		if (state->crtc_count > 1) {
 			fprintf(stderr, _("Valid CRTCs are [0-%d].\n"),
 				state->crtc_count-1);
@@ -376,17 +422,20 @@ randr_set_temperature(randr_state_t *state,
 {
 	int r;
 
-	/* If no CRTC number has been specified,
+	/* If no CRTC numbers have been specified,
 	   set temperature on all CRTCs. */
-	if (state->crtc_num < 0) {
+	if (state->crtc_num_count == 0) {
 		for (int i = 0; i < state->crtc_count; i++) {
 			r = randr_set_temperature_for_crtc(state, i,
 							   setting);
 			if (r < 0) return -1;
 		}
 	} else {
-		return randr_set_temperature_for_crtc(state, state->crtc_num,
-						      setting);
+		for (int i = 0; i < state->crtc_num_count; ++i) {
+			r = randr_set_temperature_for_crtc(
+				state, state->crtc_num[i], setting);
+			if (r < 0) return -1;
+		}
 	}
 
 	return 0;

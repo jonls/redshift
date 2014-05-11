@@ -41,7 +41,8 @@ typedef struct {
 	int preferred_screen;
 	int preserve;
 	int screen_num;
-	int crtc_num;
+	int crtc_num_count;
+	int* crtc_num;
 	unsigned int crtc_count;
 	randr_crtc_state_t *crtcs;
 } randr_state_t;
