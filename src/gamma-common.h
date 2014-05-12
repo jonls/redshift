@@ -149,4 +149,19 @@ struct gamma_server_state {
 };
 
 
+
+/* Initialize the adjustment method common parts of a state,
+   this should be done before initialize the adjustment method
+   specific parts. */
+int gamma_init(gamma_server_state_t *state);
+
+
+/* Free all CRTC selection data in a state. */
+void gamma_free_selections(gamma_server_state_t *state);
+
+/* Free all data in a state. */
+void gamma_free(gamma_server_state_t *state);
+
+
+
 #endif /* ! REDSHIFT_GAMMA_COMMON_H */
