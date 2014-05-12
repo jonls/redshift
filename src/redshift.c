@@ -1087,11 +1087,6 @@ main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	if (verbose) {
-		printf(_("Gamma: %.3f, %.3f, %.3f\n"),
-		       gamma[0], gamma[1], gamma[2]);
-	}
-
 	/* Initialize gamma adjustment method. If method is NULL
 	   try all methods until one that works is found. */
 	gamma_state_t state;
