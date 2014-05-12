@@ -15,6 +15,7 @@
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
    Copyright (c) 2013  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2014  Mattias Andrée <maandree@member.fsf.org>
 */
 
 #ifdef HAVE_CONFIG_H
@@ -81,22 +82,6 @@
 #endif
 
 
-/* Union of state data for gamma adjustment methods */
-typedef union {
-#ifdef ENABLE_DRM
-	drm_state_t drm;
-#endif
-#ifdef ENABLE_RANDR
-	randr_state_t randr;
-#endif
-#ifdef ENABLE_VIDMODE
-	vidmode_state_t vidmode;
-#endif
-#ifdef ENABLE_WINGDI
-	w32gdi_state_t w32gdi;
-#endif
-} gamma_state_t;
-
 
 /* Gamma adjustment method structs */
 static const gamma_method_t gamma_methods[] = {
@@ -105,11 +90,7 @@ static const gamma_method_t gamma_methods[] = {
 		"drm", 0,
 		(gamma_method_init_func *)drm_init,
 		(gamma_method_start_func *)drm_start,
-		(gamma_method_free_func *)drm_free,
-		(gamma_method_print_help_func *)drm_print_help,
-		(gamma_method_set_option_func *)drm_set_option,
-		(gamma_method_restore_func *)drm_restore,
-		(gamma_method_set_temperature_func *)drm_set_temperature
+		(gamma_method_print_help_func *)drm_print_help
 	},
 #endif
 #ifdef ENABLE_RANDR
@@ -117,11 +98,7 @@ static const gamma_method_t gamma_methods[] = {
 		"randr", 1,
 		(gamma_method_init_func *)randr_init,
 		(gamma_method_start_func *)randr_start,
-		(gamma_method_free_func *)randr_free,
-		(gamma_method_print_help_func *)randr_print_help,
-		(gamma_method_set_option_func *)randr_set_option,
-		(gamma_method_restore_func *)randr_restore,
-		(gamma_method_set_temperature_func *)randr_set_temperature
+		(gamma_method_print_help_func *)randr_print_help
 	},
 #endif
 #ifdef ENABLE_VIDMODE
@@ -129,11 +106,7 @@ static const gamma_method_t gamma_methods[] = {
 		"vidmode", 1,
 		(gamma_method_init_func *)vidmode_init,
 		(gamma_method_start_func *)vidmode_start,
-		(gamma_method_free_func *)vidmode_free,
-		(gamma_method_print_help_func *)vidmode_print_help,
-		(gamma_method_set_option_func *)vidmode_set_option,
-		(gamma_method_restore_func *)vidmode_restore,
-		(gamma_method_set_temperature_func *)vidmode_set_temperature
+		(gamma_method_print_help_func *)vidmode_print_help
 	},
 #endif
 #ifdef ENABLE_WINGDI
@@ -141,22 +114,14 @@ static const gamma_method_t gamma_methods[] = {
 		"wingdi", 1,
 		(gamma_method_init_func *)w32gdi_init,
 		(gamma_method_start_func *)w32gdi_start,
-		(gamma_method_free_func *)w32gdi_free,
-		(gamma_method_print_help_func *)w32gdi_print_help,
-		(gamma_method_set_option_func *)w32gdi_set_option,
-		(gamma_method_restore_func *)w32gdi_restore,
-		(gamma_method_set_temperature_func *)w32gdi_set_temperature
+		(gamma_method_print_help_func *)w32gdi_print_help
 	},
 #endif
 	{
 		"dummy", 0,
 		(gamma_method_init_func *)gamma_dummy_init,
 		(gamma_method_start_func *)gamma_dummy_start,
-		(gamma_method_free_func *)gamma_dummy_free,
-		(gamma_method_print_help_func *)gamma_dummy_print_help,
-		(gamma_method_set_option_func *)gamma_dummy_set_option,
-		(gamma_method_restore_func *)gamma_dummy_restore,
-		(gamma_method_set_temperature_func *)gamma_dummy_set_temperature
+		(gamma_method_print_help_func *)gamma_dummy_print_help
 	},
 	{ NULL }
 };
@@ -471,8 +436,9 @@ provider_try_start(const location_provider_t *provider,
 
 static int
 method_try_start(const gamma_method_t *method,
-		 gamma_state_t *state,
-		 config_ini_state_t *config, char *args)
+		 gamma_server_state_t *state,
+		 config_ini_state_t *config, char *args,
+		 char *gamma)
 {
 	int r;
 
@@ -483,28 +449,44 @@ method_try_start(const gamma_method_t *method,
 		return -1;
 	}
 
-	/* Set method options from config file. */
-	config_ini_section_t *section =
-		config_ini_get_section(config, method->name);
-	if (section != NULL) {
-		config_ini_setting_t *setting = section->settings;
-		while (setting != NULL) {
-			r = method->set_option(state, setting->name,
-						 setting->value);
-			if (r < 0) {
-				method->free(state);
-				fprintf(stderr, _("Failed to set %s"
-						  " option.\n"),
-					method->name);
-				/* TRANSLATORS: `help' must not be
-				   translated. */
-				fprintf(stderr, _("Try `-m %s:help' for more"
-						  " information.\n"),
-					method->name);
-				return -1;
-			}
-			setting = setting->next;
+
+	/* Set default gamma. */
+	if (gamma != NULL) {
+		r = gamma_set_option(state, "gamma", gamma, 0);
+		free(gamma);
+		if (r < 0) {
+			gamma_free(state);
+			return -1;
 		}
+	}
+
+	/* Set method options from config file. */
+	config_ini_section_t **sections =
+		config_ini_get_sections(config, method->name);
+	if (sections != NULL) {
+		int section_i = 0;
+		while (sections[section_i] != NULL) {
+			config_ini_setting_t *setting = sections[section_i]->settings;
+			while (setting != NULL) {
+				r = gamma_set_option(state, setting->name,
+						     setting->value, section_i + 1);
+				if (r < 0) {
+					gamma_free(state);
+					fprintf(stderr, _("Failed to set %s option.\n"),
+						method->name);
+					/* TRANSLATORS: `help' must not be translated. */
+					fprintf(stderr, _("Try `-m %s:help' for more information.\n"),
+						method->name);
+					return -1;
+				}
+				setting = setting->next;
+			}
+			section_i++;
+		}
+		free(sections);
+	} else {
+		gamma_free(state);
+		return -1;
 	}
 
 	/* Set method options from command line. */
@@ -520,9 +502,9 @@ method_try_start(const gamma_method_t *method,
 				*(value++) = '\0';
 			}
 
-			r = method->set_option(state, key, value);
+			r = gamma_set_option(state, key, value, -1);
 			if (r < 0) {
-				method->free(state);
+				gamma_free(state);
 				fprintf(stderr, _("Failed to set %s option.\n"),
 					method->name);
 				/* TRANSLATORS: `help' must not be translated. */
@@ -538,7 +520,7 @@ method_try_start(const gamma_method_t *method,
 	/* Start method. */
 	r = method->start(state);
 	if (r < 0) {
-		method->free(state);
+		gamma_free(state);
 		fprintf(stderr, _("Failed to start adjustment method %s.\n"),
 			method->name);
 		return -1;
@@ -593,6 +575,14 @@ find_location_provider(const char *name)
 	return provider;
 }
 
+static int
+set_temperature(gamma_server_state_t *state, int temp, float brightness)
+{
+	gamma_update_all_brightness(state, brightness);
+	gamma_update_all_temperature(state, (float)temp);
+	return gamma_update(state);
+}
+
 
 int
 main(int argc, char *argv[])
@@ -615,7 +605,7 @@ main(int argc, char *argv[])
 	int temp_set = -1;
 	int temp_day = -1;
 	int temp_night = -1;
-	float gamma[3] = { NAN, NAN, NAN };
+	char *gamma = NULL;
 	float brightness_day = NAN;
 	float brightness_night = NAN;
 
@@ -641,6 +631,7 @@ main(int argc, char *argv[])
 	const char **args = alloca(argc * sizeof(char*));
 	int args_count;
 	while ((opt = parseopt(argc, argv, "b:c:g:hl:m:oO:prt:vVx", args, &args_count)) != -1) {
+		float gamma_[3];
 		switch (opt) {
 		case 'b':
 			parse_brightness_string(optarg, &brightness_day, &brightness_night);
@@ -648,9 +639,18 @@ main(int argc, char *argv[])
 		case 'c':
 			if (config_filepath != NULL) free(config_filepath);
 			config_filepath = strdup(optarg);
+			if (config_filepath == NULL) {
+				perror("strdup");
+				abort();
+			}
 			break;
 		case 'g':
-			r = parse_gamma_string(optarg, gamma);
+			gamma = strdup(optarg);
+			if (gamma == NULL) {
+				perror("strdup");
+				abort();
+			}
+			r = parse_gamma_string(optarg, gamma_);
 			if (r < 0) {
 				fputs(_("Malformed gamma argument.\n"),
 				      stderr);
@@ -847,14 +847,11 @@ main(int argc, char *argv[])
 					      "elevation-low") == 0) {
 				transition_low = atof(setting->value);
 			} else if (strcasecmp(setting->name, "gamma") == 0) {
-				if (isnan(gamma[0])) {
-					r = parse_gamma_string(setting->value,
-							       gamma);
-					if (r < 0) {
-						fputs(_("Malformed gamma"
-							" setting.\n"),
-						      stderr);
-						exit(EXIT_FAILURE);
+				if (gamma == NULL) {
+					gamma = strdup(setting->value);
+					if (gamma == NULL) {
+						perror("strdup");
+						abort();
 					}
 				}
 			} else if (strcasecmp(setting->name,
@@ -900,7 +897,6 @@ main(int argc, char *argv[])
 	if (temp_night < 0) temp_night = DEFAULT_NIGHT_TEMP;
 	if (isnan(brightness_day)) brightness_day = DEFAULT_BRIGHTNESS;
 	if (isnan(brightness_night)) brightness_night = DEFAULT_BRIGHTNESS;
-	if (isnan(gamma[0])) gamma[0] = gamma[1] = gamma[2] = DEFAULT_GAMMA;
 	if (transition < 0) transition = 1;
 
 	float lat = NAN;
@@ -1039,19 +1035,9 @@ main(int argc, char *argv[])
 		printf(_("Brightness: %.2f:%.2f\n"), brightness_day, brightness_night);
 	}
 
-	/* Gamma */
-	if (gamma[0] < MIN_GAMMA || gamma[0] > MAX_GAMMA ||
-	    gamma[1] < MIN_GAMMA || gamma[1] > MAX_GAMMA ||
-	    gamma[2] < MIN_GAMMA || gamma[2] > MAX_GAMMA) {
-		fprintf(stderr,
-			_("Gamma value must be between %.1f and %.1f.\n"),
-			MIN_GAMMA, MAX_GAMMA);
-		exit(EXIT_FAILURE);
-	}
-
 	/* Initialize gamma adjustment method. If method is NULL
 	   try all methods until one that works is found. */
-	gamma_state_t state;
+	gamma_server_state_t state;
 
 	/* Gamma adjustment not needed for print mode */
 	if (mode != PROGRAM_MODE_PRINT) {
@@ -1059,15 +1045,20 @@ main(int argc, char *argv[])
 			/* Use method specified on command line. */
 			r = method_try_start(method, &state, &config_state,
 					     method_args == NULL ? NULL :
-					     method_args + strlen(method_args) + 1);
-			if (r < 0) exit(EXIT_FAILURE);
+					     method_args + strlen(method_args) + 1,
+					     gamma);
+			if (r < 0) {
+				config_ini_free(&config_state);
+				exit(EXIT_FAILURE);
+			}
 		} else {
 			/* Try all methods, use the first that works. */
 			for (int i = 0; gamma_methods[i].name != NULL; i++) {
 				const gamma_method_t *m = &gamma_methods[i];
 				if (!m->autostart) continue;
 
-				r = method_try_start(m, &state, &config_state, NULL);
+				r = method_try_start(m, &state, &config_state, NULL,
+						     gamma);
 				if (r < 0) {
 					fputs(_("Trying next method...\n"), stderr);
 					continue;
@@ -1098,7 +1089,7 @@ main(int argc, char *argv[])
 		r = systemtime_get_time(&now);
 		if (r < 0) {
 			fputs(_("Unable to read system time.\n"), stderr);
-			method->free(&state);
+			gamma_free(&state);
 			exit(EXIT_FAILURE);
 		}
 
@@ -1126,10 +1117,10 @@ main(int argc, char *argv[])
 		}
 
 		/* Adjust temperature */
-		r = method->set_temperature(&state, temp, brightness, gamma);
+		r = set_temperature(&state, temp, brightness);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
-			method->free(&state);
+			gamma_free(&state);
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -1139,10 +1130,10 @@ main(int argc, char *argv[])
 		if (verbose) printf(_("Color temperature: %uK\n"), temp_set);
 
 		/* Adjust temperature */
-		r = method->set_temperature(&state, temp_set, brightness_day, gamma);
+		r = set_temperature(&state, temp_set, brightness_day);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
-			method->free(&state);
+			gamma_free(&state);
 			exit(EXIT_FAILURE);
 		}
 
@@ -1151,10 +1142,10 @@ main(int argc, char *argv[])
 	case PROGRAM_MODE_RESET:
 	{
 		/* Reset screen */
-		r = method->set_temperature(&state, NEUTRAL_TEMP, 1.0, gamma);
+		r = set_temperature(&state, NEUTRAL_TEMP, 1.0);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
-			method->free(&state);
+			gamma_free(&state);
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -1242,7 +1233,7 @@ main(int argc, char *argv[])
 			if (r < 0) {
 				fputs(_("Unable to read system time.\n"),
 				      stderr);
-				method->free(&state);
+				gamma_free(&state);
 				exit(EXIT_FAILURE);
 			}
 
@@ -1302,13 +1293,11 @@ main(int argc, char *argv[])
 
 			/* Adjust temperature */
 			if (!disabled || short_trans_delta || set_adjustments) {
-				r = method->set_temperature(&state,
-							    temp, brightness,
-							    gamma);
+				r = set_temperature(&state, temp, brightness);
 				if (r < 0) {
 					fputs(_("Temperature adjustment"
 						" failed.\n"), stderr);
-					method->free(&state);
+					gamma_free(&state);
 					exit(EXIT_FAILURE);
 				}
 			}
@@ -1324,13 +1313,13 @@ main(int argc, char *argv[])
 		}
 
 		/* Restore saved gamma ramps */
-		method->restore(&state);
+		gamma_restore(&state);
 	}
 	break;
 	}
 
 	/* Clean up gamma adjustment state */
-	method->free(&state);
+	gamma_free(&state);
 
 	/* Free memory */
 	if (method_args != NULL)
