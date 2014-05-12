@@ -159,6 +159,10 @@ location_geoclue_set_option(location_geoclue_state_t *state,
 		}
 
 		state->provider = strdup(provider);
+		if (state->provider == NULL) {
+			perror("strdup");
+			return -1;
+		}
 	} else if (strcasecmp(key, "path") == 0) {
 		if (value != NULL && strcasecmp(value, "default") == 0) {
 			path = DEFAULT_PROVIDER_PATH;
@@ -167,6 +171,10 @@ location_geoclue_set_option(location_geoclue_state_t *state,
 		}
 
 		state->provider_path = strdup(path);
+		if (state->provider_path == NULL) {
+			perror("strdup");
+			return -1;
+		}
 	} else {
 		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
 		return -1;
