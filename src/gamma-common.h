@@ -191,5 +191,12 @@ size_t gamma_find_site(const gamma_server_state_t *state, const char *site) __at
 int gamma_resolve_selections(gamma_server_state_t *state);
 
 
+/* Restore gamma ramps. */
+void gamma_restore(gamma_server_state_t *state);
+
+/* Update gamma ramps. */
+int gamma_update(gamma_server_state_t *state);
+
+
 
 #endif /* ! REDSHIFT_GAMMA_COMMON_H */

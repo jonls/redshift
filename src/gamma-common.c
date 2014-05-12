@@ -18,6 +18,8 @@
 */
 
 #include "gamma-common.h"
+#include "adjustments.h"
+#include "colorramp.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -417,3 +419,33 @@ fail:
 
 	return rc;
 }
+
+
+/* Restore gamma ramps. */
+void
+gamma_restore(gamma_server_state_t *state)
+{
+	gamma_iterator_t iter = gamma_iterator(state);
+	while (gamma_iterator_next(&iter)) {
+		if (iter.crtc->saved_ramps.red == NULL)
+			continue;
+		state->set_ramps(state, iter.crtc, iter.crtc->saved_ramps);
+	}
+}
+
+/* Update gamma ramps. */
+int
+gamma_update(gamma_server_state_t *state)
+{
+	gamma_iterator_t iter = gamma_iterator(state);
+	int r;
+	while (gamma_iterator_next(&iter)) {
+		if (iter.crtc->current_ramps.red == NULL)
+			continue;
+		colorramp_fill_(iter.crtc->current_ramps, iter.crtc->settings);
+		r = state->set_ramps(state, iter.crtc, iter.crtc->current_ramps);
+		if (r != 0) return r;
+	}
+	return 0;
+}
+
