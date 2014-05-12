@@ -104,13 +104,28 @@ AS_IF([test "x$enable_vidmode" != xno], [
 ])
 AM_CONDITIONAL([ENABLE_VIDMODE], [test "x$enable_vidmode" = xyes])
 
+# Check for fake Windows GDI
+AC_MSG_CHECKING([whether to enable fake WinGDI])
+AC_ARG_ENABLE([fakegdi], [AC_HELP_STRING([--enable-fakegdi],
+	[enable fake WinGDI])],
+        [enable_fakegdi=$enableval],[enable_fakegdi=no])
+AS_IF([test "x$enable_fakegdi" != xno], [
+	AC_DEFINE([FAKE_W32GDI], 1,
+		[Define to 1 to enable WinGDI method])
+        AC_MSG_RESULT([yes])
+	enable_fakegdi=yes
+], [
+        AC_MSG_RESULT([no])
+])
+AM_CONDITIONAL([FAKE_W32GDI], [test "x$enable_fakegdi" != xno])
+
 # Check Windows GDI method 
 AC_MSG_CHECKING([whether to enable WinGDI method])
 AC_ARG_ENABLE([wingdi], [AC_HELP_STRING([--enable-wingdi],
 	[enable WinGDI method])],
 	[enable_wingdi=$enableval],[enable_wingdi=maybe])
 AS_IF([test "x$enable_wingdi" != xno], [
-	AS_IF([test $have_windows_h = yes], [
+	AS_IF([test $have_windows_h = yes -o $enable_fakegdi = yes], [
 		AC_DEFINE([ENABLE_WINGDI], 1,
 			[Define to 1 to enable WinGDI method])
 		AC_MSG_RESULT([yes])
