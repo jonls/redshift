@@ -198,5 +198,12 @@ void gamma_restore(gamma_server_state_t *state);
 int gamma_update(gamma_server_state_t *state);
 
 
+/* Parse and apply an option. */
+int gamma_set_option(gamma_server_state_t *state, const char *key, char *value, ssize_t section);
+
+/* A gamma string contains either one floating point value,
+   or three values separated by colon. */
+int parse_gamma_string(char *str, float gamma[3]);
+
 
 #endif /* ! REDSHIFT_GAMMA_COMMON_H */

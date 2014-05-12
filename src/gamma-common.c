@@ -449,3 +449,110 @@ gamma_update(gamma_server_state_t *state)
 	return 0;
 }
 
+
+/* Parse and apply an option */
+int
+gamma_set_option(gamma_server_state_t *state, const char *key, char *value, ssize_t section)
+{
+	int r;
+
+	if (section == (ssize_t)(state->selections_made)) {
+		/* Grow array with selections, we temporarily store
+		   the new array a temporarily variable so that we can
+		   properly release resources on error. */
+		gamma_selection_state_t *new_selections;
+		size_t alloc_size = state->selections_made + 1;
+		alloc_size *= sizeof(gamma_selection_state_t);
+		new_selections = realloc(state->selections, alloc_size);
+		if (new_selections == NULL) {
+			perror("realloc");
+			return -1;
+		}
+		state->selections = new_selections;
+
+		/* Copy default selection. */
+		state->selections[section] = *(state->selections);
+		if (state->selections->site != NULL) {
+			state->selections[section].site = strdup(state->selections->site);
+			if (state->selections[section].site == NULL) {
+				perror("strdup");
+				return -1;
+			}
+		}
+
+		/* Increment this last, so we do not get segfault on error. */
+		state->selections_made += 1;
+	}
+
+	if (strcasecmp(key, "gamma") == 0) {
+		float gamma[3];
+		if (parse_gamma_string(value, gamma) < 0) {
+			fputs(_("Malformed gamma setting.\n"),
+			      stderr);
+			return -1;
+		}
+#ifdef MAX_GAMMA
+		if (gamma[0] < MIN_GAMMA || gamma[0] > MAX_GAMMA ||
+		    gamma[1] < MIN_GAMMA || gamma[1] > MAX_GAMMA ||
+		    gamma[2] < MIN_GAMMA || gamma[2] > MAX_GAMMA) {
+			fprintf(stderr,
+				_("Gamma value must be between %.1f and %.1f.\n"),
+				MIN_GAMMA, MAX_GAMMA);
+			return -1;
+		}
+#else
+		if (gamma[0] < MIN_GAMMA ||
+		    gamma[1] < MIN_GAMMA ||
+		    gamma[2] < MIN_GAMMA) {
+			fprintf(stderr,
+				_("Gamma value must be atleast %.1f.\n"),
+				MIN_GAMMA);
+			return -1;
+		}
+#endif
+		if (section >= 0) {
+			state->selections[section].settings.gamma_correction[0] = gamma[0];
+			state->selections[section].settings.gamma_correction[1] = gamma[1];
+			state->selections[section].settings.gamma_correction[2] = gamma[2];
+		} else {
+			for (size_t i = 0; i < state->selections_made; i++) {
+				state->selections[i].settings.gamma_correction[0] = gamma[0];
+				state->selections[i].settings.gamma_correction[1] = gamma[1];
+				state->selections[i].settings.gamma_correction[2] = gamma[2];
+			}
+		}
+	} else {
+		r = state->set_option(state, key, value, section);
+		if (r <= 0)
+			return r;
+		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
+		return -1;
+	}
+	return 0;
+}
+
+/* A gamma string contains either one floating point value,
+   or three values separated by colon. */
+int
+parse_gamma_string(char *str, float gamma[3])
+{
+	char *s = strchr(str, ':');
+	if (s == NULL) {
+		/* Use value for all channels. */
+		float g = atof(str);
+		gamma[0] = gamma[1] = gamma[2] = g;
+	} else {
+		/* Parse separate value for each channel. */
+		*(s++) = '\0';
+		char *g_s = s;
+		s = strchr(s, ':');
+		if (s == NULL) return -1;
+
+		*(s++) = '\0';
+		gamma[0] = atof(str); /* Red   */
+		gamma[1] = atof(g_s); /* Blue  */
+		gamma[2] = atof(s);   /* Green */
+	}
+
+	return 0;
+}

@@ -547,32 +547,6 @@ method_try_start(const gamma_method_t *method,
 	return 0;
 }
 
-/* A gamma string contains either one floating point value,
-   or three values separated by colon. */
-static int
-parse_gamma_string(const char *str, float gamma[])
-{
-	char *s = strchr(str, ':');
-	if (s == NULL) {
-		/* Use value for all channels */
-		float g = atof(str);
-		gamma[0] = gamma[1] = gamma[2] = g;
-	} else {
-		/* Parse separate value for each channel */
-		*(s++) = '\0';
-		char *g_s = s;
-		s = strchr(s, ':');
-		if (s == NULL) return -1;
-
-		*(s++) = '\0';
-		gamma[0] = atof(str); /* Red */
-		gamma[1] = atof(g_s); /* Blue */
-		gamma[2] = atof(s); /* Green */
-	}
-
-	return 0;
-}
-
 /* A brightness string contains either one floating point value,
    or two values separated by a colon. */
 static void
