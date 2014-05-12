@@ -48,6 +48,7 @@
 #include "systemtime.h"
 #include "adjustments.h"
 #include "opt-parser.h"
+#include "gamma-common.h"
 
 
 #define MIN(x,y)  ((x) < (y) ? (x) : (y))

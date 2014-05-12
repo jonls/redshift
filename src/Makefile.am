@@ -16,6 +16,7 @@ redshift_SOURCES = \
 	solar.c solar.h \
 	systemtime.c systemtime.h \
 	adjustments.h \
+	gamma-common.h \
 	gamma-dummy.c gamma-dummy.h \
 	opt-parser.c opt-parser.h
 
