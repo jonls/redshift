@@ -450,7 +450,88 @@ gamma_update(gamma_server_state_t *state)
 }
 
 
-/* Parse and apply an option */
+/* Methods for updating adjustments on all CRTCs. */
+
+static gamma_crtc_selection_t all_crtcs = {
+	.site = -1,
+	.partition = -1,
+	.crtc = -1
+};
+
+#define __gamma_update_all(PROP)						\
+	void									\
+	gamma_update_all_##PROP(gamma_server_state_t *state, float PROP)	\
+	{									\
+		gamma_update_##PROP(state, all_crtcs, PROP);			\
+	}
+
+__gamma_update_all(gamma)
+__gamma_update_all(brightness)
+__gamma_update_all(temperature)
+
+#undef __gamma_update_all
+
+
+/* Methods for updating adjustments on selected CRTCs. */
+
+#define __test(ANCESTOR, THIS)  (crtcs.THIS < 0 || iter.THIS == iter.ANCESTOR->THIS##s + crtcs.THIS)
+#define __test_all()            (__test(state, site) && __test(site, partition) && __test(partition, crtc))
+
+#define __update(PROP)										\
+	if (crtcs.site < 0 || crtcs.partition < 0 || crtcs.crtc < 0) {				\
+		gamma_iterator_t iter = gamma_iterator(state);					\
+		if (crtcs.site < 0 && crtcs.partition < 0 && crtcs.crtc < 0) {			\
+			while (gamma_iterator_next(&iter))					\
+				iter.crtc->settings.PROP = PROP;				\
+		} else {									\
+			while (gamma_iterator_next(&iter))					\
+				if (__test_all())						\
+					iter.crtc->settings.PROP = PROP;			\
+		}										\
+	} else if ((size_t)(crtcs.site) < state->sites_used) {					\
+		gamma_site_state_t site = state->sites[crtcs.site];				\
+		gamma_partition_state_t partition;						\
+		if ((size_t)(crtcs.partition) < site.partitions_available) {			\
+			partition = site.partitions[crtcs.partition];				\
+			if (partition.used && (size_t)(crtcs.crtc) < partition.crtcs_used)	\
+				partition.crtcs[crtcs.crtc].settings.PROP = PROP;		\
+		}										\
+	}
+
+void
+gamma_update_gamma(gamma_server_state_t *state, gamma_crtc_selection_t crtcs, float gamma)
+{
+	if (gamma < MIN_GAMMA) gamma = MIN_GAMMA;
+#ifdef MAX_BRIGHTNESS
+	if (gamma > MAX_GAMMA) gamma = MAX_GAMMA;
+#endif
+	__update(gamma)
+}
+
+void
+gamma_update_brightness(gamma_server_state_t *state, gamma_crtc_selection_t crtcs, float brightness)
+{
+	if (brightness < MIN_BRIGHTNESS) brightness = MIN_BRIGHTNESS;
+#ifdef MAX_BRIGHTNESS
+	if (brightness > MAX_BRIGHTNESS) brightness = MAX_BRIGHTNESS;
+#endif
+	__update(brightness)
+}
+
+void
+gamma_update_temperature(gamma_server_state_t *state, gamma_crtc_selection_t crtcs, float temperature)
+{
+	if (temperature < MIN_TEMP) temperature = MIN_TEMP;
+	if (temperature > MAX_TEMP) temperature = MAX_TEMP;
+	__update(temperature)
+}
+
+#undef __update
+#undef __test_all
+#undef __test
+
+
+/* Parse and apply an option. */
 int
 gamma_set_option(gamma_server_state_t *state, const char *key, char *value, ssize_t section)
 {

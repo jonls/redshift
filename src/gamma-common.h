@@ -37,6 +37,7 @@ struct gamma_site_state;
 struct gamma_selection_state;
 struct gamma_server_state;
 struct gamma_iterator;
+struct gamma_crtc_selection;
 
 /* Typedef:s of the structures. */
 typedef struct gamma_crtc_state      gamma_crtc_state_t;
@@ -45,6 +46,7 @@ typedef struct gamma_site_state      gamma_site_state_t;
 typedef struct gamma_selection_state gamma_selection_state_t;
 typedef struct gamma_server_state    gamma_server_state_t;
 typedef struct gamma_iterator        gamma_iterator_t;
+typedef struct gamma_crtc_selection  gamma_crtc_selection_t;
 
 
 
@@ -161,6 +163,13 @@ struct gamma_iterator {
 	gamma_server_state_t *state;
 };
 
+/* CRTC selection. */
+struct gamma_crtc_selection {
+	ssize_t site;
+	ssize_t partition;
+	ssize_t crtc;
+};
+
 
 
 /* Initialize the adjustment method common parts of a state,
@@ -196,6 +205,17 @@ void gamma_restore(gamma_server_state_t *state);
 
 /* Update gamma ramps. */
 int gamma_update(gamma_server_state_t *state);
+
+
+/* Methods for updating adjustments on all CRTCs. */
+void gamma_update_all_gamma(gamma_server_state_t *state, float gamma);
+void gamma_update_all_brightness(gamma_server_state_t *state, float brightness);
+void gamma_update_all_temperature(gamma_server_state_t *state, float temperature);
+
+/* Methods for updating adjustments on selected CRTCs. */
+void gamma_update_gamma(gamma_server_state_t *state, gamma_crtc_selection_t crtcs, float gamma);
+void gamma_update_brightness(gamma_server_state_t *state, gamma_crtc_selection_t crtcs, float brightness);
+void gamma_update_temperature(gamma_server_state_t *state, gamma_crtc_selection_t crtcs, float temperature);
 
 
 /* Parse and apply an option. */
