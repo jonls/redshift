@@ -199,19 +199,6 @@ static const location_provider_t location_providers[] = {
 	{ NULL }
 };
 
-/* Bounds for parameters. */
-#define MIN_LAT   -90.0
-#define MAX_LAT    90.0
-#define MIN_LON  -180.0
-#define MAX_LON   180.0
-
-/* Angular elevation of the sun at which the color temperature
-   transition period starts and ends (in degress).
-   Transition during twilight, and while the sun is lower than
-   3.0 degrees above the horizon. */
-#define TRANSITION_LOW     SOLAR_CIVIL_TWILIGHT_ELEV
-#define TRANSITION_HIGH    3.0
-
 /* Program modes. */
 typedef enum {
 	PROGRAM_MODE_CONTINUAL,
