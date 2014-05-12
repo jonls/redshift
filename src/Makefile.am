@@ -16,6 +16,7 @@ redshift_SOURCES = \
 	solar.c solar.h \
 	systemtime.c systemtime.h \
 	hooks.c hooks.h \
+	adjustments.h \
 	gamma-dummy.c gamma-dummy.h
 
 EXTRA_redshift_SOURCES = \
