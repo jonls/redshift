@@ -1539,17 +1539,6 @@ main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	if (verbose) {
-		/* TRANSLATORS: The string in parenthesis is either
-		   Daytime or Night (translated). */
-		printf(_("Gamma (%s): %.3f, %.3f, %.3f\n"),
-		       _("Daytime"), scheme.day.gamma[0],
-		       scheme.day.gamma[1], scheme.day.gamma[2]);
-		printf(_("Gamma (%s): %.3f, %.3f, %.3f\n"),
-		       _("Night"), scheme.night.gamma[0],
-		       scheme.night.gamma[1], scheme.night.gamma[2]);
-	}
-
 	/* Initialize gamma adjustment method. If method is NULL
 	   try all methods until one that works is found. */
 	gamma_state_t state;
