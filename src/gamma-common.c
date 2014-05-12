@@ -442,7 +442,7 @@ gamma_update(gamma_server_state_t *state)
 	while (gamma_iterator_next(&iter)) {
 		if (iter.crtc->current_ramps.red == NULL)
 			continue;
-		colorramp_fill_(iter.crtc->current_ramps, iter.crtc->settings);
+		colorramp_fill(iter.crtc->current_ramps, iter.crtc->settings);
 		r = state->set_ramps(state, iter.crtc, iter.crtc->current_ramps);
 		if (r != 0) return r;
 	}

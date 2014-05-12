@@ -286,7 +286,7 @@ interpolate_color(float a, const float *c1, const float *c2, float *c)
 }
 
 void
-colorramp_fill_(gamma_ramps_t out_ramps, gamma_settings_t adjustments)
+colorramp_fill(gamma_ramps_t out_ramps, gamma_settings_t adjustments)
 {
 	size_t gamma_sizes[3] = {
 		out_ramps.red_size,
@@ -328,27 +328,4 @@ colorramp_fill_(gamma_ramps_t out_ramps, gamma_settings_t adjustments)
 	}
 
 #undef F
-}
-
-void
-colorramp_fill(uint16_t *gamma_r, uint16_t *gamma_g, uint16_t *gamma_b,
-	       int size, int temp, float brightness, const float gamma[3])
-{
-	gamma_ramps_t out_ramps = {
-		.red_size = (size_t)size,
-		.green_size = (size_t)size,
-		.blue_size = (size_t)size,
-		.red = gamma_r,
-		.green = gamma_g,
-		.blue = gamma_b
-	};
-	gamma_settings_t adjustments = {
-		.gamma_correction[0] = gamma[0],
-		.gamma_correction[1] = gamma[1],
-		.gamma_correction[2] = gamma[2],
-		.gamma = 1,
-		.brightness = brightness,
-		.temperature = temp
-	};
-	colorramp_fill_(out_ramps, adjustments);
 }
