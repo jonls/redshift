@@ -25,8 +25,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#ifndef _WIN32
+#ifdef _WIN32
+# define PATH_MAX  4096
+#else
 # include <pwd.h>
+# include <limits.h>
 #endif
 
 #include "config-ini.h"
@@ -38,8 +41,7 @@
 # define _(s) s
 #endif
 
-#define MAX_CONFIG_PATH  4096
-#define MAX_LINE_LENGTH   512
+#define MAX_LINE_LENGTH  512
 
 
 static FILE *
@@ -58,7 +60,7 @@ open_config_file(const char *filepath)
 
 	if (filepath == NULL) {
 		FILE *f = NULL;
-		char cp[MAX_CONFIG_PATH];
+		char cp[PATH_MAX];
 		char *env;
 
 		if (f == NULL && (env = getenv("XDG_CONFIG_HOME")) != NULL &&
