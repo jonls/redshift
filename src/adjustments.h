@@ -69,6 +69,8 @@ typedef struct {
 typedef struct {
 	/* The monitor's gamma correction. */
 	float gamma_correction[3];
+	/* Lookup table for monitor calibration. */
+	gamma_ramps_t *lut_calibration;
 	/* Adjustments.
 	   The gamma is only one value, rather than
 	   three becuase it is not an correction,

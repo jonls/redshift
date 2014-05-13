@@ -386,4 +386,10 @@ colorramp_fill(gamma_ramps_t out_ramps, gamma_settings_t adjustments)
 #undef F
 
 	apply_lut(filter, gamma_sizes, adjustments.lut_post);
+
+	/* Apply gamma ramps used when Redshift started on top of
+	   the effects of Redshift. It would be easier to put
+	   Redshift's effects on top if this, but then calibrations
+	   would become incorrect. */
+	apply_lut(filter, gamma_sizes, adjustments.lut_calibration);
 }

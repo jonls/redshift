@@ -283,6 +283,7 @@ print_help(const char *program_name)
 		"  -o\t\tOne shot mode (do not continuously adjust"
 		" color temperature)\n"
 		"  -O TEMP\tOne shot manual mode (set color temperature)\n"
+		"  -P\t\tPreserve current calibrations\n"
 		"  -p\t\tPrint mode (only print parameters and exit)\n"
 		"  -x\t\tReset mode (remove adjustment from screen)\n"
 		"  -r\t\tDisable temperature transitions\n"
@@ -438,7 +439,7 @@ static int
 method_try_start(const gamma_method_t *method,
 		 gamma_server_state_t *state,
 		 config_ini_state_t *config, char *args,
-		 char *gamma)
+		 char *gamma, int preserve_calibrations)
 {
 	int r;
 
@@ -458,6 +459,15 @@ method_try_start(const gamma_method_t *method,
 			gamma_free(state);
 			return -1;
 		}
+	}
+
+	/* Set default preserve-calibrations settings. */
+	char preserve_calibrations_value[2];
+	snprintf(preserve_calibrations_value, 2, preserve_calibrations ? "1" : "0");
+	r = gamma_set_option(state, "preserve-calibrations", preserve_calibrations_value, 0);
+	if (r < 0) {
+		gamma_free(state);
+	        return -1;
 	}
 
 	/* Set method options from config file. */
@@ -615,6 +625,7 @@ main(int argc, char *argv[])
 	const location_provider_t *provider = NULL;
 	char *provider_args = NULL;
 
+	int preserve_calibrations = -1;
 	int transition = -1;
 	program_mode_t mode = PROGRAM_MODE_CONTINUAL;
 	int verbose = 0;
@@ -630,7 +641,7 @@ main(int argc, char *argv[])
 	int opt;
 	const char **args = alloca(argc * sizeof(char*));
 	int args_count;
-	while ((opt = parseopt(argc, argv, "b:c:g:hl:m:oO:prt:vVx", args, &args_count)) != -1) {
+	while ((opt = parseopt(argc, argv, "b:c:g:hl:m:oO:pPrt:vVx", args, &args_count)) != -1) {
 		float gamma_[3];
 		switch (opt) {
 		case 'b':
@@ -759,6 +770,9 @@ main(int argc, char *argv[])
 		case 'p':
 			mode = PROGRAM_MODE_PRINT;
 			break;
+		case 'P':
+			preserve_calibrations = 1;
+			break;
 		case 'r':
 			transition = 0;
 			break;
@@ -816,6 +830,12 @@ main(int argc, char *argv[])
 					      "temp-night") == 0) {
 				if (temp_night < 0) {
 					temp_night = atoi(setting->value);
+				}
+			} else if (strcasecmp(setting->name,
+					      "preserve-calibrations") == 0) {
+				if (preserve_calibrations < 0 &&
+				    mode == PROGRAM_MODE_CONTINUAL) {
+					preserve_calibrations = !!atoi(setting->value);
 				}
 			} else if (strcasecmp(setting->name,
 					      "transition") == 0) {
@@ -898,6 +918,7 @@ main(int argc, char *argv[])
 	if (isnan(brightness_day)) brightness_day = DEFAULT_BRIGHTNESS;
 	if (isnan(brightness_night)) brightness_night = DEFAULT_BRIGHTNESS;
 	if (transition < 0) transition = 1;
+	if (preserve_calibrations < 0) preserve_calibrations = 0;
 
 	float lat = NAN;
 	float lon = NAN;
@@ -1046,7 +1067,7 @@ main(int argc, char *argv[])
 			r = method_try_start(method, &state, &config_state,
 					     method_args == NULL ? NULL :
 					     method_args + strlen(method_args) + 1,
-					     gamma);
+					     gamma, preserve_calibrations);
 			if (r < 0) {
 				config_ini_free(&config_state);
 				exit(EXIT_FAILURE);
@@ -1058,7 +1079,7 @@ main(int argc, char *argv[])
 				if (!m->autostart) continue;
 
 				r = method_try_start(m, &state, &config_state, NULL,
-						     gamma);
+						     gamma, preserve_calibrations);
 				if (r < 0) {
 					fputs(_("Trying next method...\n"), stderr);
 					continue;
