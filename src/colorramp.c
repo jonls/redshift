@@ -285,6 +285,43 @@ interpolate_color(float a, const float *c1, const float *c2, float *c)
 	c[2] = (1.0-a)*c1[2] + a*c2[2];
 }
 
+static void
+apply_lut(uint16_t *out[3], size_t out_sizes[3], gamma_ramps_t *lut)
+{
+	if (lut == NULL)
+		return;
+	size_t calib_sizes[3] = {
+		lut->red_size,
+		lut->green_size,
+		lut->blue_size
+	};
+	uint16_t *calib[3] = {
+		lut->red,
+		lut->green,
+		lut->blue
+	};
+	for (int c = 0; c < 3; c++) {
+		uint16_t *cfilter = out[c];
+		uint16_t *ccalib  = calib[c];
+		size_t gamma_size = out_sizes[c];
+		size_t size_      = calib_sizes[c] - 1;
+		for (size_t i = 0; i < gamma_size; i++) {
+			/* We a rounding a bit. We could do linear
+			   interpolation or even more advanced
+			   interpolations, but it is probably not
+			   worth it. If this is used for adjustments
+			   rather than applying the calibrations that
+			   was present when Redshift started, the
+			   lookup table can be of any size so that
+			   this issue cannot possibility be noticed. */
+			int32_t y = (int32_t)(cfilter[i]);
+			y = (float)y * size_ / UINT16_MAX + 0.5f;
+			y = y < 0 ? 0 : (y > (ssize_t)size_ ? (int32_t)size_ : y);
+			cfilter[i] = ccalib[y];
+		}
+	}
+}
+
 void
 colorramp_fill(gamma_ramps_t out_ramps, gamma_settings_t adjustments)
 {
@@ -299,6 +336,25 @@ colorramp_fill(gamma_ramps_t out_ramps, gamma_settings_t adjustments)
 		out_ramps.green,
 		out_ramps.blue
 	};
+
+
+	if (adjustments.lut_pre != NULL) {
+		gamma_ramps_t lut = *(adjustments.lut_pre);
+		if (lut.red_size   == out_ramps.red_size   &&
+		    lut.green_size == out_ramps.green_size &&
+		    lut.blue_size  == out_ramps.blue_size) {
+			memcpy(out_ramps.red, lut.red,
+			       (gamma_sizes[0] + gamma_sizes[1] + gamma_sizes[2]) * sizeof(uint16_t));
+		} else {
+			for (int c = 0; c < 3; c++) {
+				uint16_t *cfilter = filter[c];
+				size_t gamma_size_ = gamma_sizes[c] - 1;
+				for (size_t i = 0; i < gamma_sizes[c]; i++)
+					cfilter[i] = (float)i / gamma_size_ * UINT16_MAX;
+			}
+			apply_lut(filter, gamma_sizes, adjustments.lut_pre);
+		}
+	}
 
 
 	/* Approximate white point. */
@@ -328,4 +384,6 @@ colorramp_fill(gamma_ramps_t out_ramps, gamma_settings_t adjustments)
 	}
 
 #undef F
+
+	apply_lut(filter, gamma_sizes, adjustments.lut_post);
 }

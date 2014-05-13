@@ -81,6 +81,12 @@ typedef struct {
 	float gamma;
 	float brightness;
 	float temperature;
+	/* Lookup table with adjustments, before
+	   and after gamma–brightness–temperature,
+	   but both before gamma correction and
+	   LUT calibration. */
+	gamma_ramps_t *lut_pre;
+	gamma_ramps_t *lut_post;
 } gamma_settings_t;
 
 
