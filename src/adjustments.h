@@ -52,4 +52,37 @@
 
 
 
+/* Gamma ramp trio. */
+typedef struct {
+	/* The number of stops in each ramp. */
+	size_t red_size;
+	size_t green_size;
+	size_t blue_size;
+	/* The actual ramps. */
+	uint16_t *red;
+	uint16_t *green;
+	uint16_t *blue;
+} gamma_ramps_t;
+
+
+/* Color adjustment settings. */
+typedef struct {
+	/* The monitor's gamma correction. */
+	float gamma_correction[3];
+	/* Adjustments.
+	   The gamma is only one value, rather than
+	   three becuase it is not an correction,
+	   but rather an adjustment as suggest in
+	   <https://github.com/jonls/redshift/issues/10>.
+	   This is included for performance: it takes
+	   less work for Redshift to multiply the gamma
+	   values than for a front-ent to create or
+	   modify a lookup table. */
+	float gamma;
+	float brightness;
+	float temperature;
+} gamma_settings_t;
+
+
+
 #endif

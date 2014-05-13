@@ -15,10 +15,13 @@
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2014  Mattias Andrée <maandree@member.fsf.org>
 */
 
 #ifndef REDSHIFT_COLORRAMP_H
 #define REDSHIFT_COLORRAMP_H
+
+#include "adjustments.h"
 
 #include <stdint.h>
 

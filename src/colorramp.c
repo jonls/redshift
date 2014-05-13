@@ -16,8 +16,13 @@
 
    Copyright (c) 2013  Jon Lund Steffensen <jonlst@gmail.com>
    Copyright (c) 2013  Ingo Thies <ithies@astro.uni-bonn.de>
+   Copyright (c) 2014  Mattias Andrée <maandree@member.fsf.org>
 */
 
+#include "colorramp.h"
+#include "adjustments.h"
+
+#include <string.h>
 #include <stdint.h>
 #include <math.h>
 
@@ -281,21 +286,69 @@ interpolate_color(float a, const float *c1, const float *c2, float *c)
 }
 
 void
-colorramp_fill(uint16_t *gamma_r, uint16_t *gamma_g, uint16_t *gamma_b,
-	       int size, int temp, float brightness, const float gamma[3])
+colorramp_fill_(gamma_ramps_t out_ramps, gamma_settings_t adjustments)
 {
-	/* Approximate white point */
+	size_t gamma_sizes[3] = {
+		out_ramps.red_size,
+		out_ramps.green_size,
+		out_ramps.blue_size
+	};
+
+	uint16_t *filter[3] = {
+		out_ramps.red,
+		out_ramps.green,
+		out_ramps.blue
+	};
+
+
+	/* Approximate white point. */
+	int temp = (int)(adjustments.temperature + 0.5f);
 	float white_point[3];
 	float alpha = (temp % 100) / 100.0;
 	int temp_index = ((temp - 1000) / 100)*3;
 	interpolate_color(alpha, &blackbody_color[temp_index],
 			  &blackbody_color[temp_index+3], white_point);
 
-#define F(Y, C)  pow((Y) * brightness * white_point[C], 1.0/gamma[C])
+	float gamma[3] = {
+		adjustments.gamma_correction[0] * adjustments.gamma,
+		adjustments.gamma_correction[1] * adjustments.gamma,
+		adjustments.gamma_correction[2] * adjustments.gamma
+	};
 
-	for (int i = 0; i < size; i++) {
-		gamma_r[i] = F((float)i/size, 0) * (UINT16_MAX+1);
-		gamma_g[i] = F((float)i/size, 1) * (UINT16_MAX+1);
-		gamma_b[i] = F((float)i/size, 2) * (UINT16_MAX+1);
+#define F(Y, C)  pow((Y) * adjustments.brightness * white_point[C], \
+		     1.0f / gamma[C])
+
+	for (int c = 0; c < 3; c++) {
+		uint16_t *cfilter = filter[c];
+		size_t gamma_size = gamma_sizes[c];
+		for (size_t i = 0; i < gamma_size; i++) {
+			int32_t y = F((float)i / gamma_size, c) * (UINT16_MAX+1);
+			cfilter[i] = (uint16_t)(y < 0 ? 0 : y > UINT16_MAX ? UINT16_MAX : y);
+		}
 	}
+
+#undef F
+}
+
+void
+colorramp_fill(uint16_t *gamma_r, uint16_t *gamma_g, uint16_t *gamma_b,
+	       int size, int temp, float brightness, const float gamma[3])
+{
+	gamma_ramps_t out_ramps = {
+		.red_size = (size_t)size,
+		.green_size = (size_t)size,
+		.blue_size = (size_t)size,
+		.red = gamma_r,
+		.green = gamma_g,
+		.blue = gamma_b
+	};
+	gamma_settings_t adjustments = {
+		.gamma_correction[0] = gamma[0],
+		.gamma_correction[1] = gamma[1],
+		.gamma_correction[2] = gamma[2],
+		.gamma = 1,
+		.brightness = brightness,
+		.temperature = temp
+	};
+	colorramp_fill_(out_ramps, adjustments);
 }
