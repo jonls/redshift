@@ -21,6 +21,7 @@
 # include "config.h"
 #endif
 
+#include <alloca.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -46,6 +47,7 @@
 #include "solar.h"
 #include "systemtime.h"
 #include "adjustments.h"
+#include "opt-parser.h"
 
 
 #define MIN(x,y)  ((x) < (y) ? (x) : (y))
@@ -416,43 +418,42 @@ provider_try_start(const location_provider_t *provider,
 	/* Set provider options from command line. */
 	const char *manual_keys[] = { "lat", "lon" };
 	int i = 0;
-	while (args != NULL) {
-		char *next_arg = strchr(args, ':');
-		if (next_arg != NULL) *(next_arg++) = '\0';
-
-		const char *key = args;
-		char *value = strchr(args, '=');
-		if (value == NULL) {
-			/* The options for the "manual" method can be set
-			   without keys on the command line for convencience
-			   and for backwards compatability. We add the proper
-			   keys here before calling set_option(). */
-			if (strcmp(provider->name, "manual") == 0 &&
-			    i < sizeof(manual_keys)/sizeof(manual_keys[0])) {
-				key = manual_keys[i];
-				value = args;
+	if (args != NULL) {
+		while (*args != '\0') {
+			const char *key = args;
+			char *value = strchr(args, '=');
+			if (value == NULL) {
+				/* The options for the "manual" method can be set
+				   without keys on the command line for convencience
+				   and for backwards compatability. We add the proper
+				   keys here before calling set_option(). */
+				if (strcmp(provider->name, "manual") == 0 &&
+				    i < sizeof(manual_keys)/sizeof(manual_keys[0])) {
+					key = manual_keys[i];
+					value = args;
+				} else {
+					fprintf(stderr, _("Failed to parse option `%s'.\n"),
+						args);
+					return -1;
+				}
 			} else {
-				fprintf(stderr, _("Failed to parse option `%s'.\n"),
-					args);
+				*(value++) = '\0';
+			}
+
+			r = provider->set_option(state, key, value);
+			if (r < 0) {
+				provider->free(state);
+				fprintf(stderr, _("Failed to set %s option.\n"),
+					provider->name);
+				/* TRANSLATORS: `help' must not be translated. */
+				fprintf(stderr, _("Try `-l %s:help' for more"
+						  " information.\n"), provider->name);
 				return -1;
 			}
-		} else {
-			*(value++) = '\0';
-		}
 
-		r = provider->set_option(state, key, value);
-		if (r < 0) {
-			provider->free(state);
-			fprintf(stderr, _("Failed to set %s option.\n"),
-				provider->name);
-			/* TRANSLATORS: `help' must not be translated. */
-			fprintf(stderr, _("Try `-l %s:help' for more"
-					  " information.\n"), provider->name);
-			return -1;
+			args = value + strlen(value) + 1;
+			i += 1;
 		}
-
-		args = next_arg;
-		i += 1;
 	}
 
 	/* Start provider. */
@@ -506,32 +507,31 @@ method_try_start(const gamma_method_t *method,
 	}
 
 	/* Set method options from command line. */
-	while (args != NULL) {
-		char *next_arg = strchr(args, ':');
-		if (next_arg != NULL) *(next_arg++) = '\0';
+	if (args != NULL) {
+		while (*args != '\0') {
+			const char *key = args;
+			char *value = strchr(args, '=');
+			if (value == NULL) {
+				fprintf(stderr, _("Failed to parse option `%s'.\n"),
+					args);
+				return -1;
+			} else {
+				*(value++) = '\0';
+			}
 
-		const char *key = args;
-		char *value = strchr(args, '=');
-		if (value == NULL) {
-			fprintf(stderr, _("Failed to parse option `%s'.\n"),
-				args);
-			return -1;
-		} else {
-			*(value++) = '\0';
+			r = method->set_option(state, key, value);
+			if (r < 0) {
+				method->free(state);
+				fprintf(stderr, _("Failed to set %s option.\n"),
+					method->name);
+				/* TRANSLATORS: `help' must not be translated. */
+				fprintf(stderr, _("Try -m %s:help' for more"
+						  " information.\n"), method->name);
+				return -1;
+			}
+
+			args = value + strlen(value) + 1;
 		}
-
-		r = method->set_option(state, key, value);
-		if (r < 0) {
-			method->free(state);
-			fprintf(stderr, _("Failed to set %s option.\n"),
-				method->name);
-			/* TRANSLATORS: `help' must not be translated. */
-			fprintf(stderr, _("Try -m %s:help' for more"
-					  " information.\n"), method->name);
-			return -1;
-		}
-
-		args = next_arg;
 	}
 
 	/* Start method. */
@@ -663,7 +663,9 @@ main(int argc, char *argv[])
 
 	/* Parse command line arguments. */
 	int opt;
-	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:prt:vVx")) != -1) {
+	const char **args = alloca(argc * sizeof(char*));
+	int args_count;
+	while ((opt = parseopt(argc, argv, "b:c:g:hl:m:oO:prt:vVx", args, &args_count)) != -1) {
 		switch (opt) {
 		case 'b':
 			parse_brightness_string(optarg, &brightness_day, &brightness_night);
@@ -688,38 +690,47 @@ main(int argc, char *argv[])
 			break;
 		case 'l':
 			/* Print list of providers if argument is `list' */
-			if (strcasecmp(optarg, "list") == 0) {
+			if (strcasecmp(*args, "list") == 0) {
 				print_provider_list();
 				exit(EXIT_SUCCESS);
 			}
 
-			char *provider_name = NULL;
+			provider_args = coalesce_args(args, args_count, '\0', '\0');
+			if (provider_args == NULL) {
+				perror("coalesce_args");
+				exit(EXIT_FAILURE);
+			}
 
 			/* Don't save the result of strtof(); we simply want
 			   to know if optarg can be parsed as a float. */
 			errno = 0;
 			char *end;
-			strtof(optarg, &end);
-			if (errno == 0 && *end == ':') {
-				/* Use instead as arguments to `manual'. */
-				provider_name = "manual";
-				provider_args = optarg;
-			} else {
-				/* Split off provider arguments. */
-				s = strchr(optarg, ':');
-				if (s != NULL) {
-					*(s++) = '\0';
-					provider_args = s;
+			strtof(provider_args, &end);
+			if (errno == 0 && (end[0] == ':' || end[0] == '\0') && end[1] != '\0') {
+				/* Set delimiter to `\0'. */
+				end[0] = '\0';
+				/* Set provider method to `manual'. */
+				char *old_buf = provider_args;
+				size_t n = 0;
+				while (provider_args[n] != '\0' || provider_args[n + 1] != '\0')
+					n++;
+				n += 2;
+				provider_args = realloc(old_buf, (strlen("manual") + 1 + n) * sizeof(char));
+				if (provider_args == NULL) {
+					perror("realloc");
+					free(old_buf);
+					exit(EXIT_FAILURE);
 				}
-
-				provider_name = optarg;
+				memmove(provider_args + strlen("manual") + 1, provider_args, n * sizeof(char));
+				strcpy(provider_args, "manual");
 			}
 
 			/* Lookup provider from name. */
-			provider = find_location_provider(provider_name);
+			provider = find_location_provider(provider_args);
 			if (provider == NULL) {
 				fprintf(stderr, _("Unknown location provider"
-						  " `%s'.\n"), provider_name);
+						  " `%s'.\n"), provider_args);
+				free(provider_args);
 				exit(EXIT_FAILURE);
 			}
 
@@ -727,6 +738,7 @@ main(int argc, char *argv[])
 			if (provider_args != NULL &&
 			    strcasecmp(provider_args, "help") == 0) {
 				provider->print_help(stdout);
+				free(provider_args);
 				exit(EXIT_SUCCESS);
 			}
 			break;
@@ -737,20 +749,20 @@ main(int argc, char *argv[])
 				exit(EXIT_SUCCESS);
 			}
 
-			/* Split off method arguments. */
-			s = strchr(optarg, ':');
-			if (s != NULL) {
-				*(s++) = '\0';
-				method_args = s;
+			method_args = coalesce_args(args, args_count, '\0', '\0');
+			if (method_args == NULL) {
+				perror("coalesce_args");
+				exit(EXIT_FAILURE);
 			}
 
 			/* Find adjustment method by name. */
-			method = find_gamma_method(optarg);
+			method = find_gamma_method(method_args);
 			if (method == NULL) {
 				/* TRANSLATORS: This refers to the method
 				   used to adjust colors e.g VidMode */
 				fprintf(stderr, _("Unknown adjustment method"
 						  " `%s'.\n"), optarg);
+				free(method_args);
 				exit(EXIT_FAILURE);
 			}
 
@@ -758,6 +770,7 @@ main(int argc, char *argv[])
 			if (method_args != NULL &&
 			    strcasecmp(method_args, "help") == 0) {
 				method->print_help(stdout);
+				free(method_args);
 				exit(EXIT_SUCCESS);
 			}
 			break;
@@ -927,8 +940,9 @@ main(int argc, char *argv[])
 	    mode != PROGRAM_MODE_MANUAL) {
 		if (provider != NULL) {
 			/* Use provider specified on command line. */
-			r = provider_try_start(provider, &location_state,
-					       &config_state, provider_args);
+			r = provider_try_start(provider, &location_state, &config_state,
+					       provider_args == NULL ? NULL :
+					       provider_args + strlen(provider_args) + 1);
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
 			/* Try all providers, use the first that works. */
@@ -1069,7 +1083,8 @@ main(int argc, char *argv[])
 		if (method != NULL) {
 			/* Use method specified on command line. */
 			r = method_try_start(method, &state, &config_state,
-					     method_args);
+					     method_args == NULL ? NULL :
+					     method_args + strlen(method_args) + 1);
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
 			/* Try all methods, use the first that works. */
@@ -1341,6 +1356,12 @@ main(int argc, char *argv[])
 
 	/* Clean up gamma adjustment state */
 	method->free(&state);
+
+	/* Free memory */
+	if (method_args != NULL)
+		free(method_args);
+	if (provider_args != NULL)
+		free(provider_args);
 
 	return EXIT_SUCCESS;
 }
