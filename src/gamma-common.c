@@ -367,10 +367,28 @@ fail:
 /* Open partitions. */
 static int
 gamma_open_partitions(gamma_server_state_t *state, gamma_site_state_t *site,
-		      gamma_selection_state_t *selection)
+		      gamma_selection_state_t *selection, int all_partitions)
 {
 	int rc = -1, r;
 
+	/* Select all partitions if none have been specified explicity. */
+	if (all_partitions && selection->partitions_count < site->partitions_available) {
+		size_t p, n = site->partitions_available;
+		if (selection->partitions != NULL)
+			free(selection->partitions);
+		selection->partitions = malloc(n * sizeof(size_t));
+		if (selection->partitions == NULL) {
+			perror("malloc");
+			goto fail;
+		}
+		for (p = 0; p < n; p++)
+			selection->partitions[p] = p;
+	}
+	if (all_partitions) {
+		selection->partitions_count = site->partitions_available;
+	}
+
+	/* Open partitions. */
 	for (size_t p = 0; p < selection->partitions_count; p++) {
 		size_t partition_index = selection->partitions[p];
 
@@ -493,7 +511,6 @@ gamma_resolve_selections(gamma_server_state_t *state)
 		int all_partitions = selection->partitions == NULL;
 		gamma_site_state_t *site;
 		size_t site_index;
-		size_t s = 0;
 
 		/* Select default site if none have been specified. */
 		if (selection->sites == NULL) {
@@ -503,63 +520,42 @@ gamma_resolve_selections(gamma_server_state_t *state)
 				goto fail;
 			}
 			selection->sites[0] = NULL;
+			selection->sites_count = 1;
 		}
 
-	next_site:
-		if (s == selection->sites_count)
-			continue;
+		for (size_t s = 0; s < selection->sites_count; s++) {
+			/* Find matching already opened site. */
+			site_index = gamma_find_site(state, selection->sites[s]);
 
-		/* Find matching already opened site. */
-		site_index = gamma_find_site(state, selection->sites[s]);
+			/* Open site if not found. */
+			if (site_index == state->sites_used) {
+				r = gamma_open_site(state, site_index, selection->sites[s], &site);
+				if (r != 0) {
+					rc = r;
+					goto fail;
+				}
+			} else {
+				site = state->sites + site_index;
+			}
 
-		/* Open site if not found. */
-		if (site_index == state->sites_used) {
-			r = gamma_open_site(state, site_index, selection->sites[s], &site);
+			/* Open partitions. */
+			r = gamma_open_partitions(state, site, selection, all_partitions);
 			if (r != 0) {
 				rc = r;
 				goto fail;
 			}
-		} else {
-			site = state->sites + site_index;
-		}
 
-		/* Select all partitions if none have been specified explicity. */
-		if (all_partitions && selection->partitions_count < site->partitions_available) {
-			size_t p, n = site->partitions_available;
-			if (selection->partitions != NULL)
-				free(selection->partitions);
-			selection->partitions = malloc(n * sizeof(size_t));
-			if (selection->partitions == NULL) {
-				perror("malloc");
-				goto fail;
-			}
-			for (p = 0; p < n; p++)
-				selection->partitions[p] = p;
-		}
-		if (all_partitions) {
-			selection->partitions_count = site->partitions_available;
-		}
-
-		/* Open partitions. */
-		r = gamma_open_partitions(state, site, selection);
-		if (r != 0) {
-			rc = r;
-			goto fail;
-		}
-
-		/* Open CRTCs. */
-		for (size_t p = 0; p < selection->partitions_count; p++) {
-			size_t partition_index = selection->partitions[p];
-			r = gamma_open_crtcs(state, site, site_index,
-					     partition_index, selection, all_crtcs);
-			if (r != 0) {
-				rc = r;
-				goto fail;
+			/* Open CRTCs. */
+			for (size_t p = 0; p < selection->partitions_count; p++) {
+				size_t partition_index = selection->partitions[p];
+				r = gamma_open_crtcs(state, site, site_index,
+						     partition_index, selection, all_crtcs);
+				if (r != 0) {
+					rc = r;
+					goto fail;
+				}
 			}
 		}
-
-		s++;
-		goto next_site;
 	}
 
 	rc = 0;
