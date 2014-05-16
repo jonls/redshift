@@ -187,5 +187,9 @@ int gamma_iterator_next(gamma_iterator_t *iterator);
 size_t gamma_find_site(const gamma_server_state_t *state, const char *site) __attribute__((pure));
 
 
+/* Resolve selections. */
+int gamma_resolve_selections(gamma_server_state_t *state);
+
+
 
 #endif /* ! REDSHIFT_GAMMA_COMMON_H */

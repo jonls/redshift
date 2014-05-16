@@ -238,3 +238,182 @@ gamma_find_site(const gamma_server_state_t *state, const char *site)
 
 	return site_index;
 }
+
+
+/* Resolve selections. */
+int
+gamma_resolve_selections(gamma_server_state_t *state)
+{
+	int default_selection = state->selections_made == 1;
+	int rc = -1, r;
+
+	/* Shift the selections so that the iteration finds the
+	   default selection if no other selection is made. */
+	if (default_selection) {
+		state->selections_made += 1;
+		state->selections--;
+	}
+
+	for (size_t i = 1; i < state->selections_made; i++) {
+		gamma_selection_state_t *selection = state->selections + i;
+		gamma_site_state_t *site;
+		size_t site_index;
+		size_t partition_start;
+		size_t partition_end;
+
+		/* Find matching already opened site. */
+		site_index = gamma_find_site(state, selection->site);
+
+		/* Open site if not found. */
+		if (site_index == state->sites_used) {
+			/* Grow array with sites, we temporarily store the new array
+			   a temporarily variable so that we can properly release
+			   resources on error. */
+			gamma_site_state_t *new_sites;
+			size_t alloc_size = (site_index + 1) * sizeof(gamma_site_state_t);
+			new_sites = state->sites != NULL ?
+				      realloc(state->sites, alloc_size) :
+				      malloc(alloc_size);
+			if (new_sites == NULL) {
+		  		perror(state->sites != NULL ? "realloc" : "malloc");
+				goto fail;
+			}
+			state->sites = new_sites;
+			site = state->sites + site_index;
+
+			/* Make sure these are not freed before allocated on error. */
+			site->site = NULL;
+			site->partitions = NULL;
+
+			r = state->open_site(state, selection->site, site);
+			if (r != 0) {
+				rc = r;
+				goto fail;
+			}
+
+			/* Increment now (rather than earlier), so we do not get segfault on error. */
+			state->sites_used += 1;
+
+			if (selection->site != NULL) {
+				site->site = strdup(selection->site);
+				if (site->site == NULL) {
+					perror("strdup");
+					goto fail;
+				}
+			}
+
+			/* calloc is used so that `used` in each partition is set to false. */
+			site->partitions = calloc(site->partitions_available,
+						  sizeof(gamma_partition_state_t));
+			if (site->partitions == NULL) {
+				site->partitions_available = 0;
+				perror(state->sites != NULL ? "realloc" : "malloc");
+				goto fail;
+			}
+		} else {
+			site = state->sites + site_index;
+		}
+
+		/* Select partitions. */
+		if (selection->partition >= (ssize_t)(site->partitions_available)) {
+			state->invalid_partition(site, (size_t)(selection->partition));
+			goto fail;
+		}
+		partition_start = selection->partition < 0 ? 0 : (size_t)(selection->partition);
+		partition_end = selection->partition < 0 ? site->partitions_available : partition_start + 1;
+		/* Open partitions. */
+		for (size_t p = partition_start; p < partition_end; p++) {
+			gamma_partition_state_t *partition = site->partitions + p;
+			if (partition->used) continue;
+
+			r = state->open_partition(state, site, p, partition);
+			if (r != 0) {
+				rc = r;
+				goto fail;
+			}
+
+			partition->used = 1;
+		}
+
+		/* Open CRTCs. */
+		for (size_t p = partition_start; p < partition_end; p++) {
+			gamma_partition_state_t *partition = site->partitions + p;
+			size_t crtc_start = selection->crtc < 0 ? 0 : (size_t)(selection->crtc);
+			size_t crtc_end = selection->crtc < 0 ? partition->crtcs_available : crtc_start + 1;
+
+			if (selection->crtc >= (ssize_t)(partition->crtcs_available)) {
+				fprintf(stderr, _("CRTC %ld does not exist. "),
+					selection->crtc);
+				if (partition->crtcs_available > 1) {
+					fprintf(stderr, _("Valid CRTCs are [0-%ld].\n"),
+						partition->crtcs_available - 1);
+				} else {
+					fprintf(stderr, _("Only CRTC 0 exists.\n"));
+				}
+				return -1;
+			}
+
+			/* Grow array with selected CRTCs, we temporarily store
+			   the new array a temporarily variable so that we can
+			   properly release resources on error. */
+			gamma_crtc_state_t *new_crtcs;
+			size_t alloc_size = partition->crtcs_used + crtc_end - crtc_start;
+			alloc_size *= sizeof(gamma_crtc_state_t);
+			new_crtcs = partition->crtcs != NULL ?
+				    realloc(partition->crtcs, alloc_size) :
+				    malloc(alloc_size);
+			if (new_crtcs == NULL) {
+				perror(partition->crtcs != NULL ? "realloc" : "malloc");
+				goto fail;
+			}
+			partition->crtcs = new_crtcs;
+
+			for (size_t c = crtc_start; c < crtc_end; c++) {
+				gamma_crtc_state_t *crtc = partition->crtcs + partition->crtcs_used;
+				size_t total_ramp_size = 0, rrs, grs;
+				uint16_t *ramps;
+
+				r = state->open_crtc(state, site, partition, c, crtc);
+				if (r != 0) {
+					rc = r;
+					goto fail;
+				}
+				crtc->crtc = c;
+				crtc->partition = p;
+				crtc->site_index = site_index;
+				partition->crtcs_used += 1;
+
+				/* Store adjustment settigns. */
+				crtc->settings = selection->settings;
+
+				/* Create crtc->current_ramps. */
+				crtc->current_ramps = crtc->saved_ramps;
+				total_ramp_size += rrs = crtc->current_ramps.red_size;
+				total_ramp_size += grs = crtc->current_ramps.green_size;
+				total_ramp_size +=       crtc->current_ramps.blue_size;
+				total_ramp_size *= sizeof(uint16_t);
+				ramps = malloc(total_ramp_size);
+				crtc->current_ramps.red   = ramps;
+				crtc->current_ramps.green = ramps + rrs;
+				crtc->current_ramps.blue  = ramps + rrs + grs;
+				if (ramps == NULL) {
+					perror("malloc");
+					goto fail;
+				}
+			}
+		}
+	}
+
+	rc = 0;
+
+fail:
+	/* Undo the shift made in the beginning of this function. */
+	if (default_selection) {
+		state->selections_made -= 1;
+		state->selections++;
+	}
+
+	gamma_free_selections(state);
+
+	return rc;
+}
