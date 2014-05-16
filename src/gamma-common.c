@@ -364,6 +364,42 @@ fail:
 }
 
 
+/* Open partitions. */
+static int
+gamma_open_partitions(gamma_server_state_t *state, gamma_site_state_t *site,
+		      gamma_selection_state_t *selection)
+{
+	int rc = -1, r;
+
+	for (size_t p = 0; p < selection->partitions_count; p++) {
+		size_t partition_index = selection->partitions[p];
+
+		/* Validate partition index. */
+		if (partition_index >= site->partitions_available) {
+			state->invalid_partition(site, partition_index);
+			goto fail;
+		}
+
+		gamma_partition_state_t *partition = site->partitions + partition_index;
+		if (partition->used) continue; /* Already open. */
+
+		/* Open partition. */
+		r = state->open_partition(state, site, partition_index, partition);
+		if (r != 0) {
+			rc = r;
+			goto fail;
+		}
+
+		partition->used = 1;
+	}
+
+	return 0;
+
+fail:
+	return rc;
+}
+
+
 /* Open multiple CRTCs. */
 static int
 gamma_open_crtcs(gamma_server_state_t *state, gamma_site_state_t *site,
@@ -505,26 +541,10 @@ gamma_resolve_selections(gamma_server_state_t *state)
 		}
 
 		/* Open partitions. */
-		for (size_t p = 0; p < selection->partitions_count; p++) {
-			size_t partition_index = selection->partitions[p];
-
-			/* Validate partition index. */
-			if (partition_index >= site->partitions_available) {
-				state->invalid_partition(site, partition_index);
-				goto fail;
-			}
-
-			gamma_partition_state_t *partition = site->partitions + partition_index;
-			if (partition->used) continue;
-
-			/* Open partition. */
-			r = state->open_partition(state, site, partition_index, partition);
-			if (r != 0) {
-				rc = r;
-				goto fail;
-			}
-
-			partition->used = 1;
+		r = gamma_open_partitions(state, site, selection);
+		if (r != 0) {
+			rc = r;
+			goto fail;
 		}
 
 		/* Open CRTCs. */
