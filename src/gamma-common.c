@@ -612,6 +612,7 @@ gamma_set_option(gamma_server_state_t *state, const char *key, char *value, ssiz
 	return 0;
 }
 
+
 /* A gamma string contains either one floating point value,
    or three values separated by colon. */
 int
@@ -635,5 +636,52 @@ parse_gamma_string(char *str, float gamma[3])
 		gamma[2] = atof(s);   /* Green */
 	}
 
+	return 0;
+}
+
+
+/* Parse CRTC selection option. */
+int
+gamma_select_crtcs(gamma_server_state_t *state, char *value, char delimiter,
+		   ssize_t section, const char *name)
+{
+	ssize_t crtc = strcasecmp(value, "all") ? (ssize_t)atoi(value) : -1;
+	if (crtc < 0 && strcasecmp(value, "all")) {
+		/* TRANSLATORS: `all' must not be translated. */
+		fprintf(stderr, _("%s must be `all' or a non-negative integer.\n"), name);
+		return -1;
+	}
+	on_selections({ sel->crtc = crtc; });
+	return 0;
+}
+
+
+/* Parse partition (e.g. screen) selection option. */
+int
+gamma_select_partitions(gamma_server_state_t *state, char *value, char delimiter,
+			ssize_t section, const char *name)
+{
+	ssize_t partition = strcasecmp(value, "all") ? (ssize_t)atoi(value) : -1;
+	if (partition < 0 && strcasecmp(value, "all")) {
+		/* TRANSLATORS: `all' must not be translated. */
+		fprintf(stderr, _("%s must be `all' or a non-negative integer.\n"), name);
+		return -1;
+	}
+	on_selections({ sel->partition = partition; });
+	return 0;
+}
+
+
+/* Parse site (e.g. display) selection option. */
+int
+gamma_select_sites(gamma_server_state_t *state, char *value, char delimiter, ssize_t section)
+{
+	on_selections({
+		sel->site = strdup(value);
+		if (sel->site == NULL) {
+			perror("strdup");
+			return -1;
+		}
+	});
 	return 0;
 }

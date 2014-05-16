@@ -239,5 +239,16 @@ int parse_gamma_string(char *str, float gamma[3]);
 			INSTRUCTION							\
 	}
 
+/* Parse CRTC selection option. */
+int gamma_select_crtcs(gamma_server_state_t *state, char *value, char delimiter,
+		       ssize_t section, const char *name);
+
+/* Parse partition (e.g. screen) selection option. */
+int gamma_select_partitions(gamma_server_state_t *state, char *value, char delimiter,
+			    ssize_t section, const char *name);
+
+/* Parse site (e.g. display) selection option. */
+int gamma_select_sites(gamma_server_state_t *state, char *value, char delimiter, ssize_t section);
+
 
 #endif /* ! REDSHIFT_GAMMA_COMMON_H */
