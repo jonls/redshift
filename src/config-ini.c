@@ -40,7 +40,8 @@
 #endif
 
 #define MAX_CONFIG_PATH  4096
-#define MAX_LINE_LENGTH   512
+#define MAX_LINE_LENGTH   600
+/* At least 512 is required for EDIDs by themself. */
 
 
 static FILE *
