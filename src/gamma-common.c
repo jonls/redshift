@@ -242,6 +242,115 @@ gamma_find_site(const gamma_server_state_t *state, const char *site)
 }
 
 
+/* Open a site. */
+static int
+gamma_open_site(gamma_server_state_t *state, size_t site_index,
+		char *site_name, gamma_site_state_t **site_out)
+{
+	int rc = -1, r;
+	gamma_site_state_t *site;
+
+	/* Grow array with sites, we temporarily store the new array
+	   a temporarily variable so that we can properly release
+	   resources on error. */
+	gamma_site_state_t *new_sites;
+	size_t alloc_size = (site_index + 1) * sizeof(gamma_site_state_t);
+	new_sites = state->sites != NULL ?
+		    realloc(state->sites, alloc_size) :
+		    malloc(alloc_size);
+	if (new_sites == NULL) {
+		perror(state->sites != NULL ? "realloc" : "malloc");
+		goto fail;
+	}
+	state->sites = new_sites;
+	site = state->sites + site_index;
+
+	/* Make sure these are not freed before allocated on error. */
+	site->site = NULL;
+	site->partitions = NULL;
+
+	r = state->open_site(state, site_name, site);
+	if (r != 0) {
+		rc = r;
+		goto fail;
+	}
+
+	/* Increment now (rather than earlier), so we do not get segfault on error. */
+	state->sites_used += 1;
+
+	if (site_name != NULL) {
+		site->site = strdup(site_name);
+		if (site->site == NULL) {
+			perror("strdup");
+			goto fail;
+		}
+	}
+
+	/* calloc is used so that `used` in each partition is set to false. */
+	site->partitions = calloc(site->partitions_available,
+				  sizeof(gamma_partition_state_t));
+	if (site->partitions == NULL) {
+		site->partitions_available = 0;
+		perror(state->sites != NULL ? "realloc" : "malloc");
+		goto fail;
+	}
+
+	*site_out = site;
+	return 0;
+
+fail:
+	return rc;
+}
+
+
+/* Open a CRTC. */
+static int
+gamma_open_crtc(gamma_server_state_t *state, gamma_site_state_t *site,
+		gamma_partition_state_t *partition, size_t site_index,
+		size_t partition_index, size_t crtc_index,
+		gamma_selection_state_t *selection)
+{
+	int rc = -1, r;
+
+	gamma_crtc_state_t *crtc = partition->crtcs + partition->crtcs_used;
+	size_t total_ramp_size = 0, rrs, grs;
+	uint16_t *ramps;
+
+	r = state->open_crtc(state, site, partition, crtc_index, crtc);
+	if (r != 0) {
+		rc = r;
+		goto fail;
+	}
+	crtc->crtc = crtc_index;
+	crtc->partition = partition_index;
+	crtc->site_index = site_index;
+	partition->crtcs_used += 1;
+
+	/* Store adjustment settigns. */
+	crtc->settings = selection->settings;
+
+	/* Create crtc->current_ramps. */
+	crtc->current_ramps = crtc->saved_ramps;
+	total_ramp_size += rrs = crtc->current_ramps.red_size;
+	total_ramp_size += grs = crtc->current_ramps.green_size;
+	total_ramp_size +=       crtc->current_ramps.blue_size;
+	total_ramp_size *= sizeof(uint16_t);
+	ramps = malloc(total_ramp_size);
+	crtc->current_ramps.red   = ramps;
+	crtc->current_ramps.green = ramps + rrs;
+	crtc->current_ramps.blue  = ramps + rrs + grs;
+	if (ramps == NULL) {
+		perror("malloc");
+		goto fail;
+	}
+
+	return 0;
+
+fail:
+	return rc;
+}
+
+
 /* Resolve selections. */
 int
 gamma_resolve_selections(gamma_server_state_t *state)
@@ -268,48 +377,9 @@ gamma_resolve_selections(gamma_server_state_t *state)
 
 		/* Open site if not found. */
 		if (site_index == state->sites_used) {
-			/* Grow array with sites, we temporarily store the new array
-			   a temporarily variable so that we can properly release
-			   resources on error. */
-			gamma_site_state_t *new_sites;
-			size_t alloc_size = (site_index + 1) * sizeof(gamma_site_state_t);
-			new_sites = state->sites != NULL ?
-				      realloc(state->sites, alloc_size) :
-				      malloc(alloc_size);
-			if (new_sites == NULL) {
-		  		perror(state->sites != NULL ? "realloc" : "malloc");
-				goto fail;
-			}
-			state->sites = new_sites;
-			site = state->sites + site_index;
-
-			/* Make sure these are not freed before allocated on error. */
-			site->site = NULL;
-			site->partitions = NULL;
-
-			r = state->open_site(state, selection->site, site);
+			r = gamma_open_site(state, site_index, selection->site, &site);
 			if (r != 0) {
 				rc = r;
-				goto fail;
-			}
-
-			/* Increment now (rather than earlier), so we do not get segfault on error. */
-			state->sites_used += 1;
-
-			if (selection->site != NULL) {
-				site->site = strdup(selection->site);
-				if (site->site == NULL) {
-					perror("strdup");
-					goto fail;
-				}
-			}
-
-			/* calloc is used so that `used` in each partition is set to false. */
-			site->partitions = calloc(site->partitions_available,
-						  sizeof(gamma_partition_state_t));
-			if (site->partitions == NULL) {
-				site->partitions_available = 0;
-				perror(state->sites != NULL ? "realloc" : "malloc");
 				goto fail;
 			}
 		} else {
@@ -371,35 +441,10 @@ gamma_resolve_selections(gamma_server_state_t *state)
 			partition->crtcs = new_crtcs;
 
 			for (size_t c = crtc_start; c < crtc_end; c++) {
-				gamma_crtc_state_t *crtc = partition->crtcs + partition->crtcs_used;
-				size_t total_ramp_size = 0, rrs, grs;
-				uint16_t *ramps;
-
-				r = state->open_crtc(state, site, partition, c, crtc);
+				r = gamma_open_crtc(state, site, partition, site_index,
+						    p, c, selection);
 				if (r != 0) {
 					rc = r;
-					goto fail;
-				}
-				crtc->crtc = c;
-				crtc->partition = p;
-				crtc->site_index = site_index;
-				partition->crtcs_used += 1;
-
-				/* Store adjustment settigns. */
-				crtc->settings = selection->settings;
-
-				/* Create crtc->current_ramps. */
-				crtc->current_ramps = crtc->saved_ramps;
-				total_ramp_size += rrs = crtc->current_ramps.red_size;
-				total_ramp_size += grs = crtc->current_ramps.green_size;
-				total_ramp_size +=       crtc->current_ramps.blue_size;
-				total_ramp_size *= sizeof(uint16_t);
-				ramps = malloc(total_ramp_size);
-				crtc->current_ramps.red   = ramps;
-				crtc->current_ramps.green = ramps + rrs;
-				crtc->current_ramps.blue  = ramps + rrs + grs;
-				if (ramps == NULL) {
-					perror("malloc");
 					goto fail;
 				}
 			}
