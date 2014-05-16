@@ -318,7 +318,6 @@ randr_init(gamma_server_state_t *state)
 	r = gamma_init(state);
 	if (r != 0) return r;
 
-	state->selections->site    = getenv("DISPLAY") ? strdup(getenv("DISPLAY")) : NULL;
 	state->free_site_data      = randr_free_site;
 	state->free_partition_data = randr_free_partition;
 	state->free_crtc_data      = randr_free_crtc;
@@ -329,10 +328,22 @@ randr_init(gamma_server_state_t *state)
 	state->set_ramps           = randr_set_ramps;
 	state->set_option          = randr_set_option;
 
-	if (getenv("DISPLAY") != NULL && state->selections->site == NULL) {
-		perror("strdup");
+	state->selections->sites = malloc(1 * sizeof(char *));
+	if (state->selections->sites == NULL) {
+		perror("malloc");
 		return -1;
 	}
+
+	if (getenv("DISPLAY") != NULL) {
+		state->selections->sites[0] = strdup(getenv("DISPLAY"));
+		if (state->selections->sites[0] == NULL) {
+			perror("strdup");
+			return -1;
+		}
+	} else {
+		state->selections->sites[0] = NULL;
+	}
+	state->selections->sites_count = 1;
 
 	return 0;
 }

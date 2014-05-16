@@ -53,9 +53,12 @@ gamma_init(gamma_server_state_t *state)
 	}
 
 	/* Defaults selection. */
-	state->selections->crtc = -1;
-	state->selections->partition = -1;
-	state->selections->site = NULL;
+	state->selections->crtcs = NULL;
+	state->selections->crtcs_count = 0;
+	state->selections->partitions = NULL;
+	state->selections->partitions_count = 0;
+	state->selections->sites = NULL;
+	state->selections->sites_count = 0;
 	state->selections->settings.gamma_correction[0] = DEFAULT_GAMMA;
 	state->selections->settings.gamma_correction[1] = DEFAULT_GAMMA;
 	state->selections->settings.gamma_correction[2] = DEFAULT_GAMMA;
@@ -71,12 +74,22 @@ gamma_init(gamma_server_state_t *state)
 void
 gamma_free_selections(gamma_server_state_t *state)
 {
-	size_t i;
+	size_t i, j;
 
 	/* Free data in each selection. */
-	for (i = 0; i < state->selections_made; i++)
-		if (state->selections[i].site != NULL)
-			free(state->selections[i].site);
+	for (i = 0; i < state->selections_made; i++) {
+		if (state->selections[i].crtcs != NULL)
+			free(state->selections[i].crtcs);
+		if (state->selections[i].partitions != NULL)
+			free(state->selections[i].partitions);
+		if (state->selections[i].sites != NULL) {
+			for (j = 0; j < state->selections[i].sites_count; j++) {
+				if (state->selections[i].sites[j] != NULL)
+					free(state->selections[i].sites[j]);
+			}
+			free(state->selections[i].sites);
+		}
+	}
 	state->selections_made = 0;
 
 	/* Free the selection array. */
@@ -367,17 +380,32 @@ gamma_resolve_selections(gamma_server_state_t *state)
 
 	for (size_t i = 1; i < state->selections_made; i++) {
 		gamma_selection_state_t *selection = state->selections + i;
+		int all_crtcs = selection->crtcs == NULL;
+		int all_partitions = selection->partitions == NULL;
 		gamma_site_state_t *site;
 		size_t site_index;
-		size_t partition_start;
-		size_t partition_end;
+		size_t s = 0;
+
+		/* Select default site if none have been specified. */
+		if (selection->sites == NULL) {
+			selection->sites = malloc(1 * sizeof(char *));
+			if (selection->sites == NULL) {
+				perror("malloc");
+				goto fail;
+			}
+			selection->sites[0] = NULL;
+		}
+
+	next_site:
+		if (s == selection->sites_count)
+			continue;
 
 		/* Find matching already opened site. */
-		site_index = gamma_find_site(state, selection->site);
+		site_index = gamma_find_site(state, selection->sites[s]);
 
 		/* Open site if not found. */
 		if (site_index == state->sites_used) {
-			r = gamma_open_site(state, site_index, selection->site, &site);
+			r = gamma_open_site(state, site_index, selection->sites[s], &site);
 			if (r != 0) {
 				rc = r;
 				goto fail;
@@ -386,19 +414,38 @@ gamma_resolve_selections(gamma_server_state_t *state)
 			site = state->sites + site_index;
 		}
 
-		/* Select partitions. */
-		if (selection->partition >= (ssize_t)(site->partitions_available)) {
-			state->invalid_partition(site, (size_t)(selection->partition));
-			goto fail;
+		/* Select all partitions if none have been specified explicity. */
+		if (all_partitions && selection->partitions_count < site->partitions_available) {
+			size_t p, n = site->partitions_available;
+			if (selection->partitions != NULL)
+				free(selection->partitions);
+			selection->partitions = malloc(n * sizeof(size_t));
+			if (selection->partitions == NULL) {
+				perror("malloc");
+				goto fail;
+			}
+			for (p = 0; p < n; p++)
+				selection->partitions[p] = p;
 		}
-		partition_start = selection->partition < 0 ? 0 : (size_t)(selection->partition);
-		partition_end = selection->partition < 0 ? site->partitions_available : partition_start + 1;
+		if (all_partitions) {
+			selection->partitions_count = site->partitions_available;
+		}
+
 		/* Open partitions. */
-		for (size_t p = partition_start; p < partition_end; p++) {
-			gamma_partition_state_t *partition = site->partitions + p;
+		for (size_t p = 0; p < selection->partitions_count; p++) {
+			size_t partition_index = selection->partitions[p];
+
+			/* Validate partition index. */
+			if (partition_index >= site->partitions_available) {
+				state->invalid_partition(site, partition_index);
+				goto fail;
+			}
+
+			gamma_partition_state_t *partition = site->partitions + partition_index;
 			if (partition->used) continue;
 
-			r = state->open_partition(state, site, p, partition);
+			/* Open partition. */
+			r = state->open_partition(state, site, partition_index, partition);
 			if (r != 0) {
 				rc = r;
 				goto fail;
@@ -408,28 +455,32 @@ gamma_resolve_selections(gamma_server_state_t *state)
 		}
 
 		/* Open CRTCs. */
-		for (size_t p = partition_start; p < partition_end; p++) {
-			gamma_partition_state_t *partition = site->partitions + p;
-			size_t crtc_start = selection->crtc < 0 ? 0 : (size_t)(selection->crtc);
-			size_t crtc_end = selection->crtc < 0 ? partition->crtcs_available : crtc_start + 1;
+		for (size_t p = 0; p < selection->partitions_count; p++) {
+			size_t partition_index = selection->partitions[p];
+			gamma_partition_state_t *partition = site->partitions + partition_index;
 
-			if (selection->crtc >= (ssize_t)(partition->crtcs_available)) {
-				fprintf(stderr, _("CRTC %ld does not exist. "),
-					selection->crtc);
-				if (partition->crtcs_available > 1) {
-					fprintf(stderr, _("Valid CRTCs are [0-%ld].\n"),
-						partition->crtcs_available - 1);
-				} else {
-					fprintf(stderr, _("Only CRTC 0 exists.\n"));
+			/* Select all CRTCs if none have been specified explicity. */
+			if (all_crtcs && selection->crtcs_count < partition->crtcs_available) {
+				size_t c, n = partition->crtcs_available;
+				if (selection->crtcs != NULL)
+					free(selection->crtcs);
+				selection->crtcs = malloc(n * sizeof(size_t));
+				if (selection->crtcs == NULL) {
+					perror("malloc");
+					goto fail;
 				}
-				return -1;
+				for (c = 0; c < n; c++)
+					selection->crtcs[c] = c;
+			}
+			if (all_crtcs) {
+				selection->crtcs_count = partition->crtcs_available;
 			}
 
 			/* Grow array with selected CRTCs, we temporarily store
 			   the new array a temporarily variable so that we can
 			   properly release resources on error. */
 			gamma_crtc_state_t *new_crtcs;
-			size_t alloc_size = partition->crtcs_used + crtc_end - crtc_start;
+			size_t alloc_size = partition->crtcs_used + selection->crtcs_count;
 			alloc_size *= sizeof(gamma_crtc_state_t);
 			new_crtcs = partition->crtcs != NULL ?
 				    realloc(partition->crtcs, alloc_size) :
@@ -440,15 +491,34 @@ gamma_resolve_selections(gamma_server_state_t *state)
 			}
 			partition->crtcs = new_crtcs;
 
-			for (size_t c = crtc_start; c < crtc_end; c++) {
+			for (size_t c = 0; c < selection->crtcs_count; c++) {
+				size_t crtc_index = selection->crtcs[c];
+
+				/* Validate CRTC index. */
+				if (crtc_index >= partition->crtcs_available) {
+					fprintf(stderr, _("CRTC %ld does not exist. "),
+						crtc_index);
+					if (partition->crtcs_available > 1) {
+						fprintf(stderr, _("Valid CRTCs are [0-%ld].\n"),
+							partition->crtcs_available - 1);
+					} else {
+						fprintf(stderr, _("Only CRTC 0 exists.\n"));
+					}
+					return -1;
+				}
+
+				/* Open CRTC. */
 				r = gamma_open_crtc(state, site, partition, site_index,
-						    p, c, selection);
+						    partition_index, crtc_index, selection);
 				if (r != 0) {
 					rc = r;
 					goto fail;
 				}
 			}
 		}
+
+		s++;
+		goto next_site;
 	}
 
 	rc = 0;
@@ -576,6 +646,18 @@ gamma_update_temperature(gamma_server_state_t *state, gamma_crtc_selection_t crt
 #undef __test
 
 
+/* Duplicate memory area. */
+static void *
+memdup(void *src, size_t n)
+{
+	char *dest = malloc(n);
+	if (dest == NULL)
+		return NULL;
+	memcpy(dest, src, n);
+	return dest;
+}
+
+
 /* Parse and apply an option. */
 int
 gamma_set_option(gamma_server_state_t *state, const char *key, char *value, ssize_t section)
@@ -586,22 +668,47 @@ gamma_set_option(gamma_server_state_t *state, const char *key, char *value, ssiz
 		/* Grow array with selections, we temporarily store
 		   the new array a temporarily variable so that we can
 		   properly release resources on error. */
-		gamma_selection_state_t *new_selections;
+		gamma_selection_state_t *sels;
 		size_t alloc_size = state->selections_made + 1;
 		alloc_size *= sizeof(gamma_selection_state_t);
-		new_selections = realloc(state->selections, alloc_size);
-		if (new_selections == NULL) {
+		sels = realloc(state->selections, alloc_size);
+		if (sels == NULL) {
 			perror("realloc");
 			return -1;
 		}
-		state->selections = new_selections;
+		state->selections = sels;
 
 		/* Copy default selection. */
-		state->selections[section] = *(state->selections);
-		if (state->selections->site != NULL) {
-			state->selections[section].site = strdup(state->selections->site);
-			if (state->selections[section].site == NULL) {
-				perror("strdup");
+		sels[section] = *sels;
+		if (sels->sites != NULL) {
+			size_t i;
+			sels[section].sites = memdup(sels->sites,
+						     sels->sites_count * sizeof(char *));
+			if (sels[section].sites == NULL) {
+				perror("memdup");
+				return -1;
+			}
+			for (i = 0; i < sels->sites_count; i++) {
+				sels[section].sites[i] = strdup(sels->sites[i]);
+				if (sels[section].sites[i] == NULL) {
+					perror("strdup");
+					return -1;
+				}
+			}
+		}
+		if (sels->partitions != NULL) {
+			sels[section].partitions = memdup(sels->partitions,
+							  sels->partitions_count * sizeof(size_t));
+			if (sels[section].partitions == NULL) {
+				perror("memdup");
+				return -1;
+			}
+		}
+		if (sels->crtcs != NULL) {
+			sels[section].crtcs = memdup(sels->crtcs,
+						     sels->crtcs_count * sizeof(size_t));
+			if (sels[section].crtcs == NULL) {
+				perror("memdup");
 				return -1;
 			}
 		}
@@ -696,7 +803,22 @@ gamma_select_crtcs(gamma_server_state_t *state, char *value, char delimiter,
 		fprintf(stderr, _("%s must be `all' or a non-negative integer.\n"), name);
 		return -1;
 	}
-	on_selections({ sel->crtc = crtc; });
+	if (crtc < 0) {
+		on_selections({
+			sel->crtcs = malloc(sizeof(size_t));
+			if (sel->crtcs == NULL) {
+				perror("malloc");
+				return -1;
+			}
+			sel->crtcs[0] = (size_t)crtc;
+			sel->crtcs_count = 1;
+		});
+	} else {
+		on_selections({
+			sel->crtcs = NULL;
+			sel->crtcs_count = 1;
+		});
+	}
 	return 0;
 }
 
@@ -712,7 +834,22 @@ gamma_select_partitions(gamma_server_state_t *state, char *value, char delimiter
 		fprintf(stderr, _("%s must be `all' or a non-negative integer.\n"), name);
 		return -1;
 	}
-	on_selections({ sel->partition = partition; });
+	if (partition < 0) {
+		on_selections({
+			sel->partitions = malloc(sizeof(size_t));
+			if (sel->partitions == NULL) {
+				perror("malloc");
+				return -1;
+			}
+			sel->partitions[0] = (size_t)partition;
+			sel->partitions_count = 1;
+		});
+	} else {
+		on_selections({
+			sel->partitions = NULL;
+			sel->partitions_count = 1;
+		});
+	}
 	return 0;
 }
 
@@ -722,8 +859,13 @@ int
 gamma_select_sites(gamma_server_state_t *state, char *value, char delimiter, ssize_t section)
 {
 	on_selections({
-		sel->site = strdup(value);
-		if (sel->site == NULL) {
+		sel->sites = malloc(sizeof(size_t));
+		if (sel->sites == NULL) {
+			perror("malloc");
+			return -1;
+		}
+		sel->sites[0] = strdup(value);
+		if (sel->sites[0] == NULL) {
 			perror("strdup");
 			return -1;
 		}
