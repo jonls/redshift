@@ -364,6 +364,79 @@ fail:
 }
 
 
+/* Open multiple CRTCs. */
+static int
+gamma_open_crtcs(gamma_server_state_t *state, gamma_site_state_t *site,
+		 size_t site_index, size_t partition_index,
+		 gamma_selection_state_t *selection, int all_crtcs)
+{
+	int rc = -1, r;
+	gamma_partition_state_t *partition = site->partitions + partition_index;
+
+	/* Select all CRTCs if none have been specified explicity. */
+	if (all_crtcs && selection->crtcs_count < partition->crtcs_available) {
+		size_t c, n = partition->crtcs_available;
+		if (selection->crtcs != NULL)
+			free(selection->crtcs);
+		selection->crtcs = malloc(n * sizeof(size_t));
+		if (selection->crtcs == NULL) {
+			perror("malloc");
+			goto fail;
+		}
+		for (c = 0; c < n; c++)
+			selection->crtcs[c] = c;
+	}
+	if (all_crtcs) {
+		selection->crtcs_count = partition->crtcs_available;
+	}
+
+	/* Grow array with selected CRTCs, we temporarily store
+	   the new array a temporarily variable so that we can
+	   properly release resources on error. */
+	gamma_crtc_state_t *new_crtcs;
+	size_t alloc_size = partition->crtcs_used + selection->crtcs_count;
+	alloc_size *= sizeof(gamma_crtc_state_t);
+	new_crtcs = partition->crtcs != NULL ?
+		    realloc(partition->crtcs, alloc_size) :
+		    malloc(alloc_size);
+	if (new_crtcs == NULL) {
+		perror(partition->crtcs != NULL ? "realloc" : "malloc");
+		goto fail;
+	}
+	partition->crtcs = new_crtcs;
+
+	for (size_t c = 0; c < selection->crtcs_count; c++) {
+		size_t crtc_index = selection->crtcs[c];
+
+		/* Validate CRTC index. */
+		if (crtc_index >= partition->crtcs_available) {
+			fprintf(stderr, _("CRTC %ld does not exist. "),
+				crtc_index);
+			if (partition->crtcs_available > 1) {
+				fprintf(stderr, _("Valid CRTCs are [0-%ld].\n"),
+					partition->crtcs_available - 1);
+			} else {
+				fprintf(stderr, _("Only CRTC 0 exists.\n"));
+			}
+			return -1;
+		}
+
+		/* Open CRTC. */
+		r = gamma_open_crtc(state, site, partition, site_index,
+				    partition_index, crtc_index, selection);
+		if (r != 0) {
+			rc = r;
+			goto fail;
+		}
+	}
+
+	return 0;
+
+fail:
+	return rc;
+}
+
+
 /* Resolve selections. */
 int
 gamma_resolve_selections(gamma_server_state_t *state)
@@ -457,63 +530,11 @@ gamma_resolve_selections(gamma_server_state_t *state)
 		/* Open CRTCs. */
 		for (size_t p = 0; p < selection->partitions_count; p++) {
 			size_t partition_index = selection->partitions[p];
-			gamma_partition_state_t *partition = site->partitions + partition_index;
-
-			/* Select all CRTCs if none have been specified explicity. */
-			if (all_crtcs && selection->crtcs_count < partition->crtcs_available) {
-				size_t c, n = partition->crtcs_available;
-				if (selection->crtcs != NULL)
-					free(selection->crtcs);
-				selection->crtcs = malloc(n * sizeof(size_t));
-				if (selection->crtcs == NULL) {
-					perror("malloc");
-					goto fail;
-				}
-				for (c = 0; c < n; c++)
-					selection->crtcs[c] = c;
-			}
-			if (all_crtcs) {
-				selection->crtcs_count = partition->crtcs_available;
-			}
-
-			/* Grow array with selected CRTCs, we temporarily store
-			   the new array a temporarily variable so that we can
-			   properly release resources on error. */
-			gamma_crtc_state_t *new_crtcs;
-			size_t alloc_size = partition->crtcs_used + selection->crtcs_count;
-			alloc_size *= sizeof(gamma_crtc_state_t);
-			new_crtcs = partition->crtcs != NULL ?
-				    realloc(partition->crtcs, alloc_size) :
-				    malloc(alloc_size);
-			if (new_crtcs == NULL) {
-				perror(partition->crtcs != NULL ? "realloc" : "malloc");
+			r = gamma_open_crtcs(state, site, site_index,
+					     partition_index, selection, all_crtcs);
+			if (r != 0) {
+				rc = r;
 				goto fail;
-			}
-			partition->crtcs = new_crtcs;
-
-			for (size_t c = 0; c < selection->crtcs_count; c++) {
-				size_t crtc_index = selection->crtcs[c];
-
-				/* Validate CRTC index. */
-				if (crtc_index >= partition->crtcs_available) {
-					fprintf(stderr, _("CRTC %ld does not exist. "),
-						crtc_index);
-					if (partition->crtcs_available > 1) {
-						fprintf(stderr, _("Valid CRTCs are [0-%ld].\n"),
-							partition->crtcs_available - 1);
-					} else {
-						fprintf(stderr, _("Only CRTC 0 exists.\n"));
-					}
-					return -1;
-				}
-
-				/* Open CRTC. */
-				r = gamma_open_crtc(state, site, partition, site_index,
-						    partition_index, crtc_index, selection);
-				if (r != 0) {
-					rc = r;
-					goto fail;
-				}
 			}
 		}
 
