@@ -829,32 +829,122 @@ parse_gamma_string(char *str, float gamma[3])
 }
 
 
+/* Parse an array for size_t:s. */
+static size_t *
+parse_size_t_array(char *value, char delimiter, const char *name, size_t *n_out)
+{
+	size_t n = 0;
+	char *begin;
+	size_t *array;
+
+	/* Count number of specified values and split the values. */
+	begin = value;
+	while (1) {
+		char *end = strchr(begin, delimiter);
+		int last = end == NULL;
+		if (last) end = strchr(begin, '\0');
+
+		end[0] = '\0';
+		n++;
+
+		if (last) break;
+		begin = end + 1;
+	}
+
+	/* Allocate array and store element count for caller. */
+	array = malloc(n * sizeof(size_t));
+	if (array == NULL) {
+		perror("malloc");
+		return NULL;
+	}
+	*n_out = n;
+
+	/* Convert to array. */
+	begin = value;
+	for (size_t i = 0; i < n; i++) {
+		char *end;
+		ssize_t parsed = strtol(begin, &end, 10);
+
+		if (begin[0] == '\0' || end[0] != '\0' || parsed < 0) {
+			/* TRANSLATORS: `all' must not be translated. */
+			fprintf(stderr, _("%s must be `all' or a non-negative integer.\n"), name);
+			return NULL;
+		}
+
+		array[i] = (size_t)parsed;
+		begin = end + 1;
+	}
+
+	return array;
+}
+
+/* Parse an array for char *:s. */
+static char **
+parse_str_array(char *value, char delimiter, size_t *n_out)
+{
+	size_t n = 0;
+	char *begin;
+	char **array;
+
+	/* Count number of specified values and split the values. */
+	begin = value;
+	while (1) {
+		char *end = strchr(begin, delimiter);
+		int last = end == NULL;
+		if (last) end = strchr(begin, '\0');
+
+		end[0] = '\0';
+		n++;
+
+		if (last) break;
+		begin = end + 1;
+	}
+
+	/* Allocate array and store element count for caller. */
+	array = malloc(n * sizeof(char *));
+	if (array == NULL) {
+		perror("malloc");
+		return NULL;
+	}
+	*n_out = n;
+
+	/* Convert to array. */
+	begin = value;
+	for (size_t i = 0; i < n; i++) {
+		char *end = strchr(begin, '\0');
+		array[i] = begin;
+		begin = end + 1;
+	}
+
+	return array;
+}
+
+
 /* Parse CRTC selection option. */
 int
 gamma_select_crtcs(gamma_server_state_t *state, char *value, char delimiter,
 		   ssize_t section, const char *name)
 {
-	ssize_t crtc = strcasecmp(value, "all") ? (ssize_t)atoi(value) : -1;
-	if (crtc < 0 && strcasecmp(value, "all")) {
-		/* TRANSLATORS: `all' must not be translated. */
-		fprintf(stderr, _("%s must be `all' or a non-negative integer.\n"), name);
-		return -1;
-	}
-	if (crtc < 0) {
-		on_selections({
-			sel->crtcs = malloc(sizeof(size_t));
-			if (sel->crtcs == NULL) {
-				perror("malloc");
-				return -1;
-			}
-			sel->crtcs[0] = (size_t)crtc;
-			sel->crtcs_count = 1;
-		});
-	} else {
+	if (strcasecmp(value, "all") == 0) {
 		on_selections({
 			sel->crtcs = NULL;
-			sel->crtcs_count = 1;
+			sel->crtcs_count = 0;
 		});
+	} else {
+		size_t n;
+		size_t *values = parse_size_t_array(value, delimiter, name, &n);
+		if (values == NULL)
+			return -1;
+		on_selections({
+			sel->crtcs = memdup(values, n * sizeof(size_t));
+			if (sel->crtcs == NULL) {
+				perror("memdup");
+				free(values);
+				return -1;
+			}
+			sel->crtcs_count = n;
+		});
+		free(values);
 	}
 	return 0;
 }
@@ -865,27 +955,26 @@ int
 gamma_select_partitions(gamma_server_state_t *state, char *value, char delimiter,
 			ssize_t section, const char *name)
 {
-	ssize_t partition = strcasecmp(value, "all") ? (ssize_t)atoi(value) : -1;
-	if (partition < 0 && strcasecmp(value, "all")) {
-		/* TRANSLATORS: `all' must not be translated. */
-		fprintf(stderr, _("%s must be `all' or a non-negative integer.\n"), name);
-		return -1;
-	}
-	if (partition < 0) {
-		on_selections({
-			sel->partitions = malloc(sizeof(size_t));
-			if (sel->partitions == NULL) {
-				perror("malloc");
-				return -1;
-			}
-			sel->partitions[0] = (size_t)partition;
-			sel->partitions_count = 1;
-		});
-	} else {
+	if (strcasecmp(value, "all") == 0) {
 		on_selections({
 			sel->partitions = NULL;
-			sel->partitions_count = 1;
+			sel->partitions_count = 0;
 		});
+	} else {
+		size_t n;
+		size_t *values = parse_size_t_array(value, delimiter, name, &n);
+		if (values == NULL)
+			return -1;
+		on_selections({
+			sel->partitions = memdup(values, n * sizeof(size_t));
+			if (sel->partitions == NULL) {
+				perror("memdup");
+				free(values);
+				return -1;
+			}
+			sel->partitions_count = n;
+		});
+		free(values);
 	}
 	return 0;
 }
@@ -895,17 +984,30 @@ gamma_select_partitions(gamma_server_state_t *state, char *value, char delimiter
 int
 gamma_select_sites(gamma_server_state_t *state, char *value, char delimiter, ssize_t section)
 {
+	size_t n;
+	char **values = parse_str_array(value, delimiter, &n);
+	if (values == NULL)
+		  return -1;
 	on_selections({
-		sel->sites = malloc(sizeof(size_t));
+		sel->sites = malloc(n * sizeof(char *));
 		if (sel->sites == NULL) {
 			perror("malloc");
-			return -1;
+			goto fail;
 		}
-		sel->sites[0] = strdup(value);
-		if (sel->sites[0] == NULL) {
-			perror("strdup");
-			return -1;
+		sel->sites_count = 0;
+		for (size_t i = 0; i < n; i++) {
+			sel->sites[i] = strdup(values[i]);
+			if (sel->sites[i] == NULL) {
+				perror("strdup");
+				goto fail;
+			}
+			sel->sites_count++;
 		}
 	});
+	free(values);
 	return 0;
+
+fail:
+	free(values);
+	return -1;
 }
