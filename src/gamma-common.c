@@ -151,3 +151,69 @@ gamma_free(gamma_server_state_t *state)
 		state->data = NULL;
 	}
 }
+
+
+/* Create CRTC iterator. */
+gamma_iterator_t
+gamma_iterator(gamma_server_state_t *state)
+{
+	gamma_iterator_t iterator = {
+		.crtc      = NULL,
+		.partition = NULL,
+		.site      = NULL,
+		.state     = state
+	};
+	return iterator;
+}
+
+
+/* Get next CRTC. */
+int
+gamma_iterator_next(gamma_iterator_t *iterator)
+{
+	/* First CRTC. */
+	if (iterator->crtc == NULL) {
+		if (iterator->state->sites_used == 0)
+			return 0;
+		iterator->site      = iterator->state->sites;
+		iterator->partition = iterator->site->partitions;
+		gamma_partition_state_t *partitions_end =
+			iterator->site->partitions +
+			iterator->site->partitions_available;
+		while (iterator->partition->used == 0) {
+			iterator->partition++;
+			if (iterator->partition == partitions_end)
+				return 0;
+		}
+		if (iterator->partition->crtcs_used == 0)
+			return 0;
+		iterator->crtc = iterator->partition->crtcs;
+		return 1;
+	}
+
+	/* Next CRTC. */
+	size_t crtc_i      = (size_t)(iterator->crtc - iterator->partition->crtcs) + 1;
+	size_t partition_i = iterator->crtc->partition;
+	size_t site_i      = iterator->crtc->site_index;
+
+	if (crtc_i == iterator->partition->crtcs_used) {
+		crtc_i = 0;
+		partition_i += 1;
+	}
+next_partition:
+	if (partition_i == iterator->site->partitions_available) {
+		partition_i = 0;
+		site_i += 1;
+	}
+	if (site_i == iterator->state->sites_used)
+		return 0;
+	if (iterator->state->sites[site_i].partitions[partition_i].used == 0) {
+		partition_i += 1;
+		goto next_partition;
+	}
+
+	iterator->site      = iterator->state->sites     + site_i;
+	iterator->partition = iterator->site->partitions + partition_i;
+	iterator->crtc      = iterator->partition->crtcs + crtc_i;
+	return 1;
+}

@@ -36,6 +36,7 @@ struct gamma_partition_state;
 struct gamma_site_state;
 struct gamma_selection_state;
 struct gamma_server_state;
+struct gamma_iterator;
 
 /* Typedef:s of the structures. */
 typedef struct gamma_crtc_state      gamma_crtc_state_t;
@@ -43,6 +44,7 @@ typedef struct gamma_partition_state gamma_partition_state_t;
 typedef struct gamma_site_state      gamma_site_state_t;
 typedef struct gamma_selection_state gamma_selection_state_t;
 typedef struct gamma_server_state    gamma_server_state_t;
+typedef struct gamma_iterator        gamma_iterator_t;
 
 
 
@@ -149,6 +151,17 @@ struct gamma_server_state {
 };
 
 
+/* CRTC iterator. */
+struct gamma_iterator {
+	/* The current CRTC, partition and site. */
+	gamma_crtc_state_t *crtc;
+	gamma_partition_state_t *partition;
+	gamma_site_state_t *site;
+	/* The gamma state whose CRTCs are being iterated. */
+	gamma_server_state_t *state;
+};
+
+
 
 /* Initialize the adjustment method common parts of a state,
    this should be done before initialize the adjustment method
@@ -161,6 +174,13 @@ void gamma_free_selections(gamma_server_state_t *state);
 
 /* Free all data in a state. */
 void gamma_free(gamma_server_state_t *state);
+
+
+/* Create CRTC iterator. */
+gamma_iterator_t gamma_iterator(gamma_server_state_t *state);
+
+/* Get next CRTC. */
+int gamma_iterator_next(gamma_iterator_t *iterator);
 
 
 
