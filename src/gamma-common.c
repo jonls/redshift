@@ -217,3 +217,24 @@ next_partition:
 	iterator->crtc      = iterator->partition->crtcs + crtc_i;
 	return 1;
 }
+
+
+/* Find the index of a site or the index for a new site. */
+size_t
+gamma_find_site(const gamma_server_state_t *state, const char *site)
+{
+	size_t site_index;
+
+	/* Find matching already opened site. */
+	for (site_index = 0; site_index < state->sites_used; site_index++) {
+		char *test_site = state->sites[site_index].site;
+		if (test_site == NULL || site == NULL) {
+			if (test_site == NULL && site == NULL)
+				break;
+		}
+		else if (!strcmp(site, test_site))
+			break;
+	}
+
+	return site_index;
+}
