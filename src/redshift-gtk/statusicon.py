@@ -296,7 +296,7 @@ class RedshiftStatusIcon(object):
         elif key == 'Period':
             self.change_period(value)
         elif key == 'Location':
-            self.change_location(tuple(float(x) for x in value.split(', ')))
+            self.change_location(value.split(', '))
 
     def child_stdout_line_cb(self, line):
         if line:
