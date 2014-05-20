@@ -43,9 +43,13 @@ _ = gettext.gettext
 def sigterm_handler(signal, frame):
     sys.exit()
 
+def sigx_handler(signal, frame):
+    os.kill(redshift_proc, signal)
+
 
 class RedshiftStatusIcon(object):
     def __init__(self, args=[]):
+        global redshift_proc
         # Initialize state variables
         self._status = False
         self._temperature = 0
@@ -61,6 +65,10 @@ class RedshiftStatusIcon(object):
             args.append('-v')
 
         self.start_child_process(args)
+        redshift_proc = self.process[0]
+
+        # Install relay signal handlers
+        signal.signal(signal.SIGUSR1, sigx_handler)
 
         if appindicator:
             # Create indicator
