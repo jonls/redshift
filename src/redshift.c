@@ -1000,7 +1000,7 @@ main(int argc, char *argv[])
 		provider->free(&location_state);
 	
 		if (verbose) {
-		        /* TRANSLATORS: Append degree symbols if possible. */
+		        /* TRANSLATORS: Append degree symbols after %f if possible. */
 		        printf(_("Location: %f %s, %f %s\n"),
 			       fabs(lat), lat >= 0.f ? _("N") : _("S"),
 			       fabs(lon), lon >= 0.f ? _("E") : _("W"));
