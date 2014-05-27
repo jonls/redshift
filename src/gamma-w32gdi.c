@@ -211,6 +211,6 @@ w32gdi_print_help(FILE *f)
 
 	/* TRANSLATORS: Windows GDI help output
 	   left column must not be translated. */
-	fputs(_("  crtc=N\List of comman separated monitors to apply adjustments to\n"), f);
+	fputs(_("  crtc=N\tList of comman separated monitors to apply adjustments to\n"), f);
 	fputs("\n", f);
 }
