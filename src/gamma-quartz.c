@@ -214,7 +214,7 @@ quartz_set_ramps(gamma_server_state_t *state, gamma_crtc_state_t *crtc, gamma_ra
 }
 
 static int
-quartz_set_option(gamma_server_state_t *state, const char *key, const char *value, ssize_t section)
+quartz_set_option(gamma_server_state_t *state, const char *key, char *value, ssize_t section)
 {
 	if (strcasecmp(key, "crtc") == 0) {
 		ssize_t crtc = strcasecmp(value, "all") ? (ssize_t)atoi(value) : -1;
