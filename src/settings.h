@@ -24,6 +24,14 @@
 #include "solar.h"
 
 
+/* Bounds for parameters. */
+#define MIN_TEMP   1000
+#define MAX_TEMP  25000
+#define MIN_BRIGHTNESS  0.1
+#define MAX_BRIGHTNESS  1.0
+#define MIN_GAMMA   0.1
+#define MAX_GAMMA  10.0
+
 /* Angular elevation of the sun at which the color temperature
    transition period starts and ends (in degress).
    Transition during twilight, and while the sun is lower than
@@ -60,6 +68,7 @@ int parse_gamma_string(const char *str, float gamma[]);
 void settings_init(settings_t *settings);
 void settings_finalize(settings_t *settings);
 int settings_parse(settings_t *settings, const char* name, char* value);
+int settings_validate(settings_t *settings, int manual_mode, int reset_mode);
 
 
 #endif /* ! REDSHIFT_SETTINGS_H */

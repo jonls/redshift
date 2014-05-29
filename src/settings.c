@@ -128,3 +128,67 @@ settings_parse(settings_t *settings, const char* name, char* value)
 	}
 	return 0;
 }
+
+
+int
+settings_validate(settings_t *settings, int manual_mode, int reset_mode)
+{
+	int rc = 0;
+
+	if (manual_mode) {
+		/* Check color temperature to be set */
+		if (settings->temp_set < MIN_TEMP || settings->temp_set > MAX_TEMP) {
+			fprintf(stderr,
+				_("Temperature must be between %uK and %uK.\n"),
+				MIN_TEMP, MAX_TEMP);
+			rc = -1;
+		}
+	} else if (reset_mode == 0) {
+		/* Color temperature at daytime */
+		if (settings->temp_day < MIN_TEMP || settings->temp_day > MAX_TEMP) {
+			fprintf(stderr,
+				_("Temperature must be between %uK and %uK.\n"),
+				MIN_TEMP, MAX_TEMP);
+		        rc = -1;
+		}
+	
+		/* Color temperature at night */
+		if (settings->temp_night < MIN_TEMP || settings->temp_night > MAX_TEMP) {
+			fprintf(stderr,
+				_("Temperature must be between %uK and %uK.\n"),
+				MIN_TEMP, MAX_TEMP);
+		        rc = -1;
+		}
+
+		/* Solar elevations */
+		if (settings->transition_high < settings->transition_low) {
+		        fprintf(stderr,
+		                _("High transition elevation cannot be lower than"
+				  " the low transition elevation.\n"));
+		        rc = -1;
+		}
+	}
+
+	/* Brightness */
+	if (settings->brightness_day < MIN_BRIGHTNESS ||
+	    settings->brightness_day > MAX_BRIGHTNESS ||
+	    settings->brightness_night < MIN_BRIGHTNESS ||
+	    settings->brightness_night > MAX_BRIGHTNESS) {
+		fprintf(stderr,
+			_("Brightness values must be between %.1f and %.1f.\n"),
+			MIN_BRIGHTNESS, MAX_BRIGHTNESS);
+		rc = -1;
+	}
+
+	/* Gamma */
+	if (settings->gamma[0] < MIN_GAMMA || settings->gamma[0] > MAX_GAMMA ||
+	    settings->gamma[1] < MIN_GAMMA || settings->gamma[1] > MAX_GAMMA ||
+	    settings->gamma[2] < MIN_GAMMA || settings->gamma[2] > MAX_GAMMA) {
+		fprintf(stderr,
+			_("Gamma value must be between %.1f and %.1f.\n"),
+			MIN_GAMMA, MAX_GAMMA);
+		rc = -1;
+	}
+
+	return rc;
+}

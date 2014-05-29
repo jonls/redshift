@@ -204,12 +204,6 @@ static const location_provider_t location_providers[] = {
 #define MAX_LAT    90.0
 #define MIN_LON  -180.0
 #define MAX_LON   180.0
-#define MIN_TEMP   1000
-#define MAX_TEMP  25000
-#define MIN_BRIGHTNESS  0.1
-#define MAX_BRIGHTNESS  1.0
-#define MIN_GAMMA   0.1
-#define MAX_GAMMA  10.0
 
 /* The color temperature when no adjustment is applied. */
 #define NEUTRAL_TEMP  6500
@@ -932,68 +926,15 @@ main(int argc, char *argv[])
 		                  " %.1f and %.1f.\n"), MIN_LON, MAX_LON);
 		        exit(EXIT_FAILURE);
 		}
-
-		/* Color temperature at daytime */
-		if (settings.temp_day < MIN_TEMP || settings.temp_day > MAX_TEMP) {
-			fprintf(stderr,
-				_("Temperature must be between %uK and %uK.\n"),
-				MIN_TEMP, MAX_TEMP);
-			exit(EXIT_FAILURE);
-		}
-	
-		/* Color temperature at night */
-		if (settings.temp_night < MIN_TEMP || settings.temp_night > MAX_TEMP) {
-			fprintf(stderr,
-				_("Temperature must be between %uK and %uK.\n"),
-				MIN_TEMP, MAX_TEMP);
-			exit(EXIT_FAILURE);
-		}
-
-		/* Solar elevations */
-		if (settings.transition_high < settings.transition_low) {
-		        fprintf(stderr,
-		                _("High transition elevation cannot be lower than"
-				  " the low transition elevation.\n"));
-		        exit(EXIT_FAILURE);
-		}
 	}
-
-	if (mode == PROGRAM_MODE_MANUAL) {
-		/* Check color temperature to be set */
-		if (settings.temp_set < MIN_TEMP || settings.temp_set > MAX_TEMP) {
-			fprintf(stderr,
-				_("Temperature must be between %uK and %uK.\n"),
-				MIN_TEMP, MAX_TEMP);
-			exit(EXIT_FAILURE);
-		}
-	}
-
-	/* Brightness */
-	if (settings.brightness_day < MIN_BRIGHTNESS ||
-	    settings.brightness_day > MAX_BRIGHTNESS ||
-	    settings.brightness_night < MIN_BRIGHTNESS ||
-	    settings.brightness_night > MAX_BRIGHTNESS) {
-		fprintf(stderr,
-			_("Brightness values must be between %.1f and %.1f.\n"),
-			MIN_BRIGHTNESS, MAX_BRIGHTNESS);
+	    
+	r = settings_validate(&settings, mode == PROGRAM_MODE_MANUAL, mode == PROGRAM_MODE_RESET);
+	if (r < 0)
 		exit(EXIT_FAILURE);
-	}
 
 	if (verbose) {
-		printf(_("Brightness: %.2f:%.2f\n"), settings.brightness_day, settings.brightness_night);
-	}
-
-	/* Gamma */
-	if (settings.gamma[0] < MIN_GAMMA || settings.gamma[0] > MAX_GAMMA ||
-	    settings.gamma[1] < MIN_GAMMA || settings.gamma[1] > MAX_GAMMA ||
-	    settings.gamma[2] < MIN_GAMMA || settings.gamma[2] > MAX_GAMMA) {
-		fprintf(stderr,
-			_("Gamma value must be between %.1f and %.1f.\n"),
-			MIN_GAMMA, MAX_GAMMA);
-		exit(EXIT_FAILURE);
-	}
-
-	if (verbose) {
+		printf(_("Brightness: %.2f:%.2f\n"),
+		       settings.brightness_day, settings.brightness_night);
 		printf(_("Gamma: %.3f, %.3f, %.3f\n"),
 		       settings.gamma[0], settings.gamma[1], settings.gamma[2]);
 	}
