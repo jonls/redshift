@@ -66,6 +66,7 @@ typedef struct
 int parse_gamma_string(const char *str, float gamma[]);
 
 void settings_init(settings_t *settings);
+void settings_copy(settings_t *restrict dest, const settings_t *restrict src);
 void settings_finalize(settings_t *settings);
 int settings_parse(settings_t *settings, const char* name, char* value);
 int settings_validate(settings_t *settings, int manual_mode, int reset_mode);

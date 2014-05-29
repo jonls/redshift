@@ -627,6 +627,7 @@ main(int argc, char *argv[])
 	/* Initialize settings to NULL values. */
 	char *config_filepath = NULL;
 
+	settings_t settings_cmdline;
 	settings_init(&settings);
 
 	const gamma_method_t *method = NULL;
@@ -789,6 +790,8 @@ main(int argc, char *argv[])
 		}
 	}
 
+	settings_copy(&settings_cmdline, &settings);
+
 	/* Load settings from config file. */
 	config_ini_state_t config_state;
 	r = config_ini_init(&config_state, config_filepath);
@@ -796,8 +799,6 @@ main(int argc, char *argv[])
 		fputs("Unable to load config file.\n", stderr);
 		exit(EXIT_FAILURE);
 	}
-
-	if (config_filepath != NULL) free(config_filepath);
 
 	/* Read global config settings. */
 	config_ini_section_t *section = config_ini_get_section(&config_state,
@@ -1102,6 +1103,45 @@ main(int argc, char *argv[])
 		int done = 0;
 		int disabled = 0;
 		while (1) {
+			/* Reload settings if reload signal was caught */
+			if (reload) {
+				reload = 0;
+				settings_t new_settings;
+				settings_copy(&new_settings, &settings_cmdline);
+
+				/* Load settings from config file. */
+				config_ini_state_t config_state;
+				r = config_ini_init(&config_state, config_filepath);
+				if (r < 0) {
+					fputs("Unable to load config file.\n", stderr);
+					goto reload_failed;
+				}
+
+				/* Read global config settings. */
+				config_ini_section_t *section =
+					config_ini_get_section(&config_state, "redshift");
+				if (section != NULL) {
+					config_ini_setting_t *setting = section->settings;
+					while (setting != NULL) {
+						r = settings_parse(&new_settings, setting->name, setting->value);
+						if (r < 0) {
+							config_ini_free(&config_state);
+							goto reload_failed;
+						}
+						setting = setting->next;
+					}
+				}
+
+				/* FIXME */
+				config_ini_free(&config_state);
+				settings_finalize(&new_settings);
+				r = settings_validate(&new_settings, 0, 0);
+				if (r == 0) {
+					settings_copy(&settings, &new_settings);
+				}
+			}
+		reload_failed:
+
 			/* Check to see if disable signal was caught */
 			if (disable) {
 				short_trans_len = 2;
@@ -1237,6 +1277,7 @@ main(int argc, char *argv[])
 
 	/* Clean up gamma adjustment state */
 	method->free(&state);
-
+	
+	if (config_filepath != NULL) free(config_filepath);
 	return EXIT_SUCCESS;
 }

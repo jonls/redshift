@@ -82,6 +82,13 @@ settings_init(settings_t *settings)
 
 
 void
+settings_copy(settings_t *restrict dest, const settings_t *restrict src)
+{
+  memcpy(dest, src, sizeof(settings_t));
+}
+
+
+void
 settings_finalize(settings_t *settings)
 {
   if (settings->temp_day < 0)            settings->temp_day         = DEFAULT_DAY_TEMP;
@@ -151,7 +158,7 @@ settings_validate(settings_t *settings, int manual_mode, int reset_mode)
 				MIN_TEMP, MAX_TEMP);
 		        rc = -1;
 		}
-	
+
 		/* Color temperature at night */
 		if (settings->temp_night < MIN_TEMP || settings->temp_night > MAX_TEMP) {
 			fprintf(stderr,
