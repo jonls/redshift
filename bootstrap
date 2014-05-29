@@ -3,4 +3,5 @@
 # change to root directory
 cd $(dirname "$0")
 
-autoreconf --force --install
+autopoint --force && \
+	AUTOPOINT="intltoolize --automake --copy" autoreconf --force --install --verbose

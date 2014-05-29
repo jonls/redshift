@@ -1,8 +1,8 @@
 [Desktop Entry]
 Version=1.0
-Name=Redshift
-GenericName=Color temperature adjustment
-Comment=Color temperature adjustment tool
+_Name=Redshift
+_GenericName=Color temperature adjustment
+_Comment=Color temperature adjustment tool
 Exec=redshift-gtk
 Icon=redshift
 Terminal=false

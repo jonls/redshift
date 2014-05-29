@@ -26,8 +26,8 @@ _UBUNTU_MONO_LIGHT_FILES = \
 	data/icons/ubuntu-mono-light/scalable/apps/redshift-status-on.svg \
 	data/icons/ubuntu-mono-light/scalable/apps/redshift-status-off.svg
 
-_DESKTOP_FILES = \
-	data/applications/redshift-gtk.desktop
+DESKTOP_IN_FILES = \
+	data/applications/redshift-gtk.desktop.in
 
 SYSTEMD_USER_UNIT_IN_FILES = \
 	data/systemd/redshift.service.in \
@@ -52,7 +52,7 @@ endif
 # Desktop file
 if ENABLE_GUI
 desktopdir = @datadir@/applications
-desktop_DATA = $(_DESKTOP_FILES)
+desktop_DATA = $(DESKTOP_IN_FILES:.desktop.in=.desktop)
 endif
 
 if ENABLE_GUI
@@ -61,6 +61,12 @@ install-data-hook:
 
 uninstall-hook:
 	$(UPDATE_ICON_CACHE);
+
+# We would preferable use @INTLTOOL_DESKTOP_RULE@ here but
+# sadly it is broken for out-of-tree builds.
+%.desktop: %.desktop.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*.po)
+	$(AM_V_GEN)$(MKDIR_P) $(@D);
+	$(INTLTOOL_V_MERGE)LC_ALL=C $(INTLTOOL_MERGE) $(INTLTOOL_V_MERGE_OPTIONS) -d -u -c $(top_builddir)/po/.intltool-merge-cache $(top_srcdir)/po $< $@
 endif
 
 
