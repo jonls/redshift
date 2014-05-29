@@ -94,6 +94,11 @@ class RedshiftStatusIcon(object):
         suspend_menu_item.set_submenu(suspend_menu)
         self.status_menu.append(suspend_menu_item)
 
+        # Add reload action
+        self.reload_item = Gtk.MenuItem.new_with_label(_('Reload settings'))
+        self.reload_item.connect('activate', self.reload_item_cb)
+        self.status_menu.append(self.reload_item)
+
         # Add autostart option
         autostart_item = Gtk.CheckMenuItem.new_with_label(_('Autostart'))
         try:
@@ -227,6 +232,10 @@ class RedshiftStatusIcon(object):
             self.remove_suspend_timer()
             self.child_toggle_status()
 
+    def reload_item_cb(self, widget, data=None):
+        # Only toggle if a change from current state was requested
+        self.child_reload_settings()
+
     # Info dialog callbacks
     def show_info_cb(self, widget, data=None):
         self.info_dialog.show()
@@ -284,6 +293,9 @@ class RedshiftStatusIcon(object):
 
     def child_toggle_status(self):
         os.kill(self.process[0], signal.SIGUSR1)
+
+    def child_reload_settings(self):
+        os.kill(self.process[0], signal.SIGUSR2)
 
     def child_cb(self, pid, cond, data=None):
         sys.exit(-1)
