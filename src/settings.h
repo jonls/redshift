@@ -57,6 +57,7 @@ typedef struct
   int transition;
   float transition_low;
   float transition_high;
+  int reload_transition;
   
 } settings_t;
 
@@ -70,6 +71,7 @@ void settings_copy(settings_t *restrict dest, const settings_t *restrict src);
 void settings_finalize(settings_t *settings);
 int settings_parse(settings_t *settings, const char* name, char* value);
 int settings_validate(settings_t *settings, int manual_mode, int reset_mode);
+void settings_interpolate(settings_t *out, settings_t low, settings_t high, double weight);
 
 
 #endif /* ! REDSHIFT_SETTINGS_H */

@@ -78,6 +78,7 @@ settings_init(settings_t *settings)
   settings->transition = -1;
   settings->transition_low = TRANSITION_LOW;
   settings->transition_high = TRANSITION_HIGH;
+  settings->reload_transition = -1;
 }
 
 
@@ -91,14 +92,15 @@ settings_copy(settings_t *restrict dest, const settings_t *restrict src)
 void
 settings_finalize(settings_t *settings)
 {
-  if (settings->temp_day < 0)            settings->temp_day         = DEFAULT_DAY_TEMP;
-  if (settings->temp_night < 0)          settings->temp_night       = DEFAULT_NIGHT_TEMP;
-  if (isnan(settings->brightness_day))   settings->brightness_day   = DEFAULT_BRIGHTNESS;
-  if (isnan(settings->brightness_night)) settings->brightness_night = DEFAULT_BRIGHTNESS;
-  if (isnan(settings->gamma[0]))         settings->gamma[0]         = DEFAULT_GAMMA;
-  if (isnan(settings->gamma[1]))         settings->gamma[1]         = DEFAULT_GAMMA;
-  if (isnan(settings->gamma[2]))         settings->gamma[2]         = DEFAULT_GAMMA;
-  if (settings->transition < 0)          settings->transition       = 1;
+  if (settings->temp_day < 0)            settings->temp_day          = DEFAULT_DAY_TEMP;
+  if (settings->temp_night < 0)          settings->temp_night        = DEFAULT_NIGHT_TEMP;
+  if (isnan(settings->brightness_day))   settings->brightness_day    = DEFAULT_BRIGHTNESS;
+  if (isnan(settings->brightness_night)) settings->brightness_night  = DEFAULT_BRIGHTNESS;
+  if (isnan(settings->gamma[0]))         settings->gamma[0]          = DEFAULT_GAMMA;
+  if (isnan(settings->gamma[1]))         settings->gamma[1]          = DEFAULT_GAMMA;
+  if (isnan(settings->gamma[2]))         settings->gamma[2]          = DEFAULT_GAMMA;
+  if (settings->transition < 0)          settings->transition        = 1;
+  if (settings->reload_transition < 0)   settings->reload_transition = 1;
 }
 
 
@@ -111,6 +113,8 @@ settings_parse(settings_t *settings, const char* name, char* value)
 		if (settings->temp_night < 0) settings->temp_night = atoi(value);
 	} else if (strcasecmp(name, "transition") == 0) {
 		if (settings->transition < 0) settings->transition = !!atoi(value);
+	} else if (strcasecmp(name, "reload-transition") == 0) {
+		if (settings->reload_transition < 0) settings->reload_transition = !!atoi(value);
 	} else if (strcasecmp(name, "brightness") == 0) {
 		if (isnan(settings->brightness_day)) settings->brightness_day = atof(value);
 		if (isnan(settings->brightness_night)) settings->brightness_night = atof(value);
@@ -198,4 +202,24 @@ settings_validate(settings_t *settings, int manual_mode, int reset_mode)
 	}
 
 	return rc;
+}
+
+
+void
+settings_interpolate(settings_t *out, settings_t low, settings_t high, double weight)
+{
+#define interpol(F) (low.F * (1.0 - weight) + high.F * weight)
+
+  out->temp_set = (int)interpol(temp_set);
+  out->temp_day = (int)interpol(temp_day);
+  out->temp_night = (int)interpol(temp_night);
+  out->gamma[0] = (float)interpol(gamma[0]);
+  out->gamma[1] = (float)interpol(gamma[1]);
+  out->gamma[2] = (float)interpol(gamma[2]);
+  out->brightness_day = (float)interpol(brightness_day);
+  out->brightness_night = (float)interpol(brightness_night);
+  out->transition_low = (float)interpol(transition_low);
+  out->transition_high = (float)interpol(transition_high);
+
+#undef interpol
 }

@@ -1102,11 +1102,16 @@ main(int argc, char *argv[])
 		/* Continuously adjust color temperature */
 		int done = 0;
 		int disabled = 0;
+		settings_t old_settings;
+		settings_t new_settings;
+		double reload_trans_delta = 0.2;
+		double reload_trans = 0;
+		int reloading = 0;
+		
 		while (1) {
 			/* Reload settings if reload signal was caught */
 			if (reload) {
 				reload = 0;
-				settings_t new_settings;
 				settings_copy(&new_settings, &settings_cmdline);
 
 				/* Load settings from config file. */
@@ -1132,15 +1137,30 @@ main(int argc, char *argv[])
 					}
 				}
 
-				/* FIXME */
 				config_ini_free(&config_state);
 				settings_finalize(&new_settings);
 				r = settings_validate(&new_settings, 0, 0);
-				if (r == 0) {
+				if (r < 0) goto reload_failed;
+				
+				if (new_settings.reload_transition) {
+					settings_copy(&old_settings, &settings);
+					reloading = 1;
+					reload_trans = 0;
+				} else {
 					settings_copy(&settings, &new_settings);
 				}
+				
+				/* FIXME */
 			}
 		reload_failed:
+
+			/* Perform reload transition */
+			if (reloading) {
+				reload_trans += reload_trans_delta;
+				if (reload_trans >= 1.0)
+					reloading = 0;
+				settings_interpolate(&settings, old_settings, new_settings, reload_trans);
+			}
 
 			/* Check to see if disable signal was caught */
 			if (disable) {
@@ -1261,10 +1281,10 @@ main(int argc, char *argv[])
 
 			/* Sleep for 5 seconds or 0.1 second. */
 #ifndef _WIN32
-			if (short_trans_delta) usleep(100000);
+			if (short_trans_delta || reloading) usleep(100000);
 			else usleep(5000000);
 #else /* ! _WIN32 */
-			if (short_trans_delta) Sleep(100);
+			if (short_trans_delta || reloading) Sleep(100);
 			else Sleep(5000);
 #endif /* ! _WIN32 */
 		}
