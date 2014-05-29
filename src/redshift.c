@@ -48,6 +48,7 @@
 #include "config-ini.h"
 #include "solar.h"
 #include "systemtime.h"
+#include "hooks.h"
 
 
 #define MIN(x,y)  ((x) < (y) ? (x) : (y))
@@ -1422,6 +1423,18 @@ main(int argc, char *argv[])
 			perror("sigaction");
 			exit(EXIT_FAILURE);
 		}
+
+		/* Ignore CHLD signal. This causes child processes
+		   (hooks) to be reaped automatically. */
+		sigact.sa_handler = SIG_IGN;
+		sigact.sa_mask = sigset;
+		sigact.sa_flags = 0;
+
+		r = sigaction(SIGCHLD, &sigact, NULL);
+		if (r < 0) {
+			perror("sigaction");
+			exit(EXIT_FAILURE);
+		}
 #endif /* HAVE_SIGNAL_H && ! __WIN32__ */
 
 		if (verbose) {
@@ -1515,6 +1528,12 @@ main(int argc, char *argv[])
 				double transition =
 					get_transition_progress(elevation);
 				print_period(period, transition);
+			}
+
+			/* Activate hooks if period changed */
+			if (period != prev_period) {
+				hooks_signal_period_change(prev_period,
+							   period);
 			}
 
 			/* Ongoing short transition */
