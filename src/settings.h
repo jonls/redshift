@@ -31,6 +31,12 @@
 #define TRANSITION_LOW     SOLAR_CIVIL_TWILIGHT_ELEV
 #define TRANSITION_HIGH    3.0
 
+/* Default values for parameters. */
+#define DEFAULT_DAY_TEMP    5500
+#define DEFAULT_NIGHT_TEMP  3500
+#define DEFAULT_BRIGHTNESS   1.0
+#define DEFAULT_GAMMA        1.0
+
 
 typedef struct
 {
@@ -47,7 +53,13 @@ typedef struct
 } settings_t;
 
 
+/* A gamma string contains either one floating point value,
+   or three values separated by colon. */
+int parse_gamma_string(const char *str, float gamma[]);
+
 void settings_init(settings_t *settings);
+void settings_finalize(settings_t *settings);
+int settings_parse(settings_t *settings, const char* name, char* value);
 
 
 #endif /* ! REDSHIFT_SETTINGS_H */

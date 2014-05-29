@@ -211,12 +211,6 @@ static const location_provider_t location_providers[] = {
 #define MIN_GAMMA   0.1
 #define MAX_GAMMA  10.0
 
-/* Default values for parameters. */
-#define DEFAULT_DAY_TEMP    5500
-#define DEFAULT_NIGHT_TEMP  3500
-#define DEFAULT_BRIGHTNESS   1.0
-#define DEFAULT_GAMMA        1.0
-
 /* The color temperature when no adjustment is applied. */
 #define NEUTRAL_TEMP  6500
 
@@ -565,32 +559,6 @@ method_try_start(const gamma_method_t *method,
 	return 0;
 }
 
-/* A gamma string contains either one floating point value,
-   or three values separated by colon. */
-static int
-parse_gamma_string(const char *str, float gamma[])
-{
-	char *s = strchr(str, ':');
-	if (s == NULL) {
-		/* Use value for all channels */
-		float g = atof(str);
-		gamma[0] = gamma[1] = gamma[2] = g;
-	} else {
-		/* Parse separate value for each channel */
-		*(s++) = '\0';
-		char *g_s = s;
-		s = strchr(s, ':');
-		if (s == NULL) return -1;
-
-		*(s++) = '\0';
-		gamma[0] = atof(str); /* Red */
-		gamma[1] = atof(g_s); /* Blue */
-		gamma[2] = atof(s); /* Green */
-	}
-
-	return 0;
-}
-
 /* A brightness string contains either one floating point value,
    or two values separated by a colon. */
 static void
@@ -834,56 +802,12 @@ main(int argc, char *argv[])
 	if (section != NULL) {
 		config_ini_setting_t *setting = section->settings;
 		while (setting != NULL) {
-			if (strcasecmp(setting->name, "temp-day") == 0) {
-				if (settings.temp_day < 0) {
-					settings.temp_day = atoi(setting->value);
-				}
-			} else if (strcasecmp(setting->name,
-					      "temp-night") == 0) {
-				if (settings.temp_night < 0) {
-					settings.temp_night = atoi(setting->value);
-				}
-			} else if (strcasecmp(setting->name,
-					      "transition") == 0) {
-				if (settings.transition < 0) {
-					settings.transition = !!atoi(setting->value);
-				}
-			} else if (strcasecmp(setting->name,
-					      "brightness") == 0) {
-				if (isnan(settings.brightness_day)) {
-					settings.brightness_day = atof(setting->value);
-				}
-				if (isnan(settings.brightness_night)) {
-					settings.brightness_night = atof(setting->value);
-				}
-			} else if (strcasecmp(setting->name,
-					      "brightness-day") == 0) {
-				if (isnan(settings.brightness_day)) {
-					settings.brightness_day = atof(setting->value);
-				}
-			} else if (strcasecmp(setting->name,
-					      "brightness-night") == 0) {
-				if (isnan(settings.brightness_night)) {
-					settings.brightness_night = atof(setting->value);
-				}
-			} else if (strcasecmp(setting->name,
-					      "elevation-high") == 0) {
-				settings.transition_high = atof(setting->value);
-			} else if (strcasecmp(setting->name,
-					      "elevation-low") == 0) {
-				settings.transition_low = atof(setting->value);
-			} else if (strcasecmp(setting->name, "gamma") == 0) {
-				if (isnan(settings.gamma[0])) {
-					r = parse_gamma_string(setting->value,
-							       settings.gamma);
-					if (r < 0) {
-						fputs(_("Malformed gamma"
-							" setting.\n"),
-						      stderr);
-						exit(EXIT_FAILURE);
-					}
-				}
-			} else if (strcasecmp(setting->name,
+			r = settings_parse(&settings, setting->name, setting->value);
+			if (r == 0)
+				;
+			else if (r < 0)
+				exit(EXIT_FAILURE);
+			else if (strcasecmp(setting->name,
 					      "adjustment-method") == 0) {
 				if (method == NULL) {
 					method = find_gamma_method(
@@ -922,12 +846,7 @@ main(int argc, char *argv[])
 
 	/* Use default values for settings that were neither defined in
 	   the config file nor on the command line. */
-	if (settings.temp_day < 0) settings.temp_day = DEFAULT_DAY_TEMP;
-	if (settings.temp_night < 0) settings.temp_night = DEFAULT_NIGHT_TEMP;
-	if (isnan(settings.brightness_day)) settings.brightness_day = DEFAULT_BRIGHTNESS;
-	if (isnan(settings.brightness_night)) settings.brightness_night = DEFAULT_BRIGHTNESS;
-	if (isnan(settings.gamma[0])) settings.gamma[0] = settings.gamma[1] = settings.gamma[2] = DEFAULT_GAMMA;
-	if (settings.transition < 0) settings.transition = 1;
+	settings_finalize(&settings);
 
 	float lat = NAN;
 	float lon = NAN;
