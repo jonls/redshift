@@ -1150,7 +1150,19 @@ main(int argc, char *argv[])
 					settings_copy(&settings, &new_settings);
 				}
 				
-				/* FIXME */
+				if (verbose) {
+				        /* TRANSLATORS: Append degree symbols if possible. */
+				        printf(_("Location: %f, %f\n"), lat, lon);
+					printf(_("Temperatures: %dK at day, %dK at night\n"),
+					       settings.temp_day, settings.temp_night);
+				        /* TRANSLATORS: Append degree symbols if possible. */
+					printf(_("Solar elevations: day above %.1f, night below %.1f\n"),
+					       settings.transition_high, settings.transition_low);
+					printf(_("Brightness: %.2f:%.2f\n"),
+					       settings.brightness_day, settings.brightness_night);
+					printf(_("Gamma: %.3f, %.3f, %.3f\n"),
+					       settings.gamma[0], settings.gamma[1], settings.gamma[2]);
+				}
 			}
 		reload_failed:
 
