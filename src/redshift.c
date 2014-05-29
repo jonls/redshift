@@ -222,6 +222,7 @@ typedef enum {
 
 static volatile sig_atomic_t exiting = 0;
 static volatile sig_atomic_t disable = 0;
+static volatile sig_atomic_t reload = 0;
 
 /* Signal handler for exit signals */
 static void
@@ -237,10 +238,18 @@ sigdisable(int signo)
 	disable = 1;
 }
 
+/* Signal handler for reload signal */
+static void
+sigreload(int signo)
+{
+	reload = 1;
+}
+
 #else /* ! HAVE_SIGNAL_H || __WIN32__ */
 
 static int exiting = 0;
 static int disable = 0;
+static int reload = 0;
 
 #endif /* ! HAVE_SIGNAL_H || __WIN32__ */
 
@@ -1077,6 +1086,12 @@ main(int argc, char *argv[])
 		sigact.sa_mask = sigset;
 		sigact.sa_flags = 0;
 		sigaction(SIGUSR1, &sigact, NULL);
+
+		/* Install signal handler for USR2 singal */
+		sigact.sa_handler = sigreload;
+		sigact.sa_mask = sigset;
+		sigact.sa_flags = 0;
+		sigaction(SIGUSR2, &sigact, NULL);
 #endif /* HAVE_SIGNAL_H && ! __WIN32__ */
 
 		if (verbose) {
