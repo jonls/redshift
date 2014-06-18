@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=dk.jonls.redshift.Redshift
+Exec=@libexecdir@/redshift-dbus
