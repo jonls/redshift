@@ -1001,7 +1001,7 @@ main(int argc, char *argv[])
 	
 		if (verbose) {
 		        /* TRANSLATORS: Append degree symbols after %f if possible. */
-		        printf(_("Location: %f %s, %f %s\n"),
+		        printf(_("Location: %.2f %s, %.2f %s\n"),
 			       fabs(lat), lat >= 0.f ? _("N") : _("S"),
 			       fabs(lon), lon >= 0.f ? _("E") : _("W"));
 			printf(_("Temperatures: %dK at day, %dK at night\n"),
