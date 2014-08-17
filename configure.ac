@@ -17,6 +17,11 @@ AC_PROG_INTLTOOL([0.50])
 AM_GNU_GETTEXT_VERSION([0.17])
 AM_GNU_GETTEXT([external])
 
+GETTEXT_PACKAGE=redshift
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [Package name for gettext])
+
+
 PKG_CHECK_MODULES([DRM], [libdrm], [have_drm=yes], [have_drm=no])
 
 PKG_CHECK_MODULES([X11], [x11], [have_x11=yes], [have_x11=no])
