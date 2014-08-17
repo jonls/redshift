@@ -90,10 +90,12 @@ EXTRA_DIST = \
 	$(_HICOLOR_FILES) \
 	$(_UBUNTU_MONO_DARK_FILES) \
 	$(_UBUNTU_MONO_LIGHT_FILES) \
-	$(_DESKTOP_FILES) \
+	$(DESKTOP_IN_FILES) \
 	$(SYSTEMD_USER_UNIT_IN_FILES)
 
-CLEANFILES = $(systemduserunit_DATA)
+CLEANFILES = \
+	$(desktop_DATA) \
+	$(systemduserunit_DATA)
 
 
 # Update PO translations
