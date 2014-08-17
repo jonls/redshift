@@ -81,7 +81,7 @@ endif
 
 $(systemduserunit_DATA): $(SYSTEMD_USER_UNIT_IN_FILES) Makefile
 	$(AM_V_GEN)$(MKDIR_P) $(@D) && \
-		sed -e "s|\@bindir\@|$(bindir)|g" $< > $@
+		sed -e "s|\@bindir\@|$(bindir)|g" "$(srcdir)/$(@:.service=.service.in)" > $@
 
 
 
