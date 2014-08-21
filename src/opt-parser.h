@@ -1,4 +1,4 @@
-/* gamma-randr.h -- X RANDR gamma adjustment header
+/* opt-parser.h -- getopt wrapper header
    This file is part of Redshift.
 
    Redshift is free software: you can redistribute it and/or modify
@@ -14,32 +14,15 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
    Copyright (c) 2014  Mattias Andrée <maandree@member.fsf.org>
 */
-
-#ifndef REDSHIFT_GAMMA_RANDR_H
-#define REDSHIFT_GAMMA_RANDR_H
-
-#include "gamma-common.h"
-
-#include <stdio.h>
-#include <stdint.h>
-
-#include <xcb/xcb.h>
-#include <xcb/randr.h>
+#ifndef REDSHIFT_OPT_PARSER_H
+#define REDSHIFT_OPT_PARSER_H
 
 
-typedef struct {
-	xcb_screen_t screen;
-	xcb_randr_crtc_t *crtcs;
-} randr_screen_data_t;
+int parseopt(int argc, char *const *argv, const char *shortopts, const char **args, int *args_count);
+
+char *coalesce_args(const char *const *args, int args_count, char delimiter, char final);
 
 
-int randr_init(gamma_server_state_t *state);
-int randr_start(gamma_server_state_t *state);
-
-void randr_print_help(FILE *f);
-
-
-#endif /* ! REDSHIFT_GAMMA_RANDR_H */
+#endif /* ! REDSHIFT_OPT_PARSER_H */

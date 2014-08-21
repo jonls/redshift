@@ -15,6 +15,7 @@
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2014  Shawn Patrick Rice <shawn.rice@fake.com>
 */
 
 #include <stdio.h>
@@ -23,30 +24,57 @@
 # include <time.h>
 #endif
 
+#ifdef __MACH__
+# include <mach/clock.h>
+# include <mach/mach.h>
+#endif
+
 #include "systemtime.h"
+
+
+#ifdef __MACH__
+static clock_serv_t cclock;
+
+void
+systemtime_init(void)
+{
+	host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+}
+
+void
+systemtime_close(void)
+{
+	mach_port_deallocate(mach_task_self(), cclock);
+}
+#endif
+
 
 int
 systemtime_get_time(double *t)
 {
-#ifndef _WIN32
+#if defined(_WIN32) /* Windows. */
+	FILETIME now;
+	ULARGE_INTEGER i;
+	GetSystemTimeAsFileTime(&now);
+	i.LowPart = now.dwLowDateTime;
+	i.HighPart = now.dwHighDateTime;
+	/* FILETIME is tenths of microseconds since 1601-01-01 UTC */
+	*t = (i.QuadPart / 10000000.0) - 11644473600.0;
+
+#elif defined(__MACH__) /* OS X */
+	mach_timespec_t now;
+	clock_get_time(cclock, &now);
+	*t = now.tv_sec + (now.tv_nsec / 1000000000.0);
+		
+#else /* SUSv2, POSIX.1-2001  (Linux and FreeBSD). */
 	struct timespec now;
 	int r = clock_gettime(CLOCK_REALTIME, &now);
 	if (r < 0) {
 		perror("clock_gettime");
 		return -1;
 	}
-
 	*t = now.tv_sec + (now.tv_nsec / 1000000000.0);
-#else /* _WIN32 */
-	FILETIME now;
-	ULARGE_INTEGER i;
-	GetSystemTimeAsFileTime(&now);
-	i.LowPart = now.dwLowDateTime;
-	i.HighPart = now.dwHighDateTime;
-
-	/* FILETIME is tenths of microseconds since 1601-01-01 UTC */
-	*t = (i.QuadPart / 10000000.0) - 11644473600.0;
-#endif /* _WIN32 */
+#endif
 
 	return 0;
 }

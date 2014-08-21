@@ -15,17 +15,24 @@ redshift_SOURCES = \
 	location-manual.c location-manual.h \
 	solar.c solar.h \
 	systemtime.c systemtime.h \
-	gamma-dummy.c gamma-dummy.h
+	adjustments.h \
+	gamma-common.c gamma-common.h \
+	gamma-dummy.c gamma-dummy.h \
+	opt-parser.c opt-parser.h
 
 EXTRA_redshift_SOURCES = \
 	gamma-drm.c gamma-drm.h \
 	gamma-randr.c gamma-randr.h \
 	gamma-vidmode.c gamma-vidmode.h \
+	gamma-quartz.c gamma-quartz.h \
+	fake-quartz.c fake-quartz.h \
 	gamma-w32gdi.c gamma-w32gdi.h \
+	fake-w32gdi.c fake-w32gdi.h \
 	location-geoclue.c location-geoclue.h
 
 AM_CFLAGS =
 redshift_LDADD = @LIBINTL@
+redshift_LDFLAGS =
 EXTRA_DIST =
 
 if ENABLE_DRM
@@ -51,9 +58,24 @@ redshift_LDADD += \
 	$(XF86VM_LIBS) $(XF86VM_CFLAGS)
 endif
 
+if ENABLE_QUARTZ
+redshift_SOURCES += gamma-quartz.c gamma-quartz.h
+if FAKE_QUARTZ
+redshift_SOURCES += fake-quartz.c fake-quartz.h
+else
+redshift_LDFLAGS += -I/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreGraphics.framework/Versions/A/Headers \
+                    -F/System/Library/Frameworks/ApplicationServices.framework \
+                    -framework ApplicationServices
+endif
+endif
+
 if ENABLE_WINGDI
 redshift_SOURCES += gamma-w32gdi.c gamma-w32gdi.h
+if FAKE_W32GDI
+redshift_SOURCES += fake-w32gdi.c fake-w32gdi.h
+else
 redshift_LDADD += -lgdi32
+endif
 endif
 
 

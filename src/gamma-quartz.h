@@ -1,4 +1,4 @@
-/* gamma-randr.h -- X RANDR gamma adjustment header
+/* gamma-quartz.h -- Mac OS X Quartz gamma adjustment header
    This file is part of Redshift.
 
    Redshift is free software: you can redistribute it and/or modify
@@ -14,32 +14,34 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
    Copyright (c) 2014  Mattias Andrée <maandree@member.fsf.org>
 */
 
-#ifndef REDSHIFT_GAMMA_RANDR_H
-#define REDSHIFT_GAMMA_RANDR_H
+#ifndef REDSHIFT_GAMMA_QUARTZ_H
+#define REDSHIFT_GAMMA_QUARTZ_H
 
 #include "gamma-common.h"
 
-#include <stdio.h>
-#include <stdint.h>
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
 
-#include <xcb/xcb.h>
-#include <xcb/randr.h>
-
-
-typedef struct {
-	xcb_screen_t screen;
-	xcb_randr_crtc_t *crtcs;
-} randr_screen_data_t;
-
-
-int randr_init(gamma_server_state_t *state);
-int randr_start(gamma_server_state_t *state);
-
-void randr_print_help(FILE *f);
+#ifdef FAKE_QUARTZ
+#  include "fake-quartz.h"
+#else
+#  include <CoreGraphics/CGDirectDisplay.h>
+#  define close_fake_quartz() /* for compatibility with "fake-quartz.h" */
+#endif
 
 
-#endif /* ! REDSHIFT_GAMMA_RANDR_H */
+int quartz_init(gamma_server_state_t *state);
+int quartz_start(gamma_server_state_t *state);
+
+void quartz_print_help(FILE *f);
+
+
+/* TODO: It should be possible to use CGDisplayRestoreColorSyncSettings. */
+
+
+#endif /* ! REDSHIFT_GAMMA_QUARTZ_H */
+

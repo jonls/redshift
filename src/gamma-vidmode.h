@@ -15,35 +15,22 @@
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2014  Mattias Andrée <maandree@member.fsf.org>
 */
 
 #ifndef REDSHIFT_GAMMA_VIDMODE_H
 #define REDSHIFT_GAMMA_VIDMODE_H
 
+#include "gamma-common.h"
+
 #include <stdio.h>
 #include <stdint.h>
 
-#include <X11/Xlib.h>
 
-typedef struct {
-	Display *display;
-	int screen_num;
-	int ramp_size;
-	uint16_t *saved_ramps;
-} vidmode_state_t;
-
-
-int vidmode_init(vidmode_state_t *state);
-int vidmode_start(vidmode_state_t *state);
-void vidmode_free(vidmode_state_t *state);
+int vidmode_init(gamma_server_state_t *state);
+int vidmode_start(gamma_server_state_t *state);
 
 void vidmode_print_help(FILE *f);
-int vidmode_set_option(vidmode_state_t *state, const char *key,
-		       const char *value);
-
-void vidmode_restore(vidmode_state_t *state);
-int vidmode_set_temperature(vidmode_state_t *state, int temp, float brightness,
-			    const float gamma[3]);
 
 
 #endif /* ! REDSHIFT_GAMMA_VIDMODE_H */
