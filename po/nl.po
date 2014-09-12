@@ -173,7 +173,7 @@ msgstr ""
 #: src/redshift.c:489
 #, c-format
 msgid "Failed to start provider %s.\n"
-msgstr "Niet gelukt om provider %s te starten.\n"
+msgstr "Niet gelukt om aanbieder %s te starten.\n"
 
 #. TRANSLATORS: `help' must not be
 #. translated.
@@ -224,29 +224,29 @@ msgstr "Misvormde gamma instelling.\n"
 #: src/redshift.c:928
 #, c-format
 msgid "Unknown configuration setting `%s'.\n"
-msgstr "Onbekende configuratie instelling  `%s'.\n"
+msgstr "Onbekende configuratie instelling `%s'.\n"
 
 #: src/redshift.c:967
 #, c-format
 msgid "Trying location provider `%s'...\n"
-msgstr ""
+msgstr "Probeert locatieaanbieder `%s'...\n"
 
 #: src/redshift.c:972
 msgid "Trying next provider...\n"
-msgstr "Probeert volgende provider...\n"
+msgstr "Probeert volgende aanbieder...\n"
 
 #: src/redshift.c:978
 #, c-format
 msgid "Using provider `%s'.\n"
-msgstr "Gebruikt provider '%s'.\n"
+msgstr "Gebruikt aanbieder '%s'.\n"
 
 #: src/redshift.c:986
 msgid "No more location providers to try.\n"
-msgstr "Geen locatie providers meer om uit te testen.\n"
+msgstr "Geen locatieaanbieders meer om uit te testen.\n"
 
 #: src/redshift.c:995
 msgid "Unable to get location from provider.\n"
-msgstr "Mislukt om de locatie te bemachtigen van de provider.\n"
+msgstr "Mislukt om de locatie te bemachtigen van de aanbieder.\n"
 
 #. TRANSLATORS: Append degree symbols if possible.
 #: src/redshift.c:1004
@@ -290,17 +290,17 @@ msgstr ""
 #: src/redshift.c:1071
 #, c-format
 msgid "Brightness values must be between %.1f and %.1f.\n"
-msgstr ""
+msgstr "Helderheidwaarde moeten tussen %.1f en %.1f zijn.\n"
 
 #: src/redshift.c:1077
 #, c-format
 msgid "Brightness: %.2f:%.2f\n"
-msgstr ""
+msgstr "Helderheid: %.2f:%.2f\n"
 
 #: src/redshift.c:1085
 #, c-format
 msgid "Gamma value must be between %.1f and %.1f.\n"
-msgstr "Gamma waarde moet tussen %.1f en %.1f liggen.\n"
+msgstr "Gammawaarde moet tussen %.1f en %.1f liggen.\n"
 
 #: src/redshift.c:1091
 #, c-format
@@ -333,7 +333,7 @@ msgstr "Zonshoogte: %f\n"
 #: src/redshift.c:1162 src/redshift.c:1181 src/redshift.c:1341
 #, c-format
 msgid "Color temperature: %uK\n"
-msgstr "Kleur temperatuur: %uK\n"
+msgstr "Kleurtemperatuur: %uK\n"
 
 #: src/redshift.c:1163 src/redshift.c:1342
 #, c-format
@@ -343,7 +343,7 @@ msgstr "Helderheid: %.2f\n"
 #: src/redshift.c:1173 src/redshift.c:1186 src/redshift.c:1198
 #: src/redshift.c:1351
 msgid "Temperature adjustment failed.\n"
-msgstr "Kleur aanpassing mislukt.\n"
+msgstr "Kleuraanpassing mislukt.\n"
 
 #: src/config-ini.c:167
 msgid "Malformed section header in config file.\n"
@@ -561,11 +561,11 @@ msgstr ""
 #: src/location-geoclue.c:197
 #, c-format
 msgid "According to the geoclue provider we're at: %.2f, %.2f\n"
-msgstr ""
+msgstr "Volgens de geoclue aanbieder zijn we op: %.2f, %.2f\n"
 
 #: src/location-geoclue.c:201
 msgid "Provider does not have a valid location available."
-msgstr ""
+msgstr "Aanbieder heeft geen geldige locatie beschikbaar."
 
 #: src/location-manual.c:50
 msgid "Latitude and longitude must be set.\n"
@@ -601,19 +601,19 @@ msgstr ""
 
 #: src/redshift-gtk/statusicon.py:86
 msgid "Suspend for"
-msgstr ""
+msgstr "Onderbreken voor"
 
 #: src/redshift-gtk/statusicon.py:88
 msgid "30 minutes"
-msgstr ""
+msgstr "30 minuten"
 
 #: src/redshift-gtk/statusicon.py:89
 msgid "1 hour"
-msgstr ""
+msgstr "1 uur"
 
 #: src/redshift-gtk/statusicon.py:90
 msgid "2 hours"
-msgstr ""
+msgstr "2 uren"
 
 #: src/redshift-gtk/statusicon.py:98
 msgid "Autostart"
@@ -645,11 +645,11 @@ msgstr ""
 
 #: src/redshift-gtk/statusicon.py:263
 msgid "Period"
-msgstr ""
+msgstr "Periode"
 
 #: src/redshift-gtk/statusicon.py:267
 msgid "Location"
-msgstr ""
+msgstr "Locatie"
 
 #~ msgid "Toggle"
 #~ msgstr "Schakel in/uit"
