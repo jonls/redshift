@@ -43,32 +43,6 @@
 #endif
 
 
-/* Gamma adjustment method */
-typedef int gamma_method_auto_func(const char *subsystem);
-typedef int gamma_method_is_available_func(const char *subsystem);
-typedef int gamma_method_init_func(void *state, const char *subsystem);
-typedef int gamma_method_start_func(void *state);
-typedef void gamma_method_print_help_func(FILE *f, const char *subsystem);
-
-typedef struct {
-	char *name;
-
-	/* If evaluated to true, this method will be tried if none is explicitly chosen. */
-	gamma_method_auto_func *autostart_test;
-
-	/* If evaluated to true, this method is available and can be tried. */
-	gamma_method_is_available_func *availability_test;
-
-	/* Initialize state. Options can be set between init and start. */
-	gamma_method_init_func *init;
-	/* Allocate storage and make connections that depend on options. */
-	gamma_method_start_func *start;
-
-	/* Print help on options for this adjustment method. */
-	gamma_method_print_help_func *print_help;
-} gamma_method_t;
-
-
 /* Location provider */
 typedef int location_provider_init_func(void *state);
 typedef int location_provider_start_func(void *state);

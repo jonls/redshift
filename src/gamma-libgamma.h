@@ -26,6 +26,15 @@
 #include <libgamma.h>
 
 
+#define LIST_GAMMA_LIBGAMMA_SUBSYSTEMS		\
+  X("randr")					\
+  X("vidmode")					\
+  X("drm")					\
+  X("wingdi")					\
+  X("quartz")					\
+  X("dummy")
+  
+
 typedef struct gamma_libgamma_state_data {
 	int method;
 	libgamma_method_capabilities_t caps;
@@ -34,6 +43,7 @@ typedef struct gamma_libgamma_state_data {
 
 int gamma_libgamma_auto(const char *subsystem);
 int gamma_libgamma_is_available(const char *subsystem);
+int gamma_libgamma_get_priority(const char *subsystem);
 
 int gamma_libgamma_init(gamma_server_state_t *state, const char *subsystem);
 int gamma_libgamma_start(gamma_server_state_t *state);

@@ -44,6 +44,7 @@
 #endif
 
 #include "redshift.h"
+#include "method.h"
 #include "config-ini.h"
 #include "solar.h"
 #include "systemtime.h"
@@ -56,36 +57,12 @@
 #define MAX(x,y)  ((x) > (y) ? (x) : (y))
 
 
-#include "gamma-libgamma.h"
-
 #include "location-manual.h"
 
 #ifdef ENABLE_GEOCLUE
 # include "location-geoclue.h"
 #endif
 
-
-
-/* Gamma adjustment method structs */
-#define __method(NAME, METHOD)							\
-	{									\
-		NAME, 								\
-		(gamma_method_auto_func *)            METHOD##_auto,		\
-		(gamma_method_is_available_func *)    METHOD##_is_available,	\
-		(gamma_method_init_func *)            METHOD##_init,		\
-		(gamma_method_start_func *)           METHOD##_start,		\
-		(gamma_method_print_help_func *)      METHOD##_print_help,	\
-	}
-static const gamma_method_t gamma_methods[] = {
-	__method("randr",   gamma_libgamma),
-	__method("vidmode", gamma_libgamma),
-	__method("drm",     gamma_libgamma),
-	__method("wingdi",  gamma_libgamma),
-	__method("quartz",  gamma_libgamma),
-	__method("dummy",   gamma_libgamma),
-	{ NULL }
-};
-#undef __method
 
 
 /* Union of state data for location providers */
@@ -271,24 +248,6 @@ print_help(const char *program_name)
 
 	/* TRANSLATORS: help output 7 */
 	printf(_("Please report bugs to <%s>\n"), PACKAGE_BUGREPORT);
-}
-
-static void
-print_method_list()
-{
-	fputs(_("Available adjustment methods:\n"), stdout);
-	for (int i = 0; gamma_methods[i].name != NULL; i++) {
-		const gamma_method_t *m = &gamma_methods[i];
-		if (!m->availability_test(m->name))
-			continue;
-		printf("  %s\n", m->name);
-	}
-
-	fputs("\n", stdout);
-	fputs(_("Specify colon-separated options with"
-		" `-m METHOD:OPTIONS'.\n"), stdout);
-	/* TRANSLATORS: `help' must not be translated. */
-	fputs(_("Try `-m METHOD:help' for help.\n"), stdout);
 }
 
 static void
@@ -515,26 +474,6 @@ parse_brightness_string(const char *str, float *bright_day, float *bright_night)
 		*bright_day = atof(str);
 		*bright_night = atof(s);
 	}
-}
-
-static const gamma_method_t *
-find_gamma_method(const char *name)
-{
-	const gamma_method_t *method = NULL;
-	int r;
-
-	for (int i = 0; gamma_methods[i].name != NULL; i++) {
-		const gamma_method_t *m = &gamma_methods[i];
-		r = m->availability_test(m->name);
-		if (r < 0)    exit(EXIT_FAILURE);
-		else if (!r)  continue;
-		if (strcasecmp(name, m->name) == 0) {
-		        method = m;
-			break;
-		}
-	}
-
-	return method;
 }
 
 static const location_provider_t *
@@ -1031,17 +970,14 @@ main(int argc, char *argv[])
 				exit(EXIT_FAILURE);
 			}
 		} else {
+			const gamma_method_t *methods;
+			size_t method_count;
+			r = get_autostartable_methods(&methods, &method_count);
+			if (r < 0)  exit(EXIT_FAILURE);
+
 			/* Try all methods, use the first that works. */
-			for (int i = 0; gamma_methods[i].name != NULL; i++) {
-				const gamma_method_t *m = &gamma_methods[i];
-
-				r = m->autostart_test(m->name);
-				if (r < 0)    exit(EXIT_FAILURE);
-				else if (!r)  continue;
-
-				r = m->availability_test(m->name);
-				if (r < 0)    exit(EXIT_FAILURE);
-				else if (!r)  continue;
+			for (int i = 0; i < method_count; i++) {
+				const gamma_method_t *m = &methods[i];
 
 				r = method_try_start(m, &state, &config_state, NULL,
 						     gamma);
@@ -1051,8 +987,8 @@ main(int argc, char *argv[])
 				}
 
 				/* Found method that works. */
-				printf(_("Using method `%s'.\n"), m->name);
 				method = m;
+				printf(_("Using method `%s'.\n"), method->name);
 				break;
 			}
 

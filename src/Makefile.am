@@ -10,6 +10,7 @@ bin_PROGRAMS = redshift
 
 redshift_SOURCES = \
 	redshift.c redshift.h \
+	method.c method.h \
 	colorramp.c colorramp.h \
 	config-ini.c config-ini.h \
 	location-manual.c location-manual.h \

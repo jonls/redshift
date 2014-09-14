@@ -273,9 +273,13 @@ int gamma_libgamma_auto(const char* subsystem)
 		methods = methods_;
 	}
 	for (i = 0; i < n; i++)
-		if (methods[i] == method)
+		if (methods[i] == method) {
+			if (methods != methods_)
+				free(methods);
 			return 1;
-	free(methods);
+		}
+	if (methods != methods_)
+		free(methods);
 	return 0;
 }
 
@@ -284,6 +288,33 @@ int gamma_libgamma_is_available(const char* subsystem)
 {
 	int method = gamma_libgamma_get_method(subsystem);
 	return libgamma_is_method_available(method);
+}
+
+
+int gamma_libgamma_get_priority(const char *subsystem)
+{
+	int method = gamma_libgamma_get_method(subsystem);
+	int methods_[LIBGAMMA_METHOD_COUNT];
+	int* methods = NULL;
+	size_t i, n = libgamma_list_methods(methods_, LIBGAMMA_METHOD_COUNT, 0);
+	if (n > LIBGAMMA_METHOD_COUNT) {
+		methods = malloc(n * sizeof(int));
+		if (methods == NULL) {
+			perror("malloc");
+			return -1;
+		}
+		libgamma_list_methods(methods, n, 0);
+	} else {
+		methods = methods_;
+	}
+	for (i = 0; i < n; i++)
+		if (methods[i] == method) {
+			if (methods != methods_)
+				free(methods);
+			return (int)i;
+		}
+	abort();
+	return -1;
 }
 
 
