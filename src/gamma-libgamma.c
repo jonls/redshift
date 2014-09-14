@@ -218,7 +218,13 @@ gamma_libgamma_perror(const char* name, int error_code)
 
 
 
-int gamma_libgamma_auto(void)
+int gamma_libgamma_auto(const char* subsystem)
+{
+	return 1;
+}
+
+
+int gamma_libgamma_is_available(const char* subsystem)
 {
 	return 1;
 }
@@ -457,7 +463,7 @@ gamma_libgamma_set_option(gamma_server_state_t *state, const char *key, char *va
 
 
 int
-gamma_libgamma_init(gamma_server_state_t *state)
+gamma_libgamma_init(gamma_server_state_t *state, const char *subsystem)
 {
 	char* default_site;
 	int r;

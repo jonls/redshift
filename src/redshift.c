@@ -71,6 +71,7 @@
 	{									\
 		NAME, 								\
 		(gamma_method_auto_func *)            METHOD##_auto,		\
+		(gamma_method_is_available_func *)    METHOD##_is_available,	\
 		(gamma_method_init_func *)            METHOD##_init,		\
 		(gamma_method_start_func *)           METHOD##_start,		\
 		(gamma_method_print_help_func *)      METHOD##_print_help,	\
@@ -272,7 +273,10 @@ print_method_list()
 {
 	fputs(_("Available adjustment methods:\n"), stdout);
 	for (int i = 0; gamma_methods[i].name != NULL; i++) {
-		printf("  %s\n", gamma_methods[i].name);
+		const gamma_method_t *m = &gamma_methods[i];
+		if (!m->availability_test(m->name))
+			continue;
+		printf("  %s\n", m->name);
 	}
 
 	fputs("\n", stdout);
@@ -397,7 +401,14 @@ method_try_start(const gamma_method_t *method,
 {
 	int r;
 
-	r = method->init(state);
+	r = method->availability_test(method->name);
+	if (r < 0) {
+		fprintf(stderr, _("%s has been disabled.\n"),
+			method->name);
+		return -1;
+	}
+
+	r = method->init(state, method->name);
 	if (r < 0) {
 		fprintf(stderr, _("Initialization of %s failed.\n"),
 			method->name);
@@ -506,6 +517,8 @@ find_gamma_method(const char *name)
 	const gamma_method_t *method = NULL;
 	for (int i = 0; gamma_methods[i].name != NULL; i++) {
 		const gamma_method_t *m = &gamma_methods[i];
+		if (!m->availability_test(m->name))
+			continue;
 		if (strcasecmp(name, m->name) == 0) {
 		        method = m;
 			break;
@@ -1012,7 +1025,9 @@ main(int argc, char *argv[])
 			/* Try all methods, use the first that works. */
 			for (int i = 0; gamma_methods[i].name != NULL; i++) {
 				const gamma_method_t *m = &gamma_methods[i];
-				if (!m->autostart_test())
+				if (!m->autostart_test(m->name))
+					continue;
+				if (!m->availability_test(m->name))
 					continue;
 
 				r = method_try_start(m, &state, &config_state, NULL,

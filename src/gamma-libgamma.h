@@ -24,9 +24,10 @@
 #include "gamma-common.h"
 
 
-int gamma_libgamma_auto(void);
+int gamma_libgamma_auto(const char *subsystem);
+int gamma_libgamma_is_available(const char *subsystem);
 
-int gamma_libgamma_init(gamma_server_state_t *state);
+int gamma_libgamma_init(gamma_server_state_t *state, const char *subsystem);
 int gamma_libgamma_start(gamma_server_state_t *state);
 
 void gamma_libgamma_print_help(FILE *f);
