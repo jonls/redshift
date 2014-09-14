@@ -25,6 +25,8 @@
 #include "gamma-common.h"
 
 
+int gamma_dummy_auto(void);
+
 int gamma_dummy_init(gamma_server_state_t *state);
 int gamma_dummy_start(gamma_server_state_t *state);
 

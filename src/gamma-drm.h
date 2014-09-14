@@ -35,6 +35,8 @@ typedef struct {
 } drm_card_data_t;
 
 
+int drm_auto(void);
+
 int drm_init(gamma_server_state_t *state);
 int drm_start(gamma_server_state_t *state);
 

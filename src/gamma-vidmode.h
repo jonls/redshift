@@ -27,6 +27,8 @@
 #include <stdint.h>
 
 
+int vidmode_auto(void);
+
 int vidmode_init(gamma_server_state_t *state);
 int vidmode_start(gamma_server_state_t *state);
 

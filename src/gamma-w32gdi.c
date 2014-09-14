@@ -48,6 +48,12 @@
 #define GAMMA_RAMP_SIZE  256
 
 
+int
+w32gdi_auto()
+{
+	return 1;
+}
+
 static void
 w32gdi_free_crtc(void *data)
 {

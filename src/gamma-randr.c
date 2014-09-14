@@ -37,6 +37,12 @@
 #define RANDR_VERSION_MINOR  3
 
 
+int
+randr_auto()
+{
+	return getenv("DISPLAY") && *getenv("DISPLAY");
+}
+
 
 static void
 randr_free_site(void *data)

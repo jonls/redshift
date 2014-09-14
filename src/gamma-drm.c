@@ -45,6 +45,14 @@
 #include "colorramp.h"
 
 
+int
+drm_auto()
+{
+#define testenv(VAR) (getenv(VAR) && *getenv(VAR))
+	return !testenv("DISPLAY") && !testenv("WAYLAND_DISPLAY");
+#undef testenv
+}
+
 static void
 drm_free_partition(void *data)
 {
