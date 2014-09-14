@@ -15,14 +15,14 @@
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2014  Mattias Andrée <maandree@member.fsf.org>
 */
 
 #ifndef REDSHIFT_COLORRAMP_H
 #define REDSHIFT_COLORRAMP_H
 
-#include <stdint.h>
+#include "adjustments.h"
 
-void colorramp_fill(uint16_t *gamma_r, uint16_t *gamma_g, uint16_t *gamma_b,
-		    int size, int temp, float brightness, const float gamma[3]);
+void colorramp_fill(gamma_ramps_t out_ramps, gamma_settings_t adjustments);
 
 #endif /* ! REDSHIFT_COLORRAMP_H */

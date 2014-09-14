@@ -15,12 +15,14 @@
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
    Copyright (c) 2013  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2014  Mattias Andrée <maandree@member.fsf.org>
 */
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif
 
+#include <alloca.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -45,6 +47,9 @@
 #include "config-ini.h"
 #include "solar.h"
 #include "systemtime.h"
+#include "adjustments.h"
+#include "opt-parser.h"
+#include "gamma-common.h"
 
 
 #define MIN(x,y)  ((x) < (y) ? (x) : (y))
@@ -77,22 +82,6 @@
 #endif
 
 
-/* Union of state data for gamma adjustment methods */
-typedef union {
-#ifdef ENABLE_DRM
-	drm_state_t drm;
-#endif
-#ifdef ENABLE_RANDR
-	randr_state_t randr;
-#endif
-#ifdef ENABLE_VIDMODE
-	vidmode_state_t vidmode;
-#endif
-#ifdef ENABLE_WINGDI
-	w32gdi_state_t w32gdi;
-#endif
-} gamma_state_t;
-
 
 /* Gamma adjustment method structs */
 static const gamma_method_t gamma_methods[] = {
@@ -101,11 +90,7 @@ static const gamma_method_t gamma_methods[] = {
 		"drm", 0,
 		(gamma_method_init_func *)drm_init,
 		(gamma_method_start_func *)drm_start,
-		(gamma_method_free_func *)drm_free,
-		(gamma_method_print_help_func *)drm_print_help,
-		(gamma_method_set_option_func *)drm_set_option,
-		(gamma_method_restore_func *)drm_restore,
-		(gamma_method_set_temperature_func *)drm_set_temperature
+		(gamma_method_print_help_func *)drm_print_help
 	},
 #endif
 #ifdef ENABLE_RANDR
@@ -113,11 +98,7 @@ static const gamma_method_t gamma_methods[] = {
 		"randr", 1,
 		(gamma_method_init_func *)randr_init,
 		(gamma_method_start_func *)randr_start,
-		(gamma_method_free_func *)randr_free,
-		(gamma_method_print_help_func *)randr_print_help,
-		(gamma_method_set_option_func *)randr_set_option,
-		(gamma_method_restore_func *)randr_restore,
-		(gamma_method_set_temperature_func *)randr_set_temperature
+		(gamma_method_print_help_func *)randr_print_help
 	},
 #endif
 #ifdef ENABLE_VIDMODE
@@ -125,11 +106,7 @@ static const gamma_method_t gamma_methods[] = {
 		"vidmode", 1,
 		(gamma_method_init_func *)vidmode_init,
 		(gamma_method_start_func *)vidmode_start,
-		(gamma_method_free_func *)vidmode_free,
-		(gamma_method_print_help_func *)vidmode_print_help,
-		(gamma_method_set_option_func *)vidmode_set_option,
-		(gamma_method_restore_func *)vidmode_restore,
-		(gamma_method_set_temperature_func *)vidmode_set_temperature
+		(gamma_method_print_help_func *)vidmode_print_help
 	},
 #endif
 #ifdef ENABLE_WINGDI
@@ -137,22 +114,14 @@ static const gamma_method_t gamma_methods[] = {
 		"wingdi", 1,
 		(gamma_method_init_func *)w32gdi_init,
 		(gamma_method_start_func *)w32gdi_start,
-		(gamma_method_free_func *)w32gdi_free,
-		(gamma_method_print_help_func *)w32gdi_print_help,
-		(gamma_method_set_option_func *)w32gdi_set_option,
-		(gamma_method_restore_func *)w32gdi_restore,
-		(gamma_method_set_temperature_func *)w32gdi_set_temperature
+		(gamma_method_print_help_func *)w32gdi_print_help
 	},
 #endif
 	{
 		"dummy", 0,
 		(gamma_method_init_func *)gamma_dummy_init,
 		(gamma_method_start_func *)gamma_dummy_start,
-		(gamma_method_free_func *)gamma_dummy_free,
-		(gamma_method_print_help_func *)gamma_dummy_print_help,
-		(gamma_method_set_option_func *)gamma_dummy_set_option,
-		(gamma_method_restore_func *)gamma_dummy_restore,
-		(gamma_method_set_temperature_func *)gamma_dummy_set_temperature
+		(gamma_method_print_help_func *)gamma_dummy_print_help
 	},
 	{ NULL }
 };
@@ -197,34 +166,6 @@ static const location_provider_t location_providers[] = {
 	},
 	{ NULL }
 };
-
-/* Bounds for parameters. */
-#define MIN_LAT   -90.0
-#define MAX_LAT    90.0
-#define MIN_LON  -180.0
-#define MAX_LON   180.0
-#define MIN_TEMP   1000
-#define MAX_TEMP  25000
-#define MIN_BRIGHTNESS  0.1
-#define MAX_BRIGHTNESS  1.0
-#define MIN_GAMMA   0.1
-#define MAX_GAMMA  10.0
-
-/* Default values for parameters. */
-#define DEFAULT_DAY_TEMP    5500
-#define DEFAULT_NIGHT_TEMP  3500
-#define DEFAULT_BRIGHTNESS   1.0
-#define DEFAULT_GAMMA        1.0
-
-/* The color temperature when no adjustment is applied. */
-#define NEUTRAL_TEMP  6500
-
-/* Angular elevation of the sun at which the color temperature
-   transition period starts and ends (in degress).
-   Transition during twilight, and while the sun is lower than
-   3.0 degrees above the horizon. */
-#define TRANSITION_LOW     SOLAR_CIVIL_TWILIGHT_ELEV
-#define TRANSITION_HIGH    3.0
 
 /* Program modes. */
 typedef enum {
@@ -443,43 +384,42 @@ provider_try_start(const location_provider_t *provider,
 	/* Set provider options from command line. */
 	const char *manual_keys[] = { "lat", "lon" };
 	int i = 0;
-	while (args != NULL) {
-		char *next_arg = strchr(args, ':');
-		if (next_arg != NULL) *(next_arg++) = '\0';
-
-		const char *key = args;
-		char *value = strchr(args, '=');
-		if (value == NULL) {
-			/* The options for the "manual" method can be set
-			   without keys on the command line for convencience
-			   and for backwards compatability. We add the proper
-			   keys here before calling set_option(). */
-			if (strcmp(provider->name, "manual") == 0 &&
-			    i < sizeof(manual_keys)/sizeof(manual_keys[0])) {
-				key = manual_keys[i];
-				value = args;
+	if (args != NULL) {
+		while (*args != '\0') {
+			const char *key = args;
+			char *value = strchr(args, '=');
+			if (value == NULL) {
+				/* The options for the "manual" method can be set
+				   without keys on the command line for convencience
+				   and for backwards compatability. We add the proper
+				   keys here before calling set_option(). */
+				if (strcmp(provider->name, "manual") == 0 &&
+				    i < sizeof(manual_keys)/sizeof(manual_keys[0])) {
+					key = manual_keys[i];
+					value = args;
+				} else {
+					fprintf(stderr, _("Failed to parse option `%s'.\n"),
+						args);
+					return -1;
+				}
 			} else {
-				fprintf(stderr, _("Failed to parse option `%s'.\n"),
-					args);
+				*(value++) = '\0';
+			}
+
+			r = provider->set_option(state, key, value);
+			if (r < 0) {
+				provider->free(state);
+				fprintf(stderr, _("Failed to set %s option.\n"),
+					provider->name);
+				/* TRANSLATORS: `help' must not be translated. */
+				fprintf(stderr, _("Try `-l %s:help' for more"
+						  " information.\n"), provider->name);
 				return -1;
 			}
-		} else {
-			*(value++) = '\0';
-		}
 
-		r = provider->set_option(state, key, value);
-		if (r < 0) {
-			provider->free(state);
-			fprintf(stderr, _("Failed to set %s option.\n"),
-				provider->name);
-			/* TRANSLATORS: `help' must not be translated. */
-			fprintf(stderr, _("Try `-l %s:help' for more"
-					  " information.\n"), provider->name);
-			return -1;
+			args = value + strlen(value) + 1;
+			i += 1;
 		}
-
-		args = next_arg;
-		i += 1;
 	}
 
 	/* Start provider. */
@@ -496,8 +436,9 @@ provider_try_start(const location_provider_t *provider,
 
 static int
 method_try_start(const gamma_method_t *method,
-		 gamma_state_t *state,
-		 config_ini_state_t *config, char *args)
+		 gamma_server_state_t *state,
+		 config_ini_state_t *config, char *args,
+		 char *gamma)
 {
 	int r;
 
@@ -508,92 +449,81 @@ method_try_start(const gamma_method_t *method,
 		return -1;
 	}
 
-	/* Set method options from config file. */
-	config_ini_section_t *section =
-		config_ini_get_section(config, method->name);
-	if (section != NULL) {
-		config_ini_setting_t *setting = section->settings;
-		while (setting != NULL) {
-			r = method->set_option(state, setting->name,
-						 setting->value);
-			if (r < 0) {
-				method->free(state);
-				fprintf(stderr, _("Failed to set %s"
-						  " option.\n"),
-					method->name);
-				/* TRANSLATORS: `help' must not be
-				   translated. */
-				fprintf(stderr, _("Try `-m %s:help' for more"
-						  " information.\n"),
-					method->name);
-				return -1;
-			}
-			setting = setting->next;
+
+	/* Set default gamma. */
+	if (gamma != NULL) {
+		r = gamma_set_option(state, "gamma", gamma, 0);
+		free(gamma);
+		if (r < 0) {
+			gamma_free(state);
+			return -1;
 		}
 	}
 
+	/* Set method options from config file. */
+	config_ini_section_t **sections =
+		config_ini_get_sections(config, method->name);
+	if (sections != NULL) {
+		int section_i = 0;
+		while (sections[section_i] != NULL) {
+			config_ini_setting_t *setting = sections[section_i]->settings;
+			while (setting != NULL) {
+				r = gamma_set_option(state, setting->name,
+						     setting->value, section_i + 1);
+				if (r < 0) {
+					gamma_free(state);
+					fprintf(stderr, _("Failed to set %s option.\n"),
+						method->name);
+					/* TRANSLATORS: `help' must not be translated. */
+					fprintf(stderr, _("Try `-m %s:help' for more information.\n"),
+						method->name);
+					return -1;
+				}
+				setting = setting->next;
+			}
+			section_i++;
+		}
+		free(sections);
+	} else {
+		gamma_free(state);
+		return -1;
+	}
+
 	/* Set method options from command line. */
-	while (args != NULL) {
-		char *next_arg = strchr(args, ':');
-		if (next_arg != NULL) *(next_arg++) = '\0';
+	if (args != NULL) {
+		while (*args != '\0') {
+			const char *key = args;
+			char *value = strchr(args, '=');
+			if (value == NULL) {
+				fprintf(stderr, _("Failed to parse option `%s'.\n"),
+					args);
+				return -1;
+			} else {
+				*(value++) = '\0';
+			}
 
-		const char *key = args;
-		char *value = strchr(args, '=');
-		if (value == NULL) {
-			fprintf(stderr, _("Failed to parse option `%s'.\n"),
-				args);
-			return -1;
-		} else {
-			*(value++) = '\0';
+			r = gamma_set_option(state, key, value, -1);
+			if (r < 0) {
+				gamma_free(state);
+				fprintf(stderr, _("Failed to set %s option.\n"),
+					method->name);
+				/* TRANSLATORS: `help' must not be translated. */
+				fprintf(stderr, _("Try -m %s:help' for more"
+						  " information.\n"), method->name);
+				return -1;
+			}
+
+			args = value + strlen(value) + 1;
 		}
-
-		r = method->set_option(state, key, value);
-		if (r < 0) {
-			method->free(state);
-			fprintf(stderr, _("Failed to set %s option.\n"),
-				method->name);
-			/* TRANSLATORS: `help' must not be translated. */
-			fprintf(stderr, _("Try -m %s:help' for more"
-					  " information.\n"), method->name);
-			return -1;
-		}
-
-		args = next_arg;
 	}
 
 	/* Start method. */
 	r = method->start(state);
 	if (r < 0) {
-		method->free(state);
+		gamma_free(state);
 		fprintf(stderr, _("Failed to start adjustment method %s.\n"),
 			method->name);
 		return -1;
-	}
-
-	return 0;
-}
-
-/* A gamma string contains either one floating point value,
-   or three values separated by colon. */
-static int
-parse_gamma_string(const char *str, float gamma[])
-{
-	char *s = strchr(str, ':');
-	if (s == NULL) {
-		/* Use value for all channels */
-		float g = atof(str);
-		gamma[0] = gamma[1] = gamma[2] = g;
-	} else {
-		/* Parse separate value for each channel */
-		*(s++) = '\0';
-		char *g_s = s;
-		s = strchr(s, ':');
-		if (s == NULL) return -1;
-
-		*(s++) = '\0';
-		gamma[0] = atof(str); /* Red */
-		gamma[1] = atof(g_s); /* Blue */
-		gamma[2] = atof(s); /* Green */
 	}
 
 	return 0;
@@ -645,6 +575,14 @@ find_location_provider(const char *name)
 	return provider;
 }
 
+static int
+set_temperature(gamma_server_state_t *state, int temp, float brightness)
+{
+	gamma_update_all_brightness(state, brightness);
+	gamma_update_all_temperature(state, (float)temp);
+	return gamma_update(state);
+}
+
 
 int
 main(int argc, char *argv[])
@@ -667,7 +605,7 @@ main(int argc, char *argv[])
 	int temp_set = -1;
 	int temp_day = -1;
 	int temp_night = -1;
-	float gamma[3] = { NAN, NAN, NAN };
+	char *gamma = NULL;
 	float brightness_day = NAN;
 	float brightness_night = NAN;
 
@@ -690,7 +628,10 @@ main(int argc, char *argv[])
 
 	/* Parse command line arguments. */
 	int opt;
-	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:prt:vVx")) != -1) {
+	const char **args = alloca(argc * sizeof(char*));
+	int args_count;
+	while ((opt = parseopt(argc, argv, "b:c:g:hl:m:oO:prt:vVx", args, &args_count)) != -1) {
+		float gamma_[3];
 		switch (opt) {
 		case 'b':
 			parse_brightness_string(optarg, &brightness_day, &brightness_night);
@@ -698,9 +639,18 @@ main(int argc, char *argv[])
 		case 'c':
 			if (config_filepath != NULL) free(config_filepath);
 			config_filepath = strdup(optarg);
+			if (config_filepath == NULL) {
+				perror("strdup");
+				abort();
+			}
 			break;
 		case 'g':
-			r = parse_gamma_string(optarg, gamma);
+			gamma = strdup(optarg);
+			if (gamma == NULL) {
+				perror("strdup");
+				abort();
+			}
+			r = parse_gamma_string(optarg, gamma_);
 			if (r < 0) {
 				fputs(_("Malformed gamma argument.\n"),
 				      stderr);
@@ -715,38 +665,47 @@ main(int argc, char *argv[])
 			break;
 		case 'l':
 			/* Print list of providers if argument is `list' */
-			if (strcasecmp(optarg, "list") == 0) {
+			if (strcasecmp(*args, "list") == 0) {
 				print_provider_list();
 				exit(EXIT_SUCCESS);
 			}
 
-			char *provider_name = NULL;
+			provider_args = coalesce_args(args, args_count, '\0', '\0');
+			if (provider_args == NULL) {
+				perror("coalesce_args");
+				exit(EXIT_FAILURE);
+			}
 
 			/* Don't save the result of strtof(); we simply want
 			   to know if optarg can be parsed as a float. */
 			errno = 0;
 			char *end;
-			strtof(optarg, &end);
-			if (errno == 0 && *end == ':') {
-				/* Use instead as arguments to `manual'. */
-				provider_name = "manual";
-				provider_args = optarg;
-			} else {
-				/* Split off provider arguments. */
-				s = strchr(optarg, ':');
-				if (s != NULL) {
-					*(s++) = '\0';
-					provider_args = s;
+			strtof(provider_args, &end);
+			if (errno == 0 && (end[0] == ':' || end[0] == '\0') && end[1] != '\0') {
+				/* Set delimiter to `\0'. */
+				end[0] = '\0';
+				/* Set provider method to `manual'. */
+				char *old_buf = provider_args;
+				size_t n = 0;
+				while (provider_args[n] != '\0' || provider_args[n + 1] != '\0')
+					n++;
+				n += 2;
+				provider_args = realloc(old_buf, (strlen("manual") + 1 + n) * sizeof(char));
+				if (provider_args == NULL) {
+					perror("realloc");
+					free(old_buf);
+					exit(EXIT_FAILURE);
 				}
-
-				provider_name = optarg;
+				memmove(provider_args + strlen("manual") + 1, provider_args, n * sizeof(char));
+				strcpy(provider_args, "manual");
 			}
 
 			/* Lookup provider from name. */
-			provider = find_location_provider(provider_name);
+			provider = find_location_provider(provider_args);
 			if (provider == NULL) {
 				fprintf(stderr, _("Unknown location provider"
-						  " `%s'.\n"), provider_name);
+						  " `%s'.\n"), provider_args);
+				free(provider_args);
 				exit(EXIT_FAILURE);
 			}
 
@@ -754,6 +713,7 @@ main(int argc, char *argv[])
 			if (provider_args != NULL &&
 			    strcasecmp(provider_args, "help") == 0) {
 				provider->print_help(stdout);
+				free(provider_args);
 				exit(EXIT_SUCCESS);
 			}
 			break;
@@ -764,20 +724,20 @@ main(int argc, char *argv[])
 				exit(EXIT_SUCCESS);
 			}
 
-			/* Split off method arguments. */
-			s = strchr(optarg, ':');
-			if (s != NULL) {
-				*(s++) = '\0';
-				method_args = s;
+			method_args = coalesce_args(args, args_count, '\0', '\0');
+			if (method_args == NULL) {
+				perror("coalesce_args");
+				exit(EXIT_FAILURE);
 			}
 
 			/* Find adjustment method by name. */
-			method = find_gamma_method(optarg);
+			method = find_gamma_method(method_args);
 			if (method == NULL) {
 				/* TRANSLATORS: This refers to the method
 				   used to adjust colors e.g VidMode */
 				fprintf(stderr, _("Unknown adjustment method"
 						  " `%s'.\n"), optarg);
+				free(method_args);
 				exit(EXIT_FAILURE);
 			}
 
@@ -785,6 +745,7 @@ main(int argc, char *argv[])
 			if (method_args != NULL &&
 			    strcasecmp(method_args, "help") == 0) {
 				method->print_help(stdout);
+				free(method_args);
 				exit(EXIT_SUCCESS);
 			}
 			break;
@@ -886,14 +847,11 @@ main(int argc, char *argv[])
 					      "elevation-low") == 0) {
 				transition_low = atof(setting->value);
 			} else if (strcasecmp(setting->name, "gamma") == 0) {
-				if (isnan(gamma[0])) {
-					r = parse_gamma_string(setting->value,
-							       gamma);
-					if (r < 0) {
-						fputs(_("Malformed gamma"
-							" setting.\n"),
-						      stderr);
-						exit(EXIT_FAILURE);
+				if (gamma == NULL) {
+					gamma = strdup(setting->value);
+					if (gamma == NULL) {
+						perror("strdup");
+						abort();
 					}
 				}
 			} else if (strcasecmp(setting->name,
@@ -939,7 +897,6 @@ main(int argc, char *argv[])
 	if (temp_night < 0) temp_night = DEFAULT_NIGHT_TEMP;
 	if (isnan(brightness_day)) brightness_day = DEFAULT_BRIGHTNESS;
 	if (isnan(brightness_night)) brightness_night = DEFAULT_BRIGHTNESS;
-	if (isnan(gamma[0])) gamma[0] = gamma[1] = gamma[2] = DEFAULT_GAMMA;
 	if (transition < 0) transition = 1;
 
 	float lat = NAN;
@@ -954,8 +911,9 @@ main(int argc, char *argv[])
 	    mode != PROGRAM_MODE_MANUAL) {
 		if (provider != NULL) {
 			/* Use provider specified on command line. */
-			r = provider_try_start(provider, &location_state,
-					       &config_state, provider_args);
+			r = provider_try_start(provider, &location_state, &config_state,
+					       provider_args == NULL ? NULL :
+					       provider_args + strlen(provider_args) + 1);
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
 			/* Try all providers, use the first that works. */
@@ -1079,39 +1037,30 @@ main(int argc, char *argv[])
 		printf(_("Brightness: %.2f:%.2f\n"), brightness_day, brightness_night);
 	}
 
-	/* Gamma */
-	if (gamma[0] < MIN_GAMMA || gamma[0] > MAX_GAMMA ||
-	    gamma[1] < MIN_GAMMA || gamma[1] > MAX_GAMMA ||
-	    gamma[2] < MIN_GAMMA || gamma[2] > MAX_GAMMA) {
-		fprintf(stderr,
-			_("Gamma value must be between %.1f and %.1f.\n"),
-			MIN_GAMMA, MAX_GAMMA);
-		exit(EXIT_FAILURE);
-	}
-
-	if (verbose) {
-		printf(_("Gamma: %.3f, %.3f, %.3f\n"),
-		       gamma[0], gamma[1], gamma[2]);
-	}
-
 	/* Initialize gamma adjustment method. If method is NULL
 	   try all methods until one that works is found. */
-	gamma_state_t state;
+	gamma_server_state_t state;
 
 	/* Gamma adjustment not needed for print mode */
 	if (mode != PROGRAM_MODE_PRINT) {
 		if (method != NULL) {
 			/* Use method specified on command line. */
 			r = method_try_start(method, &state, &config_state,
-					     method_args);
-			if (r < 0) exit(EXIT_FAILURE);
+					     method_args == NULL ? NULL :
+					     method_args + strlen(method_args) + 1,
+					     gamma);
+			if (r < 0) {
+				config_ini_free(&config_state);
+				exit(EXIT_FAILURE);
+			}
 		} else {
 			/* Try all methods, use the first that works. */
 			for (int i = 0; gamma_methods[i].name != NULL; i++) {
 				const gamma_method_t *m = &gamma_methods[i];
 				if (!m->autostart) continue;
 
-				r = method_try_start(m, &state, &config_state, NULL);
+				r = method_try_start(m, &state, &config_state, NULL,
+						     gamma);
 				if (r < 0) {
 					fputs(_("Trying next method...\n"), stderr);
 					continue;
@@ -1142,7 +1091,7 @@ main(int argc, char *argv[])
 		r = systemtime_get_time(&now);
 		if (r < 0) {
 			fputs(_("Unable to read system time.\n"), stderr);
-			method->free(&state);
+			gamma_free(&state);
 			exit(EXIT_FAILURE);
 		}
 
@@ -1170,10 +1119,10 @@ main(int argc, char *argv[])
 		}
 
 		/* Adjust temperature */
-		r = method->set_temperature(&state, temp, brightness, gamma);
+		r = set_temperature(&state, temp, brightness);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
-			method->free(&state);
+			gamma_free(&state);
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -1183,10 +1132,10 @@ main(int argc, char *argv[])
 		if (verbose) printf(_("Color temperature: %uK\n"), temp_set);
 
 		/* Adjust temperature */
-		r = method->set_temperature(&state, temp_set, brightness_day, gamma);
+		r = set_temperature(&state, temp_set, brightness_day);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
-			method->free(&state);
+			gamma_free(&state);
 			exit(EXIT_FAILURE);
 		}
 
@@ -1195,10 +1144,10 @@ main(int argc, char *argv[])
 	case PROGRAM_MODE_RESET:
 	{
 		/* Reset screen */
-		r = method->set_temperature(&state, NEUTRAL_TEMP, 1.0, gamma);
+		r = set_temperature(&state, NEUTRAL_TEMP, 1.0);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
-			method->free(&state);
+			gamma_free(&state);
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -1286,7 +1235,7 @@ main(int argc, char *argv[])
 			if (r < 0) {
 				fputs(_("Unable to read system time.\n"),
 				      stderr);
-				method->free(&state);
+				gamma_free(&state);
 				exit(EXIT_FAILURE);
 			}
 
@@ -1346,13 +1295,11 @@ main(int argc, char *argv[])
 
 			/* Adjust temperature */
 			if (!disabled || short_trans_delta || set_adjustments) {
-				r = method->set_temperature(&state,
-							    temp, brightness,
-							    gamma);
+				r = set_temperature(&state, temp, brightness);
 				if (r < 0) {
 					fputs(_("Temperature adjustment"
 						" failed.\n"), stderr);
-					method->free(&state);
+					gamma_free(&state);
 					exit(EXIT_FAILURE);
 				}
 			}
@@ -1368,13 +1315,19 @@ main(int argc, char *argv[])
 		}
 
 		/* Restore saved gamma ramps */
-		method->restore(&state);
+		gamma_restore(&state);
 	}
 	break;
 	}
 
 	/* Clean up gamma adjustment state */
-	method->free(&state);
+	gamma_free(&state);
+
+	/* Free memory */
+	if (method_args != NULL)
+		free(method_args);
+	if (provider_args != NULL)
+		free(provider_args);
 
 	return EXIT_SUCCESS;
 }
