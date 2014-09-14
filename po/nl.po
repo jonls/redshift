@@ -81,6 +81,21 @@ msgid ""
 "  -r\t\tDisable temperature transitions\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
+"  -b DAG:NACHT\tHelderheid van het scherm (tussen 0,1 en 1,0)\n"
+"  -c BESTAND\tLaadt instellingen van opgegeven configuratiebestand\n"
+"  -g R:G:B\tExtra gammacorrectie toepassen\n"
+"  -l LAT:LON\tUw huidige locatie (latitude:longitude)\n"
+"  -l AANBIEDER\tKies een aanbieder voor automatische locatie-updates\n"
+"  \t\t(Type `list' to see available providers)\n"
+"  -m METHODE\t Gebruikte methode om de kleurtemperatuur in te stellen\n"
+"  \t\t(Typ `list' om beschikbare aanbieders te zien)\n"
+"  -o\t\tOne shot mode (do not continuously adjust color temperature)\n"
+"  -O TEMP\tOne shot manual mode (set color temperature)\n"
+"  -p\t\tPrint mode (only print parameters and exit)\n"
+"  -x\t\tReset mode (remove adjustment from screen)\n"
+"  -r\t\tDisable temperature transitions\n"
+"  -t DAG:NACHT\tColor temperature to set at daytime/night\n"
+
 
 #. TRANSLATORS: help output 5
 #: src/redshift.c:353
@@ -124,7 +139,7 @@ msgstr "Beschikbare aanpassingsmethoden:\n"
 
 #: src/redshift.c:383
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
-msgstr "Specificeer met dubbele punten gescheiden opties met `-m METHOD:OPTIONS'.\n"
+msgstr "Specificeer met dubbele punten gescheiden opties met `-m METHODE:OPTIES'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:386
@@ -138,12 +153,12 @@ msgstr "Beschikbare locatieaanbieders:\n"
 #: src/redshift.c:398
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
 msgstr ""
-"Specificeer met dubbele punten gescheiden opties met `-l PROVIDER:OPTIONS'.\n"
+"Specificeer met dubbele punten gescheiden opties met `-l AANBIEDER:OPTIES'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: src/redshift.c:401
 msgid "Try `-l PROVIDER:help' for help.\n"
-msgstr "Probeer '-l PROVIDER:help' voor hulp.\n"
+msgstr "Probeer '-l AANBIEDER:help' voor hulp.\n"
 
 #: src/redshift.c:414 src/redshift.c:506
 #, c-format
@@ -197,7 +212,7 @@ msgstr "Misvormd gamma argument.\n"
 
 #: src/redshift.c:707 src/redshift.c:809 src/redshift.c:828
 msgid "Try `-h' for more information.\n"
-msgstr "Probeer '-m' voor meer informatie.\n"
+msgstr "Probeer '-h' voor meer informatie.\n"
 
 #: src/redshift.c:748 src/redshift.c:919
 #, c-format
@@ -407,13 +422,13 @@ msgid ""
 "  card=N\tGraphics card to apply adjustments to\n"
 "  crtc=N\tCRTC to apply adjustments to\n"
 msgstr ""
-"  screen=N\tTe wijzigen X-scherm\n"
+"  card=N\tTe wijzigen Grafische kaart\n"
 "  crtc=N\tTe wijzigen CRTC\n"
 
 #: src/gamma-drm.c:232
 #, c-format
 msgid "CRTC must be a non-negative integer\n"
-msgstr ""
+msgstr "CRTC moet een niet-negatief geheel getal zijn\n"
 
 #: src/gamma-drm.c:236 src/gamma-randr.c:289 src/gamma-vidmode.c:141
 #: src/location-geoclue.c:171 src/location-manual.c:96
