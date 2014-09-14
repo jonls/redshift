@@ -297,30 +297,11 @@ static int
 randr_set_option(gamma_server_state_t *state, const char *key, char *value, ssize_t section)
 {
 	if (strcasecmp(key, "screen") == 0) {
-		ssize_t screen = strcasecmp(value, "all") ? (ssize_t)atoi(value) : -1;
-		if (screen < 0 && strcasecmp(value, "all")) {
-			/* TRANSLATORS: `all' must not be translated. */
-			fprintf(stderr, _("Screen must be `all' or a non-negative integer.\n"));
-			return -1;
-		}
-		on_selections({ sel->partition = screen; });
-		return 0;
+		return gamma_select_partitions(state, value, ',', section, _("Screen"));
 	} else if (strcasecmp(key, "crtc") == 0) {
-		ssize_t crtc = strcasecmp(value, "all") ? (ssize_t)atoi(value) : -1;
-		if (crtc < 0 && strcasecmp(value, "all")) {
-			/* TRANSLATORS: `all' must not be translated. */
-			fprintf(stderr, _("CRTC must be `all' or a non-negative integer.\n"));
-			return -1;
-		}
-		on_selections({ sel->crtc = crtc; });
-		return 0;
+		return gamma_select_crtcs(state, value, ',', section, _("CRTC"));
 	} else if (strcasecmp(key, "display") == 0) {
-		on_selections({
-			sel->site = strdup(value);
-			if (sel->site == NULL)
-				goto strdup_fail;
-		});
-		return 0;
+		return gamma_select_sites(state, value, ',', section);
 	}
 	return 1;
 
@@ -337,7 +318,6 @@ randr_init(gamma_server_state_t *state)
 	r = gamma_init(state);
 	if (r != 0) return r;
 
-	state->selections->site    = getenv("DISPLAY") ? strdup(getenv("DISPLAY")) : NULL;
 	state->free_site_data      = randr_free_site;
 	state->free_partition_data = randr_free_partition;
 	state->free_crtc_data      = randr_free_crtc;
@@ -348,10 +328,22 @@ randr_init(gamma_server_state_t *state)
 	state->set_ramps           = randr_set_ramps;
 	state->set_option          = randr_set_option;
 
-	if (getenv("DISPLAY") != NULL && state->selections->site == NULL) {
-		perror("strdup");
+	state->selections->sites = malloc(1 * sizeof(char *));
+	if (state->selections->sites == NULL) {
+		perror("malloc");
 		return -1;
 	}
+
+	if (getenv("DISPLAY") != NULL) {
+		state->selections->sites[0] = strdup(getenv("DISPLAY"));
+		if (state->selections->sites[0] == NULL) {
+			perror("strdup");
+			return -1;
+		}
+	} else {
+		state->selections->sites[0] = NULL;
+	}
+	state->selections->sites_count = 1;
 
 	return 0;
 }
@@ -370,8 +362,8 @@ randr_print_help(FILE *f)
 
 	/* TRANSLATORS: RANDR help output
 	   left column must not be translated */
-	fputs(_("  crtc=N\tCRTC to apply adjustments to\n"
-		"  screen=N\tX screen to apply adjustments to\n"
-		"  display=NAME\tX display to apply adjustments to\n"), f);
+	fputs(_("  crtc=N\tList of comma separated CRTCs to apply adjustments to\n"
+		"  screen=N\tList of comma separated X screens to apply adjustments to\n"
+		"  display=NAME\tList of comma separated X displays to apply adjustments to\n"), f);
 	fputs("\n", f);
 }

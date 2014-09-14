@@ -174,14 +174,7 @@ static int
 w32gdi_set_option(gamma_server_state_t *state, const char *key, char *value, ssize_t section)
 {
 	if (strcasecmp(key, "crtc") == 0) {
-		ssize_t crtc = strcasecmp(value, "all") ? (ssize_t)atoi(value) : -1;
-		if (crtc < 0 && strcasecmp(value, "all")) {
-			/* TRANSLATORS: `all' must not be translated. */
-			fprintf(stderr, _("CRTC must be `all' or a non-negative integer.\n"));
-			return -1;
-		}
-		on_selections({ sel->crtc = crtc; });
-		return 0;
+		return gamma_select_crtcs(state, value, ',', section, _("CRTC"));
 	}
 	return 1;
 }
@@ -218,6 +211,6 @@ w32gdi_print_help(FILE *f)
 
 	/* TRANSLATORS: Windows GDI help output
 	   left column must not be translated. */
-	fputs(_("  crtc=N\tX monitor to apply adjustments to\n"), f);
+	fputs(_("  crtc=N\tList of comman separated monitors to apply adjustments to\n"), f);
 	fputs("\n", f);
 }
