@@ -20,8 +20,6 @@
 
 #include "gamma-libgamma.h"
 
-#include <libgamma.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -68,7 +66,7 @@ gamma_libgamma_perror(const char* name, int error_code)
 	  _("The selected display does not exist."));
 
 	p(LIBGAMMA_NO_SUCH_PARTITION,
-	  _("The selected screen does not exist."));
+	  _("The selected screen/graphics card does not exist."));
 
 	p(LIBGAMMA_NO_SUCH_CRTC,
 	  _("The selected monitor does not exist."));
@@ -110,10 +108,10 @@ gamma_libgamma_perror(const char* name, int error_code)
 	  _("Failed to acquire mode resources from the adjustment method."));
 
 	p(LIBGAMMA_NEGATIVE_PARTITION_COUNT,
-	  _("The adjustment method reported that a negative number of screens exists in the display."));
+	  _("The adjustment method reported that a negative number of screens/graphics cards exists in the display."));
 
 	p(LIBGAMMA_NEGATIVE_CRTC_COUNT,
-	  _("The adjustment method reported that a negative number of CRTCs exists in the screen."));
+	  _("The adjustment method reported that a negative number of CRTCs exists in the screen/graphics card."));
 
 	p(LIBGAMMA_DEVICE_RESTRICTED,
 	  _("Device cannot be access becauses of insufficient permissions."));
@@ -155,7 +153,7 @@ gamma_libgamma_perror(const char* name, int error_code)
 	  _("Failed to query the gamma ramps size from the adjustment method, reason unknown."));
 
 	p(LIBGAMMA_OPEN_PARTITION_FAILED,
-	  _("The selected screen could not be opened, reason unknown."));
+	  _("The selected screen/graphics card could not be opened, reason unknown."));
 
 	p(LIBGAMMA_OPEN_SITE_FAILED,
 	  _("The selected display could not be opened, reason unknown."));
@@ -167,10 +165,10 @@ gamma_libgamma_perror(const char* name, int error_code)
 	  _("The adjustment method's version of its protocol is not supported."));
 
 	p(LIBGAMMA_LIST_PARTITIONS_FAILED,
-	  _("The adjustment method failed to list available screens, reason unknown."));
+	  _("The adjustment method failed to list available screens/graphics cards, reason unknown."));
 
 	p(LIBGAMMA_NULL_PARTITION,
-	  _("Screen exists by index, but the screen at that index does not exist."));
+	  _("Screen/graphics card exists by index, but the screen/graphics card at that index does not exist."));
 
 	p(LIBGAMMA_NOT_CONNECTED,
 	  _("There is not monitor connected to the connector of the selected CRTC."));
@@ -217,16 +215,75 @@ gamma_libgamma_perror(const char* name, int error_code)
 }
 
 
+int gamma_libgamma_get_method(const char* subsystem)
+{
+#define __test(NAME, METHOD)			\
+	if (!strcmp(subsystem, NAME))		\
+		return LIBGAMMA_METHOD_##METHOD
+
+	__test("randr",   X_RANDR);
+	__test("vidmode", X_VIDMODE);
+	__test("drm",     LINUX_DRM);
+	__test("wingdi",  W32_GDI);
+	__test("quartz",  QUARTZ_CORE_GRAPHICS);
+	__test("dummy",   DUMMY);
+
+	fprintf(stderr, _("An undefined subsystem of libgamma has been requested.\n"));
+	abort();
+	return -1;
+#undef __test
+}
+
+
+const char *gamma_libgamma_get_method_name(int method)
+{
+#define __test(METHOD, NAME)		\
+	case LIBGAMMA_METHOD_##METHOD:	\
+		return NAME;
+	switch (method) {
+	__test(X_RANDR,              _("X.org's RandR extension"));
+	__test(X_VIDMODE,            _("X.org's VidMode extension"));
+	__test(LINUX_DRM,            _("Direct Rendering Manager"));
+	__test(W32_GDI,              _("Windows GDI"));
+	__test(QUARTZ_CORE_GRAPHICS, _("Quartz"));
+	__test(DUMMY,                _("the dummy adjustment method"));
+	default:
+		fprintf(stderr, _("An undefined subsystem of libgamma has been requested.\n"));
+		abort();
+		return NULL;
+	}
+#undef __test
+}
+
 
 int gamma_libgamma_auto(const char* subsystem)
 {
-	return 1;
+	int method = gamma_libgamma_get_method(subsystem);
+	int methods_[LIBGAMMA_METHOD_COUNT];
+	int* methods = NULL;
+	size_t i, n = libgamma_list_methods(methods_, LIBGAMMA_METHOD_COUNT, 0);
+	if (n > LIBGAMMA_METHOD_COUNT) {
+		methods = malloc(n * sizeof(int));
+		if (methods == NULL) {
+			perror("malloc");
+			return -1;
+		}
+		libgamma_list_methods(methods, n, 0);
+	} else {
+		methods = methods_;
+	}
+	for (i = 0; i < n; i++)
+		if (methods[i] == method)
+			return 1;
+	free(methods);
+	return 0;
 }
 
 
 int gamma_libgamma_is_available(const char* subsystem)
 {
-	return 1;
+	int method = gamma_libgamma_get_method(subsystem);
+	return libgamma_is_method_available(method);
 }
 
 
@@ -280,6 +337,12 @@ gamma_libgamma_set_ramps(gamma_server_state_t *state, gamma_crtc_state_t *crtc, 
 
 
 static void
+gamma_libgamma_free_state(void *data)
+{
+	free(data);
+}
+
+static void
 gamma_libgamma_free_site(void *data)
 {
 	libgamma_site_free(data);
@@ -301,8 +364,7 @@ gamma_libgamma_free_crtc(void *data)
 static int
 gamma_libgamma_open_site(gamma_server_state_t *state, char *site, gamma_site_state_t *site_out)
 {
-	(void) state;
-
+	gamma_libgamma_state_data_t *state_data = state->data;
 	char *site_id = NULL;
 	libgamma_site_state_t *site_state = NULL;
 	int r;
@@ -319,7 +381,7 @@ gamma_libgamma_open_site(gamma_server_state_t *state, char *site, gamma_site_sta
 		goto fail;
 	}
 
-        r = libgamma_site_initialise(site_state, LIBGAMMA_METHOD_X_RANDR, site_id);
+        r = libgamma_site_initialise(site_state, state_data->method, site_id);
 	if (r) {
 		gamma_libgamma_perror("libgamma_site_initialise", r);
 		goto fail;
@@ -433,28 +495,67 @@ fail:
 
 
 static void
-gamma_libgamma_invalid_partition(const gamma_site_state_t *site, size_t partition) /* TODO needs updating */
+gamma_libgamma_invalid_partition(gamma_server_state_t *state, const gamma_site_state_t *site, size_t partition)
 {
-	fprintf(stderr, _("Screen %ld does not exist. "),
-		partition);
-	if (site->partitions_available > 1) {
-		fprintf(stderr, _("Valid screens are [0-%ld].\n"),
-			site->partitions_available - 1);
-	} else {
-		fprintf(stderr, _("Only screen 0 exists, did you mean CRTC %ld?\n"),
+	gamma_libgamma_state_data_t *state_data = state->data;
+	libgamma_method_capabilities_t caps = state_data->caps;
+
+	if (caps.partitions_are_graphics_cards) {
+		fprintf(stderr, _("Card %ld does not exist. "),
 			partition);
+		if (site->partitions_available > 1) {
+			fprintf(stderr, _("Valid cards are [0-%ld].\n"),
+				site->partitions_available - 1);
+		} else {
+			fprintf(stderr, _("Only card 0 exists.\n"));
+		}
+
+	} else if (caps.multiple_crtcs) {
+		fprintf(stderr, _("Screen %ld does not exist. "),
+			partition);
+		if (site->partitions_available > 1) {
+			fprintf(stderr, _("Valid screens are [0-%ld].\n"),
+				site->partitions_available - 1);
+		} else {
+			fprintf(stderr, _("Only screen 0 exists, did you mean CRTC %ld?\n"),
+				partition);
+		}
+
+	} else {
+		fprintf(stderr, _("Screen %ld does not exist. "),
+			partition);
+		if (site->partitions_available > 1) {
+			fprintf(stderr, _("Valid screens are [0-%ld].\n"),
+				site->partitions_available - 1);
+		} else {
+			fprintf(stderr, _("Only screen 0 exists, did you mean CRTC %ld?\n"),
+				partition);
+			if (state_data->method == LIBGAMMA_METHOD_X_VIDMODE)
+				fprintf(stderr, _("If so, you need to use `randr' instead of `vidmode'.\n"));
+		}
 	}
 }
 
 
 static int
-gamma_libgamma_set_option(gamma_server_state_t *state, const char *key, char *value, ssize_t section) /* TODO needs updating */
+gamma_libgamma_set_option(gamma_server_state_t *state, const char *key, char *value, ssize_t section)
 {
-	if (strcasecmp(key, "screen") == 0) {
+	gamma_libgamma_state_data_t *state_data = state->data;
+	libgamma_method_capabilities_t caps = state_data->caps;
+
+	if (caps.partitions_are_graphics_cards && strcasecmp(key, "card") == 0) {
+		return gamma_select_partitions(state, value, ',', section, _("card"));
+
+	} else if (caps.multiple_partitions && strcasecmp(key, "screen") == 0) {
 		return gamma_select_partitions(state, value, ',', section, _("Screen"));
-	} else if (strcasecmp(key, "crtc") == 0) {
+
+	} else if (caps.multiple_crtcs && caps.multiple_sites && strcasecmp(key, "crtc") == 0) {
 		return gamma_select_crtcs(state, value, ',', section, _("CRTC"));
-	} else if (strcasecmp(key, "display") == 0) {
+
+	} else if (caps.multiple_crtcs && strcasecmp(key, "display") == 0) {
+		return gamma_select_crtcs(state, value, ',', section, _("Display"));
+
+	} else if (caps.multiple_sites && strcasecmp(key, "display") == 0) {
 		return gamma_select_sites(state, value, ',', section);
 	}
 
@@ -465,12 +566,23 @@ gamma_libgamma_set_option(gamma_server_state_t *state, const char *key, char *va
 int
 gamma_libgamma_init(gamma_server_state_t *state, const char *subsystem)
 {
-	char* default_site;
+	gamma_libgamma_state_data_t *state_data = NULL;
+	char *default_site;
 	int r;
 
 	r = gamma_init(state);
 	if (r != 0) return r;
 
+	state->data = state_data = malloc(sizeof(gamma_libgamma_state_data_t));
+	if (state_data == NULL) {
+		perror("malloc");
+		return -1;
+	}
+
+	state_data->method = gamma_libgamma_get_method(subsystem);
+	libgamma_method_capabilities(&(state_data->caps), state_data->method);
+
+	state->free_state_data         = gamma_libgamma_free_state;
 	state->free_site_data          = gamma_libgamma_free_site;
 	state->free_partition_data     = gamma_libgamma_free_partition;
 	state->free_crtc_data          = gamma_libgamma_free_crtc;
@@ -481,12 +593,15 @@ gamma_libgamma_init(gamma_server_state_t *state, const char *subsystem)
 	state->set_ramps               = gamma_libgamma_set_ramps;
 	state->set_option              = gamma_libgamma_set_option;
 
+	if (state_data->caps.multiple_partitions)
+		state->invalid_partition = NULL;
+
 	state->selections->sites = malloc(1 * sizeof(char *));
 	if (state->selections->sites == NULL) {
 		perror("malloc");
 		return -1;
 	}
-	default_site = libgamma_method_default_site(LIBGAMMA_METHOD_X_RANDR);
+	default_site = libgamma_method_default_site(state_data->method);
 	if (default_site != NULL) {
 		state->selections->sites[0] = strdup(default_site);
 		if (state->selections->sites[0] == NULL) {
@@ -510,16 +625,32 @@ gamma_libgamma_start(gamma_server_state_t *state)
 
 
 void
-gamma_libgamma_print_help(FILE *f) /* TODO needs updating */
+gamma_libgamma_print_help(FILE *f, const char *subsystem)
 {
-	fputs(_("Adjust gamma ramps with the X RANDR extension.\n"), f);
+	int method = gamma_libgamma_get_method(subsystem);
+	libgamma_method_capabilities_t caps;
+
+	libgamma_method_capabilities(&caps, method);
+
+	fprintf(f, _("Adjust gamma ramps with %s.\n"), gamma_libgamma_get_method_name(method));
 	fputs("\n", f);
-	/* TRANSLATORS: RANDR help output
+
+	/* TRANSLATORS: libgamma help output
 	   left column must not be translated */
-	fputs(_(" edid=VALUE\tThe EDID of the monitor to apply adjustments to\n"
-		" crtc=N\tList of comma separated CRTCs to apply adjustments to\n"
-		" screen=N\tList of comma separated X screens to apply adjustments to\n"
-		" display=NAME\tList of comma separated X displays to apply adjustments to\n"), f);
+
+	if (caps.multiple_crtcs && caps.multiple_sites)
+		fputs(_(" crtc=N\tList of comma separated CRTCs to apply adjustments to\n"), f);
+	else if (caps.multiple_crtcs)
+		fputs(_(" display=N\tList of comma separated displays to apply adjustments to\n"), f);
+
+	if (caps.partitions_are_graphics_cards)
+		fputs(_(" card=N\tList of comma separated graphics cards to apply adjustments to\n"), f);
+	else if (caps.multiple_partitions)
+		fputs(_(" screen=N\tList of comma separated screens to apply adjustments to\n"), f);
+
+	if (caps.multiple_sites)
+		fputs(_(" display=NAME\tList of comma separated displays to apply adjustments to\n"), f);
+
 	fputs("\n", f);
 }
 

@@ -48,7 +48,7 @@ typedef int gamma_method_auto_func(const char *subsystem);
 typedef int gamma_method_is_available_func(const char *subsystem);
 typedef int gamma_method_init_func(void *state, const char *subsystem);
 typedef int gamma_method_start_func(void *state);
-typedef void gamma_method_print_help_func(FILE *f);
+typedef void gamma_method_print_help_func(FILE *f, const char *subsystem);
 
 typedef struct {
 	char *name;

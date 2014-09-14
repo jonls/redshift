@@ -77,7 +77,12 @@
 		(gamma_method_print_help_func *)      METHOD##_print_help,	\
 	}
 static const gamma_method_t gamma_methods[] = {
-	__method("randr", gamma_libgamma), /* TODO needs updating */
+	__method("randr",   gamma_libgamma),
+	__method("vidmode", gamma_libgamma),
+	__method("drm",     gamma_libgamma),
+	__method("wingdi",  gamma_libgamma),
+	__method("quartz",  gamma_libgamma),
+	__method("dummy",   gamma_libgamma),
 	{ NULL }
 };
 #undef __method
@@ -402,7 +407,8 @@ method_try_start(const gamma_method_t *method,
 	int r;
 
 	r = method->availability_test(method->name);
-	if (r < 0) {
+	if (r < 0)  return -1;
+	if (r == 0) {
 		fprintf(stderr, _("%s has been disabled.\n"),
 			method->name);
 		return -1;
@@ -515,10 +521,13 @@ static const gamma_method_t *
 find_gamma_method(const char *name)
 {
 	const gamma_method_t *method = NULL;
+	int r;
+
 	for (int i = 0; gamma_methods[i].name != NULL; i++) {
 		const gamma_method_t *m = &gamma_methods[i];
-		if (!m->availability_test(m->name))
-			continue;
+		r = m->availability_test(m->name);
+		if (r < 0)    exit(EXIT_FAILURE);
+		else if (!r)  continue;
 		if (strcasecmp(name, m->name) == 0) {
 		        method = m;
 			break;
@@ -712,7 +721,7 @@ main(int argc, char *argv[])
 			/* Print method help if arg is `help'. */
 			if (method_args != NULL &&
 			    strcasecmp(method_args, "help") == 0) {
-				method->print_help(stdout);
+				method->print_help(stdout, method->name);
 				free(method_args);
 				exit(EXIT_SUCCESS);
 			}
@@ -1025,10 +1034,14 @@ main(int argc, char *argv[])
 			/* Try all methods, use the first that works. */
 			for (int i = 0; gamma_methods[i].name != NULL; i++) {
 				const gamma_method_t *m = &gamma_methods[i];
-				if (!m->autostart_test(m->name))
-					continue;
-				if (!m->availability_test(m->name))
-					continue;
+
+				r = m->autostart_test(m->name);
+				if (r < 0)    exit(EXIT_FAILURE);
+				else if (!r)  continue;
+
+				r = m->availability_test(m->name);
+				if (r < 0)    exit(EXIT_FAILURE);
+				else if (!r)  continue;
 
 				r = method_try_start(m, &state, &config_state, NULL,
 						     gamma);

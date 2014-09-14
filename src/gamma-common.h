@@ -64,7 +64,8 @@ typedef int gamma_open_crtc_func(gamma_server_state_t *state,
 				 gamma_partition_state_t *partition,
 				 size_t crtc, gamma_crtc_state_t *crtc_out);
 
-typedef void gamma_invalid_partition_func(const gamma_site_state_t *site, size_t partition);
+typedef void gamma_invalid_partition_func(gamma_server_state_t *state,
+					  const gamma_site_state_t *site, size_t partition);
 
 typedef int gamma_set_ramps_func(gamma_server_state_t *state, gamma_crtc_state_t *crtc, gamma_ramps_t ramps);
 

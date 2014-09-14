@@ -23,6 +23,14 @@
 #include "redshift.h"
 #include "gamma-common.h"
 
+#include <libgamma.h>
+
+
+typedef struct gamma_libgamma_state_data {
+	int method;
+	libgamma_method_capabilities_t caps;
+} gamma_libgamma_state_data_t;
+
 
 int gamma_libgamma_auto(const char *subsystem);
 int gamma_libgamma_is_available(const char *subsystem);
@@ -30,7 +38,7 @@ int gamma_libgamma_is_available(const char *subsystem);
 int gamma_libgamma_init(gamma_server_state_t *state, const char *subsystem);
 int gamma_libgamma_start(gamma_server_state_t *state);
 
-void gamma_libgamma_print_help(FILE *f);
+void gamma_libgamma_print_help(FILE *f, const char *subsystem);
 
 
 #endif /* ! REDSHIFT_GAMMA_LIBGAMMA_H */

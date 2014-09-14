@@ -394,7 +394,7 @@ gamma_open_partitions(gamma_server_state_t *state, gamma_site_state_t *site,
 
 		/* Validate partition index. */
 		if (partition_index >= site->partitions_available) {
-			state->invalid_partition(site, partition_index);
+			state->invalid_partition(state, site, partition_index);
 			goto fail;
 		}
 
