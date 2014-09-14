@@ -56,24 +56,7 @@
 #define MAX(x,y)  ((x) > (y) ? (x) : (y))
 
 
-#include "gamma-dummy.h"
-
-#ifdef ENABLE_DRM
-# include "gamma-drm.h"
-#endif
-
-#ifdef ENABLE_RANDR
-# include "gamma-randr.h"
-#endif
-
-#ifdef ENABLE_VIDMODE
-# include "gamma-vidmode.h"
-#endif
-
-#ifdef ENABLE_WINGDI
-# include "gamma-w32gdi.h"
-#endif
-
+#include "gamma-libgamma.h"
 
 #include "location-manual.h"
 
@@ -93,19 +76,7 @@
 		(gamma_method_print_help_func *)      METHOD##_print_help,	\
 	}
 static const gamma_method_t gamma_methods[] = {
-#ifdef ENABLE_DRM
-	__method("drm", drm),
-#endif
-#ifdef ENABLE_RANDR
-	__method("randr", randr),
-#endif
-#ifdef ENABLE_VIDMODE
-	__method("vidmode", vidmode),
-#endif
-#ifdef ENABLE_WINGDI
-	__method("wingdi", w32gdi),
-#endif
-	__method("dummy", gamma_dummy),
+	__method("randr", gamma_libgamma), /* TODO needs updating */
 	{ NULL }
 };
 #undef __method

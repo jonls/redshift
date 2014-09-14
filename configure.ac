@@ -22,14 +22,6 @@ AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [Package name for gettext])
 
 
-PKG_CHECK_MODULES([DRM], [libdrm], [have_drm=yes], [have_drm=no])
-
-PKG_CHECK_MODULES([X11], [x11], [have_x11=yes], [have_x11=no])
-PKG_CHECK_MODULES([XF86VM], [xxf86vm], [have_xf86vm=yes], [have_xf86vm=no])
-PKG_CHECK_MODULES([XCB], [xcb], [have_xcb=yes], [have_xcb=no])
-PKG_CHECK_MODULES([XCB_RANDR], [xcb-randr],
-	[have_xcb_randr=yes], [have_xcb_randr=no])
-
 PKG_CHECK_MODULES([GLIB], [glib-2.0 gobject-2.0], [have_glib=yes], [have_glib=no])
 PKG_CHECK_MODULES([GEOCLUE], [geoclue], [have_geoclue=yes], [have_geoclue=no])
 
@@ -37,117 +29,6 @@ AC_CHECK_HEADER([windows.h], [have_windows_h=yes], [have_windows_h=no])
 
 # Check for Python
 AM_PATH_PYTHON([3.2], [have_python=yes], [have_python=no])
-
-# Check DRM method
-AC_MSG_CHECKING([whether to enable DRM method])
-AC_ARG_ENABLE([drm], [AC_HELP_STRING([--enable-drm],
-	[enable DRM method])],
-	[enable_drm=$enableval],[enable_drm=maybe])
-AS_IF([test "x$enable_drm" != xno], [
-	AS_IF([test $have_drm = yes], [
-		AC_DEFINE([ENABLE_DRM], 1,
-			[Define to 1 to enable DRM method])
-		AC_MSG_RESULT([yes])
-		enable_drm=yes
-	], [
-		AC_MSG_RESULT([missing dependencies])
-		AS_IF([test "x$enable_drm" = xyes], [
-			AC_MSG_ERROR([missing dependencies for DRM method])
-		])
-		enable_drm=no
-	])
-], [
-	AC_MSG_RESULT([no])
-	enable_drm=no
-])
-AM_CONDITIONAL([ENABLE_DRM], [test "x$enable_drm" = xyes])
-
-# Check RANDR method
-AC_MSG_CHECKING([whether to enable RANDR method])
-AC_ARG_ENABLE([randr], [AC_HELP_STRING([--enable-randr],
-	[enable RANDR method])],
-	[enable_randr=$enableval],[enable_randr=maybe])
-AS_IF([test "x$enable_randr" != xno], [
-	AS_IF([test $have_xcb = yes -a $have_xcb_randr = yes], [
-		AC_DEFINE([ENABLE_RANDR], 1,
-			[Define to 1 to enable RANDR method])
-		AC_MSG_RESULT([yes])
-		enable_randr=yes
-	], [
-		AC_MSG_RESULT([missing dependencies])
-		AS_IF([test "x$enable_randr" = xyes], [
-			AC_MSG_ERROR([missing dependencies for RANDR method])
-		])
-		enable_randr=no
-	])
-], [
-	AC_MSG_RESULT([no])
-	enable_randr=no
-])
-AM_CONDITIONAL([ENABLE_RANDR], [test "x$enable_randr" = xyes])
-
-# Check VidMode method 
-AC_MSG_CHECKING([whether to enable VidMode method])
-AC_ARG_ENABLE([vidmode], [AC_HELP_STRING([--enable-vidmode],
-	[enable VidMode method])],
-	[enable_vidmode=$enableval],[enable_vidmode=maybe])
-AS_IF([test "x$enable_vidmode" != xno], [
-	AS_IF([test $have_x11 = yes -a $have_xf86vm = yes], [
-		AC_DEFINE([ENABLE_VIDMODE], 1,
-			[Define to 1 to enable VidMode method])
-		AC_MSG_RESULT([yes])
-		enable_vidmode=yes
-	], [
-		AC_MSG_RESULT([missing dependencies])
-		AS_IF([test "x$enable_vidmode" = xyes], [
-			AC_MSG_ERROR([missing dependencies for VidMode method])
-		])
-		enable_vidmode=no
-	])
-], [
-	AC_MSG_RESULT([no])
-	enable_vidmode=no
-])
-AM_CONDITIONAL([ENABLE_VIDMODE], [test "x$enable_vidmode" = xyes])
-
-# Check for fake Windows GDI
-AC_MSG_CHECKING([whether to enable fake WinGDI])
-AC_ARG_ENABLE([fakegdi], [AC_HELP_STRING([--enable-fakegdi],
-	[enable fake WinGDI])],
-        [enable_fakegdi=$enableval],[enable_fakegdi=no])
-AS_IF([test "x$enable_fakegdi" != xno], [
-	AC_DEFINE([FAKE_W32GDI], 1,
-		[Define to 1 to enable WinGDI method])
-        AC_MSG_RESULT([yes])
-	enable_fakegdi=yes
-], [
-        AC_MSG_RESULT([no])
-])
-AM_CONDITIONAL([FAKE_W32GDI], [test "x$enable_fakegdi" != xno])
-
-# Check Windows GDI method 
-AC_MSG_CHECKING([whether to enable WinGDI method])
-AC_ARG_ENABLE([wingdi], [AC_HELP_STRING([--enable-wingdi],
-	[enable WinGDI method])],
-	[enable_wingdi=$enableval],[enable_wingdi=maybe])
-AS_IF([test "x$enable_wingdi" != xno], [
-	AS_IF([test $have_windows_h = yes -o $enable_fakegdi = yes], [
-		AC_DEFINE([ENABLE_WINGDI], 1,
-			[Define to 1 to enable WinGDI method])
-		AC_MSG_RESULT([yes])
-		enable_wingdi=yes
-	], [
-		AC_MSG_RESULT([missing dependencies])
-		AS_IF([test "x$enable_wingdi" = xyes], [
-			AC_MSG_ERROR([missing Windows API headers for WinGDI method])
-		])
-		enable_wingdi=no
-	])
-], [
-	AC_MSG_RESULT([no])
-	enable_wingdi=no
-])
-AM_CONDITIONAL([ENABLE_WINGDI], [test "x$enable_wingdi" = xyes])
 
 
 # Check Geoclue location provider
@@ -229,7 +110,7 @@ AM_CONDITIONAL([ENABLE_SYSTEMD], [test "x$enable_systemd" != xno])
 
 
 # Checks for header files.
-AC_CHECK_HEADERS([locale.h stdint.h stdlib.h string.h unistd.h signal.h])
+AC_CHECK_HEADERS([libgamma.h locale.h stdint.h stdlib.h string.h unistd.h signal.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_UINT16_T
@@ -256,12 +137,6 @@ echo "
     compiler:		${CC}
     cflags:		${CFLAGS}
     ldflags:		${LDFLAGS}
-
-    Adjustment methods:
-    DRM:		${enable_drm}
-    RANDR:		${enable_randr}
-    VidMode:		${enable_vidmode}
-    WinGDI:		${enable_wingdi}
 
     Location providers:
     Geoclue:		${enable_geoclue}
