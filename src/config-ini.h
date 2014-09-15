@@ -15,6 +15,7 @@
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2014  Mattias Andrée <maandree@member.fsf.org>
 */
 
 #ifndef REDSHIFT_CONFIG_INI_H
@@ -43,7 +44,10 @@ typedef struct {
 int config_ini_init(config_ini_state_t *state, const char *filepath);
 void config_ini_free(config_ini_state_t *state);
 
-config_ini_section_t *config_ini_get_section(config_ini_state_t *state,
-					     const char *name);
+config_ini_section_t *config_ini_get_section(const config_ini_state_t *state,
+					     const char *name) __attribute__((pure));
+
+config_ini_section_t **config_ini_get_sections(const config_ini_state_t *state,
+					       const char *name) __attribute__((pure));
 
 #endif /* ! REDSHIFT_CONFIG_INI_H */
