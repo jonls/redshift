@@ -48,6 +48,7 @@ Dependencies
 ------------
 
 * autotools, gettext
+* intltool
 * libdrm (Optional, for DRM support)
 * libxcb, libxcb-randr (Optional, for RandR support)
 * libX11, libXxf86vm (Optional, for VidMode support)
