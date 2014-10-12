@@ -1,0 +1,12 @@
+language: c
+before_install:
+  - sed -i -e 's|AC_PREREQ(\[2.69\])|AC_PREREQ([2.68])|' configure.ac
+  - sudo apt-get update -qq
+install:
+  - sudo apt-get install -qq autopoint intltool
+  - sudo apt-get install -qq libdrm-dev
+  - sudo apt-get install -qq libxcb1-dev libxcb-randr0-dev
+  - sudo apt-get install -qq libx11-dev libxxf86vm-dev
+  - sudo apt-get install -qq libgeoclue-dev
+  - sudo apt-get install -qq python3
+script: ./bootstrap && ./configure --enable-drm --enable-vidmode --enable-randr --enable-geoclue --enable-gui && make
