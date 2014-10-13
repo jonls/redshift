@@ -12,6 +12,10 @@ as `redshift-gtk' instead of 'redshift' for a graphical status icon.
 Website:	http://jonls.dk/redshift/
 Project page:	https://github.com/jonls/redshift
 
+Build status
+------------
+
+[![Build Status](https://travis-ci.org/jonls/redshift.svg?branch=master)](https://travis-ci.org/jonls/redshift)
 
 Building from source
 --------------------
