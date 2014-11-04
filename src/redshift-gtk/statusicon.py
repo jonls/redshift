@@ -164,9 +164,11 @@ class RedshiftStatusIcon(object):
         self.suspend_timer = None
 
         # Handle child input
+        # The buffer is encapsulated in a class so we
+        # can pass an instance to the child callback.
         class InputBuffer(object):
-            lines = []
             buf = ''
+
         self.input_buffer = InputBuffer()
         self.error_buffer = InputBuffer()
 
@@ -316,7 +318,6 @@ class RedshiftStatusIcon(object):
             if sep == '':
                 break
             ib.buf = last
-            ib.lines.append(first)
             if stdout:
                 self.child_stdout_line_cb(first)
 
