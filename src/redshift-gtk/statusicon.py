@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-# Copyright (c) 2013  Jon Lund Steffensen <jonlst@gmail.com>
+# Copyright (c) 2013-2014  Jon Lund Steffensen <jonlst@gmail.com>
 
 
 '''GUI status icon for Redshift.
@@ -58,7 +58,7 @@ class RedshiftStatusIcon(object):
         # Start redshift with arguments
         args.insert(0, os.path.join(defs.BINDIR, 'redshift'))
         if '-v' not in args:
-            args.append('-v')
+            args.insert(1, '-v')
 
         self.start_child_process(args)
 
@@ -288,6 +288,15 @@ class RedshiftStatusIcon(object):
         os.kill(self.process[0], signal.SIGUSR1)
 
     def child_cb(self, pid, cond, data=None):
+        # Empty stdout and stderr
+        for f, dest in ((self.process[2], sys.stdout),
+                         (self.process[3], sys.stderr)):
+            while True:
+                buf = os.read(f, 256).decode('utf-8')
+                if buf == '':
+                    break
+                print(buf, end='', file=dest)
+
         sys.exit(-1)
 
     def child_key_change_cb(self, key, value):
@@ -320,6 +329,8 @@ class RedshiftStatusIcon(object):
             ib.buf = last
             if stdout:
                 self.child_stdout_line_cb(first)
+            else:
+                print(first, file=sys.stderr)
 
         return True
 
