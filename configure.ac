@@ -5,13 +5,30 @@ AC_PREREQ([2.69])
 AC_INIT([redshift], [1.9.1], [https://github.com/jonls/redshift/issues])
 AC_CONFIG_SRCDIR([src/redshift.c])
 AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign subdir-objects dist-xz])
 
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 # Checks for programs.
 AC_PROG_CC_C99
+AC_PROG_LIBTOOL
+AC_PROG_OBJC # For OSX support modules
+AC_LANG([C])
+
 AC_PROG_INTLTOOL([0.50])
+
+# Test whether Objective C compiler works
+AC_MSG_CHECKING([whether Objective C compiler works])
+AC_LANG_PUSH([Objective C])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([])], [
+	AC_MSG_RESULT([yes])
+	have_objc_compiler=yes
+], [
+	AC_MSG_RESULT([no])
+	have_objc_compiler=no
+])
+AC_LANG_POP([Objective C])
 
 # Checks for libraries.
 AM_GNU_GETTEXT_VERSION([0.17])
@@ -34,8 +51,30 @@ PKG_CHECK_MODULES([GLIB], [glib-2.0 gobject-2.0], [have_glib=yes], [have_glib=no
 PKG_CHECK_MODULES([GEOCLUE], [geoclue], [have_geoclue=yes], [have_geoclue=no])
 PKG_CHECK_MODULES([GEOCLUE2], [glib-2.0 gio-2.0 >= 2.26], [have_geoclue2=yes], [have_geoclue2=no])
 
+# OSX headers
 AC_CHECK_HEADER([ApplicationServices/ApplicationServices.h], [have_appserv_h=yes], [have_appserv_h=no])
 
+# CoreLocation.h is an Objective C header. Only test if
+# Objective C compiler works. AC_CHECK_HEADER does not
+# appear to work if the Ojective C compiler is not
+# available so we need a custom test.
+AC_MSG_CHECKING([whether CoreLocation/CoreLocation.h is usable])
+AS_IF([test "x$have_objc_compiler" = xyes], [
+	AC_LANG_PUSH([Objective C])
+	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#import <CoreLocation/CoreLocation.h>]],[[]])], [
+		AC_MSG_RESULT([yes])
+		have_corelocation_h=yes
+	], [
+		AC_MSG_RESULT([no])
+		have_corelocation_h=no
+	])
+	AC_LANG_POP([Objective C])
+], [
+	AC_MSG_RESULT([no Objective C compiler available])
+	have_corelocation_h=no
+])
+
+# Windows header
 AC_CHECK_HEADER([windows.h], [have_windows_h=yes], [have_windows_h=no])
 
 # Check for Python
@@ -214,6 +253,34 @@ AS_IF([test "x$enable_geoclue2" != xno], [
 ])
 AM_CONDITIONAL([ENABLE_GEOCLUE2], [test "x$enable_geoclue2" = xyes])
 
+# Check CoreLocation (OSX) provider
+AC_MSG_CHECKING([whether to enable CoreLocation method])
+AC_ARG_ENABLE([corelocation], [AC_HELP_STRING([--enable-corelocation],
+	[enable CoreLocation (OSX) provider])],
+	[enable_corelocation=$enableval],[enable_corelocation=maybe])
+AS_IF([test "x$enable_corelocation" != xno], [
+	AS_IF([test "x$have_corelocation_h" = xyes], [
+		CORELOCATION_CFLAGS=""
+		CORELOCATION_LIBS="-framework Foundation -framework CoreLocation"
+		AC_DEFINE([ENABLE_CORELOCATION], 1,
+			[Define to 1 to enable CoreLocation provider])
+		AC_MSG_RESULT([yes])
+		enable_corelocation=yes
+	], [
+		AC_MSG_RESULT([missing dependencies])
+		AS_IF([test "x$enable_corelocation" = xyes], [
+			AC_MSG_ERROR([missing CoreLocation headers])
+		])
+		enable_corelocation=no
+	])
+], [
+	AC_MSG_RESULT([no])
+	enable_corelocation=no
+])
+AM_CONDITIONAL([ENABLE_CORELOCATION], [test "x$enable_corelocation" = xyes])
+AC_SUBST([CORELOCATION_CFLAGS])
+AC_SUBST([CORELOCATION_LIBS])
+
 
 # Check for GUI status icon
 AC_MSG_CHECKING([whether to enable GUI status icon])
@@ -306,6 +373,7 @@ echo "
     Location providers:
     Geoclue:		${enable_geoclue}
     Geoclue2:		${enable_geoclue2}
+    CoreLocation (OSX)	${enable_corelocation}
 
     GUI:		${enable_gui}
     Ubuntu icons:	${enable_ubuntu}

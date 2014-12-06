@@ -82,3 +82,18 @@ AM_CFLAGS += \
 redshift_LDADD += \
 	$(GEOCLUE2_LIBS) $(GEOCLUE2_CFLAGS)
 endif
+
+# Build CoreLocation module as a separate convenience
+# library since it is using a separate compiler
+# (Objective C).
+
+if ENABLE_CORELOCATION
+noinst_LTLIBRARIES = liblocation-corelocation.la
+liblocation_corelocation_la_SOURCES = \
+	location-corelocation.m location-corelocation.h
+liblocation_corelocation_la_OBJCFLAGS = \
+	$(CORELOCATION_CFLAGS)
+liblocation_corelocation_la_LIBADD = \
+	$(CORELOCATION_CFLAGS) $(CORELOCATION_LIBS)
+redshift_LDADD += liblocation-corelocation.la
+endif

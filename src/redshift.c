@@ -84,6 +84,10 @@
 # include "location-geoclue2.h"
 #endif
 
+#ifdef ENABLE_CORELOCATION
+# include "location-corelocation.h"
+#endif
+
 
 /* Union of state data for gamma adjustment methods */
 typedef union {
@@ -218,6 +222,20 @@ static const location_provider_t location_providers[] = {
 		location_geoclue2_set_option,
 		(location_provider_get_location_func *)
 		location_geoclue2_get_location
+	},
+#endif
+#ifdef ENABLE_CORELOCATION
+	{
+		"corelocation",
+		(location_provider_init_func *)location_corelocation_init,
+		(location_provider_start_func *)location_corelocation_start,
+		(location_provider_free_func *)location_corelocation_free,
+		(location_provider_print_help_func *)
+		location_corelocation_print_help,
+		(location_provider_set_option_func *)
+		location_corelocation_set_option,
+		(location_provider_get_location_func *)
+		location_corelocation_get_location
 	},
 #endif
 	{
