@@ -14,13 +14,17 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2010-2014  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #include <stdio.h>
 
 #ifndef _WIN32
-# include <time.h>
+# ifdef _POSIX_TIMERS
+#  include <time.h>
+# else
+#  include <sys/time.h>
+# endif
 #endif
 
 #include "systemtime.h"
@@ -28,16 +32,7 @@
 int
 systemtime_get_time(double *t)
 {
-#ifndef _WIN32
-	struct timespec now;
-	int r = clock_gettime(CLOCK_REALTIME, &now);
-	if (r < 0) {
-		perror("clock_gettime");
-		return -1;
-	}
-
-	*t = now.tv_sec + (now.tv_nsec / 1000000000.0);
-#else /* _WIN32 */
+#if defined(_WIN32) /* Windows */
 	FILETIME now;
 	ULARGE_INTEGER i;
 	GetSystemTimeAsFileTime(&now);
@@ -46,7 +41,25 @@ systemtime_get_time(double *t)
 
 	/* FILETIME is tenths of microseconds since 1601-01-01 UTC */
 	*t = (i.QuadPart / 10000000.0) - 11644473600.0;
-#endif /* _WIN32 */
+#elif defined(_POSIX_TIMERS) /* POSIX timers */
+	struct timespec now;
+	int r = clock_gettime(CLOCK_REALTIME, &now);
+	if (r < 0) {
+		perror("clock_gettime");
+		return -1;
+	}
+
+	*t = now.tv_sec + (now.tv_nsec / 1000000000.0);
+#else /* other platforms */
+	struct timeval now;
+	int r = gettimeofday(&now, NULL);
+	if (r < 0) {
+		perror("gettimeofday");
+		return -1;
+	}
+
+	*t = now.tv_sec + (now.tv_usec / 1000000.0);
+#endif
 
 	return 0;
 }

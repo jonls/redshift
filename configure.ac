@@ -222,7 +222,7 @@ AC_TYPE_UINT16_T
 # Checks for library functions.
 AC_SEARCH_LIBS([clock_gettime], [rt])
 AC_SEARCH_LIBS([floor], [m])
-AC_CHECK_FUNCS([setlocale strchr floor pow clock_gettime])
+AC_CHECK_FUNCS([setlocale strchr floor pow])
 
 AC_CONFIG_FILES([
 	Makefile
