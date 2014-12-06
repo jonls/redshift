@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2013  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2013-2014  Jon Lund Steffensen <jonlst@gmail.com>
    Copyright (c) 2013  Ingo Thies <ithies@astro.uni-bonn.de>
 */
 
@@ -280,6 +280,9 @@ interpolate_color(float a, const float *c1, const float *c2, float *c)
 	c[2] = (1.0-a)*c1[2] + a*c2[2];
 }
 
+/* Helper macro used in the fill functions */
+#define F(Y, C)  pow((Y) * brightness * white_point[C], 1.0/gamma[C])
+
 void
 colorramp_fill(uint16_t *gamma_r, uint16_t *gamma_g, uint16_t *gamma_b,
 	       int size, int temp, float brightness, const float gamma[3])
@@ -291,11 +294,30 @@ colorramp_fill(uint16_t *gamma_r, uint16_t *gamma_g, uint16_t *gamma_b,
 	interpolate_color(alpha, &blackbody_color[temp_index],
 			  &blackbody_color[temp_index+3], white_point);
 
-#define F(Y, C)  pow((Y) * brightness * white_point[C], 1.0/gamma[C])
-
 	for (int i = 0; i < size; i++) {
 		gamma_r[i] = F((float)i/size, 0) * (UINT16_MAX+1);
 		gamma_g[i] = F((float)i/size, 1) * (UINT16_MAX+1);
 		gamma_b[i] = F((float)i/size, 2) * (UINT16_MAX+1);
 	}
 }
+
+void
+colorramp_fill_float(float *gamma_r, float *gamma_g, float *gamma_b,
+		     int size, int temp, float brightness,
+		     const float gamma[3])
+{
+	/* Approximate white point */
+	float white_point[3];
+	float alpha = (temp % 100) / 100.0;
+	int temp_index = ((temp - 1000) / 100)*3;
+	interpolate_color(alpha, &blackbody_color[temp_index],
+			  &blackbody_color[temp_index+3], white_point);
+
+	for (int i = 0; i < size; i++) {
+		gamma_r[i] = F((float)i/size, 0);
+		gamma_g[i] = F((float)i/size, 1);
+		gamma_b[i] = F((float)i/size, 2);
+	}
+}
+
+#undef F

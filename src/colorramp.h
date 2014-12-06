@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2010-2014  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #ifndef REDSHIFT_COLORRAMP_H
@@ -24,5 +24,8 @@
 
 void colorramp_fill(uint16_t *gamma_r, uint16_t *gamma_g, uint16_t *gamma_b,
 		    int size, int temp, float brightness, const float gamma[3]);
+void colorramp_fill_float(float *gamma_r, float *gamma_g, float *gamma_b,
+			  int size, int temp, float brightness,
+			  const float gamma[3]);
 
 #endif /* ! REDSHIFT_COLORRAMP_H */
