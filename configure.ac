@@ -34,6 +34,8 @@ PKG_CHECK_MODULES([GLIB], [glib-2.0 gobject-2.0], [have_glib=yes], [have_glib=no
 PKG_CHECK_MODULES([GEOCLUE], [geoclue], [have_geoclue=yes], [have_geoclue=no])
 PKG_CHECK_MODULES([GEOCLUE2], [glib-2.0 gio-2.0 >= 2.26], [have_geoclue2=yes], [have_geoclue2=no])
 
+AC_CHECK_HEADER([ApplicationServices/ApplicationServices.h], [have_appserv_h=yes], [have_appserv_h=no])
+
 AC_CHECK_HEADER([windows.h], [have_windows_h=yes], [have_windows_h=no])
 
 # Check for Python
@@ -110,6 +112,34 @@ AS_IF([test "x$enable_vidmode" != xno], [
 	enable_vidmode=no
 ])
 AM_CONDITIONAL([ENABLE_VIDMODE], [test "x$enable_vidmode" = xyes])
+
+# Check Quartz (OSX) method
+AC_MSG_CHECKING([whether to enable Quartz method])
+AC_ARG_ENABLE([quartz], [AC_HELP_STRING([--enable-quartz],
+	[enable Quartz (OSX) method])],
+	[enable_quartz=$enableval],[enable_quartz=maybe])
+AS_IF([test "x$enable_quartz" != xno], [
+	AS_IF([test $have_appserv_h = yes], [
+		QUARTZ_CFLAGS=""
+		QUARTZ_LIBS="-framework ApplicationServices"
+		AC_DEFINE([ENABLE_QUARTZ], 1,
+			[Define to 1 to enable Quartz method])
+		AC_MSG_RESULT([yes])
+		enable_quartz=yes
+	], [
+		AC_MSG_RESULT([missing dependencies])
+		AS_IF([test "x$enable_quartz" = xyes], [
+			AC_MSG_ERROR([missing Quartz headers])
+		])
+		enable_quartz=no
+	])
+], [
+	AC_MSG_RESULT([no])
+	enable_quartz=no
+])
+AM_CONDITIONAL([ENABLE_QUARTZ], [test "x$enable_quartz" = xyes])
+AC_SUBST([QUARTZ_CFLAGS])
+AC_SUBST([QUARTZ_LIBS])
 
 # Check Windows GDI method 
 AC_MSG_CHECKING([whether to enable WinGDI method])
@@ -270,7 +300,8 @@ echo "
     DRM:		${enable_drm}
     RANDR:		${enable_randr}
     VidMode:		${enable_vidmode}
-    WinGDI:		${enable_wingdi}
+    Quartz (OSX):	${enable_quartz}
+    WinGDI (Windows):	${enable_wingdi}
 
     Location providers:
     Geoclue:		${enable_geoclue}

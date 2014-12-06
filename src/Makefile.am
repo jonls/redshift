@@ -21,6 +21,7 @@ EXTRA_redshift_SOURCES = \
 	gamma-drm.c gamma-drm.h \
 	gamma-randr.c gamma-randr.h \
 	gamma-vidmode.c gamma-vidmode.h \
+	gamma-quartz.c gamma-quartz.h \
 	gamma-w32gdi.c gamma-w32gdi.h \
 	location-geoclue.c location-geoclue.h
 
@@ -49,6 +50,13 @@ AM_CFLAGS += $(X11_CFLAGS) $(XF86VM_CFLAGS)
 redshift_LDADD += \
 	$(X11_LIBS) $(X11_CFLAGS) \
 	$(XF86VM_LIBS) $(XF86VM_CFLAGS)
+endif
+
+if ENABLE_QUARTZ
+redshift_SOURCES += gamma-quartz.c gamma-quartz.h
+AM_CFLAGS += $(QUARTZ_CFLAGS)
+redshift_LDADD += \
+	$(QUARTZ_LIBS) $(QUARTZ_CFLAGS)
 endif
 
 if ENABLE_WINGDI
