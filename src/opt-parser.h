@@ -1,4 +1,4 @@
-/* gamma-w32gdi.h -- Windows GDI gamma adjustment header
+/* opt-parser.h -- getopt wrapper header
    This file is part of Redshift.
 
    Redshift is free software: you can redistribute it and/or modify
@@ -14,33 +14,15 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
    Copyright (c) 2014  Mattias Andrée <maandree@member.fsf.org>
 */
-
-#ifndef REDSHIFT_GAMMA_W32GDI_H
-#define REDSHIFT_GAMMA_W32GDI_H
-
-#include "gamma-common.h"
-
-#ifdef HAVE_CONFIG_H
-# include "config.h"
-#endif
-
-#ifdef FAKE_W32GDI
-#  include "fake-w32gdi.h"
-#else
-#  include <windows.h>
-#  include <wingdi.h>
-#endif
+#ifndef REDSHIFT_OPT_PARSER_H
+#define REDSHIFT_OPT_PARSER_H
 
 
-int w32gdi_auto(void);
+int parseopt(int argc, char *const *argv, const char *shortopts, const char **args, int *args_count);
 
-int w32gdi_init(gamma_server_state_t *state);
-int w32gdi_start(gamma_server_state_t *state);
-
-void w32gdi_print_help(FILE *f);
+char *coalesce_args(const char *const *args, int args_count, char delimiter, char final);
 
 
-#endif /* ! REDSHIFT_GAMMA_W32GDI_H */
+#endif /* ! REDSHIFT_OPT_PARSER_H */

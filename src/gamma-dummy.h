@@ -15,24 +15,22 @@
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
    Copyright (c) 2013  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2014  Mattias Andrée <maandree@member.fsf.org>
 */
 
 #ifndef REDSHIFT_GAMMA_DUMMY_H
 #define REDSHIFT_GAMMA_DUMMY_H
 
 #include "redshift.h"
+#include "gamma-common.h"
 
 
-int gamma_dummy_init(void *state);
-int gamma_dummy_start(void *state);
-void gamma_dummy_free(void *state);
+int gamma_dummy_auto(void);
+
+int gamma_dummy_init(gamma_server_state_t *state);
+int gamma_dummy_start(gamma_server_state_t *state);
 
 void gamma_dummy_print_help(FILE *f);
-int gamma_dummy_set_option(void *state, const char *key, const char *value);
-
-void gamma_dummy_restore(void *state);
-int gamma_dummy_set_temperature(void *state, int temp, float brightness,
-				const float gamma[3]);
 
 
 #endif /* ! REDSHIFT_GAMMA_DUMMY_H */

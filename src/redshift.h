@@ -15,6 +15,7 @@
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
    Copyright (c) 2013  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2014  Mattias Andrée <maandree@member.fsf.org>
 */
 
 #ifndef REDSHIFT_REDSHIFT_H
@@ -24,40 +25,43 @@
 #include <stdlib.h>
 
 
+/* Bounds for parameters. */
+#define MIN_LAT   -90.0
+#define MAX_LAT    90.0
+#define MIN_LON  -180.0
+#define MAX_LON   180.0
+
+/* Angular elevation of the sun at which the color temperature
+   transition period starts and ends (in degress).
+   Transition during twilight, and while the sun is lower than
+   3.0 degrees above the horizon. */
+#ifndef TRANSITION_LOW
+#  define TRANSITION_LOW     SOLAR_CIVIL_TWILIGHT_ELEV
+#endif
+#ifndef TRANSITION_HIGH
+#  define TRANSITION_HIGH    3.0
+#endif
+
+
 /* Gamma adjustment method */
+typedef int gamma_method_auto_func(void);
 typedef int gamma_method_init_func(void *state);
 typedef int gamma_method_start_func(void *state);
-typedef void gamma_method_free_func(void *state);
 typedef void gamma_method_print_help_func(FILE *f);
-typedef int gamma_method_set_option_func(void *state, const char *key,
-					 const char *value);
-typedef void gamma_method_restore_func(void *state);
-typedef int gamma_method_set_temperature_func(void *state, int temp,
-					      float brightness,
-					      const float gamma[3]);
 
 typedef struct {
 	char *name;
 
-	/* If true, this method will be tried if none is explicitly chosen. */
-	int autostart;
+	/* If evaluated to true, this method will be tried if none is explicitly chosen. */
+	gamma_method_auto_func *autostart_test;
 
 	/* Initialize state. Options can be set between init and start. */
 	gamma_method_init_func *init;
 	/* Allocate storage and make connections that depend on options. */
 	gamma_method_start_func *start;
-	/* Free all allocated storage and close connections. */
-	gamma_method_free_func *free;
 
 	/* Print help on options for this adjustment method. */
 	gamma_method_print_help_func *print_help;
-	/* Set an option key, value-pair */
-	gamma_method_set_option_func *set_option;
-
-	/* Restore the adjustment to the state before start was called. */
-	gamma_method_restore_func *restore;
-	/* Set a specific color temperature. */
-	gamma_method_set_temperature_func *set_temperature;
 } gamma_method_t;
 
 
