@@ -57,6 +57,7 @@ Dependencies
 * python3, pygobject, pyxdg (Optional, for GUI support)
 * appindicator (Optional, for Ubuntu-style GUI status icon)
 
+Ubuntu users will find all these dependencies in the packages listed in ``.travis.yml``. 
 
 Coding style
 ------------
