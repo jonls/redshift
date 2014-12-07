@@ -15,6 +15,7 @@
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2014  Mattias Andrée <maandree@member.fsf.org>
 */
 
 
@@ -285,7 +286,7 @@ config_ini_free(config_ini_state_t *state)
 }
 
 config_ini_section_t *
-config_ini_get_section(config_ini_state_t *state, const char *name)
+config_ini_get_section(const config_ini_state_t *state, const char *name)
 {
 	config_ini_section_t *section = state->sections;
 	while (section != NULL) {
@@ -296,4 +297,35 @@ config_ini_get_section(config_ini_state_t *state, const char *name)
 	}
 
 	return NULL;
+}
+
+config_ini_section_t **
+config_ini_get_sections(const config_ini_state_t *state, const char *name)
+{
+	config_ini_section_t **sections = malloc(1 * sizeof(config_ini_section_t*));
+	if (sections == NULL) {
+		perror("malloc");
+		return NULL;
+	}
+
+	size_t ptr = 0;
+	config_ini_section_t *section = state->sections;
+	while (section != NULL) {
+		if (strcasecmp(section->name, name) == 0) {
+			sections[ptr++] = section;
+ 
+			if ((ptr & -ptr) == ptr) {
+				sections = realloc(sections, (ptr << 1) * sizeof(config_ini_section_t*));
+				if (sections == NULL) {
+					perror("realloc");
+					return NULL;
+				}
+			}
+		}
+ 
+		section = section->next;
+	}
+
+	sections[ptr] = NULL;
+	return sections;
 }

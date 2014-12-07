@@ -1,3 +1,7 @@
+# Hidden and temporary files
+.*
+!.git*
+
 # Backup files
 *~
 \#*\#
@@ -5,6 +9,10 @@
 # Object files
 *.o
 *.ko
+
+# Auxiliary files
+*.gch
+*.su
 
 # Libraries
 *.lib
