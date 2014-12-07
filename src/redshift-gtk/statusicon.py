@@ -52,8 +52,9 @@ class RedshiftStatusIcon(object):
         self._period = 'Unknown'
         self._location = (0.0, 0.0)
 
-        # Install TERM signal handler
+        # Install TERM/INT signal handler
         signal.signal(signal.SIGTERM, sigterm_handler)
+        signal.signal(signal.SIGINT, sigterm_handler)
 
         # Start redshift with arguments
         args.insert(0, os.path.join(defs.BINDIR, 'redshift'))
@@ -182,6 +183,12 @@ class RedshiftStatusIcon(object):
                           self.child_data_cb, (True, self.input_buffer))
         GLib.io_add_watch(self.process[3], GLib.PRIORITY_DEFAULT, GLib.IO_IN,
                           self.child_data_cb, (False, self.error_buffer))
+
+        # Signal handler to relay USR1 signal to redshift process
+        def relay_signal_handler(signal, frame):
+            os.kill(self.process[0], signal)
+
+        signal.signal(signal.SIGUSR1, relay_signal_handler)
 
         # Notify desktop that startup is complete
         Gdk.notify_startup_complete()
