@@ -40,12 +40,16 @@ from . import utils
 _ = gettext.gettext
 
 
-def sigterm_handler(signal, frame):
+def exit_signal_handler(signal, frame):
     sys.exit()
+
+def relay_signal_handler(signal, frame):
+    os.kill(redshift_proc, signal)
 
 
 class RedshiftStatusIcon(object):
     def __init__(self, args=[]):
+        global redshift_proc
         # Initialize state variables
         self._status = False
         self._temperature = 0
@@ -53,7 +57,8 @@ class RedshiftStatusIcon(object):
         self._location = (0.0, 0.0)
 
         # Install TERM signal handler
-        signal.signal(signal.SIGTERM, sigterm_handler)
+        signal.signal(signal.SIGTERM, exit_signal_handler)
+        signal.signal(signal.SIGINT,  exit_signal_handler)
 
         # Start redshift with arguments
         args.insert(0, os.path.join(defs.BINDIR, 'redshift'))
@@ -61,6 +66,10 @@ class RedshiftStatusIcon(object):
             args.insert(1, '-v')
 
         self.start_child_process(args)
+        redshift_proc = self.process[0]
+
+        # Install relay signal handlers
+        signal.signal(signal.SIGUSR1, relay_signal_handler)
 
         if appindicator:
             # Create indicator
