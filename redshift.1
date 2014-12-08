@@ -3,7 +3,7 @@
 redshift \- Set color temperature of display according to time of day.
 .SH SYNOPSIS
 .B redshift
-\fI[\-l LAT:LON | \-l PROVIDER:OPTIONS] [\-t DAY:NIGHT] \fR[\fIOPTIONS\fR...]
+\fI[\-l LAT:LON | \-l PROVIDER OPTIONS] [\-t DAY:NIGHT] \fR[\fIOPTIONS\fR...]
 .SH DESCRIPTION
 .B redshift
 adjusts the color temperature of your screen according to your
@@ -46,11 +46,11 @@ Your current location, in degrees, given as floating point numbers,
 towards north and east, with negative numbers representing south and
 west, respectively.
 .TP
-\fB\-l\fR PROVIDER[:OPTIONS]
+\fB\-l\fR PROVIDER [OPTIONS]
 Select provider for automatic location updates
 (Type `list' to see available providers)
 .TP
-\fB\-m\fR METHOD
+\fB\-m\fR METHOD [OPTIONS]
 Method to use to set color temperature
 (Type `list' to see available methods)
 .TP
@@ -59,6 +59,9 @@ One shot mode (do not continuously adjust color temperature)
 .TP
 \fB\-O\fR TEMP
 One shot manual mode (set color temperature)
+.TP
+\fB\-P\fR
+Preserve current calibrations
 .TP
 \fB\-p\fR
 Print mode (only print parameters and exit)
@@ -105,6 +108,9 @@ Screen brightness at night
 .TP
 \fBgamma\fR = R:G:B
 Gamma adjustment to apply
+.TP
+\fBpreserve-calibrations\fR = 0 or 1
+Disable or enable preservation of currently applied calibrations.
 .TP
 \fBadjustment\-method\fR = name
 Select adjustment method. Options for the adjustment method can be

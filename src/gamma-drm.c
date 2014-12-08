@@ -26,6 +26,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <limits.h>
+#include <errno.h>
+#include <grp.h>
 
 #ifdef ENABLE_NLS
 # include <libintl.h>
@@ -42,170 +45,306 @@
 #include "colorramp.h"
 
 
-int
-drm_init(drm_state_t *state)
+static void
+drm_free_partition(void *data)
 {
-	/* Initialize state. */
-	state->card_num = 0;
-	state->crtc_num = -1;
-	state->fd = -1;
-	state->res = NULL;
-	state->crtcs = NULL;
+	drm_card_data_t *card_data = data;
+	if (card_data->res != NULL)
+		drmModeFreeResources(card_data->res);
+	if (card_data->fd >= 0)
+		close(card_data->fd);
+	free(data);
+}
+
+static void
+drm_free_crtc(void *data)
+{
+	(void) data;
+}
+
+static int
+drm_open_site(gamma_server_state_t *state, char *site, gamma_site_state_t *site_out)
+{
+	(void) state;
+	(void) site;
+	site_out->data = NULL;
+	site_out->partitions_available = 0;
+
+	/* Count the number of available graphics cards. */
+	char pathname[PATH_MAX];
+	struct stat _attr;
+	while (1) {
+		snprintf(pathname, PATH_MAX, DRM_DEV_NAME, DRM_DIR_NAME,
+			 (int)site_out->partitions_available);
+		if (stat(pathname, &_attr))
+			break;
+		site_out->partitions_available++;
+	}
 
 	return 0;
 }
 
-int
-drm_start(drm_state_t *state)
+static int
+drm_open_partition(gamma_server_state_t *state, gamma_site_state_t *site,
+		   size_t partition, gamma_partition_state_t *partition_out)
 {
+	(void) state;
+	(void) site;
+
+	partition_out->data = NULL;
+	drm_card_data_t *data = malloc(sizeof(drm_card_data_t));
+	if (data == NULL) {
+		perror("malloc");
+		return -1;
+	}
+	data->fd = -1;
+	data->res = NULL;
+	data->index = partition;
+	partition_out->data = data;
+
 	/* Acquire access to a graphics card. */
-	long maxlen = strlen(DRM_DIR_NAME) + strlen(DRM_DEV_NAME) + 10;
-	char *pathname = alloca(maxlen * sizeof(char));
+	char pathname[PATH_MAX];
+	snprintf(pathname, PATH_MAX, DRM_DEV_NAME, DRM_DIR_NAME, (int)partition);
 
-	sprintf(pathname, DRM_DEV_NAME, DRM_DIR_NAME, state->card_num);
-
-	state->fd = open(pathname, O_RDWR | O_CLOEXEC);
-	if (state->fd < 0) {
-		/* TODO check if access permissions, normally root or
-		        membership of the video group is required. */
-		perror("open");
+	data->fd = open(pathname, O_RDWR | O_CLOEXEC);
+	if (data->fd < 0) {
+		if ((errno == ENXIO) || (errno == ENODEV)) {
+			goto card_removed;
+		} else if (errno == EACCES) {
+			struct stat attr;
+			int r;
+			r = stat(pathname, &attr);
+			if (r != 0) {
+				if (errno == EACCES)
+					goto card_removed;
+				perror("stat");
+#define __test(R, W) ((attr.st_mode & (R | W)) == (R | W))
+			} else if ((attr.st_uid == geteuid() && __test(S_IRUSR, S_IWUSR)) ||
+				   (attr.st_gid == getegid() && __test(S_IRGRP, S_IWGRP)) ||
+				   __test(S_IROTH, S_IWOTH)) {
+				fprintf(stderr, _("Failed to access the graphics card.\n"));
+				fprintf(stderr, _("Perhaps it is locked.\n"));
+			} else if (attr.st_gid == 0 /* root group */ || __test(S_IRGRP, S_IWGRP)) {
+				fprintf(stderr,
+					_("It appears that your system administrator have\n"
+					  "restricted access to the graphics card."));
+#undef __test
+			} else {
+				gid_t supplemental_groups[NGROUPS_MAX];
+				r = getgroups(NGROUPS_MAX, supplemental_groups);
+				if (r < 0) {
+					perror("getgroups");
+					goto card_error;
+				}
+				int i, n = r;
+				for (i = 0; i < n; i++) {
+					if (supplemental_groups[i] == attr.st_gid)
+						break;
+				}
+				if (i != n) {
+					fprintf(stderr, _("Failed to access the graphics card.\n"));
+				} else {
+					struct group *group = getgrgid(attr.st_gid);
+					if (group == NULL || group->gr_name == NULL) {
+						fprintf(stderr,
+							_("You need to be in the group %i to used DRM.\n"),
+							attr.st_gid);
+					} else {
+						fprintf(stderr,
+							_("You need to be in the group `%s' to used DRM.\n"),
+							group->gr_name);
+					}
+				}
+			}
+		} else {
+			perror("open");
+		}
+		goto card_error;
+	card_removed:
+		fprintf(stderr, _("It appears that you have removed a graphics card.\n"
+				  "Please do not do that, it's so rude. I cannot\n"
+				  "imagine what issues it might have caused you.\n"));
+	card_error:
+		free(data);
 		return -1;
 	}
 
 	/* Acquire mode resources. */
-	state->res = drmModeGetResources(state->fd);
-	if (state->res == NULL) {
-		fprintf(stderr, _("Failed to get DRM mode resources\n"));
-		close(state->fd);
-		state->fd = -1;
+	data->res = drmModeGetResources(data->fd);
+	if (data->res == NULL) {
+		fprintf(stderr, _("Failed to get DRM mode resources.\n"));
+		close(data->fd);
+		free(data);
+		return -1;
+	}
+	if (data->res->count_crtcs < 0) {
+		fprintf(stderr, _("Got negative number of graphics cards from DRM.\n"));
+		close(data->fd);
+		free(data);
 		return -1;
 	}
 
-	/* Create entries for selected CRTCs. */
-	int crtc_count = state->res->count_crtcs;
-	if (state->crtc_num >= 0) {
-		if (state->crtc_num >= crtc_count) {
-			fprintf(stderr, _("CRTC %d does not exist. "),
-				state->crtc_num);
-			if (crtc_count > 1) {
-				fprintf(stderr, _("Valid CRTCs are [0-%d].\n"),
-					crtc_count-1);
-			} else {
-				fprintf(stderr, _("Only CRTC 0 exists.\n"));
-			}
-			close(state->fd);
-			state->fd = -1;
-			drmModeFreeResources(state->res);
-			state->res = NULL;
-			return -1;
-		}
+	partition_out->crtcs_available = (size_t)(data->res->count_crtcs);
+	return 0;
+}
 
-		state->crtcs = malloc(2 * sizeof(drm_crtc_state_t));
-		state->crtcs[1].crtc_num = -1;
+static int
+drm_open_crtc(gamma_server_state_t *state, gamma_site_state_t *site,
+	      gamma_partition_state_t *partition, size_t crtc, gamma_crtc_state_t *crtc_out)
+{
+	(void) state;
+	(void) site;
 
-		state->crtcs->crtc_num = state->crtc_num;
-		state->crtcs->crtc_id = -1;
-		state->crtcs->gamma_size = -1;
-		state->crtcs->r_gamma = NULL;
-		state->crtcs->g_gamma = NULL;
-		state->crtcs->b_gamma = NULL;
-	} else {
-		int crtc_num;
-		state->crtcs = malloc((crtc_count + 1) * sizeof(drm_crtc_state_t));
-		state->crtcs[crtc_count].crtc_num = -1;
-		for (crtc_num = 0; crtc_num < crtc_count; crtc_num++) {
-			state->crtcs[crtc_num].crtc_num = crtc_num;
-			state->crtcs[crtc_num].crtc_id = -1;
-			state->crtcs[crtc_num].gamma_size = -1;
-			state->crtcs[crtc_num].r_gamma = NULL;
-			state->crtcs[crtc_num].g_gamma = NULL;
-			state->crtcs[crtc_num].b_gamma = NULL;
-		}
+	drm_card_data_t *card = partition->data;
+	uint32_t crtc_id = card->res->crtcs[(size_t)crtc];
+	crtc_out->data = (void*)(size_t)crtc_id;
+	drmModeCrtc *crtc_info = drmModeGetCrtc(card->fd, crtc_id);
+	if (crtc_info == NULL) {
+		fprintf(stderr, _("Please do not unplug monitors!\n"));
+		return -1;
 	}
 
-	/* Load CRTC information and gamma ramps. */
-	drm_crtc_state_t *crtcs = state->crtcs;
-	for (; crtcs->crtc_num >= 0; crtcs++) {
-		crtcs->crtc_id = state->res->crtcs[crtcs->crtc_num];
-		drmModeCrtc* crtc_info = drmModeGetCrtc(state->fd, crtcs->crtc_id);
-		if (crtc_info == NULL) {
-			fprintf(stderr, _("CRTC %i lost, skipping\n"), crtcs->crtc_num);
-			continue;
-		}
-		crtcs->gamma_size = crtc_info->gamma_size;
-		drmModeFreeCrtc(crtc_info);
-		if (crtcs->gamma_size <= 1) {
-			fprintf(stderr, _("Could not get gamma ramp size for CRTC %i\n"
-					  "on graphics card %i, ignoring device.\n"),
-				crtcs->crtc_num, state->card_num);
-			continue;
-		}
-		/* Valgrind complains about us reading uninitialize memory if we just use malloc. */
-		crtcs->r_gamma = calloc(3 * crtcs->gamma_size, sizeof(uint16_t));
-		crtcs->g_gamma = crtcs->r_gamma + crtcs->gamma_size;
-		crtcs->b_gamma = crtcs->g_gamma + crtcs->gamma_size;
-		if (crtcs->r_gamma != NULL) {
-			int r = drmModeCrtcGetGamma(state->fd, crtcs->crtc_id, crtcs->gamma_size,
-						    crtcs->r_gamma, crtcs->g_gamma, crtcs->b_gamma);
-			if (r < 0) {
-				fprintf(stderr, _("DRM could not read gamma ramps on CRTC %i on\n"
-						  "graphics card %i, ignoring device.\n"),
-					crtcs->crtc_num, state->card_num);
-				free(crtcs->r_gamma);
-				crtcs->r_gamma = NULL;
-			}
-		} else {
-			perror("malloc");
-			drmModeFreeResources(state->res);
-			state->res = NULL;
-			close(state->fd);
-			state->fd = -1;
-			while (crtcs-- != state->crtcs)
-				free(crtcs->r_gamma);
-			free(state->crtcs);
-			state->crtcs = NULL;
-			return -1;
-		}
+	ssize_t gamma_size = crtc_info->gamma_size;
+	drmModeFreeCrtc(crtc_info);
+	if (gamma_size < 2) {
+		fprintf(stderr, _("Could not get gamma ramp size for CRTC %ld\n"
+				  "on graphics card %ld.\n"),
+			crtc, card->index);
+		return -1;
+	}
+	crtc_out->saved_ramps.red_size   = (size_t)gamma_size;
+	crtc_out->saved_ramps.green_size = (size_t)gamma_size;
+	crtc_out->saved_ramps.blue_size  = (size_t)gamma_size;
+
+	/* Valgrind complains about us reading uninitialize memory if we just use malloc. */
+	crtc_out->saved_ramps.red   = calloc(3 * (size_t)gamma_size, sizeof(uint16_t));
+	crtc_out->saved_ramps.green = crtc_out->saved_ramps.red   + gamma_size;
+	crtc_out->saved_ramps.blue  = crtc_out->saved_ramps.green + gamma_size;
+	if (crtc_out->saved_ramps.red == NULL) {
+		perror("malloc");
+		return -1;
+	}
+
+	int r = drmModeCrtcGetGamma(card->fd, crtc_id, gamma_size, crtc_out->saved_ramps.red,
+				    crtc_out->saved_ramps.green, crtc_out->saved_ramps.blue);
+	if (r < 0) {
+		fprintf(stderr, _("DRM could not read gamma ramps on CRTC %ld on\n"
+				  "graphics card %ld.\n"),
+			crtc, card->index);
+		return -1;
 	}
 
 	return 0;
 }
 
-void
-drm_restore(drm_state_t *state)
+static void
+drm_invalid_partition(const gamma_site_state_t *site, size_t partition)
 {
-	drm_crtc_state_t *crtcs = state->crtcs;
-	while (crtcs->crtc_num >= 0) {
-		if (crtcs->r_gamma != NULL) {
-			drmModeCrtcSetGamma(state->fd, crtcs->crtc_id, crtcs->gamma_size,
-					    crtcs->r_gamma, crtcs->g_gamma, crtcs->b_gamma);
-		}
-		crtcs++;
+	fprintf(stderr, _("Card %ld does not exist. "),
+		partition);
+	if (site->partitions_available > 1) {
+		fprintf(stderr, _("Valid cards are [0-%ld].\n"),
+			site->partitions_available - 1);
+	} else {
+		fprintf(stderr, _("Only card 0 exists.\n"));
 	}
 }
 
-void
-drm_free(drm_state_t *state)
+static int
+drm_set_ramps(gamma_server_state_t *state, gamma_crtc_state_t *crtc, gamma_ramps_t ramps)
 {
-	if (state->crtcs != NULL) {
-		drm_crtc_state_t *crtcs = state->crtcs;
-		while (crtcs->crtc_num >= 0) {
-			if (crtcs->r_gamma != NULL)
-				free(crtcs->r_gamma);
-			crtcs->crtc_num = -1;
-			crtcs++;
+	drm_card_data_t *card_data = state->sites[crtc->site_index].partitions[crtc->partition].data;
+	int r;
+	r = drmModeCrtcSetGamma(card_data->fd, (uint32_t)(long)(crtc->data),
+				ramps.red_size, ramps.red, ramps.green, ramps.blue);
+	if (r) {
+		switch (errno) {
+		case EACCES:
+		case EAGAIN:
+		case EIO:
+			/* Permission denied errors must be ignored, because we do not
+			   have permission to do this while a display server is active.
+			   We are also checking for some other error codes just in case. */
+		case EBUSY:
+		case EINPROGRESS:
+			/* It is hard to find documentation for DRM (in fact all of this is
+			   just based on the functions names and some testing,) perhaps we
+			   could get this if we are updating to fast. */
+			break;
+		case EBADF:
+		case ENODEV:
+		case ENXIO:
+			/* XXX: I have not actually tested removing my graphics card or,
+			        monitor but I imagine either of these is what would happen. */
+			fprintf(stderr,
+				_("Please do not unplug your monitors or remove graphics cards.\n"));
+			return -1;
+		default:
+			perror("drmModeCrtcSetGamma");
+			return -1;
 		}
-		free(state->crtcs);
-		state->crtcs = NULL;
 	}
-	if (state->res != NULL) {
-		drmModeFreeResources(state->res);
-		state->res = NULL;
+	return 0;
+}
+
+static int
+drm_set_option(gamma_server_state_t *state, const char *key, char *value, ssize_t section)
+{
+	if (strcasecmp(key, "card") == 0) {
+		ssize_t card = strcasecmp(value, "all") ? (ssize_t)atoi(value) : -1;
+		if (card < 0 && strcasecmp(value, "all")) {
+			/* TRANSLATORS: `all' must not be translated. */
+			fprintf(stderr, _("Card must be `all' or a non-negative integer.\n"));
+			return -1;
+		}
+		if (section >= 0) {
+			state->selections[section].partition = card;
+		} else {
+			for (size_t i = 0; i < state->selections_made; i++)
+				state->selections[i].partition = card;
+		}
+		return 0;
+	} else if (strcasecmp(key, "crtc") == 0) {
+		ssize_t crtc = strcasecmp(value, "all") ? (ssize_t)atoi(value) : -1;
+		if (crtc < 0 && strcasecmp(value, "all")) {
+			/* TRANSLATORS: `all' must not be translated. */
+			fprintf(stderr, _("CRTC must be `all' or a non-negative integer.\n"));
+			return -1;
+		}
+		if (section >= 0) {
+			state->selections[section].crtc = crtc;
+		} else {
+			for (size_t i = 0; i < state->selections_made; i++)
+				state->selections[i].crtc = crtc;
+		}
+		return 0;
 	}
-	if (state->fd >= 0) {
-		close(state->fd);
-		state->fd = -1;
-	}
+	return 1;
+}
+
+int
+drm_init(gamma_server_state_t *state)
+{
+	int r;
+	r = gamma_init(state);
+	if (r != 0) return r;
+
+	state->free_partition_data = drm_free_partition;
+	state->free_crtc_data      = drm_free_crtc;
+	state->open_site           = drm_open_site;
+	state->open_partition      = drm_open_partition;
+	state->open_crtc           = drm_open_crtc;
+	state->invalid_partition   = drm_invalid_partition;
+	state->set_ramps           = drm_set_ramps;
+	state->set_option          = drm_set_option;
+
+	return 0;
+}
+
+int
+drm_start(gamma_server_state_t *state)
+{
+	return gamma_resolve_selections(state);
 }
 
 void
@@ -219,62 +358,4 @@ drm_print_help(FILE *f)
 	fputs(_("  card=N\tGraphics card to apply adjustments to\n"
 		"  crtc=N\tCRTC to apply adjustments to\n"), f);
 	fputs("\n", f);
-}
-
-int
-drm_set_option(drm_state_t *state, const char *key, const char *value)
-{
-	if (strcasecmp(key, "card") == 0) {
-		state->card_num = atoi(value);
-	} else if (strcasecmp(key, "crtc") == 0) {
-		state->crtc_num = atoi(value);
-		if (state->crtc_num < 0) {
-			fprintf(stderr, _("CRTC must be a non-negative integer\n"));
-			return -1;
-		}
-	} else {
-		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
-		return -1;
-	}
-
-	return 0;
-}
-
-int
-drm_set_temperature(drm_state_t *state, int temp, float brightness, const float gamma[3])
-{
-	drm_crtc_state_t *crtcs = state->crtcs;
-	int last_gamma_size = 0;
-	uint16_t *r_gamma = NULL;
-	uint16_t *g_gamma = NULL;
-	uint16_t *b_gamma = NULL;
-
-	for (; crtcs->crtc_num >= 0; crtcs++) {
-		if (crtcs->gamma_size <= 1)
-			continue;
-		if (crtcs->gamma_size != last_gamma_size) {
-			if (last_gamma_size == 0) {
-				r_gamma = malloc(3 * crtcs->gamma_size * sizeof(uint16_t));
-				g_gamma = r_gamma + crtcs->gamma_size;
-				b_gamma = g_gamma + crtcs->gamma_size;
-			} else if (crtcs->gamma_size > last_gamma_size) {
-				r_gamma = realloc(r_gamma, 3 * crtcs->gamma_size * sizeof(uint16_t));
-				g_gamma = r_gamma + crtcs->gamma_size;
-				b_gamma = g_gamma + crtcs->gamma_size;
-			}
-			if (r_gamma == NULL) {
-				perror(last_gamma_size == 0 ? "malloc" : "realloc");
-				return -1;
-			}
-			last_gamma_size = crtcs->gamma_size;
-		}
-		colorramp_fill(r_gamma, g_gamma, b_gamma, crtcs->gamma_size,
-			       temp, brightness, gamma);
-		drmModeCrtcSetGamma(state->fd, crtcs->crtc_id, crtcs->gamma_size,
-				    r_gamma, g_gamma, b_gamma);
-	}
-
-	free(r_gamma);
-
-	return 0;
 }
