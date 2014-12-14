@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2013  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2009-2014  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #ifdef HAVE_CONFIG_H
@@ -74,6 +74,10 @@
 
 #ifdef ENABLE_GEOCLUE
 # include "location-geoclue.h"
+#endif
+
+#ifdef ENABLE_GEOCLUE2
+# include "location-geoclue2.h"
 #endif
 
 
@@ -181,6 +185,20 @@ static const location_provider_t location_providers[] = {
 		location_geoclue_set_option,
 		(location_provider_get_location_func *)
 		location_geoclue_get_location
+	},
+#endif
+#ifdef ENABLE_GEOCLUE2
+	{
+		"geoclue2",
+		(location_provider_init_func *)location_geoclue2_init,
+		(location_provider_start_func *)location_geoclue2_start,
+		(location_provider_free_func *)location_geoclue2_free,
+		(location_provider_print_help_func *)
+		location_geoclue2_print_help,
+		(location_provider_set_option_func *)
+		location_geoclue2_set_option,
+		(location_provider_get_location_func *)
+		location_geoclue2_get_location
 	},
 #endif
 	{

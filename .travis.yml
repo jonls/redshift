@@ -8,5 +8,6 @@ install:
   - sudo apt-get install -qq libxcb1-dev libxcb-randr0-dev
   - sudo apt-get install -qq libx11-dev libxxf86vm-dev
   - sudo apt-get install -qq libgeoclue-dev
+  - sudo apt-get install -qq libglib2.0-dev
   - sudo apt-get install -qq python3
-script: ./bootstrap && ./configure --enable-drm --enable-vidmode --enable-randr --enable-geoclue --enable-gui && make -j2 distcheck
+script: ./bootstrap && ./configure --enable-drm --enable-vidmode --enable-randr --enable-geoclue --enable-geoclue2 --enable-gui && make -j2 distcheck

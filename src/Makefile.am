@@ -66,3 +66,11 @@ redshift_LDADD += \
 	$(GEOCLUE_LIBS) $(GEOCLUE_CFLAGS)
 	$(GLIB_LIBS) $(GLIB_CFLAGS)
 endif
+
+if ENABLE_GEOCLUE2
+redshift_SOURCES += location-geoclue2.c location-geoclue2.h
+AM_CFLAGS += \
+	$(GEOCLUE2_CFLAGS)
+redshift_LDADD += \
+	$(GEOCLUE2_LIBS) $(GEOCLUE2_CFLAGS)
+endif
