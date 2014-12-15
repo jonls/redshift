@@ -11,6 +11,7 @@ UPDATE_ICON_CACHE = gtk-update-icon-cache -f -t $(datadir)/icons/hicolor || :
 EXTRA_ROOTDOC_FILES = \
 	HACKING \
 	DESIGN \
+	README \
 	README-colorramp
 
 _HICOLOR_FILES = \
