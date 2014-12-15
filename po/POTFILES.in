@@ -13,6 +13,7 @@ src/gamma-w32gdi.c
 src/gamma-dummy.c
 
 src/location-geoclue.c
+src/location-geoclue2.c
 src/location-manual.c
 
 src/redshift-gtk/statusicon.py

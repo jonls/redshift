@@ -10,7 +10,7 @@ BuildRequires: gettext-devel
 BuildRequires: libX11-devel
 BuildRequires: libXxf86vm-devel
 BuildRequires: libxcb-devel
-BuildRequires: geoclue-devel
+BuildRequires: glib2-devel
 BuildRequires: systemd
 
 %description
@@ -44,7 +44,7 @@ temperature adjustment program.
 %setup -q
 
 %build
-%configure --enable-gui --enable-geoclue --enable-randr --enable-vidmode --with-systemduserunitdir=%{_userunitdir}
+%configure --enable-gui --disable-geoclue --enable-geoclue2 --enable-randr --enable-vidmode --with-systemduserunitdir=%{_userunitdir}
 make %{?_smp_mflags} V=1
 
 %install

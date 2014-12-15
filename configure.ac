@@ -32,6 +32,7 @@ PKG_CHECK_MODULES([XCB_RANDR], [xcb-randr],
 
 PKG_CHECK_MODULES([GLIB], [glib-2.0 gobject-2.0], [have_glib=yes], [have_glib=no])
 PKG_CHECK_MODULES([GEOCLUE], [geoclue], [have_geoclue=yes], [have_geoclue=no])
+PKG_CHECK_MODULES([GEOCLUE2], [glib-2.0 gio-2.0 >= 2.26], [have_geoclue2=yes], [have_geoclue2=no])
 
 AC_CHECK_HEADER([windows.h], [have_windows_h=yes], [have_windows_h=no])
 
@@ -159,6 +160,30 @@ AS_IF([test "x$enable_geoclue" != xno], [
 ])
 AM_CONDITIONAL([ENABLE_GEOCLUE], [test "x$enable_geoclue" = xyes])
 
+# Check Geoclue2 location provider
+AC_MSG_CHECKING([whether to enable Geoclue2 location provider])
+AC_ARG_ENABLE([geoclue2], [AC_HELP_STRING([--enable-geoclue2],
+	[enable Geoclue2 location provider])],
+	[enable_geoclue2=$enableval],[enable_geoclue2=maybe])
+AS_IF([test "x$enable_geoclue2" != xno], [
+	AS_IF([test "x$have_geoclue2" = xyes], [
+		AC_DEFINE([ENABLE_GEOCLUE2], 1,
+			[Define to 1 to enable Geoclue2 location provider])
+		AC_MSG_RESULT([yes])
+		enable_geoclue2=yes
+	], [
+		AC_MSG_RESULT([missing dependencies])
+		AS_IF([test "x$enable_geoclue2" = xyes], [
+			AC_MSG_ERROR([missing dependencies for Geoclue2 location provider])
+		])
+		enable_geoclue2=no
+	])
+], [
+	AC_MSG_RESULT([no])
+	enable_geoclue2=no
+])
+AM_CONDITIONAL([ENABLE_GEOCLUE2], [test "x$enable_geoclue2" = xyes])
+
 
 # Check for GUI status icon
 AC_MSG_CHECKING([whether to enable GUI status icon])
@@ -249,6 +274,7 @@ echo "
 
     Location providers:
     Geoclue:		${enable_geoclue}
+    Geoclue2:		${enable_geoclue2}
 
     GUI:		${enable_gui}
     Ubuntu icons:	${enable_ubuntu}
