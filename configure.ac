@@ -229,7 +229,6 @@ AC_CONFIG_FILES([
 	po/Makefile.in
 	src/Makefile
 	src/redshift-gtk/Makefile
-	contrib/redshift.spec
 ])
 AC_OUTPUT
 

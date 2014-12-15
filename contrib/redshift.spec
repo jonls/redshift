@@ -1,5 +1,5 @@
 Name: redshift
-Version: @VERSION@
+Version: 1.9.1
 Release: 1%{dist}
 Summary: Adjusts the color temperature of your screen according to time of day
 Group: Applications/System
@@ -37,7 +37,7 @@ Requires: %{name} = %{version}-%{release}
 Obsoletes: gtk-redshift < %{version}-%{release}
 
 %description -n %{name}-gtk
-This package provides GTK integration for Redshift, a screen color 
+This package provides GTK integration for Redshift, a screen color
 temperature adjustment program.
 
 %prep
