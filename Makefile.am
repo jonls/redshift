@@ -34,6 +34,9 @@ SYSTEMD_USER_UNIT_IN_FILES = \
 	data/systemd/redshift.service.in \
 	data/systemd/redshift-gtk.service.in
 
+APPDATA_IN_FILES = \
+	data/appdata/redshift-gtk.appdata.xml.in
+
 
 # Icons
 if ENABLE_GUI
@@ -85,6 +88,19 @@ $(systemduserunit_DATA): $(SYSTEMD_USER_UNIT_IN_FILES) Makefile
 		sed -e "s|\@bindir\@|$(bindir)|g" "$(srcdir)/$(@:.service=.service.in)" > $@
 
 
+# Appdata file
+if ENABLE_GUI
+appdatadir = @datadir@/appdata
+appdata_DATA = $(APPDATA_IN_FILES:.xml.in=.xml)
+
+# We would preferable use @INTLTOOL_XML_RULE@ here but
+# sadly it is broken for out-of-tree builds.
+%.xml: %.xml.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*.po)
+	$(AM_V_GEN)$(MKDIR_P) $(@D);
+	$(INTLTOOL_V_MERGE)LC_ALL=C $(INTLTOOL_MERGE) $(INTLTOOL_V_MERGE_OPTIONS) -x -u -c $(top_builddir)/po/.intltool-merge-cache $(top_srcdir)/po $< $@
+endif
+
+
 
 EXTRA_DIST = \
 	$(EXTRA_ROOTDOC_FILES) \
@@ -92,11 +108,13 @@ EXTRA_DIST = \
 	$(_UBUNTU_MONO_DARK_FILES) \
 	$(_UBUNTU_MONO_LIGHT_FILES) \
 	$(DESKTOP_IN_FILES) \
-	$(SYSTEMD_USER_UNIT_IN_FILES)
+	$(SYSTEMD_USER_UNIT_IN_FILES) \
+	$(APPDATA_IN_FILES)
 
 CLEANFILES = \
 	$(desktop_DATA) \
-	$(systemduserunit_DATA)
+	$(systemduserunit_DATA) \
+	$(appdata_DATA)
 
 
 # Update PO translations
