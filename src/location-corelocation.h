@@ -1,4 +1,4 @@
-/* colorramp.h -- color temperature calculation header
+/* location-corelocation.h -- CoreLocation (OSX) location provider header
    This file is part of Redshift.
 
    Redshift is free software: you can redistribute it and/or modify
@@ -14,18 +14,25 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010-2014  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2014  Jon Lund Steffense <jonlst@gmail.com>
 */
 
-#ifndef REDSHIFT_COLORRAMP_H
-#define REDSHIFT_COLORRAMP_H
+#ifndef REDSHIFT_LOCATION_CORELOCATION_H
+#define REDSHIFT_LOCATION_CORELOCATION_H
 
-#include <stdint.h>
+#include <stdio.h>
 
-void colorramp_fill(uint16_t *gamma_r, uint16_t *gamma_g, uint16_t *gamma_b,
-		    int size, int temp, float brightness, const float gamma[3]);
-void colorramp_fill_float(float *gamma_r, float *gamma_g, float *gamma_b,
-			  int size, int temp, float brightness,
-			  const float gamma[3]);
 
-#endif /* ! REDSHIFT_COLORRAMP_H */
+int location_corelocation_init(void *state);
+int location_corelocation_start(void *state);
+void location_corelocation_free(void *state);
+
+void location_corelocation_print_help(FILE *f);
+int location_corelocation_set_option(void *state,
+				     const char *key, const char *value);
+
+int location_corelocation_get_location(void *state,
+				       float *lat, float *lon);
+
+
+#endif /* ! REDSHIFT_LOCATION_CORELOCATION_H */

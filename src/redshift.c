@@ -65,6 +65,10 @@
 # include "gamma-vidmode.h"
 #endif
 
+#ifdef ENABLE_QUARTZ
+# include "gamma-quartz.h"
+#endif
+
 #ifdef ENABLE_WINGDI
 # include "gamma-w32gdi.h"
 #endif
@@ -80,6 +84,10 @@
 # include "location-geoclue2.h"
 #endif
 
+#ifdef ENABLE_CORELOCATION
+# include "location-corelocation.h"
+#endif
+
 
 /* Union of state data for gamma adjustment methods */
 typedef union {
@@ -91,6 +99,9 @@ typedef union {
 #endif
 #ifdef ENABLE_VIDMODE
 	vidmode_state_t vidmode;
+#endif
+#ifdef ENABLE_QUARTZ
+	quartz_state_t quartz;
 #endif
 #ifdef ENABLE_WINGDI
 	w32gdi_state_t w32gdi;
@@ -134,6 +145,18 @@ static const gamma_method_t gamma_methods[] = {
 		(gamma_method_set_option_func *)vidmode_set_option,
 		(gamma_method_restore_func *)vidmode_restore,
 		(gamma_method_set_temperature_func *)vidmode_set_temperature
+	},
+#endif
+#ifdef ENABLE_QUARTZ
+	{
+		"quartz", 1,
+		(gamma_method_init_func *)quartz_init,
+		(gamma_method_start_func *)quartz_start,
+		(gamma_method_free_func *)quartz_free,
+		(gamma_method_print_help_func *)quartz_print_help,
+		(gamma_method_set_option_func *)quartz_set_option,
+		(gamma_method_restore_func *)quartz_restore,
+		(gamma_method_set_temperature_func *)quartz_set_temperature
 	},
 #endif
 #ifdef ENABLE_WINGDI
@@ -199,6 +222,20 @@ static const location_provider_t location_providers[] = {
 		location_geoclue2_set_option,
 		(location_provider_get_location_func *)
 		location_geoclue2_get_location
+	},
+#endif
+#ifdef ENABLE_CORELOCATION
+	{
+		"corelocation",
+		(location_provider_init_func *)location_corelocation_init,
+		(location_provider_start_func *)location_corelocation_start,
+		(location_provider_free_func *)location_corelocation_free,
+		(location_provider_print_help_func *)
+		location_corelocation_print_help,
+		(location_provider_set_option_func *)
+		location_corelocation_set_option,
+		(location_provider_get_location_func *)
+		location_corelocation_get_location
 	},
 #endif
 	{

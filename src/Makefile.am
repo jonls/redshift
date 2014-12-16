@@ -21,6 +21,7 @@ EXTRA_redshift_SOURCES = \
 	gamma-drm.c gamma-drm.h \
 	gamma-randr.c gamma-randr.h \
 	gamma-vidmode.c gamma-vidmode.h \
+	gamma-quartz.c gamma-quartz.h \
 	gamma-w32gdi.c gamma-w32gdi.h \
 	location-geoclue.c location-geoclue.h
 
@@ -51,6 +52,13 @@ redshift_LDADD += \
 	$(XF86VM_LIBS) $(XF86VM_CFLAGS)
 endif
 
+if ENABLE_QUARTZ
+redshift_SOURCES += gamma-quartz.c gamma-quartz.h
+AM_CFLAGS += $(QUARTZ_CFLAGS)
+redshift_LDADD += \
+	$(QUARTZ_LIBS) $(QUARTZ_CFLAGS)
+endif
+
 if ENABLE_WINGDI
 redshift_SOURCES += gamma-w32gdi.c gamma-w32gdi.h
 redshift_LDADD += -lgdi32
@@ -73,4 +81,19 @@ AM_CFLAGS += \
 	$(GEOCLUE2_CFLAGS)
 redshift_LDADD += \
 	$(GEOCLUE2_LIBS) $(GEOCLUE2_CFLAGS)
+endif
+
+# Build CoreLocation module as a separate convenience
+# library since it is using a separate compiler
+# (Objective C).
+
+if ENABLE_CORELOCATION
+noinst_LTLIBRARIES = liblocation-corelocation.la
+liblocation_corelocation_la_SOURCES = \
+	location-corelocation.m location-corelocation.h
+liblocation_corelocation_la_OBJCFLAGS = \
+	$(CORELOCATION_CFLAGS)
+liblocation_corelocation_la_LIBADD = \
+	$(CORELOCATION_CFLAGS) $(CORELOCATION_LIBS)
+redshift_LDADD += liblocation-corelocation.la
 endif

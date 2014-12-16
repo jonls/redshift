@@ -10,11 +10,13 @@ src/config-ini.c
 src/gamma-drm.c
 src/gamma-randr.c
 src/gamma-vidmode.c
+src/gamma-quartz.c
 src/gamma-w32gdi.c
 src/gamma-dummy.c
 
 src/location-geoclue.c
 src/location-geoclue2.c
+src/location-corelocation.m
 src/location-manual.c
 
 src/redshift-gtk/statusicon.py
