@@ -357,8 +357,12 @@ class RedshiftStatusIcon(object):
         return True
 
     def termwait(self):
-        os.kill(self.process[0], signal.SIGINT)
-        os.waitpid(self.process[0], 0)
+        try:
+            os.kill(self.process[0], signal.SIGINT)
+            os.waitpid(self.process[0], 0)
+        except ProcessLookupError:
+            # Process has apparently already disappeared
+            pass
 
 
 def run():
