@@ -172,6 +172,7 @@ class RedshiftStatusIcon(object):
 
         self.input_buffer = InputBuffer()
         self.error_buffer = InputBuffer()
+        self.errors = ''
 
         # Set non blocking
         fcntl.fcntl(self.process[2], fcntl.F_SETFL,
@@ -294,7 +295,7 @@ class RedshiftStatusIcon(object):
     def child_toggle_status(self):
         os.kill(self.process[0], signal.SIGUSR1)
 
-    def child_cb(self, pid, cond, data=None):
+    def child_cb(self, pid, status, data=None):
         # Empty stdout and stderr
         for f, dest in ((self.process[2], sys.stdout),
                          (self.process[3], sys.stderr)):
@@ -302,9 +303,23 @@ class RedshiftStatusIcon(object):
                 buf = os.read(f, 256).decode('utf-8')
                 if buf == '':
                     break
-                print(buf, end='', file=dest)
+                if dest is sys.stderr:
+                    self.errors += buf
 
-        sys.exit(-1)
+        # Check exit status of child
+        show_errors = False
+        try:
+            GLib.spawn_check_exit_status(status)
+            Gtk.main_quit()
+        except GLib.GError:
+            show_errors = True
+
+        if show_errors:
+            error_dialog = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR,
+                                             Gtk.ButtonsType.CLOSE, '')
+            error_dialog.set_markup('<b>Failed to run Redshift</b>\n<i>' + self.errors + '</i>')
+            error_dialog.run()
+            sys.exit(-1)
 
     def child_key_change_cb(self, key, value):
         if key == 'Status':
@@ -337,7 +352,7 @@ class RedshiftStatusIcon(object):
             if stdout:
                 self.child_stdout_line_cb(first)
             else:
-                print(first, file=sys.stderr)
+                self.errors += first + '\n'
 
         return True
 
