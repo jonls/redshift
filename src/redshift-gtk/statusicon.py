@@ -126,25 +126,25 @@ class RedshiftStatusIcon(object):
 
         self.status_label = Gtk.Label()
         self.status_label.set_alignment(0.0, 0.5)
-        self.status_label.set_padding(6, 6);
+        self.status_label.set_padding(6, 6)
         self.info_dialog.get_content_area().pack_start(self.status_label, True, True, 0)
         self.status_label.show()
 
         self.location_label = Gtk.Label()
         self.location_label.set_alignment(0.0, 0.5)
-        self.location_label.set_padding(6, 6);
+        self.location_label.set_padding(6, 6)
         self.info_dialog.get_content_area().pack_start(self.location_label, True, True, 0)
         self.location_label.show()
 
         self.temperature_label = Gtk.Label()
         self.temperature_label.set_alignment(0.0, 0.5)
-        self.temperature_label.set_padding(6, 6);
+        self.temperature_label.set_padding(6, 6)
         self.info_dialog.get_content_area().pack_start(self.temperature_label, True, True, 0)
         self.temperature_label.show()
 
         self.period_label = Gtk.Label()
         self.period_label.set_alignment(0.0, 0.5)
-        self.period_label.set_padding(6, 6);
+        self.period_label.set_padding(6, 6)
         self.info_dialog.get_content_area().pack_start(self.period_label, True, True, 0)
         self.period_label.show()
 
