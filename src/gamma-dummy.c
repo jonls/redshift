@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2013  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2013-2014  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #include <stdio.h>
@@ -26,6 +26,8 @@
 #else
 # define _(s) s
 #endif
+
+#include "redshift.h"
 
 
 int
@@ -66,9 +68,8 @@ gamma_dummy_set_option(void *state, const char *key, const char *value)
 }
 
 int
-gamma_dummy_set_temperature(void *state, int temp, float brightness,
-			    const float gamma[3])
+gamma_dummy_set_temperature(void *state, const color_setting_t *setting)
 {
-	printf(_("Temperature: %i\n"), temp);
+	printf(_("Temperature: %i\n"), setting->temperature);
 	return 0;
 }

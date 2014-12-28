@@ -21,6 +21,7 @@
 #include <stdint.h>
 #include <math.h>
 
+#include "redshift.h"
 
 /* Whitepoint values for temperatures at 100K intervals.
    These will be interpolated for the actual temperature.
@@ -281,16 +282,17 @@ interpolate_color(float a, const float *c1, const float *c2, float *c)
 }
 
 /* Helper macro used in the fill functions */
-#define F(Y, C)  pow((Y) * brightness * white_point[C], 1.0/gamma[C])
+#define F(Y, C)  pow((Y) * setting->brightness * \
+		     white_point[C], 1.0/setting->gamma[C])
 
 void
 colorramp_fill(uint16_t *gamma_r, uint16_t *gamma_g, uint16_t *gamma_b,
-	       int size, int temp, float brightness, const float gamma[3])
+	       int size, const color_setting_t *setting)
 {
 	/* Approximate white point */
 	float white_point[3];
-	float alpha = (temp % 100) / 100.0;
-	int temp_index = ((temp - 1000) / 100)*3;
+	float alpha = (setting->temperature % 100) / 100.0;
+	int temp_index = ((setting->temperature - 1000) / 100)*3;
 	interpolate_color(alpha, &blackbody_color[temp_index],
 			  &blackbody_color[temp_index+3], white_point);
 
@@ -303,13 +305,12 @@ colorramp_fill(uint16_t *gamma_r, uint16_t *gamma_g, uint16_t *gamma_b,
 
 void
 colorramp_fill_float(float *gamma_r, float *gamma_g, float *gamma_b,
-		     int size, int temp, float brightness,
-		     const float gamma[3])
+		     int size, const color_setting_t *setting)
 {
 	/* Approximate white point */
 	float white_point[3];
-	float alpha = (temp % 100) / 100.0;
-	int temp_index = ((temp - 1000) / 100)*3;
+	float alpha = (setting->temperature % 100) / 100.0;
+	int temp_index = ((setting->temperature - 1000) / 100)*3;
 	interpolate_color(alpha, &blackbody_color[temp_index],
 			  &blackbody_color[temp_index+3], white_point);
 

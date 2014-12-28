@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2010-2014  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #include <stdlib.h>
@@ -33,6 +33,7 @@
 #include <X11/extensions/xf86vmode.h>
 
 #include "gamma-vidmode.h"
+#include "redshift.h"
 #include "colorramp.h"
 
 
@@ -163,8 +164,8 @@ vidmode_restore(vidmode_state_t *state)
 }
 
 int
-vidmode_set_temperature(vidmode_state_t *state, int temp, float brightness,
-			const float gamma[3])
+vidmode_set_temperature(vidmode_state_t *state,
+			const color_setting_t *setting)
 {
 	int r;
 
@@ -180,7 +181,7 @@ vidmode_set_temperature(vidmode_state_t *state, int temp, float brightness,
 	uint16_t *gamma_b = &gamma_ramps[2*state->ramp_size];
 
 	colorramp_fill(gamma_r, gamma_g, gamma_b, state->ramp_size,
-		       temp, brightness, gamma);
+		       setting);
 
 	/* Set new gamma ramps */
 	r = XF86VidModeSetGammaRamp(state->display, state->screen_num,

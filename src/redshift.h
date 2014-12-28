@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2013  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2013-2014  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #ifndef REDSHIFT_REDSHIFT_H
@@ -40,9 +40,8 @@ typedef void gamma_method_print_help_func(FILE *f);
 typedef int gamma_method_set_option_func(void *state, const char *key,
 					 const char *value);
 typedef void gamma_method_restore_func(void *state);
-typedef int gamma_method_set_temperature_func(void *state, int temp,
-					      float brightness,
-					      const float gamma[3]);
+typedef int gamma_method_set_temperature_func(void *state,
+					      const color_setting_t *setting);
 
 typedef struct {
 	char *name;

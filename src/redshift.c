@@ -1296,8 +1296,7 @@ main(int argc, char *argv[])
 		}
 
 		/* Adjust temperature */
-		r = method->set_temperature(&state, interp.temperature,
-					    interp.brightness, interp.gamma);
+		r = method->set_temperature(&state, &interp);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
 			method->free(&state);
@@ -1310,8 +1309,10 @@ main(int argc, char *argv[])
 		if (verbose) printf(_("Color temperature: %uK\n"), temp_set);
 
 		/* Adjust temperature */
-		r = method->set_temperature(&state, temp_set, day.brightness,
-					    day.gamma);
+		color_setting_t manual;
+		memcpy(&manual, &day, sizeof(color_setting_t));
+		manual.temperature = temp_set;
+		r = method->set_temperature(&state, &manual);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
 			method->free(&state);
@@ -1323,8 +1324,8 @@ main(int argc, char *argv[])
 	case PROGRAM_MODE_RESET:
 	{
 		/* Reset screen */
-		r = method->set_temperature(&state, NEUTRAL_TEMP, 1.0,
-					    day.gamma);
+		color_setting_t reset = { NEUTRAL_TEMP, { 1.0, 1.0, 1.0 }, 1.0 };
+		r = method->set_temperature(&state, &reset);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
 			method->free(&state);
@@ -1473,10 +1474,7 @@ main(int argc, char *argv[])
 
 			/* Adjust temperature */
 			if (!disabled || short_trans_delta || set_adjustments) {
-				r = method->set_temperature(&state,
-							    interp.temperature,
-							    interp.brightness,
-							    interp.gamma);
+				r = method->set_temperature(&state, &interp);
 				if (r < 0) {
 					fputs(_("Temperature adjustment"
 						" failed.\n"), stderr);

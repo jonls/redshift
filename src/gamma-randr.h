@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2010-2014  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #ifndef REDSHIFT_GAMMA_RANDR_H
@@ -54,8 +54,8 @@ void randr_print_help(FILE *f);
 int randr_set_option(randr_state_t *state, const char *key, const char *value);
 
 void randr_restore(randr_state_t *state);
-int randr_set_temperature(randr_state_t *state, int temp, float brightness,
-			  const float gamma[3]);
+int randr_set_temperature(randr_state_t *state,
+			  const color_setting_t *setting);
 
 
 #endif /* ! REDSHIFT_GAMMA_RANDR_H */

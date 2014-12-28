@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2010-2014  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #include <stdio.h>
@@ -129,8 +129,8 @@ w32gdi_restore(w32gdi_state_t *state)
 }
 
 int
-w32gdi_set_temperature(w32gdi_state_t *state, int temp, float brightness,
-		       const float gamma[3])
+w32gdi_set_temperature(w32gdi_state_t *state,
+		       const color_setting_t *setting)
 {
 	BOOL r;
 
@@ -154,7 +154,7 @@ w32gdi_set_temperature(w32gdi_state_t *state, int temp, float brightness,
 	WORD *gamma_b = &gamma_ramps[2*GAMMA_RAMP_SIZE];
 
 	colorramp_fill(gamma_r, gamma_g, gamma_b, GAMMA_RAMP_SIZE,
-		       temp, brightness, gamma);
+		       setting);
 
 	/* Set new gamma ramps */
 	r = SetDeviceGammaRamp(hDC, gamma_ramps);

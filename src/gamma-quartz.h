@@ -37,8 +37,8 @@ int quartz_set_option(quartz_state_t *state, const char *key,
 		      const char *value);
 
 void quartz_restore(quartz_state_t *state);
-int quartz_set_temperature(quartz_state_t *state, int temp, float brightness,
-			   const float gamma[3]);
+int quartz_set_temperature(quartz_state_t *state,
+			   const color_setting_t *setting);
 
 
 #endif /* ! REDSHIFT_GAMMA_QUARTZ_H */
