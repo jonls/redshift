@@ -68,3 +68,14 @@ systemtime_get_time(double *t)
 
 	return 0;
 }
+
+/* Sleep for a number of milliseconds. */
+void
+systemtime_msleep(unsigned int msecs)
+{
+#ifndef _WIN32
+	usleep(msecs*1000);
+#else
+	Sleep(msecs);
+#endif
+}

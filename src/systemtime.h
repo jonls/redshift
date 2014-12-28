@@ -22,5 +22,6 @@
 
 
 int systemtime_get_time(double *now);
+void systemtime_msleep(unsigned int msecs);
 
 #endif /* ! REDSHIFT_SYSTEMTIME_H */

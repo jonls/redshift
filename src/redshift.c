@@ -25,7 +25,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include <time.h>
 #include <math.h>
 #include <locale.h>
 #include <errno.h>
@@ -1583,13 +1582,11 @@ main(int argc, char *argv[])
 			       sizeof(color_setting_t));
 
 			/* Sleep for 5 seconds or 0.1 second. */
-#ifndef _WIN32
-			if (short_trans_delta) usleep(SLEEP_DURATION_SHORT*1000);
-			else usleep(SLEEP_DURATION*1000);
-#else /* ! _WIN32 */
-			if (short_trans_delta) Sleep(SLEEP_DURATION_SHORT);
-			else Sleep(SLEEP_DURATION);
-#endif /* ! _WIN32 */
+			if (short_trans_delta) {
+				systemtime_msleep(SLEEP_DURATION_SHORT);
+			} else {
+				systemtime_msleep(SLEEP_DURATION);
+			}
 		}
 
 		/* Restore saved gamma ramps */
