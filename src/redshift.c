@@ -299,13 +299,15 @@ typedef enum {
 
 /* Periods of day. */
 typedef enum {
-	PERIOD_DAYTIME = 0,
+	PERIOD_NONE = 0,
+	PERIOD_DAYTIME,
 	PERIOD_NIGHT,
 	PERIOD_TRANSITION
 } period_t;
 
 /* Names of periods of day */
 static const char *period_names[] = {
+	N_("None"),
 	N_("Daytime"),
 	N_("Night"),
 	N_("Transition")
@@ -374,6 +376,7 @@ static void
 print_period(period_t period, double transition)
 {
 	switch (period) {
+	case PERIOD_NONE:
 	case PERIOD_NIGHT:
 	case PERIOD_DAYTIME:
 		printf(_("Period: %s\n"), gettext(period_names[period]));
@@ -1436,7 +1439,7 @@ main(int argc, char *argv[])
 		/* Save previous colors so we can avoid
 		   printing status updates if the values
 		   did not change. */
-		period_t prev_period = -1;
+		period_t prev_period = PERIOD_NONE;
 		color_setting_t prev_interp =
 			{ -1, { NAN, NAN, NAN }, NAN };
 
