@@ -37,8 +37,11 @@
 #ifdef ENABLE_NLS
 # include <libintl.h>
 # define _(s) gettext(s)
+# define N_(s) (s)
 #else
 # define _(s) s
+# define N_(s) s
+# define gettext(s) s
 #endif
 
 #include "redshift.h"
@@ -303,9 +306,9 @@ typedef enum {
 
 /* Names of periods of day */
 static const char *period_names[] = {
-	"Daytime",
-	"Night",
-	"Transition"
+	N_("Daytime"),
+	N_("Night"),
+	N_("Transition")
 };
 
 #if defined(HAVE_SIGNAL_H) && !defined(__WIN32__)
@@ -373,11 +376,12 @@ print_period(period_t period, double transition)
 	switch (period) {
 	case PERIOD_NIGHT:
 	case PERIOD_DAYTIME:
-		printf(_("Period: %s\n"), period_names[period]);
+		printf(_("Period: %s\n"), gettext(period_names[period]));
 		break;
 	case PERIOD_TRANSITION:
 		printf(_("Period: %s (%.2f%% day)\n"),
-		       period_names[period], transition*100);
+		       gettext(period_names[period]),
+		       transition*100);
 		break;
 	}
 }
