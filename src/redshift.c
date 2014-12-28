@@ -1178,12 +1178,25 @@ main(int argc, char *argv[])
 		provider->free(&location_state);
 	
 		if (verbose) {
-		        /* TRANSLATORS: Append degree symbols after %f if possible. */
+			/* TRANSLATORS: Abbreviation for `north' */
+			const char *north = _("N");
+			/* TRANSLATORS: Abbreviation for `south' */
+			const char *south = _("S");
+			/* TRANSLATORS: Abbreviation for `east' */
+			const char *east = _("E");
+			/* TRANSLATORS: Abbreviation for `west' */
+			const char *west = _("W");
+
+		        /* TRANSLATORS: Append degree symbols after %f if possible.
+			   The string following each number is an abreviation for
+			   north, source, east or west (N, S, E, W). */
 		        printf(_("Location: %.2f %s, %.2f %s\n"),
-			       fabs(lat), lat >= 0.f ? _("N") : _("S"),
-			       fabs(lon), lon >= 0.f ? _("E") : _("W"));
+			       fabs(lat), lat >= 0.f ? north : south,
+			       fabs(lon), lon >= 0.f ? east : west);
+
 			printf(_("Temperatures: %dK at day, %dK at night\n"),
 			       day.temperature, night.temperature);
+
 		        /* TRANSLATORS: Append degree symbols if possible. */
 			printf(_("Solar elevations: day above %.1f, night below %.1f\n"),
 			       transition_high, transition_low);
