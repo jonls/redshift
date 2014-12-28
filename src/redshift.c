@@ -306,6 +306,7 @@ typedef enum {
 
 /* Names of periods of day */
 static const char *period_names[] = {
+	/* TRANSLATORS: Name printed when period of day is unknown */
 	N_("None"),
 	N_("Daytime"),
 	N_("Night"),
