@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2010-2014  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #include <stdio.h>
@@ -33,6 +33,7 @@
 #include <xcb/randr.h>
 
 #include "gamma-randr.h"
+#include "redshift.h"
 #include "colorramp.h"
 
 
@@ -294,8 +295,8 @@ randr_set_option(randr_state_t *state, const char *key, const char *value)
 }
 
 static int
-randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num, int temp,
-			       float brightness, const float gamma[3])
+randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num,
+			       const color_setting_t *setting)
 {
 	xcb_generic_error_t *error;
 	
@@ -327,7 +328,7 @@ randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num, int temp,
 	uint16_t *gamma_b = &gamma_ramps[2*ramp_size];
 
 	colorramp_fill(gamma_r, gamma_g, gamma_b, ramp_size,
-		       temp, brightness, gamma);
+		       setting);
 
 	/* Set new gamma ramps */
 	xcb_void_cookie_t gamma_set_cookie =
@@ -349,8 +350,8 @@ randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num, int temp,
 }
 
 int
-randr_set_temperature(randr_state_t *state, int temp, float brightness,
-		      const float gamma[3])
+randr_set_temperature(randr_state_t *state,
+		      const color_setting_t *setting)
 {
 	int r;
 
@@ -359,13 +360,12 @@ randr_set_temperature(randr_state_t *state, int temp, float brightness,
 	if (state->crtc_num < 0) {
 		for (int i = 0; i < state->crtc_count; i++) {
 			r = randr_set_temperature_for_crtc(state, i,
-							   temp, brightness,
-							   gamma);
+							   setting);
 			if (r < 0) return -1;
 		}
 	} else {
 		return randr_set_temperature_for_crtc(state, state->crtc_num,
-						      temp, brightness, gamma);
+						      setting);
 	}
 
 	return 0;
