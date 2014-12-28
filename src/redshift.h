@@ -24,6 +24,14 @@
 #include <stdlib.h>
 
 
+/* Color setting */
+typedef struct {
+	int temperature;
+	float gamma[3];
+	float brightness;
+} color_setting_t;
+
+
 /* Gamma adjustment method */
 typedef int gamma_method_init_func(void *state);
 typedef int gamma_method_start_func(void *state);
