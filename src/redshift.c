@@ -1404,14 +1404,29 @@ main(int argc, char *argv[])
 		sigact.sa_handler = sigexit;
 		sigact.sa_mask = sigset;
 		sigact.sa_flags = 0;
-		sigaction(SIGINT, &sigact, NULL);
-		sigaction(SIGTERM, &sigact, NULL);
 
-		/* Install signal handler for USR1 singal */
+		r = sigaction(SIGINT, &sigact, NULL);
+		if (r < 0) {
+			perror("sigaction");
+			exit(EXIT_FAILURE);
+		}
+
+		r = sigaction(SIGTERM, &sigact, NULL);
+		if (r < 0) {
+			perror("sigaction");
+			exit(EXIT_FAILURE);
+		}
+
+		/* Install signal handler for USR1 signal */
 		sigact.sa_handler = sigdisable;
 		sigact.sa_mask = sigset;
 		sigact.sa_flags = 0;
-		sigaction(SIGUSR1, &sigact, NULL);
+
+		r = sigaction(SIGUSR1, &sigact, NULL);
+		if (r < 0) {
+			perror("sigaction");
+			exit(EXIT_FAILURE);
+		}
 #endif /* HAVE_SIGNAL_H && ! __WIN32__ */
 
 		if (verbose) {
