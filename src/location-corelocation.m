@@ -127,9 +127,9 @@ location_corelocation_print_help(FILE *f)
 	fputs(_("Use the location as discovered by the Corelocation provider.\n"), f);
 	fputs("\n", f);
 
-	fputs(_("NOTE: currently redshift doesn't recheck CoreLocation once started,\n"
-		"which means it has to be restarted to take notice after travel.\n"),
-	      f);
+	fprintf(f, _("NOTE: currently Redshift doesn't recheck %s once started,\n"
+		     "which means it has to be restarted to take notice after travel.\n"),
+		"CoreLocation");
 	fputs("\n", f);
 }
 

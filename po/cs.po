@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
-"POT-Creation-Date: 2014-05-07 20:17-0400\n"
+"POT-Creation-Date: 2014-12-28 14:36-0500\n"
 "PO-Revision-Date: 2014-03-22 15:58+0000\n"
 "Last-Translator: Jakub Vaněk <vanek.jakub4@seznam.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -18,27 +18,80 @@ msgstr ""
 "X-Launchpad-Export-Date: 2014-04-06 17:36+0000\n"
 "X-Generator: Launchpad (build 16976)\n"
 
-#: src/redshift.c:275
-#, c-format
-msgid "Period: Night\n"
+#: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
+msgid ""
+"Redshift adjusts the color temperature of your screen according to your "
+"surroundings. This may help your eyes hurt less if you are working in front "
+"of the screen at night."
+msgstr ""
+
+#: ../data/appdata/redshift-gtk.appdata.xml.in.h:2
+msgid ""
+"The color temperature is set according to the position of the sun. A "
+"different color temperature is set during night and daytime. During twilight "
+"and early morning, the color temperature transitions smoothly from night to "
+"daytime temperature to allow your eyes to slowly adapt."
+msgstr ""
+
+#: ../data/appdata/redshift-gtk.appdata.xml.in.h:3
+msgid ""
+"This program provides a status icon that allows the user to control Redshift."
+msgstr ""
+
+#: ../data/appdata/redshift-gtk.appdata.xml.in.h:4
+msgid ""
+"The Redshift information window overlaid with an example of the redness "
+"effect"
+msgstr ""
+
+#: ../data/applications/redshift-gtk.desktop.in.h:1
+msgid "Redshift"
+msgstr ""
+
+#: ../data/applications/redshift-gtk.desktop.in.h:2
+#, fuzzy
+msgid "Color temperature adjustment"
+msgstr "Teplota barvy"
+
+#: ../data/applications/redshift-gtk.desktop.in.h:3
+#, fuzzy
+msgid "Color temperature adjustment tool"
+msgstr "Přizpůsobení barev selhalo.\n"
+
+#. TRANSLATORS: Name printed when period of day is unknown
+#: ../src/redshift.c:310
+msgid "None"
+msgstr ""
+
+#: ../src/redshift.c:311 ../src/redshift.c:1287
+#, fuzzy
+msgid "Daytime"
+msgstr "Doba: Den\n"
+
+#: ../src/redshift.c:312 ../src/redshift.c:1289
+msgid "Night"
+msgstr ""
+
+#: ../src/redshift.c:313
+msgid "Transition"
+msgstr ""
+
+#: ../src/redshift.c:382
+#, fuzzy, c-format
+msgid "Period: %s\n"
 msgstr "Doba: Noc\n"
 
-#: src/redshift.c:279
-#, c-format
-msgid "Period: Transition (%.2f%% day)\n"
+#: ../src/redshift.c:385
+#, fuzzy, c-format
+msgid "Period: %s (%.2f%% day)\n"
 msgstr "Doba: Přechod (%.2f%% den)\n"
-
-#: src/redshift.c:281
-#, c-format
-msgid "Period: Daytime\n"
-msgstr "Doba: Den\n"
 
 #. TRANSLATORS: help output 1
 #. LAT is latitude, LON is longitude,
 #. DAY is temperature at daytime,
 #. NIGHT is temperature at night
 #. no-wrap
-#: src/redshift.c:313
+#: ../src/redshift.c:443
 #, c-format
 msgid "Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
 msgstr ""
@@ -47,13 +100,13 @@ msgstr ""
 
 #. TRANSLATORS: help output 2
 #. no-wrap
-#: src/redshift.c:319
+#: ../src/redshift.c:449
 msgid "Set color temperature of display according to time of day.\n"
 msgstr "Nastavení teploty barev podle denní doby.\n"
 
 #. TRANSLATORS: help output 3
 #. no-wrap
-#: src/redshift.c:325
+#: ../src/redshift.c:455
 msgid ""
 "  -h\t\tDisplay this help message\n"
 "  -v\t\tVerbose output\n"
@@ -66,7 +119,7 @@ msgstr ""
 #. TRANSLATORS: help output 4
 #. `list' must not be translated
 #. no-wrap
-#: src/redshift.c:333
+#: ../src/redshift.c:463
 msgid ""
 "  -b DAY:NIGHT\tScreen brightness to apply (between 0.1 and 1.0)\n"
 "  -c FILE\tLoad settings from specified configuration file\n"
@@ -99,7 +152,7 @@ msgstr ""
 "  -t DEN:NOC\tTeplota barev k nastavení ve dne/v noci\n"
 
 #. TRANSLATORS: help output 5
-#: src/redshift.c:353
+#: ../src/redshift.c:483
 #, c-format
 msgid ""
 "The neutral temperature is %uK. Using this value will not\n"
@@ -115,7 +168,7 @@ msgstr ""
 "červeného světla.\n"
 
 #. TRANSLATORS: help output 6
-#: src/redshift.c:363
+#: ../src/redshift.c:493
 #, c-format
 msgid ""
 "Default values:\n"
@@ -129,44 +182,45 @@ msgstr ""
 "  Teplota v noci: %uK\n"
 
 #. TRANSLATORS: help output 7
-#: src/redshift.c:371
+#: ../src/redshift.c:501
 #, c-format
 msgid "Please report bugs to <%s>\n"
 msgstr "Chyby prosím hlaste na <%s>\n"
 
-#: src/redshift.c:377
+#: ../src/redshift.c:507
 msgid "Available adjustment methods:\n"
 msgstr "Dostupné metody přizpůsobení:\n"
 
-#: src/redshift.c:383
+#: ../src/redshift.c:513
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
 msgstr "Specifikujte dvojtečkou oddělené volby za použití `-m METODA:VOLBY'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:386
+#: ../src/redshift.c:516
 msgid "Try `-m METHOD:help' for help.\n"
 msgstr "Zkuste `-m METODA:help' pro nápovědu.\n"
 
-#: src/redshift.c:392
+#: ../src/redshift.c:522
 msgid "Available location providers:\n"
 msgstr "Dostupní poskytovatelé polohy:\n"
 
-#: src/redshift.c:398
+#: ../src/redshift.c:528
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
 msgstr ""
 "Specifikujte dvojtečkou oddělené volby za použití `-l POSKYTOVATEL:VOLBY'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:401
+#: ../src/redshift.c:531
 msgid "Try `-l PROVIDER:help' for help.\n"
 msgstr "Zkuste `-l POSKYTOVATEL:help' pro nápovědu.\n"
 
-#: src/redshift.c:414 src/redshift.c:506
+#: ../src/redshift.c:544 ../src/redshift.c:636
 #, c-format
 msgid "Initialization of %s failed.\n"
 msgstr "Inicializace %s selhala.\n"
 
-#: src/redshift.c:429 src/redshift.c:473 src/redshift.c:521 src/redshift.c:553
+#: ../src/redshift.c:559 ../src/redshift.c:603 ../src/redshift.c:651
+#: ../src/redshift.c:683
 #, c-format
 msgid "Failed to set %s option.\n"
 msgstr "Chyba v nastavení volby %s.\n"
@@ -174,250 +228,274 @@ msgstr "Chyba v nastavení volby %s.\n"
 #. TRANSLATORS: `help' must not be
 #. translated.
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:434 src/redshift.c:476
+#: ../src/redshift.c:564 ../src/redshift.c:606
 #, c-format
 msgid "Try `-l %s:help' for more information.\n"
 msgstr "Zkuste `-l %s:help' pro více informací.\n"
 
-#: src/redshift.c:462 src/redshift.c:543
+#: ../src/redshift.c:592 ../src/redshift.c:673
 #, c-format
 msgid "Failed to parse option `%s'.\n"
 msgstr "Nepodařilo se parsování volby `%s'.\n"
 
-#: src/redshift.c:489
+#: ../src/redshift.c:619
 #, c-format
 msgid "Failed to start provider %s.\n"
 msgstr "Nepodařilo se spustit poskytovatele %s.\n"
 
 #. TRANSLATORS: `help' must not be
 #. translated.
-#: src/redshift.c:526
+#: ../src/redshift.c:656
 #, c-format
 msgid "Try `-m %s:help' for more information.\n"
 msgstr "Zkuste `-m %s:help' pro více informací.\n"
 
 #. TRANSLATORS: `help' must not be translated.
-#: src/redshift.c:556
+#: ../src/redshift.c:686
 #, c-format
 msgid "Try -m %s:help' for more information.\n"
 msgstr "Zkuste -m %s:help' pro více informací.\n"
 
-#: src/redshift.c:568
+#: ../src/redshift.c:698
 #, c-format
 msgid "Failed to start adjustment method %s.\n"
 msgstr "Nepodařilo se spustit metodu přizpůsobení %s.\n"
 
-#: src/redshift.c:705
+#: ../src/redshift.c:845
 msgid "Malformed gamma argument.\n"
 msgstr "Neplatný argument gamma.\n"
 
-#: src/redshift.c:707 src/redshift.c:809 src/redshift.c:828
+#: ../src/redshift.c:847 ../src/redshift.c:954 ../src/redshift.c:973
 msgid "Try `-h' for more information.\n"
 msgstr "Zkuste `-h' pro více informací.\n"
 
-#: src/redshift.c:748 src/redshift.c:919
+#: ../src/redshift.c:893 ../src/redshift.c:1090
 #, c-format
 msgid "Unknown location provider `%s'.\n"
 msgstr "Neznámý poskytovatel polohy `%s'.\n"
 
 #. TRANSLATORS: This refers to the method
 #. used to adjust colors e.g VidMode
-#: src/redshift.c:779 src/redshift.c:905
+#: ../src/redshift.c:924 ../src/redshift.c:1076
 #, c-format
 msgid "Unknown adjustment method `%s'.\n"
 msgstr "Neznámá metoda přizpůsobení `%s'.\n"
 
-#: src/redshift.c:807
+#: ../src/redshift.c:952
 msgid "Malformed temperature argument.\n"
 msgstr "Neplatný argument teploty.\n"
 
-#: src/redshift.c:893
+#: ../src/redshift.c:1040 ../src/redshift.c:1053 ../src/redshift.c:1064
 msgid "Malformed gamma setting.\n"
 msgstr "Neplatné nastavení gamma.\n"
 
-#: src/redshift.c:928
+#: ../src/redshift.c:1099
 #, c-format
 msgid "Unknown configuration setting `%s'.\n"
 msgstr "Neznámá konfigurace nastavení `%s'.\n"
 
-#: src/redshift.c:967
+#: ../src/redshift.c:1146
 #, c-format
 msgid "Trying location provider `%s'...\n"
 msgstr "Zkouší se poskytovatel polohy `%s'...\n"
 
-#: src/redshift.c:972
+#: ../src/redshift.c:1151
 msgid "Trying next provider...\n"
 msgstr "Zkouší se další poskytovatel...\n"
 
-#: src/redshift.c:978
+#: ../src/redshift.c:1157
 #, c-format
 msgid "Using provider `%s'.\n"
 msgstr "Používám poskytovatele `%s'.\n"
 
-#: src/redshift.c:986
+#: ../src/redshift.c:1165
 msgid "No more location providers to try.\n"
 msgstr "Nejsou žádní další poskytovatelé polohy k vyzkoušení.\n"
 
-#: src/redshift.c:995
+#: ../src/redshift.c:1174
 msgid "Unable to get location from provider.\n"
 msgstr "Nebylo možné získat polohu od poskytovatele.\n"
 
-#. TRANSLATORS: Append degree symbols if possible.
-#: src/redshift.c:1004
-#, c-format
-msgid "Location: %f, %f\n"
+#. TRANSLATORS: Abbreviation for `north'
+#: ../src/redshift.c:1183
+msgid "N"
+msgstr ""
+
+#. TRANSLATORS: Abbreviation for `south'
+#: ../src/redshift.c:1185
+msgid "S"
+msgstr ""
+
+#. TRANSLATORS: Abbreviation for `east'
+#: ../src/redshift.c:1187
+msgid "E"
+msgstr ""
+
+#. TRANSLATORS: Abbreviation for `west'
+#: ../src/redshift.c:1189
+msgid "W"
+msgstr ""
+
+#. TRANSLATORS: Append degree symbols after %f if possible.
+#. The string following each number is an abreviation for
+#. north, source, east or west (N, S, E, W).
+#: ../src/redshift.c:1194
+#, fuzzy, c-format
+msgid "Location: %.2f %s, %.2f %s\n"
 msgstr "Poloha: %f, %f\n"
 
-#: src/redshift.c:1005
+#: ../src/redshift.c:1198
 #, c-format
 msgid "Temperatures: %dK at day, %dK at night\n"
 msgstr "Teploty: %dK ve dne, %dK v noci\n"
 
 #. TRANSLATORS: Append degree symbols if possible.
-#: src/redshift.c:1008
+#: ../src/redshift.c:1202
 #, c-format
 msgid "Solar elevations: day above %.1f, night below %.1f\n"
 msgstr ""
 
-#: src/redshift.c:1016
+#: ../src/redshift.c:1210
 #, c-format
 msgid "Latitude must be between %.1f and %.1f.\n"
 msgstr "Zeměpisná šířka musí být mezi %.1f a %.1f.\n"
 
-#: src/redshift.c:1025
+#: ../src/redshift.c:1219
 #, c-format
 msgid "Longitude must be between %.1f and %.1f.\n"
 msgstr "Zeměpisná délka musí být mezi %.1f a %.1f.\n"
 
-#: src/redshift.c:1033 src/redshift.c:1041 src/redshift.c:1059
+#: ../src/redshift.c:1230 ../src/redshift.c:1248
 #, c-format
 msgid "Temperature must be between %uK and %uK.\n"
 msgstr "Teplota musí být mezi %uK a %uK.\n"
 
-#: src/redshift.c:1049
+#: ../src/redshift.c:1238
 #, c-format
 msgid ""
 "High transition elevation cannot be lower than the low transition "
 "elevation.\n"
 msgstr ""
 
-#: src/redshift.c:1071
+#: ../src/redshift.c:1260
 #, c-format
 msgid "Brightness values must be between %.1f and %.1f.\n"
 msgstr "Hodnota jasu musí být mezi %.1f a %.1f.\n"
 
-#: src/redshift.c:1077
+#: ../src/redshift.c:1266
 #, c-format
 msgid "Brightness: %.2f:%.2f\n"
 msgstr "Jas: %.2f:%.2f\n"
 
-#: src/redshift.c:1085
+#: ../src/redshift.c:1278
 #, c-format
 msgid "Gamma value must be between %.1f and %.1f.\n"
 msgstr "Hodnota gamma musí být %.1f a %.1f.\n"
 
-#: src/redshift.c:1091
-#, c-format
-msgid "Gamma: %.3f, %.3f, %.3f\n"
+#. TRANSLATORS: The string in parenthesis is either
+#. Daytime or Night (translated).
+#: ../src/redshift.c:1286 ../src/redshift.c:1288
+#, fuzzy, c-format
+msgid "Gamma (%s): %.3f, %.3f, %.3f\n"
 msgstr "Gamma: %.3f, %.3f, %.3f\n"
 
-#: src/redshift.c:1114
+#: ../src/redshift.c:1311
 msgid "Trying next method...\n"
 msgstr "Zkouším další metodu...\n"
 
-#: src/redshift.c:1119
+#: ../src/redshift.c:1316
 #, c-format
 msgid "Using method `%s'.\n"
 msgstr "Používám metodu `%s'.\n"
 
-#: src/redshift.c:1126
+#: ../src/redshift.c:1323
 msgid "No more methods to try.\n"
 msgstr "Nejsou další metody k vyzkoušení.\n"
 
-#: src/redshift.c:1142 src/redshift.c:1285
+#: ../src/redshift.c:1339 ../src/redshift.c:1508
 msgid "Unable to read system time.\n"
 msgstr "Nebylo možné načíst systémový čas.\n"
 
 #. TRANSLATORS: Append degree symbol if possible.
-#: src/redshift.c:1151
+#: ../src/redshift.c:1348
 #, c-format
 msgid "Solar elevation: %f\n"
 msgstr "Solarní elevace: %f\n"
 
-#: src/redshift.c:1162 src/redshift.c:1181 src/redshift.c:1341
+#: ../src/redshift.c:1359 ../src/redshift.c:1378 ../src/redshift.c:1574
 #, c-format
 msgid "Color temperature: %uK\n"
 msgstr "Teplota barev: %uK\n"
 
-#: src/redshift.c:1163 src/redshift.c:1342
+#: ../src/redshift.c:1360 ../src/redshift.c:1579
 #, c-format
 msgid "Brightness: %.2f\n"
 msgstr "Jas: %.2f\n"
 
-#: src/redshift.c:1173 src/redshift.c:1186 src/redshift.c:1198
-#: src/redshift.c:1351
+#: ../src/redshift.c:1370 ../src/redshift.c:1386 ../src/redshift.c:1399
+#: ../src/redshift.c:1588
 msgid "Temperature adjustment failed.\n"
 msgstr "Přizpůsobení barev selhalo.\n"
 
-#: src/config-ini.c:167
+#: ../src/config-ini.c:167
 msgid "Malformed section header in config file.\n"
 msgstr "Neplatné záhlaví sekce v konfiguračním souboru.\n"
 
-#: src/config-ini.c:203
+#: ../src/config-ini.c:203
 msgid "Malformed assignment in config file.\n"
 msgstr "Neplatné přiřazení v konfiguračním souboru.\n"
 
-#: src/config-ini.c:214
+#: ../src/config-ini.c:214
 msgid "Assignment outside section in config file.\n"
 msgstr "Přiřazení mimo sekci v konfiguračním souboru.\n"
 
-#: src/gamma-drm.c:78
+#: ../src/gamma-drm.c:78
 #, c-format
 msgid "Failed to get DRM mode resources\n"
 msgstr ""
 
-#: src/gamma-drm.c:88 src/gamma-randr.c:303
+#: ../src/gamma-drm.c:88 ../src/gamma-randr.c:304
 #, c-format
 msgid "CRTC %d does not exist. "
 msgstr "CRTC %d neexistuje. "
 
-#: src/gamma-drm.c:91 src/gamma-randr.c:306
+#: ../src/gamma-drm.c:91 ../src/gamma-randr.c:307
 #, c-format
 msgid "Valid CRTCs are [0-%d].\n"
 msgstr "Platné CRTCs jsou [0-%d].\n"
 
-#: src/gamma-drm.c:94 src/gamma-randr.c:309
+#: ../src/gamma-drm.c:94 ../src/gamma-randr.c:310
 #, c-format
 msgid "Only CRTC 0 exists.\n"
 msgstr "Existuje pouze CRTC 0.\n"
 
-#: src/gamma-drm.c:132
+#: ../src/gamma-drm.c:132
 #, c-format
 msgid "CRTC %i lost, skipping\n"
 msgstr ""
 
-#: src/gamma-drm.c:138
+#: ../src/gamma-drm.c:138
 #, c-format
 msgid ""
 "Could not get gamma ramp size for CRTC %i\n"
 "on graphics card %i, ignoring device.\n"
 msgstr ""
 
-#: src/gamma-drm.c:151
+#: ../src/gamma-drm.c:151
 #, c-format
 msgid ""
 "DRM could not read gamma ramps on CRTC %i on\n"
 "graphics card %i, ignoring device.\n"
 msgstr ""
 
-#: src/gamma-drm.c:214
+#: ../src/gamma-drm.c:214
 #, fuzzy
 msgid "Adjust gamma ramps with Direct Rendering Manager.\n"
 msgstr "Seřídit hodnoty gamma pomocí Windows GDI.\n"
 
 #. TRANSLATORS: DRM help output
 #. left column must not be translated
-#: src/gamma-drm.c:219
+#: ../src/gamma-drm.c:219
 #, fuzzy
 msgid ""
 "  card=N\tGraphics card to apply adjustments to\n"
@@ -426,50 +504,52 @@ msgstr ""
 "  screen=N\tX obrazovka použitá pro úpravy\n"
 "  crtc=N\tCRTC použité pro úpravy\n"
 
-#: src/gamma-drm.c:232
+#: ../src/gamma-drm.c:232
 #, c-format
 msgid "CRTC must be a non-negative integer\n"
 msgstr ""
 
-#: src/gamma-drm.c:236 src/gamma-randr.c:289 src/gamma-vidmode.c:141
-#: src/location-geoclue.c:171 src/location-manual.c:96
+#: ../src/gamma-drm.c:236 ../src/gamma-randr.c:290 ../src/gamma-vidmode.c:142
+#: ../src/gamma-quartz.c:73 ../src/gamma-dummy.c:66
+#: ../src/location-geoclue.c:179 ../src/location-geoclue2.c:82
+#: ../src/location-corelocation.m:140 ../src/location-manual.c:96
 #, c-format
 msgid "Unknown method parameter: `%s'.\n"
 msgstr "Neznámý parametr metody: `%s'.\n"
 
-#: src/gamma-randr.c:69 src/gamma-randr.c:126 src/gamma-randr.c:165
-#: src/gamma-randr.c:191 src/gamma-randr.c:248 src/gamma-randr.c:340
+#: ../src/gamma-randr.c:70 ../src/gamma-randr.c:127 ../src/gamma-randr.c:166
+#: ../src/gamma-randr.c:192 ../src/gamma-randr.c:249 ../src/gamma-randr.c:341
 #, c-format
 msgid "`%s' returned error %d\n"
 msgstr "`%s' vrátila chybu %d\n"
 
-#: src/gamma-randr.c:77
+#: ../src/gamma-randr.c:78
 #, c-format
 msgid "Unsupported RANDR version (%u.%u)\n"
 msgstr "Nepodporovaná verze RANDR (%u.%u)\n"
 
-#: src/gamma-randr.c:111
+#: ../src/gamma-randr.c:112
 #, c-format
 msgid "Screen %i could not be found.\n"
 msgstr "Obrazovka %i nebyla nalezena.\n"
 
-#: src/gamma-randr.c:177 src/gamma-vidmode.c:84
+#: ../src/gamma-randr.c:178 ../src/gamma-vidmode.c:85 ../src/gamma-quartz.c:83
 #, c-format
 msgid "Gamma ramp size too small: %i\n"
 msgstr "Velikost gamma ramp je příliš malá: %i\n"
 
-#: src/gamma-randr.c:250
+#: ../src/gamma-randr.c:251
 #, c-format
 msgid "Unable to restore CRTC %i\n"
 msgstr "Nebylo možné obnovit CRTC %i\n"
 
-#: src/gamma-randr.c:271
+#: ../src/gamma-randr.c:272
 msgid "Adjust gamma ramps with the X RANDR extension.\n"
 msgstr "Seřídit hodnoty gamma pomocí rozšíření X RANDR.\n"
 
 #. TRANSLATORS: RANDR help output
 #. left column must not be translated
-#: src/gamma-randr.c:276
+#: ../src/gamma-randr.c:277
 msgid ""
 "  screen=N\tX screen to apply adjustments to\n"
 "  crtc=N\tCRTC to apply adjustments to\n"
@@ -477,85 +557,110 @@ msgstr ""
 "  screen=N\tX obrazovka použitá pro úpravy\n"
 "  crtc=N\tCRTC použité pro úpravy\n"
 
-#: src/gamma-vidmode.c:48 src/gamma-vidmode.c:69 src/gamma-vidmode.c:78
-#: src/gamma-vidmode.c:105 src/gamma-vidmode.c:160 src/gamma-vidmode.c:190
+#: ../src/gamma-vidmode.c:49 ../src/gamma-vidmode.c:70
+#: ../src/gamma-vidmode.c:79 ../src/gamma-vidmode.c:106
+#: ../src/gamma-vidmode.c:161 ../src/gamma-vidmode.c:191
 #, c-format
 msgid "X request failed: %s\n"
 msgstr "Požadavek na X selhal: %s\n"
 
-#: src/gamma-vidmode.c:126
+#: ../src/gamma-vidmode.c:127
 msgid "Adjust gamma ramps with the X VidMode extension.\n"
 msgstr "Seřídit hodnoty gamma pomocí rozšíření X VidMode.\n"
 
 #. TRANSLATORS: VidMode help output
 #. left column must not be translated
-#: src/gamma-vidmode.c:131
+#: ../src/gamma-vidmode.c:132
 msgid "  screen=N\tX screen to apply adjustments to\n"
 msgstr "  screen=N\tX obrazovka použitá pro úpravy\n"
 
-#: src/gamma-w32gdi.c:58 src/gamma-w32gdi.c:119 src/gamma-w32gdi.c:140
+#: ../src/gamma-quartz.c:66
+#, fuzzy
+msgid "Adjust gamma ramps on OSX using Quartz.\n"
+msgstr "Seřídit hodnoty gamma pomocí Windows GDI.\n"
+
+#: ../src/gamma-w32gdi.c:58 ../src/gamma-w32gdi.c:119
+#: ../src/gamma-w32gdi.c:140
 msgid "Unable to open device context.\n"
 msgstr "Není možné otevřít kontext zařízení.\n"
 
-#: src/gamma-w32gdi.c:65
+#: ../src/gamma-w32gdi.c:65
 msgid "Display device does not support gamma ramps.\n"
 msgstr "Zobrazovací zařízení nepodporuje gamma ramp.\n"
 
-#: src/gamma-w32gdi.c:81
+#: ../src/gamma-w32gdi.c:81
 msgid "Unable to save current gamma ramp.\n"
 msgstr "Není možné uložit současnou gamma ramp.\n"
 
-#: src/gamma-w32gdi.c:103
+#: ../src/gamma-w32gdi.c:103
 msgid "Adjust gamma ramps with the Windows GDI.\n"
 msgstr "Seřídit hodnoty gamma pomocí Windows GDI.\n"
 
-#: src/gamma-w32gdi.c:125
+#: ../src/gamma-w32gdi.c:125
 msgid "Unable to restore gamma ramps.\n"
 msgstr "Není možné obnovit gamma ramp.\n"
 
-#: src/gamma-w32gdi.c:165
+#: ../src/gamma-w32gdi.c:165
 msgid "Unable to set gamma ramps.\n"
 msgstr "Není možné nastavit gamma ramp.\n"
 
-#: src/location-geoclue.c:75
+#: ../src/gamma-dummy.c:42
+msgid ""
+"WARNING: Using dummy gamma method! Display will not be affected by this "
+"gamma method.\n"
+msgstr ""
+
+#: ../src/gamma-dummy.c:59
+msgid ""
+"Does not affect the display but prints the color temperature to the "
+"terminal.\n"
+msgstr ""
+
+#: ../src/gamma-dummy.c:73
+#, fuzzy, c-format
+msgid "Temperature: %i\n"
+msgstr "Teplota barev: %uK\n"
+
+#: ../src/location-geoclue.c:75
 #, c-format
 msgid "Unable to obtain master client: %s\n"
 msgstr "Nepodařilo se získat hlavního klienta: %s\n"
 
-#: src/location-geoclue.c:79
-#, fuzzy
+#: ../src/location-geoclue.c:79
+#, fuzzy, c-format
 msgid "Unable to obtain master client\n"
 msgstr "Nepodařilo se získat hlavního klienta: %s\n"
 
-#: src/location-geoclue.c:90
+#: ../src/location-geoclue.c:90
 #, c-format
 msgid "Can't set requirements for master: %s\n"
 msgstr ""
 
-#: src/location-geoclue.c:94
+#: ../src/location-geoclue.c:94
+#, c-format
 msgid "Can't set requirements for master\n"
 msgstr ""
 
-#: src/location-geoclue.c:110
+#: ../src/location-geoclue.c:110
 #, c-format
 msgid "Started Geoclue provider `%s'.\n"
 msgstr "Spuštěn Geoclue poskytovatel `%s'.\n"
 
-#: src/location-geoclue.c:113
+#: ../src/location-geoclue.c:113
 msgid "Could not find a usable Geoclue provider.\n"
 msgstr "Nemohu najít použitelného Geoclue poskytovatele.\n"
 
-#: src/location-geoclue.c:114
+#: ../src/location-geoclue.c:114
 msgid "Try setting name and path to specify which to use.\n"
 msgstr "Zkuste nastavit jméno a cestu k určení, kterého mám použít.\n"
 
-#: src/location-geoclue.c:132
+#: ../src/location-geoclue.c:132
 msgid "Use the location as discovered by a Geoclue provider.\n"
 msgstr "Použít umístění získáno od poskytovatele Geoclue.\n"
 
 #. TRANSLATORS: Geoclue help output
 #. left column must not be translated
-#: src/location-geoclue.c:137
+#: ../src/location-geoclue.c:137
 msgid ""
 "  name=N\tName of Geoclue provider (or `default')\n"
 "  path=N\tPath of Geoclue provider (or `default')\n"
@@ -563,39 +668,103 @@ msgstr ""
 "  name=N\tJméno Geoclue poskytovatele (nebo `default')\n"
 "  path=N\tCesta Geoclue poskytovatele (nebo `default')\n"
 
-#: src/location-geoclue.c:140
+#: ../src/location-geoclue.c:140 ../src/location-geoclue2.c:72
+#: ../src/location-corelocation.m:130
+#, fuzzy, c-format
 msgid ""
-"NOTE: currently redshift doesn't recheck geoclue once started,\n"
+"NOTE: currently Redshift doesn't recheck %s once started,\n"
 "which means it has to be restarted to take notice after travel.\n"
 msgstr ""
 "POZNÁMKA: v současnosti po spuštění redshift dále nepřekontolovává Geoclue,\n"
 "to znamená, že se musí redshift znovu spustit k aktualizaci pozice.\n"
 
-#: src/location-geoclue.c:190
+#: ../src/location-geoclue.c:198
 #, c-format
 msgid "Could not get location: %s.\n"
 msgstr "Nelze zjisti umístění: %s.\n"
 
-#: src/location-geoclue.c:197
+#: ../src/location-geoclue.c:205
 #, c-format
 msgid "According to the geoclue provider we're at: %.2f, %.2f\n"
 msgstr "Podle poskytovatele Geoclue jsme na: %.2f, %.2f\n"
 
-#: src/location-geoclue.c:201
+#: ../src/location-geoclue.c:209
 msgid "Provider does not have a valid location available."
 msgstr "Poskytovatel namá dostupnou platnou polohu."
 
-#: src/location-manual.c:50
+#: ../src/location-geoclue2.c:69
+#, fuzzy
+msgid "Use the location as discovered by a GeoClue2 provider.\n"
+msgstr "Použít umístění získáno od poskytovatele Geoclue.\n"
+
+#: ../src/location-geoclue2.c:114
+#, fuzzy, c-format
+msgid "Unable to obtain location: %s.\n"
+msgstr "Nepodařilo se získat hlavního klienta: %s\n"
+
+#: ../src/location-geoclue2.c:153
+#, fuzzy, c-format
+msgid "Unable to obtain GeoClue Manager: %s.\n"
+msgstr "Nepodařilo se získat hlavního klienta: %s\n"
+
+#: ../src/location-geoclue2.c:168
+#, fuzzy, c-format
+msgid "Unable to obtain GeoClue client path: %s.\n"
+msgstr "Nepodařilo se získat hlavního klienta: %s\n"
+
+#: ../src/location-geoclue2.c:189
+#, fuzzy, c-format
+msgid "Unable to obtain GeoClue Client: %s.\n"
+msgstr "Nepodařilo se získat hlavního klienta: %s\n"
+
+#: ../src/location-geoclue2.c:211
+#, fuzzy, c-format
+msgid "Unable to set distance threshold: %s.\n"
+msgstr "Nepodařilo se spustit metodu přizpůsobení %s.\n"
+
+#: ../src/location-geoclue2.c:234
+#, fuzzy, c-format
+msgid "Unable to start GeoClue client: %s.\n"
+msgstr "Nepodařilo se získat hlavního klienta: %s\n"
+
+#: ../src/location-geoclue2.c:252
+#, fuzzy, c-format
+msgid "Unable to connect to GeoClue.\n"
+msgstr "Není možné otevřít kontext zařízení.\n"
+
+#: ../src/location-corelocation.m:58
+msgid "Not authorized to obtain location from CoreLocation.\n"
+msgstr ""
+
+#: ../src/location-corelocation.m:86
+#, c-format
+msgid "Error obtaining location from CoreLocation: %s\n"
+msgstr ""
+
+#: ../src/location-corelocation.m:95
+msgid "Waiting for authorization to obtain location...\n"
+msgstr ""
+
+#: ../src/location-corelocation.m:98
+msgid "Request for location was not authorized!\n"
+msgstr ""
+
+#: ../src/location-corelocation.m:127
+#, fuzzy
+msgid "Use the location as discovered by the Corelocation provider.\n"
+msgstr "Použít umístění získáno od poskytovatele Geoclue.\n"
+
+#: ../src/location-manual.c:50
 msgid "Latitude and longitude must be set.\n"
 msgstr "Zeměpisná šířka a délka musí být nastavena.\n"
 
-#: src/location-manual.c:65
+#: ../src/location-manual.c:65
 msgid "Specify location manually.\n"
 msgstr "Určete ručně umístění.\n"
 
 #. TRANSLATORS: Manual location help output
 #. left column must not be translated
-#: src/location-manual.c:70
+#: ../src/location-manual.c:70
 msgid ""
 "  lat=N\t\tLatitude\n"
 "  lon=N\t\tLongitude\n"
@@ -603,7 +772,7 @@ msgstr ""
 "  lat=N\t\tšířka\n"
 "  lon=N\t\tdélka\n"
 
-#: src/location-manual.c:73
+#: ../src/location-manual.c:73
 msgid ""
 "Both values are expected to be floating point numbers,\n"
 "negative values representing west / south, respectively.\n"
@@ -611,65 +780,68 @@ msgstr ""
 "Obě hodnoty mají být desetinná čísla,\n"
 "záporné hodnoty reprezentují západ, resp. jih.\n"
 
-#: src/location-manual.c:87
+#: ../src/location-manual.c:87
 msgid "Malformed argument.\n"
 msgstr "Nevhodný argument.\n"
 
-#: src/redshift-gtk/statusicon.py:81 src/redshift-gtk/statusicon.py:255
+#: ../src/redshift-gtk/statusicon.py:260 ../src/redshift-gtk/statusicon.py:466
 msgid "Enabled"
 msgstr "Povoleno"
 
-#: src/redshift-gtk/statusicon.py:86
+#: ../src/redshift-gtk/statusicon.py:265
 msgid "Suspend for"
 msgstr "Uspat po"
 
-#: src/redshift-gtk/statusicon.py:88
+#: ../src/redshift-gtk/statusicon.py:267
 msgid "30 minutes"
 msgstr "30 minutách"
 
-#: src/redshift-gtk/statusicon.py:89
+#: ../src/redshift-gtk/statusicon.py:268
 msgid "1 hour"
 msgstr "1 hodině"
 
-#: src/redshift-gtk/statusicon.py:90
+#: ../src/redshift-gtk/statusicon.py:269
 msgid "2 hours"
 msgstr "2 hodinách"
 
-#: src/redshift-gtk/statusicon.py:98
+#: ../src/redshift-gtk/statusicon.py:277
 msgid "Autostart"
 msgstr "Automatické spuštění"
 
-#: src/redshift-gtk/statusicon.py:110 src/redshift-gtk/statusicon.py:121
+#: ../src/redshift-gtk/statusicon.py:289 ../src/redshift-gtk/statusicon.py:300
 msgid "Info"
 msgstr "Info"
 
-#: src/redshift-gtk/statusicon.py:115
+#: ../src/redshift-gtk/statusicon.py:294
 msgid "Quit"
 msgstr "Ukončit"
 
-#: src/redshift-gtk/statusicon.py:122
+#: ../src/redshift-gtk/statusicon.py:301
 msgid "Close"
 msgstr "Zavřít"
 
-#: src/redshift-gtk/statusicon.py:254
-msgid "Status"
-msgstr "Stav"
+#: ../src/redshift-gtk/statusicon.py:466
+msgid "<b>Status:</b> {}"
+msgstr ""
 
-#: src/redshift-gtk/statusicon.py:255
+#: ../src/redshift-gtk/statusicon.py:466
 msgid "Disabled"
 msgstr "Zakázáno"
 
-#: src/redshift-gtk/statusicon.py:259
+#: ../src/redshift-gtk/statusicon.py:470
 msgid "Color temperature"
 msgstr "Teplota barvy"
 
-#: src/redshift-gtk/statusicon.py:263
+#: ../src/redshift-gtk/statusicon.py:474
 msgid "Period"
 msgstr "Období"
 
-#: src/redshift-gtk/statusicon.py:267
+#: ../src/redshift-gtk/statusicon.py:478
 msgid "Location"
 msgstr "Umístění"
+
+#~ msgid "Status"
+#~ msgstr "Stav"
 
 #~ msgid "Toggle"
 #~ msgstr "Přepnout"

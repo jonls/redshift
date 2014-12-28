@@ -306,6 +306,7 @@ typedef enum {
 
 /* Names of periods of day */
 static const char *period_names[] = {
+	/* TRANSLATORS: Name printed when period of day is unknown */
 	N_("None"),
 	N_("Daytime"),
 	N_("Night"),
@@ -1178,12 +1179,25 @@ main(int argc, char *argv[])
 		provider->free(&location_state);
 	
 		if (verbose) {
-		        /* TRANSLATORS: Append degree symbols after %f if possible. */
+			/* TRANSLATORS: Abbreviation for `north' */
+			const char *north = _("N");
+			/* TRANSLATORS: Abbreviation for `south' */
+			const char *south = _("S");
+			/* TRANSLATORS: Abbreviation for `east' */
+			const char *east = _("E");
+			/* TRANSLATORS: Abbreviation for `west' */
+			const char *west = _("W");
+
+		        /* TRANSLATORS: Append degree symbols after %f if possible.
+			   The string following each number is an abreviation for
+			   north, source, east or west (N, S, E, W). */
 		        printf(_("Location: %.2f %s, %.2f %s\n"),
-			       fabs(lat), lat >= 0.f ? _("N") : _("S"),
-			       fabs(lon), lon >= 0.f ? _("E") : _("W"));
+			       fabs(lat), lat >= 0.f ? north : south,
+			       fabs(lon), lon >= 0.f ? east : west);
+
 			printf(_("Temperatures: %dK at day, %dK at night\n"),
 			       day.temperature, night.temperature);
+
 		        /* TRANSLATORS: Append degree symbols if possible. */
 			printf(_("Solar elevations: day above %.1f, night below %.1f\n"),
 			       transition_high, transition_low);
@@ -1267,10 +1281,12 @@ main(int argc, char *argv[])
 	}
 
 	if (verbose) {
+		/* TRANSLATORS: The string in parenthesis is either
+		   Daytime or Night (translated). */
 		printf(_("Gamma (%s): %.3f, %.3f, %.3f\n"),
-		       "Day", day.gamma[0], day.gamma[1], day.gamma[2]);
+		       _("Daytime"), day.gamma[0], day.gamma[1], day.gamma[2]);
 		printf(_("Gamma (%s): %.3f, %.3f, %.3f\n"),
-		       "Night", night.gamma[0], night.gamma[1], night.gamma[2]);
+		       _("Night"), night.gamma[0], night.gamma[1], night.gamma[2]);
 	}
 
 	/* Initialize gamma adjustment method. If method is NULL
