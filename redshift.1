@@ -48,11 +48,11 @@ west, respectively.
 .TP
 \fB\-l\fR PROVIDER[:OPTIONS]
 Select provider for automatic location updates
-(Type `list' to see available providers)
+(Use `-l list' to see available providers)
 .TP
-\fB\-m\fR METHOD
+\fB\-m\fR METHOD[:OPTIONS]
 Method to use to set color temperature
-(Type `list' to see available methods)
+(Use `-m list' to see available methods)
 .TP
 \fB\-o\fR
 One shot mode (do not continuously adjust color temperature)
@@ -103,8 +103,20 @@ Screen brightness at daytime
 \fBbrightness\-night\fR = 0.1\-1.0
 Screen brightness at night
 .TP
+\fBelevation-high\fR = decimal
+The solar elevation for the transition to daytime
+.TP
+\fBelevation-low\fR = decimal
+The solar elevation for the transition to night
+.TP
 \fBgamma\fR = R:G:B
-Gamma adjustment to apply
+Gamma adjustment to apply (day and night)
+.TP
+\fBgamma-day\fR = R:G:B
+Gamma adjustment to apply at daytime
+.TP
+\fBgamma-night\fR = R:G:B
+Gamma adjustment to apply at night
 .TP
 \fBadjustment\-method\fR = name
 Select adjustment method. Options for the adjustment method can be
@@ -145,7 +157,7 @@ Both
 and this manual page are released under the GNU General Public
 License, version 3.
 .SH BUGS
-Please report bugs to <https://bugs.launchpad.net/redshift>
+Please report bugs to <https://github.com/jonls/redshift/issues>
 .SH KNOWN ISSUES
 Redshift won't affect the color of your cursor when your graphics driver
 is configured to use hardware cursors. Some graphics drivers have an
