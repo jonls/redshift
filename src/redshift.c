@@ -797,7 +797,9 @@ main(int argc, char *argv[])
 				exit(EXIT_FAILURE);
 			}
 
-			/* Set night gamma to the same value as day gamma. */
+			/* Set night gamma to the same value as day gamma.
+			   To set these to distinct values use the config
+			   file. */
 			memcpy(night.gamma, day.gamma, sizeof(night.gamma));
 			break;
 		case 'h':
@@ -990,6 +992,28 @@ main(int argc, char *argv[])
 					}
 					memcpy(night.gamma, day.gamma,
 					       sizeof(night.gamma));
+				}
+			} else if (strcasecmp(setting->name, "gamma-day") == 0) {
+				if (isnan(day.gamma[0])) {
+					r = parse_gamma_string(setting->value,
+							       day.gamma);
+					if (r < 0) {
+						fputs(_("Malformed gamma"
+							" setting.\n"),
+						      stderr);
+						exit(EXIT_FAILURE);
+					}
+				}
+			} else if (strcasecmp(setting->name, "gamma-night") == 0) {
+				if (isnan(night.gamma[0])) {
+					r = parse_gamma_string(setting->value,
+							       night.gamma);
+					if (r < 0) {
+						fputs(_("Malformed gamma"
+							" setting.\n"),
+						      stderr);
+						exit(EXIT_FAILURE);
+					}
 				}
 			} else if (strcasecmp(setting->name,
 					      "adjustment-method") == 0) {
