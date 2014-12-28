@@ -69,9 +69,9 @@ location_geoclue2_print_help(FILE *f)
 	fputs(_("Use the location as discovered by a GeoClue2 provider.\n"), f);
 	fputs("\n", f);
 
-	fputs(_("NOTE: currently redshift doesn't recheck GeoClue2 once started,\n"
-		"which means it has to be restarted to take notice after travel.\n"),
-	      f);
+	fprintf(f, _("NOTE: currently Redshift doesn't recheck %s once started,\n"
+		     "which means it has to be restarted to take notice after travel.\n"),
+		"GeoClue2");
 	fputs("\n", f);
 }
 

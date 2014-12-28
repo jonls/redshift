@@ -137,9 +137,9 @@ location_geoclue_print_help(FILE *f)
 	fputs(_("  name=N\tName of Geoclue provider (or `default')\n"
 		"  path=N\tPath of Geoclue provider (or `default')\n"), f);
 	fputs("\n", f);
-	fputs(_("NOTE: currently redshift doesn't recheck geoclue once started,\n"
-		"which means it has to be restarted to take notice after travel.\n"),
-	      f);
+	fprintf(f, _("NOTE: currently Redshift doesn't recheck %s once started,\n"
+		     "which means it has to be restarted to take notice after travel.\n"),
+		"GeoClue");
 	fputs("\n", f);
 }
 
