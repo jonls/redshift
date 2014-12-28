@@ -78,6 +78,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{python3_sitelib}/redshift_gtk/
 %{_datadir}/icons/hicolor/scalable/apps/redshift*.svg
 %{_datadir}/applications/redshift-gtk.desktop
+%{_datadir}/appdata/redshift-gtk.appdata.xml
 
 %changelog
 * Sun Apr 6 2014 Jon Lund Steffensen <jonlst@gmail.com> - 1.9-1
