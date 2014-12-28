@@ -18,17 +18,22 @@
 */
 
 #include <stdio.h>
+#include <unistd.h>
 
 #ifndef _WIN32
-# ifdef _POSIX_TIMERS
+# if _POSIX_TIMERS > 0
 #  include <time.h>
 # else
 #  include <sys/time.h>
 # endif
+#else
+# include <windows.h>
 #endif
 
 #include "systemtime.h"
 
+
+/* Return current time in T as the number of seconds since the epoch. */
 int
 systemtime_get_time(double *t)
 {
@@ -41,7 +46,7 @@ systemtime_get_time(double *t)
 
 	/* FILETIME is tenths of microseconds since 1601-01-01 UTC */
 	*t = (i.QuadPart / 10000000.0) - 11644473600.0;
-#elif defined(_POSIX_TIMERS) /* POSIX timers */
+#elif _POSIX_TIMERS > 0 /* POSIX timers */
 	struct timespec now;
 	int r = clock_gettime(CLOCK_REALTIME, &now);
 	if (r < 0) {

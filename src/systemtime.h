@@ -14,17 +14,11 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2010-2014  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #ifndef REDSHIFT_SYSTEMTIME_H
 #define REDSHIFT_SYSTEMTIME_H
-
-#ifndef _WIN32
-# include <time.h>
-#else
-# include <windows.h>
-#endif
 
 
 int systemtime_get_time(double *now);
