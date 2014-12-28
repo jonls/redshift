@@ -281,6 +281,10 @@ static const location_provider_t location_providers[] = {
 #define TRANSITION_LOW     SOLAR_CIVIL_TWILIGHT_ELEV
 #define TRANSITION_HIGH    3.0
 
+/* Duration of sleep between screen updates (milliseconds). */
+#define SLEEP_DURATION        5000
+#define SLEEP_DURATION_SHORT  100
+
 /* Program modes. */
 typedef enum {
 	PROGRAM_MODE_CONTINUAL,
@@ -289,7 +293,6 @@ typedef enum {
 	PROGRAM_MODE_RESET,
 	PROGRAM_MODE_MANUAL
 } program_mode_t;
-
 
 #if defined(HAVE_SIGNAL_H) && !defined(__WIN32__)
 
@@ -1485,11 +1488,11 @@ main(int argc, char *argv[])
 
 			/* Sleep for 5 seconds or 0.1 second. */
 #ifndef _WIN32
-			if (short_trans_delta) usleep(100000);
-			else usleep(5000000);
+			if (short_trans_delta) usleep(SLEEP_DURATION_SHORT*1000);
+			else usleep(SLEEP_DURATION*1000);
 #else /* ! _WIN32 */
-			if (short_trans_delta) Sleep(100);
-			else Sleep(5000);
+			if (short_trans_delta) Sleep(SLEEP_DURATION_SHORT);
+			else Sleep(SLEEP_DURATION);
 #endif /* ! _WIN32 */
 		}
 
