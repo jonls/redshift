@@ -56,7 +56,7 @@
 	if (authStatus != kCLAuthorizationStatusNotDetermined &&
 	    authStatus != kCLAuthorizationStatusAuthorized) {
 		fputs(_("Not authorized to obtain location"
-			"from CoreLocation.\n"), stderr);
+			" from CoreLocation.\n"), stderr);
 		CFRunLoopStop(CFRunLoopGetCurrent());
 	}
 
