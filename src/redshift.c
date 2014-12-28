@@ -338,15 +338,15 @@ print_period(double elevation)
 }
 
 /* Interpolate value based on the specified solar elevation. */
-static float
-calculate_interpolated_value(double elevation, float day, float night)
+static double
+calculate_interpolated_value(double elevation, double day, double night)
 {
-	float result;
+	double result;
 	if (elevation < transition_low) {
 		result = night;
 	} else if (elevation < transition_high) {
 		/* Transition period: interpolate */
-		float a = (transition_low - elevation) /
+		double a = (transition_low - elevation) /
 			(transition_low - transition_high);
 		result = (1.0-a)*night + a*day;
 	} else {
