@@ -1280,10 +1280,12 @@ main(int argc, char *argv[])
 	}
 
 	if (verbose) {
+		/* TRANSLATORS: The string in parenthesis is either
+		   Daytime or Night (translated). */
 		printf(_("Gamma (%s): %.3f, %.3f, %.3f\n"),
-		       "Day", day.gamma[0], day.gamma[1], day.gamma[2]);
+		       _("Daytime"), day.gamma[0], day.gamma[1], day.gamma[2]);
 		printf(_("Gamma (%s): %.3f, %.3f, %.3f\n"),
-		       "Night", night.gamma[0], night.gamma[1], night.gamma[2]);
+		       _("Night"), night.gamma[0], night.gamma[1], night.gamma[2]);
 	}
 
 	/* Initialize gamma adjustment method. If method is NULL
