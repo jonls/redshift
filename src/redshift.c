@@ -297,14 +297,6 @@ typedef enum {
 	PROGRAM_MODE_MANUAL
 } program_mode_t;
 
-/* Periods of day. */
-typedef enum {
-	PERIOD_NONE = 0,
-	PERIOD_DAYTIME,
-	PERIOD_NIGHT,
-	PERIOD_TRANSITION
-} period_t;
-
 /* Names of periods of day */
 static const char *period_names[] = {
 	N_("None"),
