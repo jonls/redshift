@@ -294,6 +294,20 @@ typedef enum {
 	PROGRAM_MODE_MANUAL
 } program_mode_t;
 
+/* Periods of day. */
+typedef enum {
+	PERIOD_DAYTIME = 0,
+	PERIOD_NIGHT,
+	PERIOD_TRANSITION
+} period_t;
+
+/* Names of periods of day */
+static const char *period_names[] = {
+	"Daytime",
+	"Night",
+	"Transition"
+};
+
 #if defined(HAVE_SIGNAL_H) && !defined(__WIN32__)
 
 static volatile sig_atomic_t exiting = 0;
@@ -325,18 +339,46 @@ static float transition_low = TRANSITION_LOW;
 static float transition_high = TRANSITION_HIGH;
 
 
-/* Print which period (night, day or transition) we're currently in. */
-static void
-print_period(double elevation)
+/* Determine which period we are currently in. */
+static period_t
+get_period(double elevation)
 {
 	if (elevation < transition_low) {
-		printf(_("Period: Night\n"));
+		return PERIOD_NIGHT;
 	} else if (elevation < transition_high) {
-		float a = (transition_low - elevation) /
-			(transition_low - transition_high);
-		printf(_("Period: Transition (%.2f%% day)\n"), a*100);
+		return PERIOD_TRANSITION;
 	} else {
-		printf(_("Period: Daytime\n"));
+		return PERIOD_DAYTIME;
+	}
+}
+
+/* Determine how far through the transition we are. */
+static double
+get_transition_progress(double elevation)
+{
+	if (elevation < transition_low) {
+		return 0.0;
+	} else if (elevation < transition_high) {
+		return (transition_low - elevation) /
+			(transition_low - transition_high);
+	} else {
+		return 1.0;
+	}
+}
+
+/* Print verbose description of the given period. */
+static void
+print_period(period_t period, double transition)
+{
+	switch (period) {
+	case PERIOD_NIGHT:
+	case PERIOD_DAYTIME:
+		printf(_("Period: %s\n"), period_names[period]);
+		break;
+	case PERIOD_TRANSITION:
+		printf(_("Period: %s (%.2f%% day)\n"),
+		       period_names[period], transition*100);
+		break;
 	}
 }
 
@@ -1289,7 +1331,9 @@ main(int argc, char *argv[])
 		interpolate_color_settings(elevation, &day, &night, &interp);
 
 		if (verbose || mode == PROGRAM_MODE_PRINT) {
-			print_period(elevation);
+			period_t period = get_period(elevation);
+			double transition = get_transition_progress(elevation);
+			print_period(period, transition);
 			printf(_("Color temperature: %uK\n"), interp.temperature);
 			printf(_("Brightness: %.2f\n"), interp.brightness);
 		}
@@ -1373,6 +1417,7 @@ main(int argc, char *argv[])
 		/* Save previous colors so we can avoid
 		   printing status updates if the values
 		   did not change. */
+		period_t prev_period = -1;
 		color_setting_t prev_interp =
 			{ -1, { NAN, NAN, NAN }, NAN };
 
@@ -1446,7 +1491,17 @@ main(int argc, char *argv[])
 			color_setting_t interp;
 			interpolate_color_settings(elevation, &day, &night, &interp);
 
-			if (verbose) print_period(elevation);
+			/* Print period if it changed during this update,
+			   or if we are in transition. In transition we
+			   print the progress, so we always print it in
+			   that case. */
+			period_t period = get_period(elevation);
+			if (verbose && (period != prev_period ||
+					period == PERIOD_TRANSITION)) {
+				double transition =
+					get_transition_progress(elevation);
+				print_period(period, transition);
+			}
 
 			/* Ongoing short transition */
 			if (short_trans_delta) {
@@ -1501,6 +1556,7 @@ main(int argc, char *argv[])
 			}
 
 			/* Save temperature as previous */
+			prev_period = period;
 			memcpy(&prev_interp, &interp,
 			       sizeof(color_setting_t));
 
