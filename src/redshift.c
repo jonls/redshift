@@ -1370,6 +1370,12 @@ main(int argc, char *argv[])
 			printf("Status: %s\n", "Enabled");
 		}
 
+		/* Save previous colors so we can avoid
+		   printing status updates if the values
+		   did not change. */
+		color_setting_t prev_interp =
+			{ -1, { NAN, NAN, NAN }, NAN };
+
 		/* Continuously adjust color temperature */
 		int done = 0;
 		int disabled = 0;
@@ -1471,8 +1477,16 @@ main(int argc, char *argv[])
 			if (done && !short_trans_delta) break;
 
 			if (verbose) {
-				printf(_("Color temperature: %uK\n"), interp.temperature);
-				printf(_("Brightness: %.2f\n"), interp.brightness);
+				if (interp.temperature !=
+				    prev_interp.temperature) {
+					printf(_("Color temperature: %uK\n"),
+					       interp.temperature);
+				}
+				if (interp.brightness !=
+				    prev_interp.brightness) {
+					printf(_("Brightness: %.2f\n"),
+					       interp.brightness);
+				}
 			}
 
 			/* Adjust temperature */
@@ -1485,6 +1499,10 @@ main(int argc, char *argv[])
 					exit(EXIT_FAILURE);
 				}
 			}
+
+			/* Save temperature as previous */
+			memcpy(&prev_interp, &interp,
+			       sizeof(color_setting_t));
 
 			/* Sleep for 5 seconds or 0.1 second. */
 #ifndef _WIN32
