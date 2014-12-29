@@ -21,3 +21,8 @@ Building from source
 --------------------
 
 See the file HACKING for more details on building from source.
+
+Donations
+---------
+
+[![Flattr](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/thing/57936/Redshift)
