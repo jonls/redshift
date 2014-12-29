@@ -327,6 +327,14 @@ randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num,
 	uint16_t *gamma_g = &gamma_ramps[1*ramp_size];
 	uint16_t *gamma_b = &gamma_ramps[2*ramp_size];
 
+	/* Initialize gamma ramps to pure state */
+	for (int i = 0; i < ramp_size; i++) {
+		uint16_t value = (double)i/ramp_size * (UINT16_MAX+1);
+		gamma_r[i] = value;
+		gamma_g[i] = value;
+		gamma_b[i] = value;
+	}
+
 	colorramp_fill(gamma_r, gamma_g, gamma_b, ramp_size,
 		       setting);
 
