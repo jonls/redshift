@@ -96,6 +96,14 @@ quartz_set_temperature_for_display(CGDirectDisplayID display,
 	float *gamma_g = &gamma_ramps[1*ramp_size];
 	float *gamma_b = &gamma_ramps[2*ramp_size];
 
+	/* Initialize gamma ramps to pure state */
+	for (int i = 0; i < ramp_size; i++) {
+		float value = (double)i/ramp_size;
+		gamma_r[i] = value;
+		gamma_g[i] = value;
+		gamma_b[i] = value;
+	}
+
 	colorramp_fill_float(gamma_r, gamma_g, gamma_b, ramp_size,
 			     setting);
 

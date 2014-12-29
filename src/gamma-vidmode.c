@@ -180,6 +180,14 @@ vidmode_set_temperature(vidmode_state_t *state,
 	uint16_t *gamma_g = &gamma_ramps[1*state->ramp_size];
 	uint16_t *gamma_b = &gamma_ramps[2*state->ramp_size];
 
+	/* Initialize gamma ramps to pure state */
+	for (int i = 0; i < state->ramp_size; i++) {
+		uint16_t value = (double)i/state->ramp_size * (UINT16_MAX+1);
+		gamma_r[i] = value;
+		gamma_g[i] = value;
+		gamma_b[i] = value;
+	}
+
 	colorramp_fill(gamma_r, gamma_g, gamma_b, state->ramp_size,
 		       setting);
 

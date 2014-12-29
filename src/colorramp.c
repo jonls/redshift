@@ -297,9 +297,12 @@ colorramp_fill(uint16_t *gamma_r, uint16_t *gamma_g, uint16_t *gamma_b,
 			  &blackbody_color[temp_index+3], white_point);
 
 	for (int i = 0; i < size; i++) {
-		gamma_r[i] = F((float)i/size, 0) * (UINT16_MAX+1);
-		gamma_g[i] = F((float)i/size, 1) * (UINT16_MAX+1);
-		gamma_b[i] = F((float)i/size, 2) * (UINT16_MAX+1);
+		gamma_r[i] = F((double)gamma_r[i]/(UINT16_MAX+1), 0) *
+			(UINT16_MAX+1);
+		gamma_g[i] = F((double)gamma_g[i]/(UINT16_MAX+1), 1) *
+			(UINT16_MAX+1);
+		gamma_b[i] = F((double)gamma_b[i]/(UINT16_MAX+1), 2) *
+			(UINT16_MAX+1);
 	}
 }
 
@@ -315,9 +318,9 @@ colorramp_fill_float(float *gamma_r, float *gamma_g, float *gamma_b,
 			  &blackbody_color[temp_index+3], white_point);
 
 	for (int i = 0; i < size; i++) {
-		gamma_r[i] = F((float)i/size, 0);
-		gamma_g[i] = F((float)i/size, 1);
-		gamma_b[i] = F((float)i/size, 2);
+		gamma_r[i] = F((double)gamma_r[i], 0);
+		gamma_g[i] = F((double)gamma_g[i], 1);
+		gamma_b[i] = F((double)gamma_b[i], 2);
 	}
 }
 

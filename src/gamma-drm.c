@@ -268,6 +268,16 @@ drm_set_temperature(drm_state_t *state, const color_setting_t *setting)
 			}
 			last_gamma_size = crtcs->gamma_size;
 		}
+
+		/* Initialize gamma ramps to pure state */
+		int ramp_size = crtcs->gamma_size;
+		for (int i = 0; i < ramp_size; i++) {
+			uint16_t value = (double)i/ramp_size * (UINT16_MAX+1);
+			r_gamma[i] = value;
+			g_gamma[i] = value;
+			b_gamma[i] = value;
+		}
+
 		colorramp_fill(r_gamma, g_gamma, b_gamma, crtcs->gamma_size,
 			       setting);
 		drmModeCrtcSetGamma(state->fd, crtcs->crtc_id, crtcs->gamma_size,

@@ -153,6 +153,14 @@ w32gdi_set_temperature(w32gdi_state_t *state,
 	WORD *gamma_g = &gamma_ramps[1*GAMMA_RAMP_SIZE];
 	WORD *gamma_b = &gamma_ramps[2*GAMMA_RAMP_SIZE];
 
+	/* Initialize gamma ramps to pure state */
+	for (int i = 0; i < GAMMA_RAMP_SIZE; i++) {
+		WORD value = (double)i/GAMMA_RAMP_SIZE * (UINT16_MAX+1);
+		gamma_r[i] = value;
+		gamma_g[i] = value;
+		gamma_b[i] = value;
+	}
+
 	colorramp_fill(gamma_r, gamma_g, gamma_b, GAMMA_RAMP_SIZE,
 		       setting);
 
