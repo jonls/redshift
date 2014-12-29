@@ -24,6 +24,15 @@
 #include <stdlib.h>
 
 
+/* Periods of day. */
+typedef enum {
+	PERIOD_NONE = 0,
+	PERIOD_DAYTIME,
+	PERIOD_NIGHT,
+	PERIOD_TRANSITION
+} period_t;
+
+
 /* Color setting */
 typedef struct {
 	int temperature;
