@@ -39,6 +39,7 @@ typedef struct {
 	xcb_connection_t *conn;
 	xcb_screen_t *screen;
 	int preferred_screen;
+	int preserve;
 	int screen_num;
 	int crtc_num;
 	unsigned int crtc_count;
