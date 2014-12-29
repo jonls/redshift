@@ -20,11 +20,23 @@
 #ifndef REDSHIFT_GAMMA_QUARTZ_H
 #define REDSHIFT_GAMMA_QUARTZ_H
 
+#include <stdint.h>
+
+#include <ApplicationServices/ApplicationServices.h>
+
 #include "redshift.h"
 
 
 typedef struct {
-	int dummy;
+	CGDirectDisplayID display;
+	uint32_t ramp_size;
+	float *saved_ramps;
+} quartz_display_state_t;
+
+typedef struct {
+	quartz_display_state_t *displays;
+	uint32_t display_count;
+	int preserve;
 } quartz_state_t;
 
 
