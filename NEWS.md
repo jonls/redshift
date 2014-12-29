@@ -1,6 +1,32 @@
 News
 ====
 
+v1.10 (TBD)
+-----------
+* Fix #80: Add Geoclue2 location provider.
+* Add CoreLocation (OSX) location provider and Quartz (OSX) gamma
+  adjustment method.
+* Add hooks for user actions on period switch.
+* Be less verbose when color values/period did not change.
+* Add config setting to set gamma separately for day/night.
+* Add support for custom transition start and end elevation (Mattias
+  Andrée).
+* redshift-gtk: Show errors from child process in a dialog.
+* Fix #95: Add AppData file for package managers.
+* Use gettimeofday if POSIX timers not available (add support for
+  OSX).
+* Fix #41: Do not jump to 0 % or 100 % when changing direction of
+  transition (Mattias Andrée).
+* redshift-gtk: Relay USR1 signal to redshift process.
+* redshift-gtk: Notify desktop about startup completion.
+* Fix: systemd unit files were built from the wrong source.
+* Fix #90: Print N/S and E/W in the location (Mattias Andrée).
+* Fix #112: redshift-gtk: Do not buffer lines from child indefinitely.
+* Fix #105: Limit decimals in displayed location to two.
+* Update dependencies listed in HACKING.md (emilf, Kees Hink).
+* Fix: Make desktop file translatable.
+* Add Travis CI build script.
+
 v1.9.1 (2014-04-20)
 -------------------
 * Fix: Do not distribute redshift-gtk, only redshift-gtk.in.
