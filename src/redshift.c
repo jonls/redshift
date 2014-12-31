@@ -1364,6 +1364,14 @@ main(int argc, char *argv[])
 			method->free(&state);
 			exit(EXIT_FAILURE);
 		}
+
+		/* In Quartz (OSX) the gamma adjustments will automatically
+		   revert when the process exits. Therefore, we have to loop
+		   until CTRL-C is received. */
+		if (strcmp(method->name, "quartz") == 0) {
+			fputs(_("Press ctrl-c to stop...\n"), stderr);
+			pause();
+		}
 	}
 	break;
 	case PROGRAM_MODE_MANUAL:
@@ -1381,6 +1389,13 @@ main(int argc, char *argv[])
 			exit(EXIT_FAILURE);
 		}
 
+		/* In Quartz (OSX) the gamma adjustments will automatically
+		   revert when the process exits. Therefore, we have to loop
+		   until CTRL-C is received. */
+		if (strcmp(method->name, "quartz") == 0) {
+			fputs(_("Press ctrl-c to stop...\n"), stderr);
+			pause();
+		}
 	}
 	break;
 	case PROGRAM_MODE_RESET:
@@ -1392,6 +1407,14 @@ main(int argc, char *argv[])
 			fputs(_("Temperature adjustment failed.\n"), stderr);
 			method->free(&state);
 			exit(EXIT_FAILURE);
+		}
+
+		/* In Quartz (OSX) the gamma adjustments will automatically
+		   revert when the process exits. Therefore, we have to loop
+		   until CTRL-C is received. */
+		if (strcmp(method->name, "quartz") == 0) {
+			fputs(_("Press ctrl-c to stop...\n"), stderr);
+			pause();
 		}
 	}
 	break;
