@@ -731,6 +731,19 @@ parse_brightness_string(const char *str, float *bright_day, float *bright_night)
 	}
 }
 
+/* Check whether gamma is within allowed levels. */
+static int
+gamma_is_valid(const float gamma[3])
+{
+	return !(gamma[0] < MIN_GAMMA ||
+		 gamma[0] > MAX_GAMMA ||
+		 gamma[1] < MIN_GAMMA ||
+		 gamma[1] > MAX_GAMMA ||
+		 gamma[2] < MIN_GAMMA ||
+		 gamma[2] > MAX_GAMMA);
+
+}
+
 static const gamma_method_t *
 find_gamma_method(const char *name)
 {
@@ -1511,18 +1524,8 @@ main(int argc, char *argv[])
 	}
 
 	/* Gamma */
-	if (scheme.day.gamma[0] < MIN_GAMMA ||
-	    scheme.day.gamma[0] > MAX_GAMMA ||
-	    scheme.day.gamma[1] < MIN_GAMMA ||
-	    scheme.day.gamma[1] > MAX_GAMMA ||
-	    scheme.day.gamma[2] < MIN_GAMMA ||
-	    scheme.day.gamma[2] > MAX_GAMMA ||
-	    scheme.night.gamma[0] < MIN_GAMMA ||
-	    scheme.night.gamma[0] > MAX_GAMMA ||
-	    scheme.night.gamma[1] < MIN_GAMMA ||
-	    scheme.night.gamma[1] > MAX_GAMMA ||
-	    scheme.night.gamma[2] < MIN_GAMMA ||
-	    scheme.night.gamma[2] > MAX_GAMMA) {
+	if (!gamma_is_valid(scheme.day.gamma) ||
+	    !gamma_is_valid(scheme.night.gamma)) {
 		fprintf(stderr,
 			_("Gamma value must be between %.1f and %.1f.\n"),
 			MIN_GAMMA, MAX_GAMMA);
