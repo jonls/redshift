@@ -302,12 +302,15 @@ typedef enum {
 	PROGRAM_MODE_MANUAL
 } program_mode_t;
 
-/* Transition levels.
-   The solar elevations at which the transition begins/ends. */
+/* Transition scheme.
+   The solar elevations at which the transition begins/ends,
+   and the association color settings. */
 typedef struct {
 	double high;
 	double low;
-} transition_levels_t;
+	color_setting_t day;
+	color_setting_t night;
+} transition_scheme_t;
 
 /* Names of periods of day */
 static const char *period_names[] = {
@@ -347,7 +350,7 @@ static int disable = 0;
 
 /* Determine which period we are currently in. */
 static period_t
-get_period(const transition_levels_t *transition,
+get_period(const transition_scheme_t *transition,
 	   double elevation)
 {
 	if (elevation < transition->low) {
@@ -361,7 +364,7 @@ get_period(const transition_levels_t *transition,
 
 /* Determine how far through the transition we are. */
 static double
-get_transition_progress(const transition_levels_t *transition,
+get_transition_progress(const transition_scheme_t *transition,
 			double elevation)
 {
 	if (elevation < transition->low) {
@@ -392,50 +395,25 @@ print_period(period_t period, double transition)
 	}
 }
 
-/* Interpolate value based on the specified solar elevation. */
-static double
-calculate_interpolated_value(const transition_levels_t *transition,
-			     double elevation, double day, double night)
-{
-	double result;
-	if (elevation < transition->low) {
-		result = night;
-	} else if (elevation < transition->high) {
-		/* Transition period: interpolate */
-		double a = (transition->low - elevation) /
-			(transition->low - transition->high);
-		result = (1.0-a)*night + a*day;
-	} else {
-		result = day;
-	}
-
-	return result;
-}
-
 /* Interpolate color setting structs based on solar elevation */
 static void
-interpolate_color_settings(const transition_levels_t *transition,
+interpolate_color_settings(const transition_scheme_t *transition,
 			   double elevation,
-			   const color_setting_t *day,
-			   const color_setting_t *night,
 			   color_setting_t *result)
 {
-	result->temperature =
-		(int)calculate_interpolated_value(transition,
-						  elevation,
-						  day->temperature,
-						  night->temperature);
-	result->brightness =
-		calculate_interpolated_value(transition,
-					     elevation,
-					     day->brightness,
-					     night->brightness);
+	const color_setting_t *day = &transition->day;
+	const color_setting_t *night = &transition->night;
+
+	double alpha = (transition->low - elevation) /
+		(transition->low - transition->high);
+
+	result->temperature = (1.0-alpha)*night->temperature +
+		alpha*day->temperature;
+	result->brightness = (1.0-alpha)*night->brightness +
+		alpha*day->brightness;
 	for (int i = 0; i < 3; i++) {
-		result->gamma[i] =
-			calculate_interpolated_value(transition,
-						     elevation,
-						     day->gamma[i],
-						     night->gamma[i]);
+		result->gamma[i] = (1.0-alpha)*night->gamma[i] +
+			alpha*day->gamma[i];
 	}
 }
 
@@ -790,9 +768,7 @@ find_location_provider(const char *name)
    color temperature. */
 static int
 run_continual_mode(const location_t *loc,
-		   const color_setting_t *day,
-		   const color_setting_t *night,
-		   const transition_levels_t *trans_levels,
+		   const transition_scheme_t *scheme,
 		   const gamma_method_t *method,
 		   gamma_state_t *state,
 		   int transition, int verbose)
@@ -933,18 +909,17 @@ run_continual_mode(const location_t *loc,
 
 		/* Use elevation of sun to set color temperature */
 		color_setting_t interp;
-		interpolate_color_settings(trans_levels, elevation,
-					   day, night, &interp);
+		interpolate_color_settings(scheme, elevation, &interp);
 
 		/* Print period if it changed during this update,
 		   or if we are in transition. In transition we
 		   print the progress, so we always print it in
 		   that case. */
-		period_t period = get_period(trans_levels, elevation);
+		period_t period = get_period(scheme, elevation);
 		if (verbose && (period != prev_period ||
 				period == PERIOD_TRANSITION)) {
 			double transition =
-				get_transition_progress(trans_levels,
+				get_transition_progress(scheme,
 							elevation);
 			print_period(period, transition);
 		}
@@ -1042,18 +1017,18 @@ main(int argc, char *argv[])
 	/* Initialize settings to NULL values. */
 	char *config_filepath = NULL;
 
-	/* Settings for day and night.
+	/* Settings for day, night and transition.
 	   Initialized to indicate that the values are not set yet. */
-	color_setting_t day;
-	color_setting_t night;
+	transition_scheme_t scheme =
+		{ TRANSITION_HIGH, TRANSITION_LOW };
 
-	day.temperature = -1;
-	day.gamma[0] = NAN;
-	day.brightness = NAN;
+	scheme.day.temperature = -1;
+	scheme.day.gamma[0] = NAN;
+	scheme.day.brightness = NAN;
 
-	night.temperature = -1;
-	night.gamma[0] = NAN;
-	night.brightness = NAN;
+	scheme.night.temperature = -1;
+	scheme.night.gamma[0] = NAN;
+	scheme.night.brightness = NAN;
 
 	/* Temperature for manual mode */
 	int temp_set = -1;
@@ -1063,9 +1038,6 @@ main(int argc, char *argv[])
 
 	const location_provider_t *provider = NULL;
 	char *provider_args = NULL;
-
-	transition_levels_t trans_levels =
-		{ TRANSITION_HIGH, TRANSITION_LOW };
 
 	int transition = -1;
 	program_mode_t mode = PROGRAM_MODE_CONTINUAL;
@@ -1083,15 +1055,16 @@ main(int argc, char *argv[])
 	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:prt:vVx")) != -1) {
 		switch (opt) {
 		case 'b':
-			parse_brightness_string(optarg, &day.brightness,
-						&night.brightness);
+			parse_brightness_string(optarg,
+						&scheme.day.brightness,
+						&scheme.night.brightness);
 			break;
 		case 'c':
 			if (config_filepath != NULL) free(config_filepath);
 			config_filepath = strdup(optarg);
 			break;
 		case 'g':
-			r = parse_gamma_string(optarg, day.gamma);
+			r = parse_gamma_string(optarg, scheme.day.gamma);
 			if (r < 0) {
 				fputs(_("Malformed gamma argument.\n"),
 				      stderr);
@@ -1103,7 +1076,8 @@ main(int argc, char *argv[])
 			/* Set night gamma to the same value as day gamma.
 			   To set these to distinct values use the config
 			   file. */
-			memcpy(night.gamma, day.gamma, sizeof(night.gamma));
+			memcpy(scheme.night.gamma, scheme.day.gamma,
+			       sizeof(scheme.night.gamma));
 			break;
 		case 'h':
 			print_help(argv[0]);
@@ -1207,8 +1181,8 @@ main(int argc, char *argv[])
 				exit(EXIT_FAILURE);
 			}
 			*(s++) = '\0';
-			day.temperature = atoi(optarg);
-			night.temperature = atoi(s);
+			scheme.day.temperature = atoi(optarg);
+			scheme.night.temperature = atoi(s);
 			break;
 		case 'v':
 			verbose = 1;
@@ -1244,14 +1218,14 @@ main(int argc, char *argv[])
 		config_ini_setting_t *setting = section->settings;
 		while (setting != NULL) {
 			if (strcasecmp(setting->name, "temp-day") == 0) {
-				if (day.temperature < 0) {
-					day.temperature =
+				if (scheme.day.temperature < 0) {
+					scheme.day.temperature =
 						atoi(setting->value);
 				}
 			} else if (strcasecmp(setting->name,
 					      "temp-night") == 0) {
-				if (night.temperature < 0) {
-					night.temperature =
+				if (scheme.night.temperature < 0) {
+					scheme.night.temperature =
 						atoi(setting->value);
 				}
 			} else if (strcasecmp(setting->name,
@@ -1261,45 +1235,49 @@ main(int argc, char *argv[])
 				}
 			} else if (strcasecmp(setting->name,
 					      "brightness") == 0) {
-				if (isnan(day.brightness)) {
-					day.brightness = atof(setting->value);
+				if (isnan(scheme.day.brightness)) {
+					scheme.day.brightness =
+						atof(setting->value);
 				}
-				if (isnan(night.brightness)) {
-					night.brightness = atof(setting->value);
+				if (isnan(scheme.night.brightness)) {
+					scheme.night.brightness =
+						atof(setting->value);
 				}
 			} else if (strcasecmp(setting->name,
 					      "brightness-day") == 0) {
-				if (isnan(day.brightness)) {
-					day.brightness = atof(setting->value);
+				if (isnan(scheme.day.brightness)) {
+					scheme.day.brightness =
+						atof(setting->value);
 				}
 			} else if (strcasecmp(setting->name,
 					      "brightness-night") == 0) {
-				if (isnan(night.brightness)) {
-					night.brightness = atof(setting->value);
+				if (isnan(scheme.night.brightness)) {
+					scheme.night.brightness =
+						atof(setting->value);
 				}
 			} else if (strcasecmp(setting->name,
 					      "elevation-high") == 0) {
-				trans_levels.high = atof(setting->value);
+				scheme.high = atof(setting->value);
 			} else if (strcasecmp(setting->name,
 					      "elevation-low") == 0) {
-				trans_levels.low = atof(setting->value);
+				scheme.low = atof(setting->value);
 			} else if (strcasecmp(setting->name, "gamma") == 0) {
-				if (isnan(day.gamma[0])) {
+				if (isnan(scheme.day.gamma[0])) {
 					r = parse_gamma_string(setting->value,
-							       day.gamma);
+							       scheme.day.gamma);
 					if (r < 0) {
 						fputs(_("Malformed gamma"
 							" setting.\n"),
 						      stderr);
 						exit(EXIT_FAILURE);
 					}
-					memcpy(night.gamma, day.gamma,
-					       sizeof(night.gamma));
+					memcpy(scheme.night.gamma, scheme.day.gamma,
+					       sizeof(scheme.night.gamma));
 				}
 			} else if (strcasecmp(setting->name, "gamma-day") == 0) {
-				if (isnan(day.gamma[0])) {
+				if (isnan(scheme.day.gamma[0])) {
 					r = parse_gamma_string(setting->value,
-							       day.gamma);
+							       scheme.day.gamma);
 					if (r < 0) {
 						fputs(_("Malformed gamma"
 							" setting.\n"),
@@ -1308,9 +1286,9 @@ main(int argc, char *argv[])
 					}
 				}
 			} else if (strcasecmp(setting->name, "gamma-night") == 0) {
-				if (isnan(night.gamma[0])) {
+				if (isnan(scheme.night.gamma[0])) {
 					r = parse_gamma_string(setting->value,
-							       night.gamma);
+							       scheme.night.gamma);
 					if (r < 0) {
 						fputs(_("Malformed gamma"
 							" setting.\n"),
@@ -1357,17 +1335,29 @@ main(int argc, char *argv[])
 
 	/* Use default values for settings that were neither defined in
 	   the config file nor on the command line. */
-	if (day.temperature < 0) day.temperature = DEFAULT_DAY_TEMP;
-	if (night.temperature < 0) night.temperature = DEFAULT_NIGHT_TEMP;
-
-	if (isnan(day.brightness)) day.brightness = DEFAULT_BRIGHTNESS;
-	if (isnan(night.brightness)) night.brightness = DEFAULT_BRIGHTNESS;
-
-	if (isnan(day.gamma[0])) {
-		day.gamma[0] = day.gamma[1] = day.gamma[2] = DEFAULT_GAMMA;
+	if (scheme.day.temperature < 0) {
+		scheme.day.temperature = DEFAULT_DAY_TEMP;
 	}
-	if (isnan(night.gamma[0])) {
-		night.gamma[0] = night.gamma[1] = night.gamma[2] = DEFAULT_GAMMA;
+	if (scheme.night.temperature < 0) {
+		scheme.night.temperature = DEFAULT_NIGHT_TEMP;
+	}
+
+	if (isnan(scheme.day.brightness)) {
+		scheme.day.brightness = DEFAULT_BRIGHTNESS;
+	}
+	if (isnan(scheme.night.brightness)) {
+		scheme.night.brightness = DEFAULT_BRIGHTNESS;
+	}
+
+	if (isnan(scheme.day.gamma[0])) {
+		scheme.day.gamma[0] = DEFAULT_GAMMA;
+		scheme.day.gamma[1] = DEFAULT_GAMMA;
+		scheme.day.gamma[2] = DEFAULT_GAMMA;
+	}
+	if (isnan(scheme.night.gamma[0])) {
+		scheme.night.gamma[0] = DEFAULT_GAMMA;
+		scheme.night.gamma[1] = DEFAULT_GAMMA;
+		scheme.night.gamma[2] = DEFAULT_GAMMA;
 	}
 
 	if (transition < 0) transition = 1;
@@ -1448,11 +1438,12 @@ main(int argc, char *argv[])
 			       loc.lon >= 0.f ? east : west);
 
 			printf(_("Temperatures: %dK at day, %dK at night\n"),
-			       day.temperature, night.temperature);
+			       scheme.day.temperature,
+			       scheme.night.temperature);
 
 		        /* TRANSLATORS: Append degree symbols if possible. */
 			printf(_("Solar elevations: day above %.1f, night below %.1f\n"),
-			       trans_levels.high, trans_levels.low);
+			       scheme.high, scheme.low);
 		}
 
 		/* Latitude */
@@ -1474,10 +1465,10 @@ main(int argc, char *argv[])
 		}
 
 		/* Color temperature */
-		if (day.temperature < MIN_TEMP ||
-		    day.temperature > MAX_TEMP ||
-		    night.temperature < MIN_TEMP ||
-		    night.temperature > MAX_TEMP) {
+		if (scheme.day.temperature < MIN_TEMP ||
+		    scheme.day.temperature > MAX_TEMP ||
+		    scheme.night.temperature < MIN_TEMP ||
+		    scheme.night.temperature > MAX_TEMP) {
 			fprintf(stderr,
 				_("Temperature must be between %uK and %uK.\n"),
 				MIN_TEMP, MAX_TEMP);
@@ -1485,7 +1476,7 @@ main(int argc, char *argv[])
 		}
 
 		/* Solar elevations */
-		if (trans_levels.high < trans_levels.low) {
+		if (scheme.high < scheme.low) {
 		        fprintf(stderr,
 		                _("High transition elevation cannot be lower than"
 				  " the low transition elevation.\n"));
@@ -1504,10 +1495,10 @@ main(int argc, char *argv[])
 	}
 
 	/* Brightness */
-	if (day.brightness < MIN_BRIGHTNESS ||
-	    day.brightness > MAX_BRIGHTNESS ||
-	    night.brightness < MIN_BRIGHTNESS ||
-	    night.brightness > MAX_BRIGHTNESS) {
+	if (scheme.day.brightness < MIN_BRIGHTNESS ||
+	    scheme.day.brightness > MAX_BRIGHTNESS ||
+	    scheme.night.brightness < MIN_BRIGHTNESS ||
+	    scheme.night.brightness > MAX_BRIGHTNESS) {
 		fprintf(stderr,
 			_("Brightness values must be between %.1f and %.1f.\n"),
 			MIN_BRIGHTNESS, MAX_BRIGHTNESS);
@@ -1516,16 +1507,22 @@ main(int argc, char *argv[])
 
 	if (verbose) {
 		printf(_("Brightness: %.2f:%.2f\n"),
-		       day.brightness, night.brightness);
+		       scheme.day.brightness, scheme.night.brightness);
 	}
 
 	/* Gamma */
-	if (day.gamma[0] < MIN_GAMMA || day.gamma[0] > MAX_GAMMA ||
-	    day.gamma[1] < MIN_GAMMA || day.gamma[1] > MAX_GAMMA ||
-	    day.gamma[2] < MIN_GAMMA || day.gamma[2] > MAX_GAMMA ||
-	    night.gamma[0] < MIN_GAMMA || night.gamma[0] > MAX_GAMMA ||
-	    night.gamma[1] < MIN_GAMMA || night.gamma[1] > MAX_GAMMA ||
-	    night.gamma[2] < MIN_GAMMA || night.gamma[2] > MAX_GAMMA) {
+	if (scheme.day.gamma[0] < MIN_GAMMA ||
+	    scheme.day.gamma[0] > MAX_GAMMA ||
+	    scheme.day.gamma[1] < MIN_GAMMA ||
+	    scheme.day.gamma[1] > MAX_GAMMA ||
+	    scheme.day.gamma[2] < MIN_GAMMA ||
+	    scheme.day.gamma[2] > MAX_GAMMA ||
+	    scheme.night.gamma[0] < MIN_GAMMA ||
+	    scheme.night.gamma[0] > MAX_GAMMA ||
+	    scheme.night.gamma[1] < MIN_GAMMA ||
+	    scheme.night.gamma[1] > MAX_GAMMA ||
+	    scheme.night.gamma[2] < MIN_GAMMA ||
+	    scheme.night.gamma[2] > MAX_GAMMA) {
 		fprintf(stderr,
 			_("Gamma value must be between %.1f and %.1f.\n"),
 			MIN_GAMMA, MAX_GAMMA);
@@ -1536,9 +1533,11 @@ main(int argc, char *argv[])
 		/* TRANSLATORS: The string in parenthesis is either
 		   Daytime or Night (translated). */
 		printf(_("Gamma (%s): %.3f, %.3f, %.3f\n"),
-		       _("Daytime"), day.gamma[0], day.gamma[1], day.gamma[2]);
+		       _("Daytime"), scheme.day.gamma[0],
+		       scheme.day.gamma[1], scheme.day.gamma[2]);
 		printf(_("Gamma (%s): %.3f, %.3f, %.3f\n"),
-		       _("Night"), night.gamma[0], night.gamma[1], night.gamma[2]);
+		       _("Night"), scheme.night.gamma[0],
+		       scheme.night.gamma[1], scheme.night.gamma[2]);
 	}
 
 	/* Initialize gamma adjustment method. If method is NULL
@@ -1602,14 +1601,13 @@ main(int argc, char *argv[])
 
 		/* Use elevation of sun to set color temperature */
 		color_setting_t interp;
-		interpolate_color_settings(&trans_levels, elevation,
-					   &day, &night, &interp);
+		interpolate_color_settings(&scheme, elevation, &interp);
 
 		if (verbose || mode == PROGRAM_MODE_PRINT) {
-			period_t period = get_period(&trans_levels,
+			period_t period = get_period(&scheme,
 						     elevation);
 			double transition =
-				get_transition_progress(&trans_levels,
+				get_transition_progress(&scheme,
 							elevation);
 			print_period(period, transition);
 			printf(_("Color temperature: %uK\n"),
@@ -1645,7 +1643,7 @@ main(int argc, char *argv[])
 
 		/* Adjust temperature */
 		color_setting_t manual;
-		memcpy(&manual, &day, sizeof(color_setting_t));
+		memcpy(&manual, &scheme.day, sizeof(color_setting_t));
 		manual.temperature = temp_set;
 		r = method->set_temperature(&state, &manual);
 		if (r < 0) {
@@ -1685,8 +1683,7 @@ main(int argc, char *argv[])
 	break;
 	case PROGRAM_MODE_CONTINUAL:
 	{
-		r = run_continual_mode(&loc, &day, &night,
-				       &trans_levels,
+		r = run_continual_mode(&loc, &scheme,
 				       method, &state,
 				       transition, verbose);
 		if (r < 0) exit(EXIT_FAILURE);
