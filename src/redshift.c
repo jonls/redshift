@@ -1453,7 +1453,7 @@ main(int argc, char *argv[])
 #endif /* HAVE_SIGNAL_H && ! __WIN32__ */
 
 		if (verbose) {
-			printf("Status: %s\n", "Enabled");
+			printf(_("Status: %s\n"), _("Enabled"));
 		}
 
 		/* Save previous colors so we can avoid
@@ -1481,8 +1481,8 @@ main(int argc, char *argv[])
 				disable = 0;
 
 				if (verbose) {
-					printf("Status: %s\n", disabled ?
-					       "Disabled" : "Enabled");
+					printf(_("Status: %s\n"), disabled ?
+					       _("Disabled") : _("Enabled"));
 				}
 			}
 
