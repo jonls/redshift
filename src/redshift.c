@@ -774,6 +774,243 @@ find_location_provider(const char *name)
 }
 
 
+/* Run continual mode loop
+   This is the main loop of the continual mode which keeps track of the
+   current time and continuously updates the screen to the appropriate
+   color temperature. */
+static int
+run_continual_mode(const location_t *loc,
+		   const color_setting_t *day,
+		   const color_setting_t *night,
+		   const gamma_method_t *method,
+		   gamma_state_t *state,
+		   int transition, int verbose)
+{
+	int r;
+
+	/* Make an initial transition from 6500K */
+	int short_trans_delta = -1;
+	int short_trans_len = 10;
+
+	/* Amount of adjustment to apply. At zero the color
+	   temperature will be exactly as calculated, and at one it
+	   will be exactly 6500K. */
+	double adjustment_alpha = 1.0;
+
+#if defined(HAVE_SIGNAL_H) && !defined(__WIN32__)
+	struct sigaction sigact;
+	sigset_t sigset;
+	sigemptyset(&sigset);
+
+	/* Install signal handler for INT and TERM signals */
+	sigact.sa_handler = sigexit;
+	sigact.sa_mask = sigset;
+	sigact.sa_flags = 0;
+
+	r = sigaction(SIGINT, &sigact, NULL);
+	if (r < 0) {
+		perror("sigaction");
+		return -1;
+	}
+
+	r = sigaction(SIGTERM, &sigact, NULL);
+	if (r < 0) {
+		perror("sigaction");
+		return -1;
+	}
+
+	/* Install signal handler for USR1 signal */
+	sigact.sa_handler = sigdisable;
+	sigact.sa_mask = sigset;
+	sigact.sa_flags = 0;
+
+	r = sigaction(SIGUSR1, &sigact, NULL);
+	if (r < 0) {
+		perror("sigaction");
+		return -1;
+	}
+
+	/* Ignore CHLD signal. This causes child processes
+	   (hooks) to be reaped automatically. */
+	sigact.sa_handler = SIG_IGN;
+	sigact.sa_mask = sigset;
+	sigact.sa_flags = 0;
+
+	r = sigaction(SIGCHLD, &sigact, NULL);
+	if (r < 0) {
+		perror("sigaction");
+		return -1;
+	}
+#endif /* HAVE_SIGNAL_H && ! __WIN32__ */
+
+	if (verbose) {
+		printf(_("Status: %s\n"), _("Enabled"));
+	}
+
+	/* Save previous colors so we can avoid
+	   printing status updates if the values
+	   did not change. */
+	period_t prev_period = PERIOD_NONE;
+	color_setting_t prev_interp =
+		{ -1, { NAN, NAN, NAN }, NAN };
+
+	/* Continuously adjust color temperature */
+	int done = 0;
+	int disabled = 0;
+	while (1) {
+		/* Check to see if disable signal was caught */
+		if (disable) {
+			short_trans_len = 2;
+			if (!disabled) {
+				/* Transition to disabled state */
+				short_trans_delta = 1;
+			} else {
+				/* Transition back to enabled */
+				short_trans_delta = -1;
+			}
+			disabled = !disabled;
+			disable = 0;
+
+			if (verbose) {
+				printf(_("Status: %s\n"), disabled ?
+				       _("Disabled") : _("Enabled"));
+			}
+		}
+
+		/* Check to see if exit signal was caught */
+		if (exiting) {
+			if (done) {
+				/* On second signal stop the ongoing
+				   transition */
+				short_trans_delta = 0;
+				adjustment_alpha = 0.0;
+			} else {
+				if (!disabled) {
+					/* Make a short transition
+					   back to 6500K */
+					short_trans_delta = 1;
+					short_trans_len = 2;
+				}
+
+				done = 1;
+			}
+			exiting = 0;
+		}
+
+		/* Read timestamp */
+		double now;
+		r = systemtime_get_time(&now);
+		if (r < 0) {
+			fputs(_("Unable to read system time.\n"), stderr);
+			return -1;
+		}
+
+		/* Skip over transition if transitions are disabled */
+		int set_adjustments = 0;
+		if (!transition) {
+			if (short_trans_delta) {
+				adjustment_alpha = short_trans_delta < 0 ?
+					0.0 : 1.0;
+				short_trans_delta = 0;
+				set_adjustments = 1;
+			}
+		}
+
+		/* Current angular elevation of the sun */
+		double elevation = solar_elevation(now, loc->lat,
+						   loc->lon);
+
+		/* Use elevation of sun to set color temperature */
+		color_setting_t interp;
+		interpolate_color_settings(elevation, day, night, &interp);
+
+		/* Print period if it changed during this update,
+		   or if we are in transition. In transition we
+		   print the progress, so we always print it in
+		   that case. */
+		period_t period = get_period(elevation);
+		if (verbose && (period != prev_period ||
+				period == PERIOD_TRANSITION)) {
+			double transition =
+				get_transition_progress(elevation);
+			print_period(period, transition);
+		}
+
+		/* Activate hooks if period changed */
+		if (period != prev_period) {
+			hooks_signal_period_change(prev_period, period);
+		}
+
+		/* Ongoing short transition */
+		if (short_trans_delta) {
+			/* Calculate alpha */
+			adjustment_alpha += short_trans_delta * 0.1 /
+				(float)short_trans_len;
+
+			/* Stop transition when done */
+			if (adjustment_alpha <= 0.0 ||
+			    adjustment_alpha >= 1.0) {
+				short_trans_delta = 0;
+			}
+
+			/* Clamp alpha value */
+			adjustment_alpha =
+				MAX(0.0, MIN(adjustment_alpha, 1.0));
+		}
+
+		/* Interpolate between 6500K and calculated
+		   temperature */
+		interp.temperature = adjustment_alpha*6500 +
+			(1.0-adjustment_alpha)*interp.temperature;
+
+		interp.brightness = adjustment_alpha*1.0 +
+			(1.0-adjustment_alpha)*interp.brightness;
+
+		/* Quit loop when done */
+		if (done && !short_trans_delta) break;
+
+		if (verbose) {
+			if (interp.temperature !=
+			    prev_interp.temperature) {
+				printf(_("Color temperature: %uK\n"),
+				       interp.temperature);
+			}
+			if (interp.brightness !=
+			    prev_interp.brightness) {
+				printf(_("Brightness: %.2f\n"),
+				       interp.brightness);
+			}
+		}
+
+		/* Adjust temperature */
+		if (!disabled || short_trans_delta || set_adjustments) {
+			r = method->set_temperature(&state, &interp);
+			if (r < 0) {
+				fputs(_("Temperature adjustment"
+					" failed.\n"), stderr);
+				return -1;
+			}
+		}
+
+		/* Save temperature as previous */
+		prev_period = period;
+		memcpy(&prev_interp, &interp,
+		       sizeof(color_setting_t));
+
+		/* Sleep for 5 seconds or 0.1 second. */
+		if (short_trans_delta) {
+			systemtime_msleep(SLEEP_DURATION_SHORT);
+		} else {
+			systemtime_msleep(SLEEP_DURATION);
+		}
+	}
+
+	/* Restore saved gamma ramps */
+	method->restore(&state);
+
+	return 0;
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -1426,228 +1663,10 @@ main(int argc, char *argv[])
 	break;
 	case PROGRAM_MODE_CONTINUAL:
 	{
-		/* Make an initial transition from 6500K */
-		int short_trans_delta = -1;
-		int short_trans_len = 10;
-
-		/* Amount of adjustment to apply. At zero the color
-		   temperature will be exactly as calculated, and at one it
-		   will be exactly 6500K. */
-		double adjustment_alpha = 1.0;
-
-#if defined(HAVE_SIGNAL_H) && !defined(__WIN32__)
-		struct sigaction sigact;
-		sigset_t sigset;
-		sigemptyset(&sigset);
-
-		/* Install signal handler for INT and TERM signals */
-		sigact.sa_handler = sigexit;
-		sigact.sa_mask = sigset;
-		sigact.sa_flags = 0;
-
-		r = sigaction(SIGINT, &sigact, NULL);
-		if (r < 0) {
-			perror("sigaction");
-			exit(EXIT_FAILURE);
-		}
-
-		r = sigaction(SIGTERM, &sigact, NULL);
-		if (r < 0) {
-			perror("sigaction");
-			exit(EXIT_FAILURE);
-		}
-
-		/* Install signal handler for USR1 signal */
-		sigact.sa_handler = sigdisable;
-		sigact.sa_mask = sigset;
-		sigact.sa_flags = 0;
-
-		r = sigaction(SIGUSR1, &sigact, NULL);
-		if (r < 0) {
-			perror("sigaction");
-			exit(EXIT_FAILURE);
-		}
-
-		/* Ignore CHLD signal. This causes child processes
-		   (hooks) to be reaped automatically. */
-		sigact.sa_handler = SIG_IGN;
-		sigact.sa_mask = sigset;
-		sigact.sa_flags = 0;
-
-		r = sigaction(SIGCHLD, &sigact, NULL);
-		if (r < 0) {
-			perror("sigaction");
-			exit(EXIT_FAILURE);
-		}
-#endif /* HAVE_SIGNAL_H && ! __WIN32__ */
-
-		if (verbose) {
-			printf(_("Status: %s\n"), _("Enabled"));
-		}
-
-		/* Save previous colors so we can avoid
-		   printing status updates if the values
-		   did not change. */
-		period_t prev_period = PERIOD_NONE;
-		color_setting_t prev_interp =
-			{ -1, { NAN, NAN, NAN }, NAN };
-
-		/* Continuously adjust color temperature */
-		int done = 0;
-		int disabled = 0;
-		while (1) {
-			/* Check to see if disable signal was caught */
-			if (disable) {
-				short_trans_len = 2;
-				if (!disabled) {
-					/* Transition to disabled state */
-					short_trans_delta = 1;
-				} else {
-					/* Transition back to enabled */
-					short_trans_delta = -1;
-				}
-				disabled = !disabled;
-				disable = 0;
-
-				if (verbose) {
-					printf(_("Status: %s\n"), disabled ?
-					       _("Disabled") : _("Enabled"));
-				}
-			}
-
-			/* Check to see if exit signal was caught */
-			if (exiting) {
-				if (done) {
-					/* On second signal stop the
-					   ongoing transition */
-					short_trans_delta = 0;
-					adjustment_alpha = 0.0;
-				} else {
-					if (!disabled) {
-						/* Make a short transition
-						   back to 6500K */
-						short_trans_delta = 1;
-						short_trans_len = 2;
-					}
-
-					done = 1;
-				}
-				exiting = 0;
-			}
-
-			/* Read timestamp */
-			double now;
-			r = systemtime_get_time(&now);
-			if (r < 0) {
-				fputs(_("Unable to read system time.\n"),
-				      stderr);
-				method->free(&state);
-				exit(EXIT_FAILURE);
-			}
-
-			/* Skip over transition if transitions are disabled */
-			int set_adjustments = 0;
-			if (!transition) {
-				if (short_trans_delta) {
-					adjustment_alpha = short_trans_delta < 0 ? 0.0 : 1.0;
-					short_trans_delta = 0;
-					set_adjustments = 1;
-				}
-			}
-
-			/* Current angular elevation of the sun */
-			double elevation =
-				solar_elevation(now, loc.lat, loc.lon);
-
-			/* Use elevation of sun to set color temperature */
-			color_setting_t interp;
-			interpolate_color_settings(elevation, &day, &night, &interp);
-
-			/* Print period if it changed during this update,
-			   or if we are in transition. In transition we
-			   print the progress, so we always print it in
-			   that case. */
-			period_t period = get_period(elevation);
-			if (verbose && (period != prev_period ||
-					period == PERIOD_TRANSITION)) {
-				double transition =
-					get_transition_progress(elevation);
-				print_period(period, transition);
-			}
-
-			/* Activate hooks if period changed */
-			if (period != prev_period) {
-				hooks_signal_period_change(prev_period,
-							   period);
-			}
-
-			/* Ongoing short transition */
-			if (short_trans_delta) {
-				/* Calculate alpha */
-				adjustment_alpha += short_trans_delta * 0.1 /
-					(float)short_trans_len;
-
-				/* Stop transition when done */
-				if (adjustment_alpha <= 0.0 ||
-				    adjustment_alpha >= 1.0) {
-					short_trans_delta = 0;
-				}
-
-				/* Clamp alpha value */
-				adjustment_alpha =
-					MAX(0.0, MIN(adjustment_alpha, 1.0));
-			}
-
-			/* Interpolate between 6500K and calculated
-			   temperature */
-			interp.temperature = adjustment_alpha*6500 +
-				(1.0-adjustment_alpha)*interp.temperature;
-
-			interp.brightness = adjustment_alpha*1.0 +
-				(1.0-adjustment_alpha)*interp.brightness;
-
-			/* Quit loop when done */
-			if (done && !short_trans_delta) break;
-
-			if (verbose) {
-				if (interp.temperature !=
-				    prev_interp.temperature) {
-					printf(_("Color temperature: %uK\n"),
-					       interp.temperature);
-				}
-				if (interp.brightness !=
-				    prev_interp.brightness) {
-					printf(_("Brightness: %.2f\n"),
-					       interp.brightness);
-				}
-			}
-
-			/* Adjust temperature */
-			if (!disabled || short_trans_delta || set_adjustments) {
-				r = method->set_temperature(&state, &interp);
-				if (r < 0) {
-					fputs(_("Temperature adjustment"
-						" failed.\n"), stderr);
-					method->free(&state);
-					exit(EXIT_FAILURE);
-				}
-			}
-
-			/* Save temperature as previous */
-			prev_period = period;
-			memcpy(&prev_interp, &interp,
-			       sizeof(color_setting_t));
-
-			/* Sleep for 5 seconds or 0.1 second. */
-			if (short_trans_delta) {
-				systemtime_msleep(SLEEP_DURATION_SHORT);
-			} else {
-				systemtime_msleep(SLEEP_DURATION);
-			}
-		}
-
-		/* Restore saved gamma ramps */
-		method->restore(&state);
+		r = run_continual_mode(&loc, &day, &night,
+				       method, &state,
+				       transition, verbose);
+		if (r < 0) exit(EXIT_FAILURE);
 	}
 	break;
 	}
