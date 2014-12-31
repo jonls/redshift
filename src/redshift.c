@@ -302,6 +302,13 @@ typedef enum {
 	PROGRAM_MODE_MANUAL
 } program_mode_t;
 
+/* Transition levels.
+   The solar elevations at which the transition begins/ends. */
+typedef struct {
+	double high;
+	double low;
+} transition_levels_t;
+
 /* Names of periods of day */
 static const char *period_names[] = {
 	/* TRANSLATORS: Name printed when period of day is unknown */
@@ -337,18 +344,15 @@ static int disable = 0;
 
 #endif /* ! HAVE_SIGNAL_H || __WIN32__ */
 
-/* Transition settings. */
-static float transition_low = TRANSITION_LOW;
-static float transition_high = TRANSITION_HIGH;
-
 
 /* Determine which period we are currently in. */
 static period_t
-get_period(double elevation)
+get_period(const transition_levels_t *transition,
+	   double elevation)
 {
-	if (elevation < transition_low) {
+	if (elevation < transition->low) {
 		return PERIOD_NIGHT;
-	} else if (elevation < transition_high) {
+	} else if (elevation < transition->high) {
 		return PERIOD_TRANSITION;
 	} else {
 		return PERIOD_DAYTIME;
@@ -357,13 +361,14 @@ get_period(double elevation)
 
 /* Determine how far through the transition we are. */
 static double
-get_transition_progress(double elevation)
+get_transition_progress(const transition_levels_t *transition,
+			double elevation)
 {
-	if (elevation < transition_low) {
+	if (elevation < transition->low) {
 		return 0.0;
-	} else if (elevation < transition_high) {
-		return (transition_low - elevation) /
-			(transition_low - transition_high);
+	} else if (elevation < transition->high) {
+		return (transition->low - elevation) /
+			(transition->low - transition->high);
 	} else {
 		return 1.0;
 	}
@@ -389,15 +394,16 @@ print_period(period_t period, double transition)
 
 /* Interpolate value based on the specified solar elevation. */
 static double
-calculate_interpolated_value(double elevation, double day, double night)
+calculate_interpolated_value(const transition_levels_t *transition,
+			     double elevation, double day, double night)
 {
 	double result;
-	if (elevation < transition_low) {
+	if (elevation < transition->low) {
 		result = night;
-	} else if (elevation < transition_high) {
+	} else if (elevation < transition->high) {
 		/* Transition period: interpolate */
-		double a = (transition_low - elevation) /
-			(transition_low - transition_high);
+		double a = (transition->low - elevation) /
+			(transition->low - transition->high);
 		result = (1.0-a)*night + a*day;
 	} else {
 		result = day;
@@ -408,22 +414,26 @@ calculate_interpolated_value(double elevation, double day, double night)
 
 /* Interpolate color setting structs based on solar elevation */
 static void
-interpolate_color_settings(double elevation,
+interpolate_color_settings(const transition_levels_t *transition,
+			   double elevation,
 			   const color_setting_t *day,
 			   const color_setting_t *night,
 			   color_setting_t *result)
 {
 	result->temperature =
-		(int)calculate_interpolated_value(elevation,
+		(int)calculate_interpolated_value(transition,
+						  elevation,
 						  day->temperature,
 						  night->temperature);
 	result->brightness =
-		calculate_interpolated_value(elevation,
+		calculate_interpolated_value(transition,
+					     elevation,
 					     day->brightness,
 					     night->brightness);
 	for (int i = 0; i < 3; i++) {
 		result->gamma[i] =
-			calculate_interpolated_value(elevation,
+			calculate_interpolated_value(transition,
+						     elevation,
 						     day->gamma[i],
 						     night->gamma[i]);
 	}
@@ -782,6 +792,7 @@ static int
 run_continual_mode(const location_t *loc,
 		   const color_setting_t *day,
 		   const color_setting_t *night,
+		   const transition_levels_t *trans_levels,
 		   const gamma_method_t *method,
 		   gamma_state_t *state,
 		   int transition, int verbose)
@@ -922,17 +933,19 @@ run_continual_mode(const location_t *loc,
 
 		/* Use elevation of sun to set color temperature */
 		color_setting_t interp;
-		interpolate_color_settings(elevation, day, night, &interp);
+		interpolate_color_settings(trans_levels, elevation,
+					   day, night, &interp);
 
 		/* Print period if it changed during this update,
 		   or if we are in transition. In transition we
 		   print the progress, so we always print it in
 		   that case. */
-		period_t period = get_period(elevation);
+		period_t period = get_period(trans_levels, elevation);
 		if (verbose && (period != prev_period ||
 				period == PERIOD_TRANSITION)) {
 			double transition =
-				get_transition_progress(elevation);
+				get_transition_progress(trans_levels,
+							elevation);
 			print_period(period, transition);
 		}
 
@@ -1050,6 +1063,9 @@ main(int argc, char *argv[])
 
 	const location_provider_t *provider = NULL;
 	char *provider_args = NULL;
+
+	transition_levels_t trans_levels =
+		{ TRANSITION_HIGH, TRANSITION_LOW };
 
 	int transition = -1;
 	program_mode_t mode = PROGRAM_MODE_CONTINUAL;
@@ -1263,10 +1279,10 @@ main(int argc, char *argv[])
 				}
 			} else if (strcasecmp(setting->name,
 					      "elevation-high") == 0) {
-				transition_high = atof(setting->value);
+				trans_levels.high = atof(setting->value);
 			} else if (strcasecmp(setting->name,
 					      "elevation-low") == 0) {
-				transition_low = atof(setting->value);
+				trans_levels.low = atof(setting->value);
 			} else if (strcasecmp(setting->name, "gamma") == 0) {
 				if (isnan(day.gamma[0])) {
 					r = parse_gamma_string(setting->value,
@@ -1436,7 +1452,7 @@ main(int argc, char *argv[])
 
 		        /* TRANSLATORS: Append degree symbols if possible. */
 			printf(_("Solar elevations: day above %.1f, night below %.1f\n"),
-			       transition_high, transition_low);
+			       trans_levels.high, trans_levels.low);
 		}
 
 		/* Latitude */
@@ -1469,7 +1485,7 @@ main(int argc, char *argv[])
 		}
 
 		/* Solar elevations */
-		if (transition_high < transition_low) {
+		if (trans_levels.high < trans_levels.low) {
 		        fprintf(stderr,
 		                _("High transition elevation cannot be lower than"
 				  " the low transition elevation.\n"));
@@ -1586,14 +1602,20 @@ main(int argc, char *argv[])
 
 		/* Use elevation of sun to set color temperature */
 		color_setting_t interp;
-		interpolate_color_settings(elevation, &day, &night, &interp);
+		interpolate_color_settings(&trans_levels, elevation,
+					   &day, &night, &interp);
 
 		if (verbose || mode == PROGRAM_MODE_PRINT) {
-			period_t period = get_period(elevation);
-			double transition = get_transition_progress(elevation);
+			period_t period = get_period(&trans_levels,
+						     elevation);
+			double transition =
+				get_transition_progress(&trans_levels,
+							elevation);
 			print_period(period, transition);
-			printf(_("Color temperature: %uK\n"), interp.temperature);
-			printf(_("Brightness: %.2f\n"), interp.brightness);
+			printf(_("Color temperature: %uK\n"),
+			       interp.temperature);
+			printf(_("Brightness: %.2f\n"),
+			       interp.brightness);
 		}
 
 		if (mode == PROGRAM_MODE_PRINT) {
@@ -1664,6 +1686,7 @@ main(int argc, char *argv[])
 	case PROGRAM_MODE_CONTINUAL:
 	{
 		r = run_continual_mode(&loc, &day, &night,
+				       &trans_levels,
 				       method, &state,
 				       transition, verbose);
 		if (r < 0) exit(EXIT_FAILURE);
