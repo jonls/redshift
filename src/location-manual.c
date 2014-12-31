@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2010-2014  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #include <stdio.h>
@@ -36,8 +36,8 @@
 int
 location_manual_init(location_manual_state_t *state)
 {
-	state->lat = NAN;
-	state->lon = NAN;
+	state->loc.lat = NAN;
+	state->loc.lon = NAN;
 
 	return 0;
 }
@@ -46,7 +46,7 @@ int
 location_manual_start(location_manual_state_t *state)
 {
 	/* Latitude and longitude must be set */
-	if (isnan(state->lat) || isnan(state->lon)) {
+	if (isnan(state->loc.lat) || isnan(state->loc.lon)) {
 		fputs(_("Latitude and longitude must be set.\n"), stderr);
 		exit(EXIT_FAILURE);
 	}
@@ -89,9 +89,9 @@ location_manual_set_option(location_manual_state_t *state, const char *key,
 	}
 
 	if (strcasecmp(key, "lat") == 0) {
-		state->lat = v;
+		state->loc.lat = v;
 	} else if (strcasecmp(key, "lon") == 0) {
-		state->lon = v;
+		state->loc.lon = v;
 	} else {
 		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
 		return -1;
@@ -101,11 +101,10 @@ location_manual_set_option(location_manual_state_t *state, const char *key,
 }
 
 int
-location_manual_get_location(location_manual_state_t *state, float *lat,
-			     float *lon)
+location_manual_get_location(location_manual_state_t *state,
+			     location_t *loc)
 {
-	*lat = state->lat;
-	*lon = state->lon;
+	*loc = state->loc;
 
 	return 0;
 }

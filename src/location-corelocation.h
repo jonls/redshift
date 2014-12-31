@@ -22,6 +22,8 @@
 
 #include <stdio.h>
 
+#include "redshift.h"
+
 
 int location_corelocation_init(void *state);
 int location_corelocation_start(void *state);
@@ -32,7 +34,7 @@ int location_corelocation_set_option(void *state,
 				     const char *key, const char *value);
 
 int location_corelocation_get_location(void *state,
-				       float *lat, float *lon);
+				       location_t *location);
 
 
 #endif /* ! REDSHIFT_LOCATION_CORELOCATION_H */

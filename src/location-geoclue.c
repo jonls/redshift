@@ -28,6 +28,7 @@
 #include <glib-object.h>
 
 #include "location-geoclue.h"
+#include "redshift.h"
 
 #ifdef ENABLE_NLS
 # include <libintl.h>
@@ -185,7 +186,7 @@ location_geoclue_set_option(location_geoclue_state_t *state,
 
 int
 location_geoclue_get_location(location_geoclue_state_t *state,
-			      float *lat, float *lon)
+			      location_t *location)
 {
 	GeocluePositionFields fields;
 	GError *error = NULL;
@@ -210,8 +211,8 @@ location_geoclue_get_location(location_geoclue_state_t *state,
 		return -1;
 	}
 
-	*lat = latitude;
-	*lon = longitude;
+	location->lat = latitude;
+	location->lon = longitude;
 
 	return 0;
 }

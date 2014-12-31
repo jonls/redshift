@@ -24,6 +24,12 @@
 #include <stdlib.h>
 
 
+/* Location */
+typedef struct {
+	float lat;
+	float lon;
+} location_t;
+
 /* Periods of day. */
 typedef enum {
 	PERIOD_NONE = 0,
@@ -31,7 +37,6 @@ typedef enum {
 	PERIOD_NIGHT,
 	PERIOD_TRANSITION
 } period_t;
-
 
 /* Color setting */
 typedef struct {
@@ -84,8 +89,7 @@ typedef void location_provider_free_func(void *state);
 typedef void location_provider_print_help_func(FILE *f);
 typedef int location_provider_set_option_func(void *state, const char *key,
 					      const char *value);
-typedef int location_provider_get_location_func(void *state, float *lat,
-						float *lon);
+typedef int location_provider_get_location_func(void *state, location_t *loc);
 
 typedef struct {
 	char *name;

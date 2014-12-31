@@ -25,6 +25,7 @@
 #include <gio/gio.h>
 
 #include "location-geoclue2.h"
+#include "redshift.h"
 
 #ifdef ENABLE_NLS
 # include <libintl.h>
@@ -38,8 +39,7 @@ typedef struct {
 	GMainLoop *loop;
 
 	int available;
-	float latitude;
-	float longitude;
+	location_t location;
 } get_location_data_t;
 
 
@@ -120,11 +120,11 @@ geoclue_client_signal_cb(GDBusProxy *client, gchar *sender_name,
 	/* Read location properties */
 	GVariant *lat_v = g_dbus_proxy_get_cached_property(location,
 							   "Latitude");
-	data->latitude = g_variant_get_double(lat_v);
+	data->location.lat = g_variant_get_double(lat_v);
 
 	GVariant *lon_v = g_dbus_proxy_get_cached_property(location,
 							   "Longitude");
-	data->longitude = g_variant_get_double(lon_v);
+	data->location.lon = g_variant_get_double(lon_v);
 
 	data->available = 1;
 
@@ -273,7 +273,7 @@ on_name_vanished(GDBusConnection *connection, const gchar *name,
 
 int
 location_geoclue2_get_location(void *state,
-			       float *lat, float *lon)
+			       location_t *location)
 {
 	get_location_data_t data;
 	data.available = 0;
@@ -291,8 +291,7 @@ location_geoclue2_get_location(void *state,
 
 	if (!data.available) return -1;
 
-	*lat = data.latitude;
-	*lon = data.longitude;
+	*location = data.location;
 
 	return 0;
 }

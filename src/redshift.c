@@ -1119,8 +1119,7 @@ main(int argc, char *argv[])
 
 	if (transition < 0) transition = 1;
 
-	float lat = NAN;
-	float lon = NAN;
+	location_t loc = { NAN, NAN };
 
 	/* Initialize location provider. If provider is NULL
 	   try all providers until one that works is found. */
@@ -1167,7 +1166,7 @@ main(int argc, char *argv[])
 		}
 
 		/* Get current location. */
-		r = provider->get_location(&location_state, &lat, &lon);
+		r = provider->get_location(&location_state, &loc);
 		if (r < 0) {
 		        fputs(_("Unable to get location from provider.\n"),
 		              stderr);
@@ -1190,8 +1189,10 @@ main(int argc, char *argv[])
 			   The string following each number is an abreviation for
 			   north, source, east or west (N, S, E, W). */
 		        printf(_("Location: %.2f %s, %.2f %s\n"),
-			       fabs(lat), lat >= 0.f ? north : south,
-			       fabs(lon), lon >= 0.f ? east : west);
+			       fabs(loc.lat),
+			       loc.lat >= 0.f ? north : south,
+			       fabs(loc.lon),
+			       loc.lon >= 0.f ? east : west);
 
 			printf(_("Temperatures: %dK at day, %dK at night\n"),
 			       day.temperature, night.temperature);
@@ -1202,7 +1203,7 @@ main(int argc, char *argv[])
 		}
 
 		/* Latitude */
-		if (lat < MIN_LAT || lat > MAX_LAT) {
+		if (loc.lat < MIN_LAT || loc.lat > MAX_LAT) {
 		        /* TRANSLATORS: Append degree symbols if possible. */
 		        fprintf(stderr,
 		                _("Latitude must be between %.1f and %.1f.\n"),
@@ -1211,7 +1212,7 @@ main(int argc, char *argv[])
 		}
 	
 		/* Longitude */
-		if (lon < MIN_LON || lon > MAX_LON) {
+		if (loc.lon < MIN_LON || loc.lon > MAX_LON) {
 		        /* TRANSLATORS: Append degree symbols if possible. */
 		        fprintf(stderr,
 		                _("Longitude must be between"
@@ -1339,7 +1340,7 @@ main(int argc, char *argv[])
 			exit(EXIT_FAILURE);
 		}
 
-		double elevation = solar_elevation(now, lat, lon);
+		double elevation = solar_elevation(now, loc.lat, loc.lon);
 
 		if (verbose) {
 			/* TRANSLATORS: Append degree symbol if possible. */
@@ -1555,7 +1556,8 @@ main(int argc, char *argv[])
 			}
 
 			/* Current angular elevation of the sun */
-			double elevation = solar_elevation(now, lat, lon);
+			double elevation =
+				solar_elevation(now, loc.lat, loc.lon);
 
 			/* Use elevation of sun to set color temperature */
 			color_setting_t interp;

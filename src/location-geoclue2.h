@@ -22,6 +22,8 @@
 
 #include <stdio.h>
 
+#include "redshift.h"
+
 
 int location_geoclue2_init(void *state);
 int location_geoclue2_start(void *state);
@@ -32,7 +34,7 @@ int location_geoclue2_set_option(void *state,
 				 const char *key, const char *value);
 
 int location_geoclue2_get_location(void *state,
-				   float *lat, float *lon);
+				   location_t *loc);
 
 
 #endif /* ! REDSHIFT_LOCATION_GEOCLUE2_H */

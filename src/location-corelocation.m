@@ -25,6 +25,7 @@
 #import <CoreLocation/CoreLocation.h>
 
 #include "location-corelocation.h"
+#include "redshift.h"
 
 #include <stdio.h>
 
@@ -143,7 +144,7 @@ location_corelocation_set_option(void *state,
 
 int
 location_corelocation_get_location(void *state,
-				   float *lat, float *lon)
+				   location_t *location)
 {
 	int result = -1;
 
@@ -153,8 +154,8 @@ location_corelocation_get_location(void *state,
 		CFRunLoopRun();
 
 		if (delegate.success) {
-			*lat = delegate.latitude;
-			*lon = delegate.longitude;
+			location->lat = delegate.latitude;
+			location->lon = delegate.longitude;
 			result = 0;
 		}
 	}

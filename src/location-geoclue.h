@@ -23,6 +23,8 @@
 #include <stdio.h>
 #include <geoclue/geoclue-position.h>
 
+#include "redshift.h"
+
 typedef struct {
 	GeocluePosition *position;  /* main geoclue object */
 	char *provider;             /* name of a geoclue provider */
@@ -38,7 +40,7 @@ int location_geoclue_set_option(location_geoclue_state_t *state,
 				const char *key, const char *value);
 
 int location_geoclue_get_location(location_geoclue_state_t *state,
-				  float *lat, float *lon);
+				  location_t *loc);
 
 
 #endif /* ! REDSHIFT_LOCATION_GEOCLUE_H */
