@@ -196,10 +196,27 @@ on_name_appeared(GDBusConnection *conn, const gchar *name,
 
 	g_variant_unref(client_path_v);
 
-	/* Set distance threshold */
+	/* Set desktop id (basename of the .desktop file) */
 	error = NULL;
 	GVariant *ret_v =
 		g_dbus_proxy_call_sync(geoclue_client,
+				       "org.freedesktop.DBus.Properties.Set",
+				       g_variant_new("(ssv)",
+						     "org.freedesktop.GeoClue2.Client",
+						     "DesktopId",
+						     g_variant_new("s", "redshift")),
+				       G_DBUS_CALL_FLAGS_NONE,
+				       -1, NULL, &error);
+	if (ret_v == NULL) {
+		/* Ignore this error for now. The property is not available
+		   in early versions of GeoClue2. */
+	} else {
+		g_variant_unref(ret_v);
+	}
+
+	/* Set distance threshold */
+	error = NULL;
+	ret_v = g_dbus_proxy_call_sync(geoclue_client,
 				       "org.freedesktop.DBus.Properties.Set",
 				       g_variant_new("(ssv)",
 						     "org.freedesktop.GeoClue2.Client",
