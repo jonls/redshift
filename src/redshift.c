@@ -53,6 +53,11 @@
 #define MIN(x,y)  ((x) < (y) ? (x) : (y))
 #define MAX(x,y)  ((x) > (y) ? (x) : (y))
 
+/* pause() is not defined on windows platform but is not needed either.
+   Use a noop macro instead. */
+#ifdef __WIN32__
+# define pause()
+#endif
 
 #include "gamma-dummy.h"
 
