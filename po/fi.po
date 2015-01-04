@@ -9,15 +9,15 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
 "POT-Creation-Date: 2014-12-30 22:08-0500\n"
-"PO-Revision-Date: 2012-11-28 22:12+0000\n"
-"Last-Translator: janipaijanen <Unknown>\n"
+"PO-Revision-Date: 2014-12-31 23:56+0000\n"
+"Last-Translator: Jon Lund Steffensen <Unknown>\n"
 "Language-Team: Finnish <fi@li.org>\n"
-"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-04-06 17:36+0000\n"
-"X-Generator: Launchpad (build 16976)\n"
+"X-Launchpad-Export-Date: 2015-01-04 20:00+0000\n"
+"X-Generator: Launchpad (build 17286)\n"
+"Language: fi\n"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
 msgid ""
@@ -50,14 +50,12 @@ msgid "Redshift"
 msgstr ""
 
 #: ../data/applications/redshift-gtk.desktop.in.h:2
-#, fuzzy
 msgid "Color temperature adjustment"
-msgstr "Värilämpötila: %uK\n"
+msgstr ""
 
 #: ../data/applications/redshift-gtk.desktop.in.h:3
-#, fuzzy
 msgid "Color temperature adjustment tool"
-msgstr "Värilämpötilan säätö epäonnistui.\n"
+msgstr ""
 
 #. TRANSLATORS: Name printed when period of day is unknown
 #: ../src/redshift.c:303
@@ -65,9 +63,8 @@ msgid "None"
 msgstr ""
 
 #: ../src/redshift.c:304 ../src/redshift.c:1280
-#, fuzzy
 msgid "Daytime"
-msgstr "Hetki: Päivä\n"
+msgstr ""
 
 #: ../src/redshift.c:305 ../src/redshift.c:1282
 msgid "Night"
@@ -78,14 +75,14 @@ msgid "Transition"
 msgstr ""
 
 #: ../src/redshift.c:375
-#, fuzzy, c-format
+#, c-format
 msgid "Period: %s\n"
-msgstr "Hetki: Yö\n"
+msgstr ""
 
 #: ../src/redshift.c:378
-#, fuzzy, c-format
+#, c-format
 msgid "Period: %s (%.2f%% day)\n"
-msgstr "Hetki: siirtymä (%.2f%% päivä)\n"
+msgstr ""
 
 #. TRANSLATORS: help output 1
 #. LAT is latitude, LON is longitude,
@@ -328,9 +325,9 @@ msgstr ""
 #. The string following each number is an abreviation for
 #. north, source, east or west (N, S, E, W).
 #: ../src/redshift.c:1187
-#, fuzzy, c-format
+#, c-format
 msgid "Location: %.2f %s, %.2f %s\n"
-msgstr "Sijainti: %f, %f\n"
+msgstr ""
 
 #: ../src/redshift.c:1191
 #, c-format
@@ -383,9 +380,9 @@ msgstr "Gamman arvon on oltava väliltä %.1f - %.1f.\n"
 #. TRANSLATORS: The string in parenthesis is either
 #. Daytime or Night (translated).
 #: ../src/redshift.c:1279 ../src/redshift.c:1281
-#, fuzzy, c-format
+#, c-format
 msgid "Gamma (%s): %.3f, %.3f, %.3f\n"
-msgstr "Gamma: %.3f, %.3f, %.3f\n"
+msgstr ""
 
 #: ../src/redshift.c:1304
 msgid "Trying next method...\n"
@@ -491,20 +488,16 @@ msgid ""
 msgstr ""
 
 #: ../src/gamma-drm.c:214
-#, fuzzy
 msgid "Adjust gamma ramps with Direct Rendering Manager.\n"
-msgstr "Säädä gamman askellusta X RANDR laajennusta käyttäen.\n"
+msgstr ""
 
 #. TRANSLATORS: DRM help output
 #. left column must not be translated
 #: ../src/gamma-drm.c:219
-#, fuzzy
 msgid ""
 "  card=N\tGraphics card to apply adjustments to\n"
 "  crtc=N\tCRTC to apply adjustments to\n"
 msgstr ""
-"  screen=N\tX kohdenäyttö jota muutetaan\n"
-"crtc=N\tCRTC jota muutetaan\n"
 
 #: ../src/gamma-drm.c:232
 #, c-format
@@ -577,9 +570,8 @@ msgid "  screen=N\tX screen to apply adjustments to\n"
 msgstr "  screen=N\tX kohdenäyttö jota muutetaan\n"
 
 #: ../src/gamma-quartz.c:66
-#, fuzzy
 msgid "Adjust gamma ramps on OSX using Quartz.\n"
-msgstr "Säädä gamman askellusta X RANDR laajennusta käyttäen.\n"
+msgstr ""
 
 #: ../src/gamma-w32gdi.c:58 ../src/gamma-w32gdi.c:119
 #: ../src/gamma-w32gdi.c:140
@@ -619,9 +611,9 @@ msgid ""
 msgstr ""
 
 #: ../src/gamma-dummy.c:73
-#, fuzzy, c-format
+#, c-format
 msgid "Temperature: %i\n"
-msgstr "Värilämpötila: %uK\n"
+msgstr ""
 
 #: ../src/location-geoclue.c:75
 #, c-format
@@ -629,9 +621,9 @@ msgid "Unable to obtain master client: %s\n"
 msgstr ""
 
 #: ../src/location-geoclue.c:79
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to obtain master client\n"
-msgstr "Ei voida lukea järjestelmän aikaa.\n"
+msgstr ""
 
 #: ../src/location-geoclue.c:90
 #, c-format
@@ -691,44 +683,43 @@ msgid "Provider does not have a valid location available."
 msgstr ""
 
 #: ../src/location-geoclue2.c:69
-#, fuzzy
 msgid "Use the location as discovered by a GeoClue2 provider.\n"
-msgstr "Sijaintia ei saatu toimittajalta.\n"
+msgstr ""
 
 #: ../src/location-geoclue2.c:114
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to obtain location: %s.\n"
-msgstr "Ei voida lukea järjestelmän aikaa.\n"
+msgstr ""
 
 #: ../src/location-geoclue2.c:153
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to obtain GeoClue Manager: %s.\n"
-msgstr "Ei voida lukea järjestelmän aikaa.\n"
+msgstr ""
 
 #: ../src/location-geoclue2.c:168
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to obtain GeoClue client path: %s.\n"
-msgstr "Ei voida lukea järjestelmän aikaa.\n"
+msgstr ""
 
 #: ../src/location-geoclue2.c:189
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to obtain GeoClue Client: %s.\n"
-msgstr "Ei voida lukea järjestelmän aikaa.\n"
+msgstr ""
 
 #: ../src/location-geoclue2.c:211
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set distance threshold: %s.\n"
-msgstr "Säätömenetelmän %s käynnistäminen epäonnistui.\n"
+msgstr ""
 
 #: ../src/location-geoclue2.c:234
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to start GeoClue client: %s.\n"
-msgstr "Ei voida lukea järjestelmän aikaa.\n"
+msgstr ""
 
 #: ../src/location-geoclue2.c:252
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to connect to GeoClue.\n"
-msgstr "Laitetta ei saada avattua käsittelyyn.\n"
+msgstr ""
 
 #: ../src/location-corelocation.m:58
 msgid "Not authorized to obtain location from CoreLocation.\n"
@@ -826,6 +817,3 @@ msgstr ""
 #: ../src/redshift-gtk/statusicon.py:478
 msgid "Location"
 msgstr ""
-
-#~ msgid "Toggle"
-#~ msgstr "Kytke"
