@@ -43,6 +43,8 @@ vidmode_init(vidmode_state_t *state)
 	state->screen_num = -1;
 	state->saved_ramps = NULL;
 
+	state->preserve = 0;
+
 	/* Open display */
 	state->display = XOpenDisplay(NULL);
 	if (state->display == NULL) {
@@ -129,7 +131,10 @@ vidmode_print_help(FILE *f)
 
 	/* TRANSLATORS: VidMode help output
 	   left column must not be translated */
-	fputs(_("  screen=N\tX screen to apply adjustments to\n"), f);
+	fputs(_("  screen=N\t\tX screen to apply adjustments to\n"
+		"  preserve={0,1}\tWhether existing gamma should be"
+		" preserved\n"),
+	      f);
 	fputs("\n", f);
 }
 
@@ -138,6 +143,8 @@ vidmode_set_option(vidmode_state_t *state, const char *key, const char *value)
 {
 	if (strcasecmp(key, "screen") == 0) {
 		state->screen_num = atoi(value);
+	} else if (strcasecmp(key, "preserve") == 0) {
+		state->preserve = atoi(value);
 	} else {
 		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
 		return -1;
@@ -179,6 +186,21 @@ vidmode_set_temperature(vidmode_state_t *state,
 	uint16_t *gamma_r = &gamma_ramps[0*state->ramp_size];
 	uint16_t *gamma_g = &gamma_ramps[1*state->ramp_size];
 	uint16_t *gamma_b = &gamma_ramps[2*state->ramp_size];
+
+	if (state->preserve) {
+		/* Initialize gamma ramps from saved state */
+		memcpy(gamma_ramps, state->saved_ramps,
+		       3*state->ramp_size*sizeof(uint16_t));
+	} else {
+		/* Initialize gamma ramps to pure state */
+		for (int i = 0; i < state->ramp_size; i++) {
+			uint16_t value = (double)i/state->ramp_size *
+				(UINT16_MAX+1);
+			gamma_r[i] = value;
+			gamma_g[i] = value;
+			gamma_b[i] = value;
+		}
+	}
 
 	colorramp_fill(gamma_r, gamma_g, gamma_b, state->ramp_size,
 		       setting);

@@ -28,6 +28,7 @@
 
 typedef struct {
 	WORD *saved_ramps;
+	int preserve;
 } w32gdi_state_t;
 
 

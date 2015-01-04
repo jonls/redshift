@@ -51,6 +51,8 @@ randr_init(randr_state_t *state)
 	state->crtc_count = 0;
 	state->crtcs = NULL;
 
+	state->preserve = 0;
+
 	xcb_generic_error_t *error;
 
 	/* Open X server connection */
@@ -274,8 +276,11 @@ randr_print_help(FILE *f)
 
 	/* TRANSLATORS: RANDR help output
 	   left column must not be translated */
-	fputs(_("  screen=N\tX screen to apply adjustments to\n"
-		"  crtc=N\tCRTC to apply adjustments to\n"), f);
+	fputs(_("  screen=N\t\tX screen to apply adjustments to\n"
+		"  crtc=N\t\tCRTC to apply adjustments to\n"
+		"  preserve={0,1}\tWhether existing gamma should be"
+		" preserved\n"),
+	      f);
 	fputs("\n", f);
 }
 
@@ -286,6 +291,8 @@ randr_set_option(randr_state_t *state, const char *key, const char *value)
 		state->screen_num = atoi(value);
 	} else if (strcasecmp(key, "crtc") == 0) {
 		state->crtc_num = atoi(value);
+	} else if (strcasecmp(key, "preserve") == 0) {
+		state->preserve = atoi(value);
 	} else {
 		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
 		return -1;
@@ -326,6 +333,20 @@ randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num,
 	uint16_t *gamma_r = &gamma_ramps[0*ramp_size];
 	uint16_t *gamma_g = &gamma_ramps[1*ramp_size];
 	uint16_t *gamma_b = &gamma_ramps[2*ramp_size];
+
+	if (state->preserve) {
+		/* Initialize gamma ramps from saved state */
+		memcpy(gamma_ramps, state->crtcs[crtc_num].saved_ramps,
+		       3*ramp_size*sizeof(uint16_t));
+	} else {
+		/* Initialize gamma ramps to pure state */
+		for (int i = 0; i < ramp_size; i++) {
+			uint16_t value = (double)i/ramp_size * (UINT16_MAX+1);
+			gamma_r[i] = value;
+			gamma_g[i] = value;
+			gamma_b[i] = value;
+		}
+	}
 
 	colorramp_fill(gamma_r, gamma_g, gamma_b, ramp_size,
 		       setting);

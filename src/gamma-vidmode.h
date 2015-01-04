@@ -29,6 +29,7 @@
 
 typedef struct {
 	Display *display;
+	int preserve;
 	int screen_num;
 	int ramp_size;
 	uint16_t *saved_ramps;

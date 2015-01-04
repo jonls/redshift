@@ -43,6 +43,7 @@ int
 w32gdi_init(w32gdi_state_t *state)
 {
 	state->saved_ramps = NULL;
+	state->preserve = 0;
 
 	return 0;
 }
@@ -102,12 +103,26 @@ w32gdi_print_help(FILE *f)
 {
 	fputs(_("Adjust gamma ramps with the Windows GDI.\n"), f);
 	fputs("\n", f);
+
+	/* TRANSLATORS: Windows GDI help output
+	   left column must not be translated */
+	fputs(_("  preserve={0,1}\tWhether existing gamma should be"
+		" preserved\n"),
+	      f);
+	fputs("\n", f);
 }
 
 int
 w32gdi_set_option(w32gdi_state_t *state, const char *key, const char *value)
 {
-	return -1;
+	if (strcasecmp(key, "preserve") == 0) {
+		state->preserve = atoi(value);
+	} else {
+		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
+		return -1;
+	}
+
+	return 0;
 }
 
 void
@@ -152,6 +167,21 @@ w32gdi_set_temperature(w32gdi_state_t *state,
 	WORD *gamma_r = &gamma_ramps[0*GAMMA_RAMP_SIZE];
 	WORD *gamma_g = &gamma_ramps[1*GAMMA_RAMP_SIZE];
 	WORD *gamma_b = &gamma_ramps[2*GAMMA_RAMP_SIZE];
+
+	if (state->preserve) {
+		/* Initialize gamma ramps from saved state */
+		memcpy(gamma_ramps, state->saved_ramps,
+		       3*GAMMA_RAMP_SIZE*sizeof(WORD));
+	} else {
+		/* Initialize gamma ramps to pure state */
+		for (int i = 0; i < GAMMA_RAMP_SIZE; i++) {
+			WORD value = (double)i/GAMMA_RAMP_SIZE *
+				(UINT16_MAX+1);
+			gamma_r[i] = value;
+			gamma_g[i] = value;
+			gamma_b[i] = value;
+		}
+	}
 
 	colorramp_fill(gamma_r, gamma_g, gamma_b, GAMMA_RAMP_SIZE,
 		       setting);
