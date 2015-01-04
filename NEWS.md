@@ -1,8 +1,8 @@
 News
 ====
 
-v1.10 (TBD)
------------
+v1.10 (2015-01-04)
+------------------
 * Fix #80: Add Geoclue2 location provider.
 * Add CoreLocation (OSX) location provider and Quartz (OSX) gamma
   adjustment method.
