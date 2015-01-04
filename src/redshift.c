@@ -395,6 +395,27 @@ print_period(period_t period, double transition)
 	}
 }
 
+/* Print location */
+static void
+print_location(const location_t *location)
+{
+	/* TRANSLATORS: Abbreviation for `north' */
+	const char *north = _("N");
+	/* TRANSLATORS: Abbreviation for `south' */
+	const char *south = _("S");
+	/* TRANSLATORS: Abbreviation for `east' */
+	const char *east = _("E");
+	/* TRANSLATORS: Abbreviation for `west' */
+	const char *west = _("W");
+
+	/* TRANSLATORS: Append degree symbols after %f if possible.
+	   The string following each number is an abreviation for
+	   north, source, east or west (N, S, E, W). */
+	printf(_("Location: %.2f %s, %.2f %s\n"),
+	       fabs(location->lat), location->lat >= 0.f ? north : south,
+	       fabs(location->lon), location->lon >= 0.f ? east : west);
+}
+
 /* Interpolate color setting structs based on solar elevation */
 static void
 interpolate_color_settings(const transition_scheme_t *transition,
@@ -1432,23 +1453,7 @@ main(int argc, char *argv[])
 		provider->free(&location_state);
 	
 		if (verbose) {
-			/* TRANSLATORS: Abbreviation for `north' */
-			const char *north = _("N");
-			/* TRANSLATORS: Abbreviation for `south' */
-			const char *south = _("S");
-			/* TRANSLATORS: Abbreviation for `east' */
-			const char *east = _("E");
-			/* TRANSLATORS: Abbreviation for `west' */
-			const char *west = _("W");
-
-		        /* TRANSLATORS: Append degree symbols after %f if possible.
-			   The string following each number is an abreviation for
-			   north, source, east or west (N, S, E, W). */
-		        printf(_("Location: %.2f %s, %.2f %s\n"),
-			       fabs(loc.lat),
-			       loc.lat >= 0.f ? north : south,
-			       fabs(loc.lon),
-			       loc.lon >= 0.f ? east : west);
+			print_location(&loc);
 
 			printf(_("Temperatures: %dK at day, %dK at night\n"),
 			       scheme.day.temperature,
