@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/redshift\n"
 "POT-Creation-Date: 2014-12-30 22:08-0500\n"
-"PO-Revision-Date: 2012-07-14 02:07+0000\n"
-"Last-Translator: Fred <Unknown>\n"
+"PO-Revision-Date: 2014-12-31 23:53+0000\n"
+"Last-Translator: Jon Lund Steffensen <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
-"Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-04-06 17:36+0000\n"
-"X-Generator: Launchpad (build 16976)\n"
+"X-Launchpad-Export-Date: 2015-01-04 20:00+0000\n"
+"X-Generator: Launchpad (build 17286)\n"
+"Language: sv\n"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
 msgid ""
@@ -49,14 +49,12 @@ msgid "Redshift"
 msgstr ""
 
 #: ../data/applications/redshift-gtk.desktop.in.h:2
-#, fuzzy
 msgid "Color temperature adjustment"
-msgstr "Färgtemperatur: %u K\n"
+msgstr ""
 
 #: ../data/applications/redshift-gtk.desktop.in.h:3
-#, fuzzy
 msgid "Color temperature adjustment tool"
-msgstr "Färgtemperatur: %u K\n"
+msgstr ""
 
 #. TRANSLATORS: Name printed when period of day is unknown
 #: ../src/redshift.c:303
@@ -64,9 +62,8 @@ msgid "None"
 msgstr ""
 
 #: ../src/redshift.c:304 ../src/redshift.c:1280
-#, fuzzy
 msgid "Daytime"
-msgstr "Period: Dagtid\n"
+msgstr ""
 
 #: ../src/redshift.c:305 ../src/redshift.c:1282
 msgid "Night"
@@ -77,9 +74,9 @@ msgid "Transition"
 msgstr ""
 
 #: ../src/redshift.c:375
-#, fuzzy, c-format
+#, c-format
 msgid "Period: %s\n"
-msgstr "Period: Natt\n"
+msgstr ""
 
 #: ../src/redshift.c:378
 #, c-format
@@ -595,9 +592,9 @@ msgid ""
 msgstr ""
 
 #: ../src/gamma-dummy.c:73
-#, fuzzy, c-format
+#, c-format
 msgid "Temperature: %i\n"
-msgstr "Färgtemperatur: %u K\n"
+msgstr ""
 
 #: ../src/location-geoclue.c:75
 #, c-format
@@ -799,6 +796,3 @@ msgstr ""
 #: ../src/redshift-gtk/statusicon.py:478
 msgid "Location"
 msgstr ""
-
-#~ msgid "Toggle"
-#~ msgstr "Växla"

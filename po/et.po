@@ -11,12 +11,12 @@ msgstr ""
 "PO-Revision-Date: 2013-12-05 10:02+0000\n"
 "Last-Translator: Jalakas <Unknown>\n"
 "Language-Team: Estonian <et@li.org>\n"
-"Language: et\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-04-06 17:36+0000\n"
-"X-Generator: Launchpad (build 16976)\n"
+"X-Launchpad-Export-Date: 2015-01-04 20:00+0000\n"
+"X-Generator: Launchpad (build 17286)\n"
+"Language: et\n"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
 msgid ""
@@ -62,9 +62,8 @@ msgid "None"
 msgstr ""
 
 #: ../src/redshift.c:304 ../src/redshift.c:1280
-#, fuzzy
 msgid "Daytime"
-msgstr "Periood: Päev\n"
+msgstr ""
 
 #: ../src/redshift.c:305 ../src/redshift.c:1282
 msgid "Night"
@@ -75,14 +74,14 @@ msgid "Transition"
 msgstr ""
 
 #: ../src/redshift.c:375
-#, fuzzy, c-format
+#, c-format
 msgid "Period: %s\n"
-msgstr "Periood: Öö\n"
+msgstr ""
 
 #: ../src/redshift.c:378
-#, fuzzy, c-format
+#, c-format
 msgid "Period: %s (%.2f%% day)\n"
-msgstr "Periood: Üleminek (%.2f%% päev)\n"
+msgstr ""
 
 #. TRANSLATORS: help output 1
 #. LAT is latitude, LON is longitude,
