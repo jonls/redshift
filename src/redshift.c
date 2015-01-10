@@ -1006,7 +1006,7 @@ run_continual_mode(const location_t *loc,
 
 		/* Adjust temperature */
 		if (!disabled || short_trans_delta || set_adjustments) {
-			r = method->set_temperature(&state, &interp);
+			r = method->set_temperature(state, &interp);
 			if (r < 0) {
 				fputs(_("Temperature adjustment"
 					" failed.\n"), stderr);
@@ -1028,7 +1028,7 @@ run_continual_mode(const location_t *loc,
 	}
 
 	/* Restore saved gamma ramps */
-	method->restore(&state);
+	method->restore(state);
 
 	return 0;
 }
