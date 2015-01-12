@@ -52,6 +52,9 @@
 
 #define MIN(x,y)  ((x) < (y) ? (x) : (y))
 #define MAX(x,y)  ((x) > (y) ? (x) : (y))
+#define INBETWEEN(x,y,z) ((x) > (y) ? x : \
+				(y) > (z) ? (z) : \
+					(y))
 
 /* pause() is not defined on windows platform but is not needed either.
    Use a noop macro instead. */
@@ -425,6 +428,7 @@ interpolate_color_settings(const transition_scheme_t *transition,
 	const color_setting_t *day = &transition->day;
 	const color_setting_t *night = &transition->night;
 
+	elevation = INBETWEEN(transition->low, elevation, transition->high);
 	double alpha = (transition->low - elevation) /
 		(transition->low - transition->high);
 
