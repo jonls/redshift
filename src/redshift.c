@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2009-2014  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2009-2015  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #ifdef HAVE_CONFIG_H
@@ -50,8 +50,9 @@
 #include "hooks.h"
 
 
-#define MIN(x,y)  ((x) < (y) ? (x) : (y))
-#define MAX(x,y)  ((x) > (y) ? (x) : (y))
+#define MIN(x,y)        ((x) < (y) ? (x) : (y))
+#define MAX(x,y)        ((x) > (y) ? (x) : (y))
+#define CLAMP(lo,x,up)  (MAX((lo), MIN((x), (up))))
 
 /* pause() is not defined on windows platform but is not needed either.
    Use a noop macro instead. */
@@ -427,6 +428,7 @@ interpolate_color_settings(const transition_scheme_t *transition,
 
 	double alpha = (transition->low - elevation) /
 		(transition->low - transition->high);
+	alpha = CLAMP(0.0, alpha, 1.0);
 
 	result->temperature = (1.0-alpha)*night->temperature +
 		alpha*day->temperature;
