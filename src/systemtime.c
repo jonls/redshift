@@ -24,6 +24,7 @@
 # if _POSIX_TIMERS > 0
 #  include <time.h>
 # else
+#  include <time.h>
 #  include <sys/time.h>
 # endif
 #else
@@ -74,7 +75,10 @@ void
 systemtime_msleep(unsigned int msecs)
 {
 #ifndef _WIN32
-	usleep(msecs*1000);
+	struct timespec sleep;
+	sleep.tv_sec = msecs / 1000;
+	sleep.tv_nsec = (msecs % 1000)*1000000;
+	nanosleep(&sleep, NULL);
 #else
 	Sleep(msecs);
 #endif
