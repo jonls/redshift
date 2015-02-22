@@ -22,7 +22,7 @@ Build status
 Building from source
 --------------------
 
-See the file HACKING for more details on building from source.
+See the file [HACKING](HACKING.md) for more details on building from source.
 
 Donations
 ---------
