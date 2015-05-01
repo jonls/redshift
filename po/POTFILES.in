@@ -9,6 +9,7 @@ src/redshift.c
 src/config-ini.c
 
 src/gamma-drm.c
+src/gamma-wl.c
 src/gamma-randr.c
 src/gamma-vidmode.c
 src/gamma-quartz.c
