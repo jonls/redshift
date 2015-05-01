@@ -49,11 +49,6 @@
 #include "systemtime.h"
 #include "hooks.h"
 
-
-#define MIN(x,y)        ((x) < (y) ? (x) : (y))
-#define MAX(x,y)        ((x) > (y) ? (x) : (y))
-#define CLAMP(lo,x,up)  (MAX((lo), MIN((x), (up))))
-
 /* pause() is not defined on windows platform but is not needed either.
    Use a noop macro instead. */
 #ifdef __WIN32__
@@ -97,6 +92,8 @@
 # include "location-corelocation.h"
 #endif
 
+#undef CLAMP
+#define CLAMP(lo,mid,up)  (((lo) > (mid)) ? (lo) : (((mid) < (up)) ? (mid) : (up)))
 
 /* Union of state data for gamma adjustment methods */
 typedef union {
@@ -978,8 +975,7 @@ run_continual_mode(const location_t *loc,
 			}
 
 			/* Clamp alpha value */
-			adjustment_alpha =
-				MAX(0.0, MIN(adjustment_alpha, 1.0));
+			adjustment_alpha = CLAMP(0.0, adjustment_alpha, 1.0);
 		}
 
 		/* Interpolate between 6500K and calculated
