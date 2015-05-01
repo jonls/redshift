@@ -49,7 +49,9 @@
 #include "systemtime.h"
 #include "hooks.h"
 
-
+#define SET_FLAG(N, F) ((N) |= (F)) 
+#define TEST_FLAG(N, F) ((N) & (F))
+#define CLR_FLAG(N, F) ((N) &= ~(F))
 #define MIN(x,y)        ((x) < (y) ? (x) : (y))
 #define MAX(x,y)        ((x) > (y) ? (x) : (y))
 #define CLAMP(lo,x,up)  (MAX((lo), MIN((x), (up))))
@@ -116,7 +118,6 @@ typedef union {
 	w32gdi_state_t w32gdi;
 #endif
 } gamma_state_t;
-
 
 /* Gamma adjustment method structs */
 static const gamma_method_t gamma_methods[] = {
@@ -295,13 +296,21 @@ static const location_provider_t location_providers[] = {
 #define SLEEP_DURATION_SHORT  100
 
 /* Program modes. */
-typedef enum {
-	PROGRAM_MODE_CONTINUAL,
-	PROGRAM_MODE_ONE_SHOT,
-	PROGRAM_MODE_PRINT,
-	PROGRAM_MODE_RESET,
-	PROGRAM_MODE_MANUAL
-} program_mode_t;
+//#define PROGRAM_MODE_CONTINUAL - redundant with ONE_SHOT
+#define PROGRAM_MODE_ONE_SHOT 1<<0
+#define	PROGRAM_MODE_PRINT 1<<1
+#define	PROGRAM_MODE_RESET 1<<2
+#define	PROGRAM_MODE_MANUAL 1<<3
+#define PROGRAM_PARSE_OPT 1<<4
+#define PROGRAM_USE_CONF 1<<5
+#define APPLY_GAMMA	1<<6
+#define APPLY_TEMPERATURE 1<<7
+#define APPLY_BRIGHTNESS 1<<8
+#define APPLY_TRANSITION 1<<9
+#define APPLY_SCHEME 1<<10
+
+static int verbose = 0;
+static int reload = 0;
 
 /* Transition scheme.
    The solar elevations at which the transition begins/ends,
@@ -312,6 +321,18 @@ typedef struct {
 	color_setting_t day;
 	color_setting_t night;
 } transition_scheme_t;
+
+typedef struct {
+	transition_scheme_t *scheme;
+	const gamma_method_t *method;
+	gamma_state_t *gamma_state;
+	const location_provider_t *provider;
+	location_t *loc; 
+	uint mode;
+	int temp_set; 
+	int transition;  
+} redshift_state_t; 
+
 
 /* Names of periods of day */
 static const char *period_names[] = {
@@ -339,6 +360,13 @@ static void
 sigdisable(int signo)
 {
 	disable = 1;
+}
+
+/* Signal handler for reload config signal */
+static void
+sigreload(int signo) 
+{
+	reload = 1;
 }
 
 #else /* ! HAVE_SIGNAL_H || __WIN32__ */
@@ -390,8 +418,8 @@ print_period(period_t period, double transition)
 		break;
 	case PERIOD_TRANSITION:
 		printf(_("Period: %s (%.2f%% day)\n"),
-		       gettext(period_names[period]),
-		       transition*100);
+			   gettext(period_names[period]),
+			   transition*100);
 		break;
 	}
 }
@@ -413,8 +441,8 @@ print_location(const location_t *location)
 	   The string following each number is an abreviation for
 	   north, source, east or west (N, S, E, W). */
 	printf(_("Location: %.2f %s, %.2f %s\n"),
-	       fabs(location->lat), location->lat >= 0.f ? north : south,
-	       fabs(location->lon), location->lon >= 0.f ? east : west);
+		   fabs(location->lat), location->lat >= 0.f ? north : south,
+		   fabs(location->lon), location->lon >= 0.f ? east : west);
 }
 
 /* Interpolate color setting structs based on solar elevation */
@@ -463,14 +491,14 @@ print_help(const char *program_name)
 	   no-wrap */
 	fputs(_("  -h\t\tDisplay this help message\n"
 		"  -v\t\tVerbose output\n"
-                "  -V\t\tShow program version\n"), stdout);
+				"  -V\t\tShow program version\n"), stdout);
 	fputs("\n", stdout);
 
 	/* TRANSLATORS: help output 4
 	   `list' must not be translated
 	   no-wrap */
 	fputs(_("  -b DAY:NIGHT\tScreen brightness to apply (between 0.1 and 1.0)\n"
-                "  -c FILE\tLoad settings from specified configuration file\n"
+				"  -c FILE\tLoad settings from specified configuration file\n"
 		"  -g R:G:B\tAdditional gamma correction to apply\n"
 		"  -l LAT:LON\tYour current location\n"
 		"  -l PROVIDER\tSelect provider for automatic"
@@ -485,7 +513,7 @@ print_help(const char *program_name)
 		"  -x\t\tReset mode (remove adjustment from screen)\n"
 		"  -r\t\tDisable temperature transitions\n"
 		"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"),
-	      stdout);
+		  stdout);
 	fputs("\n", stdout);
 
 	/* TRANSLATORS: help output 5 */
@@ -502,7 +530,7 @@ print_help(const char *program_name)
 	printf(_("Default values:\n\n"
 		 "  Daytime temperature: %uK\n"
 		 "  Night temperature: %uK\n"),
-	       DEFAULT_DAY_TEMP, DEFAULT_NIGHT_TEMP);
+		   DEFAULT_DAY_TEMP, DEFAULT_NIGHT_TEMP);
 
 	fputs("\n", stdout);
 
@@ -594,7 +622,7 @@ provider_try_start(const location_provider_t *provider,
 			   and for backwards compatability. We add the proper
 			   keys here before calling set_option(). */
 			if (strcmp(provider->name, "manual") == 0 &&
-			    i < sizeof(manual_keys)/sizeof(manual_keys[0])) {
+				i < sizeof(manual_keys)/sizeof(manual_keys[0])) {
 				key = manual_keys[i];
 				value = args;
 			} else {
@@ -646,10 +674,10 @@ method_try_start(const gamma_method_t *method,
 			method->name);
 		return -1;
 	}
-
 	/* Set method options from config file. */
 	config_ini_section_t *section =
 		config_ini_get_section(config, method->name);
+		
 	if (section != NULL) {
 		config_ini_setting_t *setting = section->settings;
 		while (setting != NULL) {
@@ -774,7 +802,7 @@ find_gamma_method(const char *name)
 	for (int i = 0; gamma_methods[i].name != NULL; i++) {
 		const gamma_method_t *m = &gamma_methods[i];
 		if (strcasecmp(name, m->name) == 0) {
-		        method = m;
+				method = m;
 			break;
 		}
 	}
@@ -807,7 +835,7 @@ run_continual_mode(const location_t *loc,
 		   const transition_scheme_t *scheme,
 		   const gamma_method_t *method,
 		   gamma_state_t *state,
-		   int transition, int verbose)
+		   int transition)
 {
 	int r;
 
@@ -852,6 +880,17 @@ run_continual_mode(const location_t *loc,
 		perror("sigaction");
 		return -1;
 	}
+	
+	/* Install signal handler for USR2 signal */
+	sigact.sa_handler = sigreload; 
+	sigact.sa_mask = sigset;
+	sigact.sa_flags =0;
+	
+	r = sigaction(SIGUSR2, &sigact, NULL); 
+	if (r < 0) {
+		perror("sigaction");
+		return -1;
+	}
 
 	/* Ignore CHLD signal. This causes child processes
 	   (hooks) to be reaped automatically. */
@@ -880,6 +919,7 @@ run_continual_mode(const location_t *loc,
 	/* Continuously adjust color temperature */
 	int done = 0;
 	int disabled = 0;
+	int reload = 0;
 	while (1) {
 		/* Check to see if disable signal was caught */
 		if (disable) {
@@ -896,7 +936,7 @@ run_continual_mode(const location_t *loc,
 
 			if (verbose) {
 				printf(_("Status: %s\n"), disabled ?
-				       _("Disabled") : _("Enabled"));
+					   _("Disabled") : _("Enabled"));
 			}
 		}
 
@@ -919,7 +959,11 @@ run_continual_mode(const location_t *loc,
 			}
 			exiting = 0;
 		}
-
+		
+		/* Check whether a signal to reload the config was passed */
+		if (reload) {
+		}
+		
 		/* Read timestamp */
 		double now;
 		r = systemtime_get_time(&now);
@@ -973,7 +1017,7 @@ run_continual_mode(const location_t *loc,
 
 			/* Stop transition when done */
 			if (adjustment_alpha <= 0.0 ||
-			    adjustment_alpha >= 1.0) {
+				adjustment_alpha >= 1.0) {
 				short_trans_delta = 0;
 			}
 
@@ -995,14 +1039,14 @@ run_continual_mode(const location_t *loc,
 
 		if (verbose) {
 			if (interp.temperature !=
-			    prev_interp.temperature) {
+				prev_interp.temperature) {
 				printf(_("Color temperature: %uK\n"),
-				       interp.temperature);
+					   interp.temperature);
 			}
 			if (interp.brightness !=
-			    prev_interp.brightness) {
+				prev_interp.brightness) {
 				printf(_("Brightness: %.2f\n"),
-				       interp.brightness);
+					   interp.brightness);
 			}
 		}
 
@@ -1019,7 +1063,7 @@ run_continual_mode(const location_t *loc,
 		/* Save temperature as previous */
 		prev_period = period;
 		memcpy(&prev_interp, &interp,
-		       sizeof(color_setting_t));
+			   sizeof(color_setting_t));
 
 		/* Sleep for 5 seconds or 0.1 second. */
 		if (short_trans_delta) {
@@ -1032,6 +1076,741 @@ run_continual_mode(const location_t *loc,
 	/* Restore saved gamma ramps */
 	method->restore(state);
 
+	return 0;
+}
+
+static int 
+redshift_state_set_from_config(config_ini_state_t *config_state, redshift_state_t *state) 
+{
+	/* Read global config settings. */
+	config_ini_section_t *section = config_ini_get_section(config_state, "redshift");
+	if (section == NULL) {
+		return 0; //Not sure if we should fail here or not?
+	}
+	config_ini_setting_t *setting = section->settings;
+	transition_scheme_t *scheme = state->scheme;
+	int r;
+	while (setting != NULL) {
+		if (strcasecmp(setting->name, "temp-day") == 0) {
+			if (scheme->day.temperature < 0) {
+				scheme->day.temperature = atoi(setting->value);
+			}
+		} else if (strcasecmp(setting->name, "temp-night") == 0) {
+			if (scheme->night.temperature < 0) {
+				scheme->night.temperature =
+					atoi(setting->value);
+			}
+		} else if (strcasecmp(setting->name, "transition") == 0) {
+			if (state->transition < 0) {
+				state->transition = !!atoi(setting->value);
+			}
+		} else if (strcasecmp(setting->name,
+					  "brightness") == 0) {
+			if (isnan(scheme->day.brightness)) {
+				scheme->day.brightness =
+					atof(setting->value);
+			}
+			if (isnan(scheme->night.brightness)) {
+				scheme->night.brightness =
+					atof(setting->value);
+			}
+		} else if (strcasecmp(setting->name,
+					  "brightness-day") == 0) {
+			if (isnan(scheme->day.brightness)) {
+				scheme->day.brightness =
+					atof(setting->value);
+			}
+		} else if (strcasecmp(setting->name,
+					  "brightness-night") == 0) {
+			if (isnan(scheme->night.brightness)) {
+				scheme->night.brightness =
+					atof(setting->value);
+			}
+		} else if (strcasecmp(setting->name,
+					  "elevation-high") == 0) {
+			scheme->high = atof(setting->value);
+		} else if (strcasecmp(setting->name,
+					  "elevation-low") == 0) {
+			scheme->low = atof(setting->value);
+		} else if (strcasecmp(setting->name, "gamma") == 0) {
+			if (isnan(scheme->day.gamma[0])) {
+				r = parse_gamma_string(setting->value,
+							   scheme->day.gamma);
+				if (r < 0) {
+					fputs(_("Malformed gamma"
+						" setting.\n"),
+						  stderr);
+					return -1;
+				}
+				memcpy(scheme->night.gamma, scheme->day.gamma,
+					   sizeof(scheme->night.gamma));
+			}
+		} else if (strcasecmp(setting->name, "gamma-day") == 0) {
+			if (isnan(scheme->day.gamma[0])) {
+				r = parse_gamma_string(setting->value,
+							   scheme->day.gamma);
+				if (r < 0) {
+					fputs(_("Malformed gamma"
+						" setting.\n"),
+						  stderr);
+					return -1;
+				}
+			}
+		} else if (strcasecmp(setting->name, "gamma-night") == 0) {
+			if (isnan(scheme->night.gamma[0])) {
+				r = parse_gamma_string(setting->value,
+							   scheme->night.gamma);
+				if (r < 0) {
+					fputs(_("Malformed gamma"
+						" setting.\n"),
+						  stderr);
+					return -1;
+				}
+			}
+		} else if (strcasecmp(setting->name, "adjustment-method") == 0) {
+			if (state->method == NULL) {
+				state->method = find_gamma_method(setting->value);
+				if (state->method == NULL) {
+					fprintf(stderr, _("Unknown"
+							  " adjustment"
+							  " method"
+							  " `%s'.\n"),
+						setting->value);
+					return -1;
+				}
+			}
+		} else if (strcasecmp(setting->name, "location-provider") == 0) {
+			if (state->provider == NULL) {
+				state->provider = find_location_provider(
+					setting->value);
+				if (state->provider == NULL) {
+					fprintf(stderr, _("Unknown"
+							  " location"
+							  " provider"
+							  " `%s'.\n"),
+						setting->value);
+					return -1;
+				}
+			}
+		} else {
+			fprintf(stderr, _("Unknown configuration"
+					  " setting `%s'.\n"),
+				setting->name);
+		}
+		setting = setting->next;
+	}
+	return 0;
+}
+
+static int
+redshift_gamma_state_init(redshift_state_t *state, config_ini_state_t *config_state, char *method_args) 
+{
+	/* Initialize gamma adjustment method. If method is NULL
+	   try all methods until one that works is found. */
+	int r;
+	if (state->method != NULL) {
+		/* Use method specified on command line. */
+		r = method_try_start(state->method, state->gamma_state, config_state,
+					 method_args);
+		if (r < 0) {
+			return -1;
+		}
+		return 0; 
+	}
+	/* Try all methods, use the first that works. */
+	for (int i = 0; gamma_methods[i].name != NULL; i++) {
+		const gamma_method_t *m = &gamma_methods[i];
+		if (!m->autostart) continue;
+		r = method_try_start(m, state->gamma_state, config_state, NULL);
+		//r=-1;
+		if (r < 0) {
+			fputs(_("Trying next method...\n"), stderr);
+			continue;
+		}
+
+		/* Found method that works. */
+		printf(_("Using method `%s'.\n"), m->name);
+		state->method = m;
+		return 0;
+	}
+	/* Failure if no methods were successful at this point. */
+	if (state->method == NULL) {
+		fputs(_("No more methods to try.\n"), stderr);
+		return -1;
+	}
+}
+
+static int 
+location_provider_setup(config_ini_state_t *config_state, transition_scheme_t *scheme, const location_provider_t *provider, location_t *loc, char *provider_args)
+{
+	int r;
+
+	/* Initialize location provider. If provider is NULL
+	   try all providers until one that works is found. */
+	location_state_t location_state;
+	
+	if (provider != NULL) {
+		/* Use provider specified on command line. */
+		r = provider_try_start(provider, &location_state,
+					   config_state, provider_args);
+		if (r < 0) return -1;
+	} else {
+		/* Try all providers, use the first that works. */
+		for (int i = 0;
+			 location_providers[i].name != NULL; i++) {
+			const location_provider_t *p =
+				&location_providers[i];
+			fprintf(stderr,
+				_("Trying location provider `%s'...\n"),
+				p->name);
+			r = provider_try_start(p, &location_state,
+						   config_state, NULL);
+			if (r < 0) {
+				fputs(_("Trying next provider...\n"),
+					  stderr);
+				continue;
+			}
+
+			/* Found provider that works. */
+			printf(_("Using provider `%s'.\n"), p->name);
+			provider = p;
+			break;
+		}
+
+		/* Failure if no providers were successful at this
+		   point. */
+		if (provider == NULL) {
+			fputs(_("No more location providers"
+				" to try.\n"), stderr);
+			return -1;
+		}
+	}
+
+	/* Get current location. */
+	r = provider->get_location(&location_state, loc);
+	if (r < 0) {
+			fputs(_("Unable to get location from provider.\n"),
+				  stderr);
+			return -1;
+	}
+
+	provider->free(&location_state);
+
+	if (verbose) {
+		print_location(loc);
+
+		printf(_("Temperatures: %dK at day, %dK at night\n"),
+			   scheme->day.temperature,
+			   scheme->night.temperature);
+
+			/* TRANSLATORS: Append degree symbols if possible. */
+		printf(_("Solar elevations: day above %.1f, night below %.1f\n"),
+			   scheme->high, scheme->low);
+	}
+
+	/* Latitude */
+	if (loc->lat < MIN_LAT || loc->lat > MAX_LAT) {
+			/* TRANSLATORS: Append degree symbols if possible. */
+			fprintf(stderr,
+					_("Latitude must be between %.1f and %.1f.\n"),
+					MIN_LAT, MAX_LAT);
+			return -1;
+	}
+
+	/* Longitude */
+	if (loc->lon < MIN_LON || loc->lon > MAX_LON) {
+			/* TRANSLATORS: Append degree symbols if possible. */
+			fprintf(stderr,
+					_("Longitude must be between"
+					  " %.1f and %.1f.\n"), MIN_LON, MAX_LON);
+			return -1;
+	}
+}
+
+
+
+int 
+transition_scheme_validate(transition_scheme_t *scheme) 
+{
+	
+	/* Color temperature */
+	if (scheme->day.temperature < MIN_TEMP ||
+		scheme->day.temperature > MAX_TEMP ||
+		scheme->night.temperature < MIN_TEMP ||
+		scheme->night.temperature > MAX_TEMP) {
+		fprintf(stderr,
+			_("Temperature must be between %uK and %uK.\n"),
+			MIN_TEMP, MAX_TEMP);
+		return -1;
+	}
+
+	/* Solar elevations */
+	if (scheme->high < scheme->low) {
+			fprintf(stderr,
+					_("High transition elevation cannot be lower than"
+			  " the low transition elevation.\n"));
+			return -1;
+	}
+
+	/* Brightness */
+	if (scheme->day.brightness < MIN_BRIGHTNESS ||
+		scheme->day.brightness > MAX_BRIGHTNESS ||
+		scheme->night.brightness < MIN_BRIGHTNESS ||
+		scheme->night.brightness > MAX_BRIGHTNESS) {
+		fprintf(stderr,
+			_("Brightness values must be between %.1f and %.1f.\n"),
+			MIN_BRIGHTNESS, MAX_BRIGHTNESS);
+		return -1;
+	}
+
+	if (verbose) {
+		printf(_("Brightness: %.2f:%.2f\n"),
+			   scheme->day.brightness, scheme->night.brightness);
+	}
+
+	/* Gamma */
+	if (!gamma_is_valid(scheme->day.gamma) ||
+		!gamma_is_valid(scheme->night.gamma)) {
+		fprintf(stderr,
+			_("Gamma value must be between %.1f and %.1f.\n"),
+			MIN_GAMMA, MAX_GAMMA);
+		return -1;
+	}
+
+	if (verbose) {
+		/* TRANSLATORS: The string in parenthesis is either
+		   Daytime or Night (translated). */
+		printf(_("Gamma (%s): %.3f, %.3f, %.3f\n"),
+			   _("Daytime"), scheme->day.gamma[0],
+			   scheme->day.gamma[1], scheme->day.gamma[2]);
+		printf(_("Gamma (%s): %.3f, %.3f, %.3f\n"),
+			   _("Night"), scheme->night.gamma[0],
+			   scheme->night.gamma[1], scheme->night.gamma[2]);
+	}
+	return 0;
+}
+
+transition_scheme_t *
+transition_scheme_new(void) 
+{
+	/* Settings for day, night and transition.
+	 Initialized to indicate that the values are not set yet. */
+	 
+	transition_scheme_t * scheme = malloc(sizeof(transition_scheme_t));
+	scheme->high = TRANSITION_HIGH;
+	scheme->low = TRANSITION_LOW;
+	scheme->day.temperature = -1;
+	scheme->day.gamma[0] = NAN;
+	scheme->day.brightness = NAN;
+
+	scheme->night.temperature = -1;
+	scheme->night.gamma[0] = NAN;
+	scheme->night.brightness = NAN;
+	return scheme; 
+}
+
+void transition_scheme_finalize(transition_scheme_t *scheme) 
+{	
+	if (scheme != NULL) {
+		free(scheme);
+	}
+}
+
+void gamma_state_finalize(gamma_state_t *state) 
+{
+	if (state != NULL) {
+		free(state);
+	}
+}
+
+static void redshift_state_init(redshift_state_t *redshift_state) 
+{
+	/* const gamma_method_t */
+	redshift_state->method = NULL; 
+	/* const location_provider_t */
+	redshift_state->provider = NULL; 
+	/* transition_scheme_t */
+	redshift_state->scheme = transition_scheme_new(); 
+	/* const gamme_state_t */
+	redshift_state->gamma_state = malloc(sizeof(gamma_state_t));
+	/* init mode ( PROGRAM_MODE_CONTINUAL ) */
+	redshift_state->mode = 0;
+	redshift_state->transition = -1;
+	redshift_state->temp_set = -1;
+	redshift_state->loc = malloc(sizeof(location_t));
+	redshift_state->loc->lat = NAN;
+	redshift_state->loc->lon = NAN;
+}
+
+static void redshift_state_finalize(redshift_state_t *redshift_state) {
+	gamma_state_finalize(redshift_state->gamma_state);
+	transition_scheme_finalize(redshift_state->scheme);
+	if (redshift_state->loc != NULL) {
+		free(redshift_state->loc);
+	}
+}
+
+void transition_scheme_set_default(transition_scheme_t *scheme) 
+{
+	/* Use default values for settings that were neither defined in
+	   the config file nor on the command line. */
+	if (scheme->day.temperature < 0) {
+		scheme->day.temperature = DEFAULT_DAY_TEMP;
+	}
+	if (scheme->night.temperature < 0) {
+		scheme->night.temperature = DEFAULT_NIGHT_TEMP;
+	}
+
+	if (isnan(scheme->day.brightness)) {
+		scheme->day.brightness = DEFAULT_BRIGHTNESS;
+	}
+	if (isnan(scheme->night.brightness)) {
+		scheme->night.brightness = DEFAULT_BRIGHTNESS;
+	}
+
+	if (isnan(scheme->day.gamma[0])) {
+		scheme->day.gamma[0] = DEFAULT_GAMMA;
+		scheme->day.gamma[1] = DEFAULT_GAMMA;
+		scheme->day.gamma[2] = DEFAULT_GAMMA;
+	}
+	if (isnan(scheme->night.gamma[0])) {
+		scheme->night.gamma[0] = DEFAULT_GAMMA;
+		scheme->night.gamma[1] = DEFAULT_GAMMA;
+		scheme->night.gamma[2] = DEFAULT_GAMMA;
+	}
+}
+
+static int 
+redshift_parse_opt(int argc, char *argv[], redshift_state_t *state, char *method_args, char *provider_args, char *config_filepath)
+{
+	transition_scheme_t *scheme= state->scheme;
+	char *s;
+	/* Parse command line arguments. */
+	int opt, r;
+	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:prt:vVx")) != -1) {
+		switch (opt) {
+		case 'b':
+			parse_brightness_string(optarg,
+						&scheme->day.brightness,
+						&scheme->night.brightness);
+			SET_FLAG(state->mode, APPLY_BRIGHTNESS);
+			break;
+		case 'c':
+			if (config_filepath != NULL) free(config_filepath);
+			config_filepath = strdup(optarg);
+			break;
+		case 'g':
+			r = parse_gamma_string(optarg, scheme->day.gamma);
+			if (r < 0) {
+				fputs(_("Malformed gamma argument.\n"),
+					  stderr);
+				fputs(_("Try `-h' for more"
+					" information.\n"), stderr);
+				return -1;
+			}
+			
+			SET_FLAG(state->mode, APPLY_GAMMA);
+			/* Set night gamma to the same value as day gamma.
+			   To set these to distinct values use the config
+			   file. */
+			memcpy(scheme->night.gamma, scheme->day.gamma,
+				   sizeof(scheme->night.gamma));
+			break;
+		case 'h':
+			print_help(argv[0]);
+			return 0;
+			break;
+		case 'l':
+			/* Print list of providers if argument is `list' */
+			if (strcasecmp(optarg, "list") == 0) {
+				print_provider_list();
+				return 0;
+			}
+
+			char *provider_name = NULL;
+
+			/* Don't save the result of strtof(); we simply want
+			   to know if optarg can be parsed as a float. */
+			errno = 0;
+			char *end;
+			strtof(optarg, &end);
+			if (errno == 0 && *end == ':') {
+				/* Use instead as arguments to `manual'. */
+				provider_name = "manual";
+				SET_FLAG(state->mode, PROGRAM_MODE_MANUAL); 
+				provider_args = optarg;
+			} else {
+				/* Split off provider arguments. */
+				s = strchr(optarg, ':');
+				if (s != NULL) {
+					*(s++) = '\0';
+					provider_args = s;
+				}
+
+				provider_name = optarg;
+			}
+
+			/* Lookup provider from name. */
+			state->provider = find_location_provider(provider_name);
+			if (state->provider == NULL) {
+				fprintf(stderr, _("Unknown location provider"
+						  " `%s'.\n"), provider_name);
+				return -1;
+			}
+
+			/* Print provider help if arg is `help'. */
+			if (provider_args != NULL &&
+				strcasecmp(provider_args, "help") == 0) {
+				state->provider->print_help(stdout);
+				return 0;
+			}
+			break;
+		case 'm':
+			/* Print list of methods if argument is `list' */
+			if (strcasecmp(optarg, "list") == 0) {
+				print_method_list();
+				return 0;
+			}
+
+			/* Split off method arguments. */
+			s = strchr(optarg, ':');
+			if (s != NULL) {
+				*(s++) = '\0';
+				method_args = s;
+			}
+
+			/* Find adjustment method by name. */
+			state->method = find_gamma_method(optarg);
+			if (state->method == NULL) {
+				/* TRANSLATORS: This refers to the method
+				   used to adjust colors e.g VidMode */
+				fprintf(stderr, _("Unknown adjustment method"
+						  " `%s'.\n"), optarg);
+				return -1;
+			}
+
+			/* Print method help if arg is `help'. */
+			if (method_args != NULL &&
+				strcasecmp(method_args, "help") == 0) {
+				state->method->print_help(stdout);
+				return 0;
+			}
+			break;
+		case 'o':
+			SET_FLAG(state->mode, PROGRAM_MODE_ONE_SHOT);
+			break;
+		case 'O':
+			SET_FLAG(state->mode, PROGRAM_MODE_MANUAL);
+			SET_FLAG(state->mode, PROGRAM_MODE_ONE_SHOT);
+			SET_FLAG(state->mode, APPLY_TEMPERATURE);
+			//CLR_FLAG(state->mode, PROGRAM_USE_CONF);
+			state->temp_set = atoi(optarg);
+			break;
+		case 'p':
+			SET_FLAG(state->mode, PROGRAM_MODE_PRINT);
+			SET_FLAG(state->mode, PROGRAM_MODE_ONE_SHOT);
+			break;
+		case 'r':
+			state->transition = 0;
+			SET_FLAG(state->mode, APPLY_TRANSITION);
+			break;
+		case 't':
+			s = strchr(optarg, ':');
+			if (s == NULL) {
+				fputs(_("Malformed temperature argument.\n"),
+					  stderr);
+				fputs(_("Try `-h' for more information.\n"),
+					  stderr);
+				return -1;
+			}
+			*(s++) = '\0';
+			scheme->day.temperature = atoi(optarg);
+			scheme->night.temperature = atoi(s);
+			SET_FLAG(state->mode, APPLY_SCHEME);
+			break;
+		case 'v':
+			verbose = 1;
+			break;
+				case 'V':
+						printf("%s\n", PACKAGE_STRING);
+						return 0;
+						break;
+		case 'x':
+			SET_FLAG(state->mode, PROGRAM_MODE_RESET);
+			SET_FLAG(state->mode, APPLY_TEMPERATURE);
+			SET_FLAG(state->mode, APPLY_GAMMA); //For now it's default
+			break;
+		case '?':
+			fputs(_("Try `-h' for more information.\n"), stderr);
+			return -1;
+			break;
+		}
+	}
+	return 1;
+}
+
+static int
+redshift_state_setup(redshift_state_t *state, int argc, char *argv[]) {
+	transition_scheme_t *scheme= state->scheme;
+	config_ini_state_t config_state; 
+	char *method_args = NULL;
+	char *provider_args = NULL;
+	char *config_filepath = NULL;
+	int r; 
+	
+	/* Parse Options */ 
+	if (TEST_FLAG(state->mode, PROGRAM_PARSE_OPT)) {
+		r = redshift_parse_opt(argc, argv, state, method_args, provider_args, config_filepath);
+		/* Check for exit_failure or exit_success */
+		if (r == 0) {
+			return r;
+		}
+		else if (r == -1) {
+			return r;
+		}
+	}
+	
+	/* Setup Config Stuff */ 
+	//Currently not running config_init breaks somethings since it sets defaults as well
+	if (TEST_FLAG(state->mode, PROGRAM_USE_CONF)) { 
+		r = config_ini_init(&config_state, config_filepath);
+		if (r < 0) {
+			fputs("Unable to load config file.\n", stderr);
+			return r;
+		}
+		if (config_filepath != NULL) {
+			free(config_filepath); 
+		}
+		r = redshift_state_set_from_config(&config_state, state);
+		if (r < 0) {
+			return r;
+		}
+	}
+	
+	/* Set unset values to default in scheme */
+	transition_scheme_set_default(state->scheme);
+
+	/* Transition set default -- should get moved */
+	if (state->transition < 0) {
+		state->transition = 1;
+	}
+	
+	/* Location provider is not needed for reset mode and manual mode. */
+	if (!TEST_FLAG(state->mode, PROGRAM_MODE_MANUAL) && !TEST_FLAG(state->mode, PROGRAM_MODE_RESET)) {
+		r = location_provider_setup(&config_state, state->scheme, state->provider, state->loc, provider_args);
+		printf("location_provider_setup r: %i \n", r);
+		if (r < 0) {
+			return r;
+		}
+	}
+	
+	/* Validate Scheme has been set correctly */ 
+	r= transition_scheme_validate(state->scheme);
+	if (r < 0) {
+		return r;
+	}
+	
+	/* If temp is not being set, we don't check it */
+	if (TEST_FLAG(state->mode, APPLY_TEMPERATURE)) {
+		if (state->temp_set < MIN_TEMP || state->temp_set > MAX_TEMP) {
+			fprintf(stderr,
+				_("Temperature must be between %uK and %uK.\n"),
+				MIN_TEMP, MAX_TEMP);
+			return -1;
+		}
+	}
+	
+	/* Init gamma settings */
+	r = redshift_gamma_state_init(state, &config_state, method_args);
+	if (r < 0) {
+		return r;
+	}
+	
+	return 1;
+}
+
+static int
+redshift_state_apply(redshift_state_t *state)
+{
+	int r;
+	transition_scheme_t *scheme= state->scheme;
+	/* It's silly but to reset we actually need to parse config and get the right gamma method */
+	/* The ideal thing might be to split LOADING into section based methods and add an APPLY set of flags instead of the MODE enum
+	 * Then we can down through a switch and load only the things neccesary according to the APPLY flags set by command-line arguments
+	 * */
+	if (TEST_FLAG(state->mode, PROGRAM_MODE_RESET)) {
+		color_setting_t reset = { NEUTRAL_TEMP, { 1.0, 1.0, 1.0 }, 1.0 };
+		r = state->method->set_temperature(state->gamma_state, &reset);
+		if (r < 0) {
+			fputs(_("Temperature adjustment failed.\n"), stderr);
+			return r;
+		}
+		return 0;
+	}
+	else if (TEST_FLAG(state->mode, PROGRAM_MODE_MANUAL) && TEST_FLAG(state->mode, PROGRAM_MODE_ONE_SHOT)) {
+		if (verbose) printf(_("Color temperature: %uK\n"), state->temp_set);
+
+		/* Adjust temperature */
+		color_setting_t manual;
+		memcpy(&manual, &scheme->day, sizeof(color_setting_t));
+		manual.temperature = state->temp_set;
+		r = state->method->set_temperature(state->gamma_state, &manual);
+		if (r < 0) {
+			fputs(_("Temperature adjustment failed.\n"), stderr);
+			return -1;
+		}
+	}
+	else if (TEST_FLAG(state->mode, PROGRAM_MODE_ONE_SHOT)) {
+		/* Current angular elevation of the sun */
+		double now;
+		r = systemtime_get_time(&now);
+		if (r < 0) {
+			fputs(_("Unable to read system time.\n"), stderr);
+			redshift_state_finalize(state);
+			return r;
+		}
+
+		double elevation = solar_elevation(now, state->loc->lat, state->loc->lon);
+
+		if (verbose) {
+			/* TRANSLATORS: Append degree symbol if possible. */
+			printf(_("Solar elevation: %f\n"), elevation);
+		}
+		
+		/* Use elevation of sun to set color temperature */
+		color_setting_t interp;
+		interpolate_color_settings(scheme, elevation, &interp);
+		
+		//Split these into different print functions later
+		if (TEST_FLAG(state->mode, PROGRAM_MODE_PRINT) || verbose) {
+			period_t period = get_period(scheme, elevation);
+			double transition = get_transition_progress(scheme, elevation);
+			
+			print_period(period, transition);
+			printf(_("Color temperature: %uK\n"), interp.temperature);
+			printf(_("Brightness: %.2f\n"), interp.brightness);
+			//If printing we are done here
+			if TEST_FLAG(state->mode, PROGRAM_MODE_PRINT) return 0;
+		}
+		
+		/* Adjust temperature */
+		r = state->method->set_temperature(state->gamma_state, &interp);
+		if (r < 0) {
+			fputs(_("Temperature adjustment failed.\n"), stderr);
+			return -1;
+		}
+	}
+	else {
+		return 1;
+	}
+	
+	/* In Quartz (OSX) the gamma adjustments will automatically
+	revert when the process exits. Therefore, we have to loop
+	until CTRL-C is received. */
+	if (strcmp(state->method->name, "quartz") == 0) {
+		fputs(_("Press ctrl-c to stop...\n"), stderr);
+		pause();
+	}
 	return 0;
 }
 
@@ -1050,659 +1829,53 @@ main(int argc, char *argv[])
 	textdomain(PACKAGE);
 #endif
 
-	/* Initialize settings to NULL values. */
-	char *config_filepath = NULL;
-
-	/* Settings for day, night and transition.
-	   Initialized to indicate that the values are not set yet. */
-	transition_scheme_t scheme =
-		{ TRANSITION_HIGH, TRANSITION_LOW };
-
-	scheme.day.temperature = -1;
-	scheme.day.gamma[0] = NAN;
-	scheme.day.brightness = NAN;
-
-	scheme.night.temperature = -1;
-	scheme.night.gamma[0] = NAN;
-	scheme.night.brightness = NAN;
-
-	/* Temperature for manual mode */
-	int temp_set = -1;
-
-	const gamma_method_t *method = NULL;
-	char *method_args = NULL;
-
-	const location_provider_t *provider = NULL;
-	char *provider_args = NULL;
-
-	int transition = -1;
-	program_mode_t mode = PROGRAM_MODE_CONTINUAL;
-	int verbose = 0;
-	char *s;
-
 	/* Flush messages consistently even if redirected to a pipe or
 	   file.  Change the flush behaviour to line-buffered, without
 	   changing the actual buffers being used. */
 	setvbuf(stdout, NULL, _IOLBF, 0);
 	setvbuf(stderr, NULL, _IOLBF, 0);
 
-	/* Parse command line arguments. */
-	int opt;
-	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:prt:vVx")) != -1) {
-		switch (opt) {
-		case 'b':
-			parse_brightness_string(optarg,
-						&scheme.day.brightness,
-						&scheme.night.brightness);
-			break;
-		case 'c':
-			if (config_filepath != NULL) free(config_filepath);
-			config_filepath = strdup(optarg);
-			break;
-		case 'g':
-			r = parse_gamma_string(optarg, scheme.day.gamma);
-			if (r < 0) {
-				fputs(_("Malformed gamma argument.\n"),
-				      stderr);
-				fputs(_("Try `-h' for more"
-					" information.\n"), stderr);
-				exit(EXIT_FAILURE);
-			}
-
-			/* Set night gamma to the same value as day gamma.
-			   To set these to distinct values use the config
-			   file. */
-			memcpy(scheme.night.gamma, scheme.day.gamma,
-			       sizeof(scheme.night.gamma));
-			break;
-		case 'h':
-			print_help(argv[0]);
-			exit(EXIT_SUCCESS);
-			break;
-		case 'l':
-			/* Print list of providers if argument is `list' */
-			if (strcasecmp(optarg, "list") == 0) {
-				print_provider_list();
-				exit(EXIT_SUCCESS);
-			}
-
-			char *provider_name = NULL;
-
-			/* Don't save the result of strtof(); we simply want
-			   to know if optarg can be parsed as a float. */
-			errno = 0;
-			char *end;
-			strtof(optarg, &end);
-			if (errno == 0 && *end == ':') {
-				/* Use instead as arguments to `manual'. */
-				provider_name = "manual";
-				provider_args = optarg;
-			} else {
-				/* Split off provider arguments. */
-				s = strchr(optarg, ':');
-				if (s != NULL) {
-					*(s++) = '\0';
-					provider_args = s;
-				}
-
-				provider_name = optarg;
-			}
-
-			/* Lookup provider from name. */
-			provider = find_location_provider(provider_name);
-			if (provider == NULL) {
-				fprintf(stderr, _("Unknown location provider"
-						  " `%s'.\n"), provider_name);
-				exit(EXIT_FAILURE);
-			}
-
-			/* Print provider help if arg is `help'. */
-			if (provider_args != NULL &&
-			    strcasecmp(provider_args, "help") == 0) {
-				provider->print_help(stdout);
-				exit(EXIT_SUCCESS);
-			}
-			break;
-		case 'm':
-			/* Print list of methods if argument is `list' */
-			if (strcasecmp(optarg, "list") == 0) {
-				print_method_list();
-				exit(EXIT_SUCCESS);
-			}
-
-			/* Split off method arguments. */
-			s = strchr(optarg, ':');
-			if (s != NULL) {
-				*(s++) = '\0';
-				method_args = s;
-			}
-
-			/* Find adjustment method by name. */
-			method = find_gamma_method(optarg);
-			if (method == NULL) {
-				/* TRANSLATORS: This refers to the method
-				   used to adjust colors e.g VidMode */
-				fprintf(stderr, _("Unknown adjustment method"
-						  " `%s'.\n"), optarg);
-				exit(EXIT_FAILURE);
-			}
-
-			/* Print method help if arg is `help'. */
-			if (method_args != NULL &&
-			    strcasecmp(method_args, "help") == 0) {
-				method->print_help(stdout);
-				exit(EXIT_SUCCESS);
-			}
-			break;
-		case 'o':
-			mode = PROGRAM_MODE_ONE_SHOT;
-			break;
-		case 'O':
-			mode = PROGRAM_MODE_MANUAL;
-			temp_set = atoi(optarg);
-			break;
-		case 'p':
-			mode = PROGRAM_MODE_PRINT;
-			break;
-		case 'r':
-			transition = 0;
-			break;
-		case 't':
-			s = strchr(optarg, ':');
-			if (s == NULL) {
-				fputs(_("Malformed temperature argument.\n"),
-				      stderr);
-				fputs(_("Try `-h' for more information.\n"),
-				      stderr);
-				exit(EXIT_FAILURE);
-			}
-			*(s++) = '\0';
-			scheme.day.temperature = atoi(optarg);
-			scheme.night.temperature = atoi(s);
-			break;
-		case 'v':
-			verbose = 1;
-			break;
-                case 'V':
-                        printf("%s\n", PACKAGE_STRING);
-                        exit(EXIT_SUCCESS);
-                        break;
-		case 'x':
-			mode = PROGRAM_MODE_RESET;
-			break;
-		case '?':
-			fputs(_("Try `-h' for more information.\n"), stderr);
-			exit(EXIT_FAILURE);
-			break;
-		}
-	}
-
-	/* Load settings from config file. */
-	config_ini_state_t config_state;
-	r = config_ini_init(&config_state, config_filepath);
-	if (r < 0) {
-		fputs("Unable to load config file.\n", stderr);
+	redshift_state_t state;
+	redshift_state_init(&state);
+	SET_FLAG(state.mode, PROGRAM_PARSE_OPT);
+	SET_FLAG(state.mode, PROGRAM_USE_CONF);
+	//SET_FLAG(state.mode, PROGRAM_MODE_CONTINUAL);
+	
+	/* Setup the state */
+	r = redshift_state_setup(&state, argc, argv);
+	printf("redshift_state_setup r: %i \n", r);
+	if (r == -1) {
+		redshift_state_finalize(&state);
 		exit(EXIT_FAILURE);
 	}
-
-	if (config_filepath != NULL) free(config_filepath);
-
-	/* Read global config settings. */
-	config_ini_section_t *section = config_ini_get_section(&config_state,
-							       "redshift");
-	if (section != NULL) {
-		config_ini_setting_t *setting = section->settings;
-		while (setting != NULL) {
-			if (strcasecmp(setting->name, "temp-day") == 0) {
-				if (scheme.day.temperature < 0) {
-					scheme.day.temperature =
-						atoi(setting->value);
-				}
-			} else if (strcasecmp(setting->name,
-					      "temp-night") == 0) {
-				if (scheme.night.temperature < 0) {
-					scheme.night.temperature =
-						atoi(setting->value);
-				}
-			} else if (strcasecmp(setting->name,
-					      "transition") == 0) {
-				if (transition < 0) {
-					transition = !!atoi(setting->value);
-				}
-			} else if (strcasecmp(setting->name,
-					      "brightness") == 0) {
-				if (isnan(scheme.day.brightness)) {
-					scheme.day.brightness =
-						atof(setting->value);
-				}
-				if (isnan(scheme.night.brightness)) {
-					scheme.night.brightness =
-						atof(setting->value);
-				}
-			} else if (strcasecmp(setting->name,
-					      "brightness-day") == 0) {
-				if (isnan(scheme.day.brightness)) {
-					scheme.day.brightness =
-						atof(setting->value);
-				}
-			} else if (strcasecmp(setting->name,
-					      "brightness-night") == 0) {
-				if (isnan(scheme.night.brightness)) {
-					scheme.night.brightness =
-						atof(setting->value);
-				}
-			} else if (strcasecmp(setting->name,
-					      "elevation-high") == 0) {
-				scheme.high = atof(setting->value);
-			} else if (strcasecmp(setting->name,
-					      "elevation-low") == 0) {
-				scheme.low = atof(setting->value);
-			} else if (strcasecmp(setting->name, "gamma") == 0) {
-				if (isnan(scheme.day.gamma[0])) {
-					r = parse_gamma_string(setting->value,
-							       scheme.day.gamma);
-					if (r < 0) {
-						fputs(_("Malformed gamma"
-							" setting.\n"),
-						      stderr);
-						exit(EXIT_FAILURE);
-					}
-					memcpy(scheme.night.gamma, scheme.day.gamma,
-					       sizeof(scheme.night.gamma));
-				}
-			} else if (strcasecmp(setting->name, "gamma-day") == 0) {
-				if (isnan(scheme.day.gamma[0])) {
-					r = parse_gamma_string(setting->value,
-							       scheme.day.gamma);
-					if (r < 0) {
-						fputs(_("Malformed gamma"
-							" setting.\n"),
-						      stderr);
-						exit(EXIT_FAILURE);
-					}
-				}
-			} else if (strcasecmp(setting->name, "gamma-night") == 0) {
-				if (isnan(scheme.night.gamma[0])) {
-					r = parse_gamma_string(setting->value,
-							       scheme.night.gamma);
-					if (r < 0) {
-						fputs(_("Malformed gamma"
-							" setting.\n"),
-						      stderr);
-						exit(EXIT_FAILURE);
-					}
-				}
-			} else if (strcasecmp(setting->name,
-					      "adjustment-method") == 0) {
-				if (method == NULL) {
-					method = find_gamma_method(
-						setting->value);
-					if (method == NULL) {
-						fprintf(stderr, _("Unknown"
-								  " adjustment"
-								  " method"
-								  " `%s'.\n"),
-							setting->value);
-						exit(EXIT_FAILURE);
-					}
-				}
-			} else if (strcasecmp(setting->name,
-					      "location-provider") == 0) {
-				if (provider == NULL) {
-					provider = find_location_provider(
-						setting->value);
-					if (provider == NULL) {
-						fprintf(stderr, _("Unknown"
-								  " location"
-								  " provider"
-								  " `%s'.\n"),
-							setting->value);
-						exit(EXIT_FAILURE);
-					}
-				}
-			} else {
-				fprintf(stderr, _("Unknown configuration"
-						  " setting `%s'.\n"),
-					setting->name);
-			}
-			setting = setting->next;
-		}
+	else if (r == 0) {
+		redshift_state_finalize(&state);
+		exit(EXIT_SUCCESS);
 	}
-
-	/* Use default values for settings that were neither defined in
-	   the config file nor on the command line. */
-	if (scheme.day.temperature < 0) {
-		scheme.day.temperature = DEFAULT_DAY_TEMP;
-	}
-	if (scheme.night.temperature < 0) {
-		scheme.night.temperature = DEFAULT_NIGHT_TEMP;
-	}
-
-	if (isnan(scheme.day.brightness)) {
-		scheme.day.brightness = DEFAULT_BRIGHTNESS;
-	}
-	if (isnan(scheme.night.brightness)) {
-		scheme.night.brightness = DEFAULT_BRIGHTNESS;
-	}
-
-	if (isnan(scheme.day.gamma[0])) {
-		scheme.day.gamma[0] = DEFAULT_GAMMA;
-		scheme.day.gamma[1] = DEFAULT_GAMMA;
-		scheme.day.gamma[2] = DEFAULT_GAMMA;
-	}
-	if (isnan(scheme.night.gamma[0])) {
-		scheme.night.gamma[0] = DEFAULT_GAMMA;
-		scheme.night.gamma[1] = DEFAULT_GAMMA;
-		scheme.night.gamma[2] = DEFAULT_GAMMA;
-	}
-
-	if (transition < 0) transition = 1;
-
-	location_t loc = { NAN, NAN };
-
-	/* Initialize location provider. If provider is NULL
-	   try all providers until one that works is found. */
-	location_state_t location_state;
-
-	/* Location is not needed for reset mode and manual mode. */
-	if (mode != PROGRAM_MODE_RESET &&
-	    mode != PROGRAM_MODE_MANUAL) {
-		if (provider != NULL) {
-			/* Use provider specified on command line. */
-			r = provider_try_start(provider, &location_state,
-					       &config_state, provider_args);
-			if (r < 0) exit(EXIT_FAILURE);
-		} else {
-			/* Try all providers, use the first that works. */
-			for (int i = 0;
-			     location_providers[i].name != NULL; i++) {
-				const location_provider_t *p =
-					&location_providers[i];
-				fprintf(stderr,
-					_("Trying location provider `%s'...\n"),
-					p->name);
-				r = provider_try_start(p, &location_state,
-						       &config_state, NULL);
-				if (r < 0) {
-					fputs(_("Trying next provider...\n"),
-					      stderr);
-					continue;
-				}
-
-				/* Found provider that works. */
-				printf(_("Using provider `%s'.\n"), p->name);
-				provider = p;
-				break;
-			}
-
-			/* Failure if no providers were successful at this
-			   point. */
-			if (provider == NULL) {
-				fputs(_("No more location providers"
-					" to try.\n"), stderr);
-				exit(EXIT_FAILURE);
-			}
-		}
-
-		/* Get current location. */
-		r = provider->get_location(&location_state, &loc);
-		if (r < 0) {
-		        fputs(_("Unable to get location from provider.\n"),
-		              stderr);
-		        exit(EXIT_FAILURE);
-		}
 	
-		provider->free(&location_state);
-	
-		if (verbose) {
-			print_location(&loc);
-
-			printf(_("Temperatures: %dK at day, %dK at night\n"),
-			       scheme.day.temperature,
-			       scheme.night.temperature);
-
-		        /* TRANSLATORS: Append degree symbols if possible. */
-			printf(_("Solar elevations: day above %.1f, night below %.1f\n"),
-			       scheme.high, scheme.low);
-		}
-
-		/* Latitude */
-		if (loc.lat < MIN_LAT || loc.lat > MAX_LAT) {
-		        /* TRANSLATORS: Append degree symbols if possible. */
-		        fprintf(stderr,
-		                _("Latitude must be between %.1f and %.1f.\n"),
-		                MIN_LAT, MAX_LAT);
-		        exit(EXIT_FAILURE);
-		}
-	
-		/* Longitude */
-		if (loc.lon < MIN_LON || loc.lon > MAX_LON) {
-		        /* TRANSLATORS: Append degree symbols if possible. */
-		        fprintf(stderr,
-		                _("Longitude must be between"
-		                  " %.1f and %.1f.\n"), MIN_LON, MAX_LON);
-		        exit(EXIT_FAILURE);
-		}
-
-		/* Color temperature */
-		if (scheme.day.temperature < MIN_TEMP ||
-		    scheme.day.temperature > MAX_TEMP ||
-		    scheme.night.temperature < MIN_TEMP ||
-		    scheme.night.temperature > MAX_TEMP) {
-			fprintf(stderr,
-				_("Temperature must be between %uK and %uK.\n"),
-				MIN_TEMP, MAX_TEMP);
-			exit(EXIT_FAILURE);
-		}
-
-		/* Solar elevations */
-		if (scheme.high < scheme.low) {
-		        fprintf(stderr,
-		                _("High transition elevation cannot be lower than"
-				  " the low transition elevation.\n"));
-		        exit(EXIT_FAILURE);
-		}
-	}
-
-	if (mode == PROGRAM_MODE_MANUAL) {
-		/* Check color temperature to be set */
-		if (temp_set < MIN_TEMP || temp_set > MAX_TEMP) {
-			fprintf(stderr,
-				_("Temperature must be between %uK and %uK.\n"),
-				MIN_TEMP, MAX_TEMP);
-			exit(EXIT_FAILURE);
-		}
-	}
-
-	/* Brightness */
-	if (scheme.day.brightness < MIN_BRIGHTNESS ||
-	    scheme.day.brightness > MAX_BRIGHTNESS ||
-	    scheme.night.brightness < MIN_BRIGHTNESS ||
-	    scheme.night.brightness > MAX_BRIGHTNESS) {
-		fprintf(stderr,
-			_("Brightness values must be between %.1f and %.1f.\n"),
-			MIN_BRIGHTNESS, MAX_BRIGHTNESS);
+	/* Apply the state */
+	r = redshift_state_apply(&state); 
+	printf("redshift_state_apply r: %i \n", r);
+	if (r == -1) {
+		redshift_state_finalize(&state);
 		exit(EXIT_FAILURE);
 	}
-
-	if (verbose) {
-		printf(_("Brightness: %.2f:%.2f\n"),
-		       scheme.day.brightness, scheme.night.brightness);
+	else if (r == 0) {
+		redshift_state_finalize(&state);
+		exit(EXIT_SUCCESS);
 	}
 
-	/* Gamma */
-	if (!gamma_is_valid(scheme.day.gamma) ||
-	    !gamma_is_valid(scheme.night.gamma)) {
-		fprintf(stderr,
-			_("Gamma value must be between %.1f and %.1f.\n"),
-			MIN_GAMMA, MAX_GAMMA);
-		exit(EXIT_FAILURE);
-	}
-
-	if (verbose) {
-		/* TRANSLATORS: The string in parenthesis is either
-		   Daytime or Night (translated). */
-		printf(_("Gamma (%s): %.3f, %.3f, %.3f\n"),
-		       _("Daytime"), scheme.day.gamma[0],
-		       scheme.day.gamma[1], scheme.day.gamma[2]);
-		printf(_("Gamma (%s): %.3f, %.3f, %.3f\n"),
-		       _("Night"), scheme.night.gamma[0],
-		       scheme.night.gamma[1], scheme.night.gamma[2]);
-	}
-
-	/* Initialize gamma adjustment method. If method is NULL
-	   try all methods until one that works is found. */
-	gamma_state_t state;
-
-	/* Gamma adjustment not needed for print mode */
-	if (mode != PROGRAM_MODE_PRINT) {
-		if (method != NULL) {
-			/* Use method specified on command line. */
-			r = method_try_start(method, &state, &config_state,
-					     method_args);
-			if (r < 0) exit(EXIT_FAILURE);
-		} else {
-			/* Try all methods, use the first that works. */
-			for (int i = 0; gamma_methods[i].name != NULL; i++) {
-				const gamma_method_t *m = &gamma_methods[i];
-				if (!m->autostart) continue;
-
-				r = method_try_start(m, &state, &config_state, NULL);
-				if (r < 0) {
-					fputs(_("Trying next method...\n"), stderr);
-					continue;
-				}
-
-				/* Found method that works. */
-				printf(_("Using method `%s'.\n"), m->name);
-				method = m;
-				break;
-			}
-
-			/* Failure if no methods were successful at this point. */
-			if (method == NULL) {
-				fputs(_("No more methods to try.\n"), stderr);
-				exit(EXIT_FAILURE);
-			}
-		}
-	}
-
-	config_ini_free(&config_state);
-
-	switch (mode) {
-	case PROGRAM_MODE_ONE_SHOT:
-	case PROGRAM_MODE_PRINT:
-	{
-		/* Current angular elevation of the sun */
-		double now;
-		r = systemtime_get_time(&now);
+	/* Run Daemon */
+	if (!TEST_FLAG(state.mode, PROGRAM_MODE_ONE_SHOT)) {
+		r = run_continual_mode(state.loc, state.scheme, state.method, state.gamma_state, state.transition);
 		if (r < 0) {
-			fputs(_("Unable to read system time.\n"), stderr);
-			method->free(&state);
+			redshift_state_finalize(&state);
 			exit(EXIT_FAILURE);
 		}
-
-		double elevation = solar_elevation(now, loc.lat, loc.lon);
-
-		if (verbose) {
-			/* TRANSLATORS: Append degree symbol if possible. */
-			printf(_("Solar elevation: %f\n"), elevation);
-		}
-
-		/* Use elevation of sun to set color temperature */
-		color_setting_t interp;
-		interpolate_color_settings(&scheme, elevation, &interp);
-
-		if (verbose || mode == PROGRAM_MODE_PRINT) {
-			period_t period = get_period(&scheme,
-						     elevation);
-			double transition =
-				get_transition_progress(&scheme,
-							elevation);
-			print_period(period, transition);
-			printf(_("Color temperature: %uK\n"),
-			       interp.temperature);
-			printf(_("Brightness: %.2f\n"),
-			       interp.brightness);
-		}
-
-		if (mode == PROGRAM_MODE_PRINT) {
-			exit(EXIT_SUCCESS);
-		}
-
-		/* Adjust temperature */
-		r = method->set_temperature(&state, &interp);
-		if (r < 0) {
-			fputs(_("Temperature adjustment failed.\n"), stderr);
-			method->free(&state);
-			exit(EXIT_FAILURE);
-		}
-
-		/* In Quartz (OSX) the gamma adjustments will automatically
-		   revert when the process exits. Therefore, we have to loop
-		   until CTRL-C is received. */
-		if (strcmp(method->name, "quartz") == 0) {
-			fputs(_("Press ctrl-c to stop...\n"), stderr);
-			pause();
-		}
-	}
-	break;
-	case PROGRAM_MODE_MANUAL:
-	{
-		if (verbose) printf(_("Color temperature: %uK\n"), temp_set);
-
-		/* Adjust temperature */
-		color_setting_t manual;
-		memcpy(&manual, &scheme.day, sizeof(color_setting_t));
-		manual.temperature = temp_set;
-		r = method->set_temperature(&state, &manual);
-		if (r < 0) {
-			fputs(_("Temperature adjustment failed.\n"), stderr);
-			method->free(&state);
-			exit(EXIT_FAILURE);
-		}
-
-		/* In Quartz (OSX) the gamma adjustments will automatically
-		   revert when the process exits. Therefore, we have to loop
-		   until CTRL-C is received. */
-		if (strcmp(method->name, "quartz") == 0) {
-			fputs(_("Press ctrl-c to stop...\n"), stderr);
-			pause();
-		}
-	}
-	break;
-	case PROGRAM_MODE_RESET:
-	{
-		/* Reset screen */
-		color_setting_t reset = { NEUTRAL_TEMP, { 1.0, 1.0, 1.0 }, 1.0 };
-		r = method->set_temperature(&state, &reset);
-		if (r < 0) {
-			fputs(_("Temperature adjustment failed.\n"), stderr);
-			method->free(&state);
-			exit(EXIT_FAILURE);
-		}
-
-		/* In Quartz (OSX) the gamma adjustments will automatically
-		   revert when the process exits. Therefore, we have to loop
-		   until CTRL-C is received. */
-		if (strcmp(method->name, "quartz") == 0) {
-			fputs(_("Press ctrl-c to stop...\n"), stderr);
-			pause();
-		}
-	}
-	break;
-	case PROGRAM_MODE_CONTINUAL:
-	{
-		r = run_continual_mode(&loc, &scheme,
-				       method, &state,
-				       transition, verbose);
-		if (r < 0) exit(EXIT_FAILURE);
-	}
-	break;
 	}
 
-	/* Clean up gamma adjustment state */
-	method->free(&state);
+	/* Clean up redshift state */
+	redshift_state_finalize(&state);
 
 	return EXIT_SUCCESS;
 }
