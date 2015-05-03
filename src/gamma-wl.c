@@ -171,6 +171,9 @@ wayland_free(wayland_state_t *state)
 	gamma_control_manager_destroy(state->gamma_control_manager);
 	wl_registry_destroy(state->registry);
 	wl_display_disconnect(state->display);
+	if (state->callback) {
+		wl_callback_destroy(state->callback);
+	}
 }
 
 void
@@ -186,15 +189,40 @@ wayland_set_option(wayland_state_t *state, const char *key, const char *value)
 	return 0;
 }
 
+static void
+callback_done(void *data, struct wl_callback *cb, uint32_t t)
+{
+	wayland_state_t *state = data;
+	state->callback = NULL;
+	wl_callback_destroy(cb);
+}
+
+static const struct wl_callback_listener callback_listener = {
+	callback_done
+};
+
 int
 wayland_set_temperature(wayland_state_t *state, const color_setting_t *setting)
 {
+	int ret = 0;
 	struct wl_array red;
 	struct wl_array green;
 	struct wl_array blue;
 	uint16_t *r_gamma = NULL;
 	uint16_t *g_gamma = NULL;
 	uint16_t *b_gamma = NULL;
+
+	/* We wait for the sync callback to throttle a bit and not send more
+	 * requests than the compositor can manage, otherwise we'd get disconnected.
+	 * This also allows us to dispatch other incoming events such as
+	 * wl_registry.global_remove. */
+	while (state->callback && ret >= 0) {
+		ret = wl_display_dispatch(state->display);
+	}
+	if (ret < 0) {
+		fprintf(stderr, _("The Wayland connection experienced a fatal error: %d\n"), ret);
+		return ret;
+	}
 
 	wl_array_init(&red);
 	wl_array_init(&green);
@@ -236,6 +264,8 @@ wayland_set_temperature(wayland_state_t *state, const color_setting_t *setting)
 		gamma_control_set_gamma(output->gamma_control, &red, &green, &blue);
 	}
 
+	state->callback = wl_display_sync(state->display);
+	wl_callback_add_listener(state->callback, &callback_listener, state);
 	wl_display_flush(state->display);
 
 	wl_array_release(&red);

@@ -29,6 +29,7 @@
 typedef struct {
 	struct wl_display *display;
 	struct wl_registry *registry;
+	struct wl_callback *callback;
 	uint32_t gamma_control_manager_id;
 	struct gamma_control_manager *gamma_control_manager;
 	int num_outputs;
