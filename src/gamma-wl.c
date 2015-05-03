@@ -76,6 +76,7 @@ registry_global(void *data, struct wl_registry *registry, uint32_t id, const cha
 		struct output *output = &state->outputs[state->num_outputs - 1];
 		output->global_id = id;
 		output->output = wl_registry_bind(registry, id, &wl_output_interface, 1);
+		output->gamma_control = NULL;
 	}
 }
 
@@ -139,13 +140,6 @@ wayland_start(wayland_state_t *state)
 		return -1;
 	}
 
-	for (int i = 0; i < state->num_outputs; ++i) {
-		struct output *output = &state->outputs[i];
-		output->gamma_control = gamma_control_manager_get_gamma_control(state->gamma_control_manager, output->output);
-		gamma_control_add_listener(output->gamma_control, &gamma_control_listener, output);
-	}
-	wl_display_roundtrip(state->display);
-
 	return 0;
 }
 
@@ -204,7 +198,7 @@ static const struct wl_callback_listener callback_listener = {
 int
 wayland_set_temperature(wayland_state_t *state, const color_setting_t *setting)
 {
-	int ret = 0;
+	int ret = 0, roundtrip = 0;
 	struct wl_array red;
 	struct wl_array green;
 	struct wl_array blue;
@@ -222,6 +216,18 @@ wayland_set_temperature(wayland_state_t *state, const color_setting_t *setting)
 	if (ret < 0) {
 		fprintf(stderr, _("The Wayland connection experienced a fatal error: %d\n"), ret);
 		return ret;
+	}
+
+	for (int i = 0; i < state->num_outputs; ++i) {
+		struct output *output = &state->outputs[i];
+		if (!output->gamma_control) {
+			output->gamma_control = gamma_control_manager_get_gamma_control(state->gamma_control_manager, output->output);
+			gamma_control_add_listener(output->gamma_control, &gamma_control_listener, output);
+			roundtrip = 1;
+		}
+	}
+	if (roundtrip) {
+		wl_display_roundtrip(state->display);
 	}
 
 	wl_array_init(&red);
