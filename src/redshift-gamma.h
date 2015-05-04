@@ -159,4 +159,41 @@ static const gamma_method_t gamma_methods[] = {
 	{ NULL }
 };
 
+void
+print_method_list()
+{
+	fputs(_("Available adjustment methods:\n"), stdout);
+	for (int i = 0; gamma_methods[i].name != NULL; i++) {
+		printf("  %s\n", gamma_methods[i].name);
+	}
+
+	fputs("\n", stdout);
+	fputs(_("Specify colon-separated options with"
+		" `-m METHOD:OPTIONS'.\n"), stdout);
+	/* TRANSLATORS: `help' must not be translated. */
+	fputs(_("Try `-m METHOD:help' for help.\n"), stdout);
+}
+
+const gamma_method_t *
+find_gamma_method(const char *name)
+{
+	const gamma_method_t *method = NULL;
+	for (int i = 0; gamma_methods[i].name != NULL; i++) {
+		const gamma_method_t *m = &gamma_methods[i];
+		if (strcasecmp(name, m->name) == 0) {
+				method = m;
+			break;
+		}
+	}
+
+	return method;
+}
+
+void gamma_state_finalize(gamma_state_t *state) 
+{
+	if (state != NULL) {
+		free(state);
+	}
+}
+
 #endif /* REDSHIFT_GAMMA_H */

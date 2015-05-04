@@ -33,21 +33,10 @@
 # include <signal.h>
 #endif
 
-#ifdef ENABLE_NLS
-# include <libintl.h>
-# define _(s) gettext(s)
-# define N_(s) (s)
-#else
-# define _(s) s
-# define N_(s) s
-# define gettext(s) s
-#endif
-
-#include "redshift.h"
 #include "config-ini.h"
-#include "solar.h"
 #include "systemtime.h"
 #include "hooks.h"
+#include "redshift.h"
 #include "redshift-gamma.h"
 #include "redshift-location.h"
 
@@ -63,35 +52,6 @@
 #ifdef __WIN32__
 # define pause()
 #endif
-
-
-/* Bounds for parameters. */
-#define MIN_LAT   -90.0
-#define MAX_LAT    90.0
-#define MIN_LON  -180.0
-#define MAX_LON   180.0
-#define MIN_TEMP   1000
-#define MAX_TEMP  25000
-#define MIN_BRIGHTNESS  0.1
-#define MAX_BRIGHTNESS  1.0
-#define MIN_GAMMA   0.1
-#define MAX_GAMMA  10.0
-
-/* Default values for parameters. */
-#define DEFAULT_DAY_TEMP    5500
-#define DEFAULT_NIGHT_TEMP  3500
-#define DEFAULT_BRIGHTNESS   1.0
-#define DEFAULT_GAMMA        1.0
-
-/* The color temperature when no adjustment is applied. */
-#define NEUTRAL_TEMP  6500
-
-/* Angular elevation of the sun at which the color temperature
-   transition period starts and ends (in degress).
-   Transition during twilight, and while the sun is lower than
-   3.0 degrees above the horizon. */
-#define TRANSITION_LOW     SOLAR_CIVIL_TWILIGHT_ELEV
-#define TRANSITION_HIGH    3.0
 
 /* Duration of sleep between screen updates (milliseconds). */
 #define SLEEP_DURATION        5000
@@ -114,16 +74,6 @@
 static int verbose = 0;
 static int reload = 0;
 
-/* Transition scheme.
-   The solar elevations at which the transition begins/ends,
-   and the association color settings. */
-typedef struct {
-	double high;
-	double low;
-	color_setting_t day;
-	color_setting_t night;
-} transition_scheme_t;
-
 typedef struct {
 	transition_scheme_t *scheme;
 	const gamma_method_t *method;
@@ -134,16 +84,6 @@ typedef struct {
 	int temp_set; 
 	int transition;  
 } redshift_state_t; 
-
-
-/* Names of periods of day */
-static const char *period_names[] = {
-	/* TRANSLATORS: Name printed when period of day is unknown */
-	N_("None"),
-	N_("Daytime"),
-	N_("Night"),
-	N_("Transition")
-};
 
 #if defined(HAVE_SIGNAL_H) && !defined(__WIN32__)
 
@@ -177,99 +117,6 @@ static int exiting = 0;
 static int disable = 0;
 
 #endif /* ! HAVE_SIGNAL_H || __WIN32__ */
-
-
-/* Determine which period we are currently in. */
-static period_t
-get_period(const transition_scheme_t *transition,
-	   double elevation)
-{
-	if (elevation < transition->low) {
-		return PERIOD_NIGHT;
-	} else if (elevation < transition->high) {
-		return PERIOD_TRANSITION;
-	} else {
-		return PERIOD_DAYTIME;
-	}
-}
-
-/* Determine how far through the transition we are. */
-static double
-get_transition_progress(const transition_scheme_t *transition,
-			double elevation)
-{
-	if (elevation < transition->low) {
-		return 0.0;
-	} else if (elevation < transition->high) {
-		return (transition->low - elevation) /
-			(transition->low - transition->high);
-	} else {
-		return 1.0;
-	}
-}
-
-/* Print verbose description of the given period. */
-static void
-print_period(period_t period, double transition)
-{
-	switch (period) {
-	case PERIOD_NONE:
-	case PERIOD_NIGHT:
-	case PERIOD_DAYTIME:
-		printf(_("Period: %s\n"), gettext(period_names[period]));
-		break;
-	case PERIOD_TRANSITION:
-		printf(_("Period: %s (%.2f%% day)\n"),
-			   gettext(period_names[period]),
-			   transition*100);
-		break;
-	}
-}
-
-/* Print location */
-static void
-print_location(const location_t *location)
-{
-	/* TRANSLATORS: Abbreviation for `north' */
-	const char *north = _("N");
-	/* TRANSLATORS: Abbreviation for `south' */
-	const char *south = _("S");
-	/* TRANSLATORS: Abbreviation for `east' */
-	const char *east = _("E");
-	/* TRANSLATORS: Abbreviation for `west' */
-	const char *west = _("W");
-
-	/* TRANSLATORS: Append degree symbols after %f if possible.
-	   The string following each number is an abreviation for
-	   north, source, east or west (N, S, E, W). */
-	printf(_("Location: %.2f %s, %.2f %s\n"),
-		   fabs(location->lat), location->lat >= 0.f ? north : south,
-		   fabs(location->lon), location->lon >= 0.f ? east : west);
-}
-
-/* Interpolate color setting structs based on solar elevation */
-static void
-interpolate_color_settings(const transition_scheme_t *transition,
-			   double elevation,
-			   color_setting_t *result)
-{
-	const color_setting_t *day = &transition->day;
-	const color_setting_t *night = &transition->night;
-
-	double alpha = (transition->low - elevation) /
-		(transition->low - transition->high);
-	alpha = CLAMP(0.0, alpha, 1.0);
-
-	result->temperature = (1.0-alpha)*night->temperature +
-		alpha*day->temperature;
-	result->brightness = (1.0-alpha)*night->brightness +
-		alpha*day->brightness;
-	for (int i = 0; i < 3; i++) {
-		result->gamma[i] = (1.0-alpha)*night->gamma[i] +
-			alpha*day->gamma[i];
-	}
-}
-
 
 static void
 print_help(const char *program_name)
@@ -339,37 +186,6 @@ print_help(const char *program_name)
 	/* TRANSLATORS: help output 7 */
 	printf(_("Please report bugs to <%s>\n"), PACKAGE_BUGREPORT);
 }
-
-static void
-print_method_list()
-{
-	fputs(_("Available adjustment methods:\n"), stdout);
-	for (int i = 0; gamma_methods[i].name != NULL; i++) {
-		printf("  %s\n", gamma_methods[i].name);
-	}
-
-	fputs("\n", stdout);
-	fputs(_("Specify colon-separated options with"
-		" `-m METHOD:OPTIONS'.\n"), stdout);
-	/* TRANSLATORS: `help' must not be translated. */
-	fputs(_("Try `-m METHOD:help' for help.\n"), stdout);
-}
-
-static void
-print_provider_list()
-{
-	fputs(_("Available location providers:\n"), stdout);
-	for (int i = 0; location_providers[i].name != NULL; i++) {
-		printf("  %s\n", location_providers[i].name);
-	}
-
-	fputs("\n", stdout);
-	fputs(_("Specify colon-separated options with"
-		"`-l PROVIDER:OPTIONS'.\n"), stdout);
-	/* TRANSLATORS: `help' must not be translated. */
-	fputs(_("Try `-l PROVIDER:help' for help.\n"), stdout);
-}
-
 
 static int
 provider_try_start(const location_provider_t *provider,
@@ -583,50 +399,6 @@ parse_brightness_string(const char *str, float *bright_day, float *bright_night)
 		*bright_night = atof(s);
 	}
 }
-
-/* Check whether gamma is within allowed levels. */
-static int
-gamma_is_valid(const float gamma[3])
-{
-	return !(gamma[0] < MIN_GAMMA ||
-		 gamma[0] > MAX_GAMMA ||
-		 gamma[1] < MIN_GAMMA ||
-		 gamma[1] > MAX_GAMMA ||
-		 gamma[2] < MIN_GAMMA ||
-		 gamma[2] > MAX_GAMMA);
-
-}
-
-static const gamma_method_t *
-find_gamma_method(const char *name)
-{
-	const gamma_method_t *method = NULL;
-	for (int i = 0; gamma_methods[i].name != NULL; i++) {
-		const gamma_method_t *m = &gamma_methods[i];
-		if (strcasecmp(name, m->name) == 0) {
-				method = m;
-			break;
-		}
-	}
-
-	return method;
-}
-
-static const location_provider_t *
-find_location_provider(const char *name)
-{
-	const location_provider_t *provider = NULL;
-	for (int i = 0; location_providers[i].name != NULL; i++) {
-		const location_provider_t *p = &location_providers[i];
-		if (strcasecmp(name, p->name) == 0) {
-			provider = p;
-			break;
-		}
-	}
-
-	return provider;
-}
-
 
 /* Run continual mode loop
    This is the main loop of the continual mode which keeps track of the
@@ -1129,102 +901,6 @@ location_provider_setup(config_ini_state_t *config_state, transition_scheme_t *s
 	}
 }
 
-
-
-int 
-transition_scheme_validate(transition_scheme_t *scheme) 
-{
-	
-	/* Color temperature */
-	if (scheme->day.temperature < MIN_TEMP ||
-		scheme->day.temperature > MAX_TEMP ||
-		scheme->night.temperature < MIN_TEMP ||
-		scheme->night.temperature > MAX_TEMP) {
-		fprintf(stderr,
-			_("Temperature must be between %uK and %uK.\n"),
-			MIN_TEMP, MAX_TEMP);
-		return -1;
-	}
-
-	/* Solar elevations */
-	if (scheme->high < scheme->low) {
-			fprintf(stderr,
-					_("High transition elevation cannot be lower than"
-			  " the low transition elevation.\n"));
-			return -1;
-	}
-
-	/* Brightness */
-	if (scheme->day.brightness < MIN_BRIGHTNESS ||
-		scheme->day.brightness > MAX_BRIGHTNESS ||
-		scheme->night.brightness < MIN_BRIGHTNESS ||
-		scheme->night.brightness > MAX_BRIGHTNESS) {
-		fprintf(stderr,
-			_("Brightness values must be between %.1f and %.1f.\n"),
-			MIN_BRIGHTNESS, MAX_BRIGHTNESS);
-		return -1;
-	}
-
-	if (verbose) {
-		printf(_("Brightness: %.2f:%.2f\n"),
-			   scheme->day.brightness, scheme->night.brightness);
-	}
-
-	/* Gamma */
-	if (!gamma_is_valid(scheme->day.gamma) ||
-		!gamma_is_valid(scheme->night.gamma)) {
-		fprintf(stderr,
-			_("Gamma value must be between %.1f and %.1f.\n"),
-			MIN_GAMMA, MAX_GAMMA);
-		return -1;
-	}
-
-	if (verbose) {
-		/* TRANSLATORS: The string in parenthesis is either
-		   Daytime or Night (translated). */
-		printf(_("Gamma (%s): %.3f, %.3f, %.3f\n"),
-			   _("Daytime"), scheme->day.gamma[0],
-			   scheme->day.gamma[1], scheme->day.gamma[2]);
-		printf(_("Gamma (%s): %.3f, %.3f, %.3f\n"),
-			   _("Night"), scheme->night.gamma[0],
-			   scheme->night.gamma[1], scheme->night.gamma[2]);
-	}
-	return 0;
-}
-
-transition_scheme_t *
-transition_scheme_new(void) 
-{
-	/* Settings for day, night and transition.
-	 Initialized to indicate that the values are not set yet. */
-	 
-	transition_scheme_t * scheme = malloc(sizeof(transition_scheme_t));
-	scheme->high = TRANSITION_HIGH;
-	scheme->low = TRANSITION_LOW;
-	scheme->day.temperature = -1;
-	scheme->day.gamma[0] = NAN;
-	scheme->day.brightness = NAN;
-
-	scheme->night.temperature = -1;
-	scheme->night.gamma[0] = NAN;
-	scheme->night.brightness = NAN;
-	return scheme; 
-}
-
-void transition_scheme_finalize(transition_scheme_t *scheme) 
-{	
-	if (scheme != NULL) {
-		free(scheme);
-	}
-}
-
-void gamma_state_finalize(gamma_state_t *state) 
-{
-	if (state != NULL) {
-		free(state);
-	}
-}
-
 static void redshift_state_init(redshift_state_t *redshift_state) 
 {
 	/* const gamma_method_t */
@@ -1249,36 +925,6 @@ static void redshift_state_finalize(redshift_state_t *redshift_state) {
 	transition_scheme_finalize(redshift_state->scheme);
 	if (redshift_state->loc != NULL) {
 		free(redshift_state->loc);
-	}
-}
-
-void transition_scheme_set_default(transition_scheme_t *scheme) 
-{
-	/* Use default values for settings that were neither defined in
-	   the config file nor on the command line. */
-	if (scheme->day.temperature < 0) {
-		scheme->day.temperature = DEFAULT_DAY_TEMP;
-	}
-	if (scheme->night.temperature < 0) {
-		scheme->night.temperature = DEFAULT_NIGHT_TEMP;
-	}
-
-	if (isnan(scheme->day.brightness)) {
-		scheme->day.brightness = DEFAULT_BRIGHTNESS;
-	}
-	if (isnan(scheme->night.brightness)) {
-		scheme->night.brightness = DEFAULT_BRIGHTNESS;
-	}
-
-	if (isnan(scheme->day.gamma[0])) {
-		scheme->day.gamma[0] = DEFAULT_GAMMA;
-		scheme->day.gamma[1] = DEFAULT_GAMMA;
-		scheme->day.gamma[2] = DEFAULT_GAMMA;
-	}
-	if (isnan(scheme->night.gamma[0])) {
-		scheme->night.gamma[0] = DEFAULT_GAMMA;
-		scheme->night.gamma[1] = DEFAULT_GAMMA;
-		scheme->night.gamma[2] = DEFAULT_GAMMA;
 	}
 }
 
@@ -1512,7 +1158,7 @@ redshift_state_setup(redshift_state_t *state, int argc, char *argv[]) {
 	}
 	
 	/* Validate Scheme has been set correctly */ 
-	r= transition_scheme_validate(state->scheme);
+	r= transition_scheme_validate(state->scheme, verbose);
 	if (r < 0) {
 		return r;
 	}

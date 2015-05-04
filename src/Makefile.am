@@ -9,6 +9,7 @@ AM_CPPFLAGS = -DLOCALEDIR=\"$(localedir)\"
 bin_PROGRAMS = redshift
 
 redshift_SOURCES = \
+	redshift-transition.c redshift-transition.h \
 	redshift.c redshift.h \
 	colorramp.c colorramp.h \
 	config-ini.c config-ini.h \

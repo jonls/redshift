@@ -22,27 +22,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-
-/* Location */
-typedef struct {
-	float lat;
-	float lon;
-} location_t;
-
-/* Periods of day. */
-typedef enum {
-	PERIOD_NONE = 0,
-	PERIOD_DAYTIME,
-	PERIOD_NIGHT,
-	PERIOD_TRANSITION
-} period_t;
-
-/* Color setting */
-typedef struct {
-	int temperature;
-	float gamma[3];
-	float brightness;
-} color_setting_t;
+#include "redshift-transition.h"
 
 #endif /* ! REDSHIFT_REDSHIFT_H */
