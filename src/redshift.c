@@ -1326,25 +1326,8 @@ main(int argc, char *argv[])
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
 			/* Try all methods, use the first that works. */
-			for (int i = 0; gamma_methods[i].name != NULL; i++) {
-				const gamma_method_t *m = &gamma_methods[i];
-				if (!m->autostart) continue;
-
-				r = method_try_start(m, &state, &config_state, NULL);
-				if (r < 0) {
-					fputs(_("Trying next method...\n"), stderr);
-					continue;
-				}
-
-				/* Found method that works. */
-				printf(_("Using method `%s'.\n"), m->name);
-				method = m;
-				break;
-			}
-
-			/* Failure if no methods were successful at this point. */
+			method = get_first_valid_method(&state, &config_state);
 			if (method == NULL) {
-				fputs(_("No more methods to try.\n"), stderr);
 				exit(EXIT_FAILURE);
 			}
 		}
