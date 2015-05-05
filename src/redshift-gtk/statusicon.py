@@ -15,6 +15,7 @@
 # along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
 # Copyright (c) 2013-2014  Jon Lund Steffensen <jonlst@gmail.com>
+# Copyright (c) 2014-2015  Mattias Andrée <maandree@member.fsf.org>
 
 
 '''GUI status icon for Redshift.
@@ -28,6 +29,7 @@ import fcntl
 import signal
 import re
 import gettext
+import datetime
 
 from gi.repository import Gtk, GLib, GObject
 
@@ -50,6 +52,10 @@ class RedshiftController(GObject.GObject):
         'temperature-changed': (GObject.SIGNAL_RUN_FIRST, None, (int,)),
         'period-changed': (GObject.SIGNAL_RUN_FIRST, None, (str,)),
         'location-changed': (GObject.SIGNAL_RUN_FIRST, None, (float, float)),
+        'previous-sunrise-changed': (GObject.SIGNAL_RUN_FIRST, None, (str, str)),
+        'next-sunrise-changed': (GObject.SIGNAL_RUN_FIRST, None, (str, str)),
+        'past-twilight-changed': (GObject.SIGNAL_RUN_FIRST, None, (str, str)),
+        'future-twilight-changed': (GObject.SIGNAL_RUN_FIRST, None, (str, str)),
         'error-occured': (GObject.SIGNAL_RUN_FIRST, None, (str,))
         }
 
@@ -66,6 +72,10 @@ class RedshiftController(GObject.GObject):
         self._temperature = 0
         self._period = 'Unknown'
         self._location = (0.0, 0.0)
+        self._previous_sunrise = ('Previous sunrise', 'never')
+        self._next_sunrise = ('Next sunrise', 'never')
+        self._past_twilight = ('Twilight ended', 'never')
+        self._future_twilight = ('Twilight starts', 'never')
 
         # Start redshift with arguments
         args.insert(0, os.path.join(defs.BINDIR, 'redshift'))
@@ -134,6 +144,22 @@ class RedshiftController(GObject.GObject):
         '''Current location'''
         return self._location
 
+    @property
+    def previous_sunrise(self):
+        return self._previous_sunrise
+
+    @property
+    def next_sunrise(self):
+        return self._next_sunrise
+
+    @property
+    def past_twilight(self):
+        return self._past_twilight
+
+    @property
+    def future_twilight(self):
+        return self._future_twilight
+
     def set_inhibit(self, inhibit):
         '''Set inhibition state'''
         if inhibit != self._inhibited:
@@ -194,6 +220,26 @@ class RedshiftController(GObject.GObject):
             if new_location != self._location:
                 self._location = new_location
                 self.emit('location-changed', *new_location)
+        elif key in ('Previous sunrise', 'Previous sunset'):
+            new_previous_sunrise = (key, value)
+            if new_previous_sunrise != self._previous_sunrise:
+                self._previous_sunrise = new_previous_sunrise
+                self.emit('previous-sunrise-changed', *new_previous_sunrise)
+        elif key in ('Next sunrise', 'Next sunset'):
+            new_next_sunrise = (key, value)
+            if new_next_sunrise != self._next_sunrise:
+                self._next_sunrise = new_next_sunrise
+                self.emit('next-sunrise-changed', *new_next_sunrise)
+        elif key in ('Twilight ended', 'Twilight started'):
+            new_past_twilight = (key, value)
+            if new_past_twilight != self._past_twilight:
+                self._past_twilight = new_past_twilight
+                self.emit('past-twilight-changed', *new_past_twilight)
+        elif key in ('Twilight ends', 'Twilight starts'):
+            new_future_twilight = (key, value)
+            if new_future_twilight != self._future_twilight:
+                self._future_twilight = new_future_twilight
+                self.emit('future-twilight-changed', *new_future_twilight)
 
     def _child_stdout_line_cb(self, line):
         '''Called when the child process outputs a line to stdout'''
@@ -326,6 +372,30 @@ class RedshiftStatusIcon(object):
         self.info_dialog.get_content_area().pack_start(self.period_label, True, True, 0)
         self.period_label.show()
 
+        self.previous_sunrise_label = Gtk.Label()
+        self.previous_sunrise_label.set_alignment(0.0, 0.5)
+        self.previous_sunrise_label.set_padding(6, 6);
+        self.info_dialog.get_content_area().pack_start(self.previous_sunrise_label, True, True, 0)
+        self.previous_sunrise_label.show()
+
+        self.next_sunrise_label = Gtk.Label()
+        self.next_sunrise_label.set_alignment(0.0, 0.5)
+        self.next_sunrise_label.set_padding(6, 6);
+        self.info_dialog.get_content_area().pack_start(self.next_sunrise_label, True, True, 0)
+        self.next_sunrise_label.show()
+
+        self.past_twilight_label = Gtk.Label()
+        self.past_twilight_label.set_alignment(0.0, 0.5)
+        self.past_twilight_label.set_padding(6, 6);
+        self.info_dialog.get_content_area().pack_start(self.past_twilight_label, True, True, 0)
+        self.past_twilight_label.show()
+
+        self.future_twilight_label = Gtk.Label()
+        self.future_twilight_label.set_alignment(0.0, 0.5)
+        self.future_twilight_label.set_padding(6, 6);
+        self.info_dialog.get_content_area().pack_start(self.future_twilight_label, True, True, 0)
+        self.future_twilight_label.show()
+
         self.info_dialog.connect('response', self.response_info_cb)
 
         # Setup signals to property changes
@@ -333,6 +403,10 @@ class RedshiftStatusIcon(object):
         self._controller.connect('period-changed', self.period_change_cb)
         self._controller.connect('temperature-changed', self.temperature_change_cb)
         self._controller.connect('location-changed', self.location_change_cb)
+        self._controller.connect('previous-sunrise-changed', self.previous_sunrise_change_cb)
+        self._controller.connect('next-sunrise-changed', self.next_sunrise_change_cb)
+        self._controller.connect('past-twilight-changed', self.past_twilight_change_cb)
+        self._controller.connect('future-twilight-changed', self.future_twilight_change_cb)
         self._controller.connect('error-occured', self.error_occured_cb)
 
         # Set info box text
@@ -340,6 +414,10 @@ class RedshiftStatusIcon(object):
         self.change_period(self._controller.period)
         self.change_temperature(self._controller.temperature)
         self.change_location(self._controller.location)
+        self.change_previous_sunrise(*(self._controller.previous_sunrise))
+        self.change_next_sunrise(*(self._controller.next_sunrise))
+        self.change_past_twilight(*(self._controller.past_twilight))
+        self.change_future_twilight(*(self._controller.future_twilight))
 
         if appindicator:
             self.status_menu.show_all()
@@ -448,6 +526,18 @@ class RedshiftStatusIcon(object):
         '''Callback when controlled changes location'''
         self.change_location((lat, lon))
 
+    def previous_sunrise_change_cb(self, controller, key, value):
+        self.change_previous_sunrise(key, value)
+
+    def next_sunrise_change_cb(self, controller, key, value):
+        self.change_next_sunrise(key, value)
+
+    def past_twilight_change_cb(self, controller, key, value):
+        self.change_past_twilight(key, value)
+
+    def future_twilight_change_cb(self, controller, key, value):
+        self.change_future_twilight(key, value)
+
     def error_occured_cb(self, controller, error):
         '''Callback when an error occurs in the controller'''
         error_dialog = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR,
@@ -476,6 +566,50 @@ class RedshiftStatusIcon(object):
     def change_location(self, location):
         '''Change interface to new location'''
         self.location_label.set_markup('<b>{}:</b> {}, {}'.format(_('Location'), *location))
+
+    def change_previous_sunrise(self, key, value):
+        if 'sunrise' in key:
+            title = _('Previous sunrise')
+        else:
+            title = _('Previous sunset')
+        if value == 'never':
+            when = _('never')
+        else:
+            when = str(datetime.datetime.fromtimestamp(int(value)))
+        self.previous_sunrise_label.set_markup('<b>{}:</b> {}'.format(title, when))
+
+    def change_next_sunrise(self, key, value):
+        if 'sunrise' in key:
+            title = _('Next sunrise')
+        else:
+            title = _('Next sunset')
+        if value == 'never':
+            when = _('never')
+        else:
+            when = str(datetime.datetime.fromtimestamp(int(value)))
+        self.next_sunrise_label.set_markup('<b>{}:</b> {}'.format(title, when))
+
+    def change_past_twilight(self, key, value):
+        if 'ended' in key:
+            title = _('Twilight ended')
+        else:
+            title = _('Twilight started')
+        if value == 'never':
+            when = _('never')
+        else:
+            when = str(datetime.datetime.fromtimestamp(int(value)))
+        self.past_twilight_label.set_markup('<b>{}:</b> {}'.format(title, when))
+
+    def change_future_twilight(self, key, value):
+        if 'ends' in key:
+            title = _('Twilight ends')
+        else:
+            title = _('Twilight starts')
+        if value == 'never':
+            when = _('never')
+        else:
+            when = str(datetime.datetime.fromtimestamp(int(value)))
+        self.future_twilight_label.set_markup('<b>{}:</b> {}'.format(title, when))
 
 
     def autostart_cb(self, widget, data=None):
