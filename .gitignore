@@ -1,3 +1,7 @@
+# Hidden files
+.*
+!.git*
+
 # Backup files
 *~
 \#*\#
@@ -38,6 +42,8 @@ stamp-h1
 /compile
 *.deps/
 /m4/
+libtool
+ltmain.sh
 
 # generated files
 src/redshift-gtk/defs.py
@@ -47,10 +53,16 @@ src/redshift
 src/redshift-gtk/__pycache__/
 /data/systemd/redshift.service
 /data/systemd/redshift-gtk.service
+/data/appdata/redshift-gtk.appdata.xml
+/data/applications/redshift-gtk.desktop
+
+*.su
+*.gch
 
 # gettext
 /po/POTFILES
 /po/stamp-po
+/po/stamp-it
 /po/*.gmo
 /po/Makefile.in.in
 /po/Rules-quot
