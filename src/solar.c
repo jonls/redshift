@@ -15,6 +15,7 @@
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2014  Mattias Andrée <maandree@member.fsf.org>
 */
 
 /* Ported from javascript code by U.S. Department of Commerce,
@@ -322,4 +323,78 @@ solar_table_fill(double date, double lat, double lon, double *table)
 			time_of_solar_elevation(t, t_noon, lat, lon, angle);
 		table[i] = epoch_from_jd(jdn - 0.5 + offset/1440.0);
 	}
+}
+
+
+
+#define EPSILON   0.000001
+#define ONE_YEAR  0.01
+
+
+static double
+future_past_elevation(double date, double delta, double lat, double lon, double elevation)
+{
+#define __test(A, B, C, OP)  ((A OP B) && (B OP C))
+#define solar_elevation_(t)  solar_elevation_from_time(t, lat, lon)
+
+	double t0, t1, t2, tm;
+	double e0, e1, e2, em;
+	unsigned char itr;
+
+	elevation = RAD(elevation);
+	t0 = t1 = t2 = jcent_from_jd(jd_from_epoch(date));
+	e0 = e1 = solar_elevation_(t0);
+
+	while (1) {
+		if (fabs(t2 - t0) > 36525.0 * ONE_YEAR) {
+			return NAN;
+		}
+		t2 += delta;
+		e2 = solar_elevation_(t2);
+		if (__test(e1, elevation, e2, <=) ||
+		    (__test(elevation, e1, e2, >=) && (elevation <= e0)))
+			break;
+		if (__test(e1, elevation, e2, >=) ||
+		    (__test(elevation, e1, e2, <=) && (elevation >= e0)))
+			break;
+		t1 = t2;
+		e2 = e1;
+	}
+
+	for (itr = 0; itr < 255; itr++) {
+		tm = (t1 + t2) / 2.0;
+		e1 = solar_elevation_(t1);
+		e2 = solar_elevation_(t2);
+		em = solar_elevation_(tm);
+		if (fabs(e1 - e2) < EPSILON) {
+			if (fabs(em - elevation) < EPSILON) {
+				return epoch_from_jd(jd_from_jcent(tm));
+			} else {
+				return NAN;
+			}
+		}
+		if ((e1 < e2) ? (elevation < em) : (elevation > em)) {
+			t2 = tm;
+		} else {
+			t1 = tm;
+		}
+	}
+
+	return NAN;
+
+#undef solar_elevation_
+#undef __test
+}
+
+
+double
+future_elevation(double date, double lat, double lon, double elevation)
+{
+  return future_past_elevation(date, ONE_YEAR / 2000.0, lat, lon, elevation);
+}
+
+double
+past_elevation(double date, double lat, double lon, double elevation)
+{
+  return future_past_elevation(date, ONE_YEAR / -2000.0, lat, lon, elevation);
 }
