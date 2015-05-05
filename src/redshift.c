@@ -448,98 +448,6 @@ print_method_list()
 }
 
 static int
-provider_try_start(const location_provider_t *provider,
-		   location_state_t *state,
-		   config_ini_state_t *config, char *args)
-{
-	int r;
-
-	r = provider->init(state);
-	if (r < 0) {
-		fprintf(stderr, _("Initialization of %s failed.\n"),
-			provider->name);
-		return -1;
-	}
-
-	/* Set provider options from config file. */
-	config_ini_section_t *section =
-		config_ini_get_section(config, provider->name);
-	if (section != NULL) {
-		config_ini_setting_t *setting = section->settings;
-		while (setting != NULL) {
-			r = provider->set_option(state, setting->name,
-						 setting->value);
-			if (r < 0) {
-				provider->free(state);
-				fprintf(stderr, _("Failed to set %s"
-						  " option.\n"),
-					provider->name);
-				/* TRANSLATORS: `help' must not be
-				   translated. */
-				fprintf(stderr, _("Try `-l %s:help' for more"
-						  " information.\n"),
-					provider->name);
-				return -1;
-			}
-			setting = setting->next;
-		}
-	}
-
-	/* Set provider options from command line. */
-	const char *manual_keys[] = { "lat", "lon" };
-	int i = 0;
-	while (args != NULL) {
-		char *next_arg = strchr(args, ':');
-		if (next_arg != NULL) *(next_arg++) = '\0';
-
-		const char *key = args;
-		char *value = strchr(args, '=');
-		if (value == NULL) {
-			/* The options for the "manual" method can be set
-			   without keys on the command line for convencience
-			   and for backwards compatability. We add the proper
-			   keys here before calling set_option(). */
-			if (strcmp(provider->name, "manual") == 0 &&
-			    i < sizeof(manual_keys)/sizeof(manual_keys[0])) {
-				key = manual_keys[i];
-				value = args;
-			} else {
-				fprintf(stderr, _("Failed to parse option `%s'.\n"),
-					args);
-				return -1;
-			}
-		} else {
-			*(value++) = '\0';
-		}
-
-		r = provider->set_option(state, key, value);
-		if (r < 0) {
-			provider->free(state);
-			fprintf(stderr, _("Failed to set %s option.\n"),
-				provider->name);
-			/* TRANSLATORS: `help' must not be translated. */
-			fprintf(stderr, _("Try `-l %s:help' for more"
-					  " information.\n"), provider->name);
-			return -1;
-		}
-
-		args = next_arg;
-		i += 1;
-	}
-
-	/* Start provider. */
-	r = provider->start(state);
-	if (r < 0) {
-		provider->free(state);
-		fprintf(stderr, _("Failed to start provider %s.\n"),
-			provider->name);
-		return -1;
-	}
-
-	return 0;
-}
-
-static int
 method_try_start(const gamma_method_t *method,
 		 gamma_state_t *state,
 		 config_ini_state_t *config, char *args)
@@ -1303,35 +1211,10 @@ main(int argc, char *argv[])
 					       &config_state, provider_args);
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
-			/* Try all providers, use the first that works. */
-			for (int i = 0;
-			     location_providers[i].name != NULL; i++) {
-				const location_provider_t *p =
-					&location_providers[i];
-				fprintf(stderr,
-					_("Trying location provider `%s'...\n"),
-					p->name);
-				r = provider_try_start(p, &location_state,
-						       &config_state, NULL);
-				if (r < 0) {
-					fputs(_("Trying next provider...\n"),
-					      stderr);
-					continue;
-				}
-
-				/* Found provider that works. */
-				printf(_("Using provider `%s'.\n"), p->name);
-				provider = p;
-				break;
-			}
-
-			/* Failure if no providers were successful at this
-			   point. */
-			if (provider == NULL) {
-				fputs(_("No more location providers"
-					" to try.\n"), stderr);
-				exit(EXIT_FAILURE);
-			}
+            provider = get_first_valid_provider(&location_state, &config_state);
+            if (provider == NULL) {
+                exit(EXIT_FAILURE);
+            }
 		}
 
 		/* Get current location. */
