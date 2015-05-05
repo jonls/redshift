@@ -35,7 +35,6 @@ typedef struct {
 	location_provider_get_location_func *get_location;
 } location_provider_t;
 
-
 /* Location Headers */
 #include "location-manual.h"
 
@@ -51,8 +50,6 @@ typedef struct {
 # include "location-corelocation.h"
 #endif
 
-
-
 /* Union of state data for location providers */
 typedef union {
 	location_manual_state_t manual;
@@ -60,66 +57,6 @@ typedef union {
 	location_geoclue_state_t geoclue;
 #endif
 } location_state_t;
-
-
-/* Location provider method structs */
-static const location_provider_t location_providers[] = {
-#ifdef ENABLE_GEOCLUE
-	{
-		"geoclue",
-		(location_provider_init_func *)location_geoclue_init,
-		(location_provider_start_func *)location_geoclue_start,
-		(location_provider_free_func *)location_geoclue_free,
-		(location_provider_print_help_func *)
-		location_geoclue_print_help,
-		(location_provider_set_option_func *)
-		location_geoclue_set_option,
-		(location_provider_get_location_func *)
-		location_geoclue_get_location
-	},
-#endif
-#ifdef ENABLE_GEOCLUE2
-	{
-		"geoclue2",
-		(location_provider_init_func *)location_geoclue2_init,
-		(location_provider_start_func *)location_geoclue2_start,
-		(location_provider_free_func *)location_geoclue2_free,
-		(location_provider_print_help_func *)
-		location_geoclue2_print_help,
-		(location_provider_set_option_func *)
-		location_geoclue2_set_option,
-		(location_provider_get_location_func *)
-		location_geoclue2_get_location
-	},
-#endif
-#ifdef ENABLE_CORELOCATION
-	{
-		"corelocation",
-		(location_provider_init_func *)location_corelocation_init,
-		(location_provider_start_func *)location_corelocation_start,
-		(location_provider_free_func *)location_corelocation_free,
-		(location_provider_print_help_func *)
-		location_corelocation_print_help,
-		(location_provider_set_option_func *)
-		location_corelocation_set_option,
-		(location_provider_get_location_func *)
-		location_corelocation_get_location
-	},
-#endif
-	{
-		"manual",
-		(location_provider_init_func *)location_manual_init,
-		(location_provider_start_func *)location_manual_start,
-		(location_provider_free_func *)location_manual_free,
-		(location_provider_print_help_func *)
-		location_manual_print_help,
-		(location_provider_set_option_func *)
-		location_manual_set_option,
-		(location_provider_get_location_func *)
-		location_manual_get_location
-	},
-	{ NULL }
-};
 
 void print_provider_list();
 const location_provider_t *find_location_provider(const char *name);
