@@ -48,6 +48,7 @@
 #include "solar.h"
 #include "systemtime.h"
 #include "hooks.h"
+#include "adjustments.h"
 
 
 #define MIN(x,y)        ((x) < (y) ? (x) : (y))
@@ -267,21 +268,6 @@ static const location_provider_t location_providers[] = {
 #define MAX_LAT    90.0
 #define MIN_LON  -180.0
 #define MAX_LON   180.0
-#define MIN_TEMP   1000
-#define MAX_TEMP  25000
-#define MIN_BRIGHTNESS  0.1
-#define MAX_BRIGHTNESS  1.0
-#define MIN_GAMMA   0.1
-#define MAX_GAMMA  10.0
-
-/* Default values for parameters. */
-#define DEFAULT_DAY_TEMP    5500
-#define DEFAULT_NIGHT_TEMP  3500
-#define DEFAULT_BRIGHTNESS   1.0
-#define DEFAULT_GAMMA        1.0
-
-/* The color temperature when no adjustment is applied. */
-#define NEUTRAL_TEMP  6500
 
 /* Angular elevation of the sun at which the color temperature
    transition period starts and ends (in degress).
