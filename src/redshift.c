@@ -33,21 +33,12 @@
 # include <signal.h>
 #endif
 
-#ifdef ENABLE_NLS
-# include <libintl.h>
-# define _(s) gettext(s)
-# define N_(s) (s)
-#else
-# define _(s) s
-# define N_(s) s
-# define gettext(s) s
-#endif
-
 #include "redshift.h"
 #include "config-ini.h"
 #include "solar.h"
 #include "systemtime.h"
 #include "hooks.h"
+#include "location-adjustment.h"
 
 
 #define MIN(x,y)        ((x) < (y) ? (x) : (y))
@@ -189,75 +180,6 @@ static const gamma_method_t gamma_methods[] = {
 		(gamma_method_set_option_func *)gamma_dummy_set_option,
 		(gamma_method_restore_func *)gamma_dummy_restore,
 		(gamma_method_set_temperature_func *)gamma_dummy_set_temperature
-	},
-	{ NULL }
-};
-
-
-/* Union of state data for location providers */
-typedef union {
-	location_manual_state_t manual;
-#ifdef ENABLE_GEOCLUE
-	location_geoclue_state_t geoclue;
-#endif
-} location_state_t;
-
-
-/* Location provider method structs */
-static const location_provider_t location_providers[] = {
-#ifdef ENABLE_GEOCLUE
-	{
-		"geoclue",
-		(location_provider_init_func *)location_geoclue_init,
-		(location_provider_start_func *)location_geoclue_start,
-		(location_provider_free_func *)location_geoclue_free,
-		(location_provider_print_help_func *)
-		location_geoclue_print_help,
-		(location_provider_set_option_func *)
-		location_geoclue_set_option,
-		(location_provider_get_location_func *)
-		location_geoclue_get_location
-	},
-#endif
-#ifdef ENABLE_GEOCLUE2
-	{
-		"geoclue2",
-		(location_provider_init_func *)location_geoclue2_init,
-		(location_provider_start_func *)location_geoclue2_start,
-		(location_provider_free_func *)location_geoclue2_free,
-		(location_provider_print_help_func *)
-		location_geoclue2_print_help,
-		(location_provider_set_option_func *)
-		location_geoclue2_set_option,
-		(location_provider_get_location_func *)
-		location_geoclue2_get_location
-	},
-#endif
-#ifdef ENABLE_CORELOCATION
-	{
-		"corelocation",
-		(location_provider_init_func *)location_corelocation_init,
-		(location_provider_start_func *)location_corelocation_start,
-		(location_provider_free_func *)location_corelocation_free,
-		(location_provider_print_help_func *)
-		location_corelocation_print_help,
-		(location_provider_set_option_func *)
-		location_corelocation_set_option,
-		(location_provider_get_location_func *)
-		location_corelocation_get_location
-	},
-#endif
-	{
-		"manual",
-		(location_provider_init_func *)location_manual_init,
-		(location_provider_start_func *)location_manual_start,
-		(location_provider_free_func *)location_manual_free,
-		(location_provider_print_help_func *)
-		location_manual_print_help,
-		(location_provider_set_option_func *)
-		location_manual_set_option,
-		(location_provider_get_location_func *)
-		location_manual_get_location
 	},
 	{ NULL }
 };
@@ -525,22 +447,6 @@ print_method_list()
 	fputs(_("Try `-m METHOD:help' for help.\n"), stdout);
 }
 
-static void
-print_provider_list()
-{
-	fputs(_("Available location providers:\n"), stdout);
-	for (int i = 0; location_providers[i].name != NULL; i++) {
-		printf("  %s\n", location_providers[i].name);
-	}
-
-	fputs("\n", stdout);
-	fputs(_("Specify colon-separated options with"
-		"`-l PROVIDER:OPTIONS'.\n"), stdout);
-	/* TRANSLATORS: `help' must not be translated. */
-	fputs(_("Try `-l PROVIDER:help' for help.\n"), stdout);
-}
-
-
 static int
 provider_try_start(const location_provider_t *provider,
 		   location_state_t *state,
@@ -781,22 +687,6 @@ find_gamma_method(const char *name)
 
 	return method;
 }
-
-static const location_provider_t *
-find_location_provider(const char *name)
-{
-	const location_provider_t *provider = NULL;
-	for (int i = 0; location_providers[i].name != NULL; i++) {
-		const location_provider_t *p = &location_providers[i];
-		if (strcasecmp(name, p->name) == 0) {
-			provider = p;
-			break;
-		}
-	}
-
-	return provider;
-}
-
 
 /* Run continual mode loop
    This is the main loop of the continual mode which keeps track of the

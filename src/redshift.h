@@ -23,6 +23,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef ENABLE_NLS
+# include <libintl.h>
+# define _(s) gettext(s)
+# define N_(s) (s)
+#else
+# define _(s) s
+# define N_(s) s
+# define gettext(s) s
+#endif
 
 /* Location */
 typedef struct {
@@ -80,35 +89,5 @@ typedef struct {
 	/* Set a specific color temperature. */
 	gamma_method_set_temperature_func *set_temperature;
 } gamma_method_t;
-
-
-/* Location provider */
-typedef int location_provider_init_func(void *state);
-typedef int location_provider_start_func(void *state);
-typedef void location_provider_free_func(void *state);
-typedef void location_provider_print_help_func(FILE *f);
-typedef int location_provider_set_option_func(void *state, const char *key,
-					      const char *value);
-typedef int location_provider_get_location_func(void *state, location_t *loc);
-
-typedef struct {
-	char *name;
-
-	/* Initialize state. Options can be set between init and start. */
-	location_provider_init_func *init;
-	/* Allocate storage and make connections that depend on options. */
-	location_provider_start_func *start;
-	/* Free all allocated storage and close connections. */
-	location_provider_free_func *free;
-
-	/* Print help on options for this location provider. */
-	location_provider_print_help_func *print_help;
-	/* Set an option key, value-pair. */
-	location_provider_set_option_func *set_option;
-
-	/* Get current location. */
-	location_provider_get_location_func *get_location;
-} location_provider_t;
-
 
 #endif /* ! REDSHIFT_REDSHIFT_H */
