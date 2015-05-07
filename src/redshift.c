@@ -291,8 +291,12 @@ static const location_provider_t location_providers[] = {
 #define TRANSITION_HIGH    3.0
 
 /* Duration of sleep between screen updates (milliseconds). */
-#define SLEEP_DURATION        5000
-#define SLEEP_DURATION_SHORT  100
+#ifndef SLEEP_DURATION
+#  define SLEEP_DURATION        5000
+#endif
+#ifndef SLEEP_DURATION_SHORT
+#  define SLEEP_DURATION_SHORT  100
+#endif
 
 /* Program modes. */
 typedef enum {
