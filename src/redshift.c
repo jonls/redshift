@@ -1050,6 +1050,7 @@ main(int argc, char *argv[])
 	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:prt:vVx")) != -1) {
 		switch (opt) {
 		case 'b':
+			cmdline_brightness = 1;
 			parse_brightness_string(optarg,
 						&scheme.day.brightness,
 						&scheme.night.brightness);
@@ -1059,6 +1060,7 @@ main(int argc, char *argv[])
 			config_filepath = strdup(optarg);
 			break;
 		case 'g':
+			cmdline_gamma = 1;
 			r = parse_gamma_string(optarg, scheme.day.gamma);
 			if (r < 0) {
 				fputs(_("Malformed gamma argument.\n"),
@@ -1164,9 +1166,11 @@ main(int argc, char *argv[])
 			mode = PROGRAM_MODE_PRINT;
 			break;
 		case 'r':
+			cmdline_transition = 1;
 			transition = 0;
 			break;
 		case 't':
+			cmdline_temperature = 1;
 			s = strchr(optarg, ':');
 			if (s == NULL) {
 				fputs(_("Malformed temperature argument.\n"),
@@ -1213,51 +1217,53 @@ main(int argc, char *argv[])
 		config_ini_setting_t *setting = section->settings;
 		while (setting != NULL) {
 			if (strcasecmp(setting->name, "temp-day") == 0) {
-				if (scheme.day.temperature < 0) {
+				if (cmdline_temperature == 0) {
 					scheme.day.temperature =
 						atoi(setting->value);
 				}
 			} else if (strcasecmp(setting->name,
 					      "temp-night") == 0) {
-				if (scheme.night.temperature < 0) {
+				if (cmdline_temperature == 0) {
 					scheme.night.temperature =
 						atoi(setting->value);
 				}
 			} else if (strcasecmp(setting->name,
 					      "transition") == 0) {
-				if (transition < 0) {
+				if (cmdline_transition == 0) {
 					transition = !!atoi(setting->value);
 				}
 			} else if (strcasecmp(setting->name,
 					      "brightness") == 0) {
-				if (isnan(scheme.day.brightness)) {
+				if (cmdline_brightness == 0) {
 					scheme.day.brightness =
 						atof(setting->value);
-				}
-				if (isnan(scheme.night.brightness)) {
 					scheme.night.brightness =
 						atof(setting->value);
 				}
 			} else if (strcasecmp(setting->name,
 					      "brightness-day") == 0) {
-				if (isnan(scheme.day.brightness)) {
+				if (cmdline_brightness == 0) {
 					scheme.day.brightness =
 						atof(setting->value);
 				}
 			} else if (strcasecmp(setting->name,
 					      "brightness-night") == 0) {
-				if (isnan(scheme.night.brightness)) {
+				if (cmdline_brightness == 0) {
 					scheme.night.brightness =
 						atof(setting->value);
 				}
 			} else if (strcasecmp(setting->name,
 					      "elevation-high") == 0) {
-				scheme.high = atof(setting->value);
+				if (cmdline_elevation == 0) {
+					scheme.high = atof(setting->value);
+				}
 			} else if (strcasecmp(setting->name,
 					      "elevation-low") == 0) {
-				scheme.low = atof(setting->value);
+				if (cmdline_elevation == 0) {
+					scheme.low = atof(setting->value);
+				}
 			} else if (strcasecmp(setting->name, "gamma") == 0) {
-				if (isnan(scheme.day.gamma[0])) {
+				if (cmdline_gamma == 0) {
 					r = parse_gamma_string(setting->value,
 							       scheme.day.gamma);
 					if (r < 0) {
@@ -1270,7 +1276,7 @@ main(int argc, char *argv[])
 					       sizeof(scheme.night.gamma));
 				}
 			} else if (strcasecmp(setting->name, "gamma-day") == 0) {
-				if (isnan(scheme.day.gamma[0])) {
+				if (cmdline_gamma == 0) {
 					r = parse_gamma_string(setting->value,
 							       scheme.day.gamma);
 					if (r < 0) {
@@ -1281,7 +1287,7 @@ main(int argc, char *argv[])
 					}
 				}
 			} else if (strcasecmp(setting->name, "gamma-night") == 0) {
-				if (isnan(scheme.night.gamma[0])) {
+				if (cmdline_gamma == 0) {
 					r = parse_gamma_string(setting->value,
 							       scheme.night.gamma);
 					if (r < 0) {

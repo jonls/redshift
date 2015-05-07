@@ -8,6 +8,13 @@
 #include "settings.h"
 
 
+int cmdline_brightness = 0;
+int cmdline_gamma = 0;
+int cmdline_transition = 0;
+int cmdline_temperature = 0;
+int cmdline_elevation = 0;
+
+
 /* A gamma string contains either one floating point value,
    or three values separated by colon. */
 int
