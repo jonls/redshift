@@ -38,6 +38,11 @@ Screen brightness to apply (between 0.1 and 1.0)
 \fB\-c\fR FILE
 Load settings from specified configuration file
 .TP
+\fB\-s\fR LONG:SHORT
+Set sleep intervals. The short interval applies during initial
+transition and during events that are triggered by interprocess signals.
+The intervals are in seconds, given as positive floating point numbers.
+.TP
 \fB\-g\fR R:G:B
 Additional gamma correction to apply
 .TP
@@ -102,6 +107,15 @@ Screen brightness at daytime
 .TP
 \fBbrightness\-night\fR = 0.1\-1.0
 Screen brightness at night
+.TP
+\fBsleep\-long\fR = positive decimal
+The number of seconds to sleep between adjustment recalculations.
+Long sleeps applies normally.
+.TP
+\fBsleep\-short\fR = positive decimal
+The number of seconds to sleep between adjustment recalculations.
+Short sleeps applies during initial transitions and during events
+that are triggered by interprocess signals.
 .TP
 \fBelevation-high\fR = decimal
 The solar elevation for the transition to daytime
