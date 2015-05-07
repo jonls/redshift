@@ -1013,7 +1013,9 @@ run_continual_mode(const location_t *loc,
 		/* Activate hooks and print twilight period if period changed */
 		if (period != prev_period) {
 			hooks_signal_period_change(prev_period, period);
-			print_twilight_period(now, elevation, loc, scheme);
+			if (verbose) {
+				print_twilight_period(now, elevation, loc, scheme);
+			}
 		}
 
 		/* Ongoing short transition */
