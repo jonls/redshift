@@ -38,7 +38,7 @@
 #include "solar.h"
 #include "systemtime.h"
 #include "hooks.h"
-#include "location-adjustment.h"
+#include "location.h"
 
 
 #define MIN(x,y)        ((x) < (y) ? (x) : (y))

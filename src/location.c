@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "config-ini.h"
-#include "location-adjustment.h"
+#include "location.h"
 #include <string.h>
 
 /* Location provider method structs */

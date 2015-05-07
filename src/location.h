@@ -1,5 +1,5 @@
-#ifndef LOCATION_ADJUSTMENT_H
-#define LOCATION_ADJUSTMENT_H
+#ifndef LOCATION_H
+#define LOCATION_H
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -63,4 +63,4 @@ const location_provider_t *find_location_provider(const char *name);
 int provider_try_start(const location_provider_t *provider, location_state_t *state, config_ini_state_t *config, char *args);
 const location_provider_t *get_first_valid_provider(location_state_t *location_state, config_ini_state_t *config);
 
-#endif /* LOCATION_ADJUSTMENT_H */
+#endif /* LOCATION_H */
