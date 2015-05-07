@@ -74,21 +74,6 @@
 #endif
 
 
-#include "location-manual.h"
-
-#ifdef ENABLE_GEOCLUE
-# include "location-geoclue.h"
-#endif
-
-#ifdef ENABLE_GEOCLUE2
-# include "location-geoclue2.h"
-#endif
-
-#ifdef ENABLE_CORELOCATION
-# include "location-corelocation.h"
-#endif
-
-
 /* Union of state data for gamma adjustment methods */
 typedef union {
 #ifdef ENABLE_DRM
@@ -1211,10 +1196,10 @@ main(int argc, char *argv[])
 					       &config_state, provider_args);
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
-            provider = get_first_valid_provider(&location_state, &config_state);
-            if (provider == NULL) {
-                exit(EXIT_FAILURE);
-            }
+			provider = get_first_valid_provider(&location_state, &config_state);
+			if (provider == NULL) {
+				exit(EXIT_FAILURE);
+			}
 		}
 
 		/* Get current location. */
