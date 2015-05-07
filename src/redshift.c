@@ -521,7 +521,7 @@ print_method_list()
 	}
 
 	fputs("\n", stdout);
-	fputs(_("Specify colon-separated options with"
+	fputs(_("Specify space-separated options with"
 		" `-m METHOD OPTIONS'.\n"), stdout);
 	/* TRANSLATORS: `help' must not be translated. */
 	fputs(_("Try `-m METHOD help' for help.\n"), stdout);
@@ -536,7 +536,7 @@ print_provider_list()
 	}
 
 	fputs("\n", stdout);
-	fputs(_("Specify colon-separated options with"
+	fputs(_("Specify space-separated options with"
 		"`-l PROVIDER OPTIONS'.\n"), stdout);
 	/* TRANSLATORS: `help' must not be translated. */
 	fputs(_("Try `-l PROVIDER help' for help.\n"), stdout);
