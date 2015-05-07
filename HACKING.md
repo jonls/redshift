@@ -53,6 +53,7 @@ Dependencies
 * libxcb, libxcb-randr (Optional, for RandR support)
 * libX11, libXxf86vm (Optional, for VidMode support)
 * geoclue (Optional, for geoclue support)
+* procps (Optional, for `redshift -T` support)
 
 * python3, pygobject, pyxdg (Optional, for GUI support)
 * appindicator (Optional, for Ubuntu-style GUI status icon)

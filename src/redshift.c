@@ -300,7 +300,8 @@ typedef enum {
 	PROGRAM_MODE_ONE_SHOT,
 	PROGRAM_MODE_PRINT,
 	PROGRAM_MODE_RESET,
-	PROGRAM_MODE_MANUAL
+	PROGRAM_MODE_MANUAL,
+	PROGRAM_MODE_TOGGLE
 } program_mode_t;
 
 /* Transition scheme.
@@ -1088,7 +1089,7 @@ main(int argc, char *argv[])
 
 	/* Parse command line arguments. */
 	int opt;
-	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:prt:vVx")) != -1) {
+	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:prt:TvVx")) != -1) {
 		switch (opt) {
 		case 'b':
 			parse_brightness_string(optarg,
@@ -1220,6 +1221,9 @@ main(int argc, char *argv[])
 			scheme.day.temperature = atoi(optarg);
 			scheme.night.temperature = atoi(s);
 			break;
+		case 'T':
+			mode = PROGRAM_MODE_TOGGLE;
+			break;
 		case 'v':
 			verbose = 1;
 			break;
@@ -1235,6 +1239,16 @@ main(int argc, char *argv[])
 			exit(EXIT_FAILURE);
 			break;
 		}
+	}
+
+	/* Activate or deactivle Redshift. */
+	if (mode == PROGRAM_MODE_TOGGLE) {
+		char user[3 * sizeof(uid_t) + 1];
+		uid_t uid = getuid();
+		sprintf(user, "%ji", (intmax_t)uid);
+		execlp("pkill", "pkill", "-USR1", "-u", user, "^redshift$", NULL);
+		perror("execlp");
+		exit(EXIT_FAILURE);
 	}
 
 	/* Load settings from config file. */
