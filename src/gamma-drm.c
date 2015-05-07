@@ -190,8 +190,7 @@ drm_free(drm_state_t *state)
 	if (state->crtcs != NULL) {
 		drm_crtc_state_t *crtcs = state->crtcs;
 		while (crtcs->crtc_num >= 0) {
-			if (crtcs->r_gamma != NULL)
-				free(crtcs->r_gamma);
+			free(crtcs->r_gamma);
 			crtcs->crtc_num = -1;
 			crtcs++;
 		}
