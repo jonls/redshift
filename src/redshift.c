@@ -33,22 +33,12 @@
 # include <signal.h>
 #endif
 
-#ifdef ENABLE_NLS
-# include <libintl.h>
-# define _(s) gettext(s)
-# define N_(s) (s)
-#else
-# define _(s) s
-# define N_(s) s
-# define gettext(s) s
-#endif
-
 #include "redshift.h"
 #include "config-ini.h"
 #include "solar.h"
 #include "systemtime.h"
 #include "hooks.h"
-
+#include "transition.h"
 
 #define MIN(x,y)        ((x) < (y) ? (x) : (y))
 #define MAX(x,y)        ((x) > (y) ? (x) : (y))
@@ -262,34 +252,6 @@ static const location_provider_t location_providers[] = {
 	{ NULL }
 };
 
-/* Bounds for parameters. */
-#define MIN_LAT   -90.0
-#define MAX_LAT    90.0
-#define MIN_LON  -180.0
-#define MAX_LON   180.0
-#define MIN_TEMP   1000
-#define MAX_TEMP  25000
-#define MIN_BRIGHTNESS  0.1
-#define MAX_BRIGHTNESS  1.0
-#define MIN_GAMMA   0.1
-#define MAX_GAMMA  10.0
-
-/* Default values for parameters. */
-#define DEFAULT_DAY_TEMP    5500
-#define DEFAULT_NIGHT_TEMP  3500
-#define DEFAULT_BRIGHTNESS   1.0
-#define DEFAULT_GAMMA        1.0
-
-/* The color temperature when no adjustment is applied. */
-#define NEUTRAL_TEMP  6500
-
-/* Angular elevation of the sun at which the color temperature
-   transition period starts and ends (in degress).
-   Transition during twilight, and while the sun is lower than
-   3.0 degrees above the horizon. */
-#define TRANSITION_LOW     SOLAR_CIVIL_TWILIGHT_ELEV
-#define TRANSITION_HIGH    3.0
-
 /* Duration of sleep between screen updates (milliseconds). */
 #define SLEEP_DURATION        5000
 #define SLEEP_DURATION_SHORT  100
@@ -302,25 +264,6 @@ typedef enum {
 	PROGRAM_MODE_RESET,
 	PROGRAM_MODE_MANUAL
 } program_mode_t;
-
-/* Transition scheme.
-   The solar elevations at which the transition begins/ends,
-   and the association color settings. */
-typedef struct {
-	double high;
-	double low;
-	color_setting_t day;
-	color_setting_t night;
-} transition_scheme_t;
-
-/* Names of periods of day */
-static const char *period_names[] = {
-	/* TRANSLATORS: Name printed when period of day is unknown */
-	N_("None"),
-	N_("Daytime"),
-	N_("Night"),
-	N_("Transition")
-};
 
 #if defined(HAVE_SIGNAL_H) && !defined(__WIN32__)
 
@@ -347,99 +290,6 @@ static int exiting = 0;
 static int disable = 0;
 
 #endif /* ! HAVE_SIGNAL_H || __WIN32__ */
-
-
-/* Determine which period we are currently in. */
-static period_t
-get_period(const transition_scheme_t *transition,
-	   double elevation)
-{
-	if (elevation < transition->low) {
-		return PERIOD_NIGHT;
-	} else if (elevation < transition->high) {
-		return PERIOD_TRANSITION;
-	} else {
-		return PERIOD_DAYTIME;
-	}
-}
-
-/* Determine how far through the transition we are. */
-static double
-get_transition_progress(const transition_scheme_t *transition,
-			double elevation)
-{
-	if (elevation < transition->low) {
-		return 0.0;
-	} else if (elevation < transition->high) {
-		return (transition->low - elevation) /
-			(transition->low - transition->high);
-	} else {
-		return 1.0;
-	}
-}
-
-/* Print verbose description of the given period. */
-static void
-print_period(period_t period, double transition)
-{
-	switch (period) {
-	case PERIOD_NONE:
-	case PERIOD_NIGHT:
-	case PERIOD_DAYTIME:
-		printf(_("Period: %s\n"), gettext(period_names[period]));
-		break;
-	case PERIOD_TRANSITION:
-		printf(_("Period: %s (%.2f%% day)\n"),
-		       gettext(period_names[period]),
-		       transition*100);
-		break;
-	}
-}
-
-/* Print location */
-static void
-print_location(const location_t *location)
-{
-	/* TRANSLATORS: Abbreviation for `north' */
-	const char *north = _("N");
-	/* TRANSLATORS: Abbreviation for `south' */
-	const char *south = _("S");
-	/* TRANSLATORS: Abbreviation for `east' */
-	const char *east = _("E");
-	/* TRANSLATORS: Abbreviation for `west' */
-	const char *west = _("W");
-
-	/* TRANSLATORS: Append degree symbols after %f if possible.
-	   The string following each number is an abreviation for
-	   north, source, east or west (N, S, E, W). */
-	printf(_("Location: %.2f %s, %.2f %s\n"),
-	       fabs(location->lat), location->lat >= 0.f ? north : south,
-	       fabs(location->lon), location->lon >= 0.f ? east : west);
-}
-
-/* Interpolate color setting structs based on solar elevation */
-static void
-interpolate_color_settings(const transition_scheme_t *transition,
-			   double elevation,
-			   color_setting_t *result)
-{
-	const color_setting_t *day = &transition->day;
-	const color_setting_t *night = &transition->night;
-
-	double alpha = (transition->low - elevation) /
-		(transition->low - transition->high);
-	alpha = CLAMP(0.0, alpha, 1.0);
-
-	result->temperature = (1.0-alpha)*night->temperature +
-		alpha*day->temperature;
-	result->brightness = (1.0-alpha)*night->brightness +
-		alpha*day->brightness;
-	for (int i = 0; i < 3; i++) {
-		result->gamma[i] = (1.0-alpha)*night->gamma[i] +
-			alpha*day->gamma[i];
-	}
-}
-
 
 static void
 print_help(const char *program_name)
