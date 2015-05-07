@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "config-ini.h"
-#include "gamma-adjustment.h"
+#include "gamma.h"
 
 /* Gamma adjustment method structs */
 static const gamma_method_t gamma_methods[] = {

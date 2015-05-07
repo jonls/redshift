@@ -18,6 +18,6 @@ src/location-geoclue.c
 src/location-geoclue2.c
 src/location-corelocation.m
 src/location-manual.c
-src/gamma-adjustment.c
+src/gamma.c
 
 src/redshift-gtk/statusicon.py

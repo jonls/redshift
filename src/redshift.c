@@ -38,7 +38,7 @@
 #include "solar.h"
 #include "systemtime.h"
 #include "hooks.h"
-#include "gamma-adjustment.h"
+#include "gamma.h"
 
 
 #define MIN(x,y)        ((x) < (y) ? (x) : (y))

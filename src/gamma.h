@@ -1,5 +1,5 @@
-#ifndef GAMMA_ADJUSTMENT_H
-#define GAMMA_ADJUSTMENT_H
+#ifndef GAMMA_H
+#define GAMMA_H
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -90,4 +90,4 @@ int method_try_start(const gamma_method_t *method, gamma_state_t *state, config_
 gamma_state_t *gammma_state_new(void);
 void gamma_state_finalize(gamma_state_t *state);
 
-#endif /* GAMMA_ADJUSTMENT_H */
+#endif /* GAMMA_H */
