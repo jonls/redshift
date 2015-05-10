@@ -123,8 +123,8 @@ void
 location_geoclue_free(location_geoclue_state_t *state)
 {
 	if (state->position != NULL) g_object_unref(state->position);
-	if (state->provider != NULL) free(state->provider);
-	if (state->provider_path != NULL) free(state->provider_path);
+	free(state->provider);
+	free(state->provider_path);
 }
 
 void

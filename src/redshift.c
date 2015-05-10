@@ -1096,7 +1096,7 @@ main(int argc, char *argv[])
 						&scheme.night.brightness);
 			break;
 		case 'c':
-			if (config_filepath != NULL) free(config_filepath);
+			free(config_filepath);
 			config_filepath = strdup(optarg);
 			break;
 		case 'g':
@@ -1245,7 +1245,7 @@ main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	if (config_filepath != NULL) free(config_filepath);
+	free(config_filepath);
 
 	/* Read global config settings. */
 	config_ini_section_t *section = config_ini_get_section(&config_state,
