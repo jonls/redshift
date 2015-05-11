@@ -23,6 +23,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef ENABLE_NLS
+# include <libintl.h>
+# define _(s) gettext(s)
+# define N_(s) (s)
+#else
+# define _(s) s
+# define N_(s) s
+# define gettext(s) s
+#endif
 
 /* Location */
 typedef struct {
