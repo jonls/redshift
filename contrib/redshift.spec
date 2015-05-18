@@ -1,6 +1,12 @@
+%if 0%{?suse_version}
+%define dist .%{vendor}
+%define _userunitdir %{_unitdir}/../user
+%systemd_requires
+%endif
+
 Name: redshift
 Version: 1.10
-Release: 1%{dist}
+Release: 2%{dist}
 Summary: Adjusts the color temperature of your screen according to time of day
 Group: Applications/System
 License: GPLv3+
@@ -12,6 +18,13 @@ BuildRequires: libXxf86vm-devel
 BuildRequires: libxcb-devel
 BuildRequires: glib2-devel
 BuildRequires: systemd
+%if 0%{?suse_version}
+BuildRequires: autoconf
+BuildRequires: intltool
+BuildRequires: automake
+BuildRequires: libtool
+Requires: geoclue2
+%endif
 
 %description
 Redshift adjusts the color temperature of your screen according to your
@@ -32,7 +45,13 @@ Group: Applications/System
 BuildRequires: python3-devel >= 3.2
 BuildRequires: desktop-file-utils
 Requires: python3-gobject
+%if 0%{?suse_version}
+BuildRequires: update-desktop-files
+Requires: python3-xdg
+Requires: typelib-1_0-AppIndicator3-0_1
+%else
 Requires: python3-pyxdg
+%endif
 Requires: %{name} = %{version}-%{release}
 Obsoletes: gtk-redshift < %{version}-%{release}
 
@@ -44,6 +63,7 @@ temperature adjustment program.
 %setup -q
 
 %build
+./bootstrap
 %configure --enable-gui --disable-geoclue --enable-geoclue2 --enable-randr --enable-vidmode --with-systemduserunitdir=%{_userunitdir}
 make %{?_smp_mflags} V=1
 
@@ -51,16 +71,25 @@ make %{?_smp_mflags} V=1
 rm -rf %{buildroot}
 make DESTDIR=%{buildroot} install INSTALL="install -p"
 %find_lang %{name}
+%if 0%{?suse_version}
+%suse_update_desktop_file %{name}-gtk GTK X-SuSE-DesktopUtility
+%endif
 desktop-file-validate %{buildroot}%{_datadir}/applications/redshift-gtk.desktop
 
 %post -n %{name}-gtk
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
+%if 0%{?suse_version}
+%desktop_database_post
+%endif
 
 %postun -n %{name}-gtk
 if [ $1 -eq 0 ] ; then
     touch --no-create %{_datadir}/icons/hicolor &>/dev/null
     gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 fi
+%if 0%{?suse_version}
+%desktop_database_postun
+%endif
 
 %posttrans -n %{name}-gtk
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
@@ -81,6 +110,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/appdata/redshift-gtk.appdata.xml
 
 %changelog
+* Sun Feb 15 2015 Cougar <cougar@random.ee> - 1.10-2
+- openSUSE support
+
 * Sun Jan 4 2015 Jon Lund Steffensen <jonlst@gmail.com> - 1.10-1
 - Update to 1.10
 
