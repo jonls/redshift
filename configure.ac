@@ -335,6 +335,19 @@ AS_IF([test -n "$with_systemduserunitdir" -a "x$with_systemduserunitdir" != xno]
 AM_CONDITIONAL([ENABLE_SYSTEMD], [test "x$enable_systemd" != xno])
 
 
+# Check for Ubuntu icons
+AC_MSG_CHECKING([whether to enable Upstart job(s)])
+AC_ARG_ENABLE([upstart], [AC_HELP_STRING([--enable-upstart],
+        [enable Upstart job(s)])],
+        [enable_upstart=$enableval],[enable_upstart=no])
+AS_IF([test "x$enable_upstart" != xno], [
+        AC_MSG_RESULT([yes])
+], [
+        AC_MSG_RESULT([no])
+])
+AM_CONDITIONAL([ENABLE_UPSTART], [test "x$enable_upstart" != xno])
+
+
 # Checks for header files.
 AC_CHECK_HEADERS([locale.h stdint.h stdlib.h string.h unistd.h signal.h])
 
@@ -378,4 +391,5 @@ echo "
     GUI:		${enable_gui}
     Ubuntu icons:	${enable_ubuntu}
     systemd units:	${enable_systemd} ${systemduserunitdir}
+    Upstart jobs:	${enable_upstart}
 "
