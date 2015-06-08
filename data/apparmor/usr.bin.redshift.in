@@ -1,0 +1,42 @@
+# ------------------------------------------------------------------
+#
+#    Copyright (C) 2015 Cameron Norman <camerontnorman@gmail.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# ------------------------------------------------------------------
+
+#include <tunables/global>
+@bindir@/redshift {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+  #include <abstractions/dbus-strict>
+  #include <abstractions/X>
+
+  dbus send
+       bus=system
+       path=/org/freedesktop/GeoClue2/Client/[0-9]*,
+
+  dbus receive
+       bus=system
+       path=/org/freedesktop/GeoClue2/Manager,
+
+  # Allow but log any other dbus activity
+  audit dbus bus=system,
+
+  owner @{HOME}/.config/redshift.conf r,
+
+  # Site-specific additions and overrides. See local/README for details.
+  #include <local/usr.bin.redshift>
+}
