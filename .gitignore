@@ -54,6 +54,7 @@ src/redshift-gtk/__pycache__/
 /data/systemd/redshift.service
 /data/systemd/redshift-gtk.service
 /data/appdata/redshift-gtk.appdata.xml
+/data/applications/redshift.desktop
 /data/applications/redshift-gtk.desktop
 
 *.su
