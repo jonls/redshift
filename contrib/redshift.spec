@@ -51,6 +51,7 @@ make %{?_smp_mflags} V=1
 rm -rf %{buildroot}
 make DESTDIR=%{buildroot} install INSTALL="install -p"
 %find_lang %{name}
+desktop-file-validate %{buildroot}%{_datadir}/applications/redshift.desktop
 desktop-file-validate %{buildroot}%{_datadir}/applications/redshift-gtk.desktop
 
 %post -n %{name}-gtk

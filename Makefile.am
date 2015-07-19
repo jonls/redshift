@@ -28,6 +28,7 @@ _UBUNTU_MONO_LIGHT_FILES = \
 	data/icons/ubuntu-mono-light/scalable/apps/redshift-status-off.svg
 
 DESKTOP_IN_FILES = \
+	data/applications/redshift.desktop.in \
 	data/applications/redshift-gtk.desktop.in
 
 SYSTEMD_USER_UNIT_IN_FILES = \
