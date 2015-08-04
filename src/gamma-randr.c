@@ -306,7 +306,7 @@ randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num,
 			       const color_setting_t *setting)
 {
 	xcb_generic_error_t *error;
-	
+
 	if (crtc_num >= state->crtc_count || crtc_num < 0) {
 		fprintf(stderr, _("CRTC %d does not exist. "),
 			state->crtc_num);

@@ -1447,9 +1447,9 @@ main(int argc, char *argv[])
 		              stderr);
 		        exit(EXIT_FAILURE);
 		}
-	
+
 		provider->free(&location_state);
-	
+
 		if (verbose) {
 			print_location(&loc);
 
@@ -1470,7 +1470,7 @@ main(int argc, char *argv[])
 		                MIN_LAT, MAX_LAT);
 		        exit(EXIT_FAILURE);
 		}
-	
+
 		/* Longitude */
 		if (loc.lon < MIN_LON || loc.lon > MAX_LON) {
 		        /* TRANSLATORS: Append degree symbols if possible. */

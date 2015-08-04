@@ -226,7 +226,7 @@ config_ini_init(config_ini_state_t *state, const char *filepath)
 				config_ini_free(state);
 				return -1;
 			}
-			
+
 			/* Insert into section list. */
 			setting->name = NULL;
 			setting->value = NULL;
