@@ -143,9 +143,13 @@ class RedshiftController(GObject.GObject):
         if inhibit != self._inhibited:
             self._child_toggle_inhibit()
 
+    def _child_signal(self, sg):
+        """Send signal to child process."""
+        os.kill(self._process[0], sg)
+
     def _child_toggle_inhibit(self):
         '''Sends a request to the child process to toggle state'''
-        os.kill(self._process[0], signal.SIGUSR1)
+        self._child_signal(signal.SIGUSR1)
 
     def _child_cb(self, pid, status, data=None):
         '''Called when the child process exists'''
@@ -163,12 +167,11 @@ class RedshiftController(GObject.GObject):
         report_errors = False
         try:
             GLib.spawn_check_exit_status(status)
-            Gtk.main_quit()
         except GLib.GError:
-            report_errors = True
-
-        if report_errors:
             self.emit('error-occured', self._errors)
+
+        GLib.spawn_close_pid(self._process[0])
+        Gtk.main_quit()
 
     def _child_key_change_cb(self, key, value):
         '''Called when the child process reports a change of internal state'''
@@ -227,14 +230,13 @@ class RedshiftController(GObject.GObject):
 
         return True
 
-    def termwait(self):
-        '''Send SIGINT and wait for the child process to quit'''
-        try:
-            os.kill(self._process[0], signal.SIGINT)
-            os.waitpid(self._process[0], 0)
-        except ProcessLookupError:
-            # Process has apparently already disappeared
-            pass
+    def terminate_child(self):
+        """Send SIGINT to child process."""
+        self._child_signal(signal.SIGINT)
+
+    def kill_child(self):
+        """Send SIGKILL to child process."""
+        self._child_signal(signal.SIGKILL)
 
 
 class RedshiftStatusIcon(object):
@@ -490,22 +492,12 @@ class RedshiftStatusIcon(object):
         '''Callback when a request to quit the application is made'''
         if not appindicator:
             self.status_icon.set_visible(False)
-        Gtk.main_quit()
+        self._controller.terminate_child()
         return False
-
-
-def sigterm_handler(data=None):
-    sys.exit(0)
 
 
 def run():
     utils.setproctitle('redshift-gtk')
-
-    # Install TERM signal handler
-    GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGTERM,
-                         sigterm_handler, None)
-    GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT,
-                         sigterm_handler, None)
 
     # Internationalisation
     gettext.bindtextdomain('redshift', defs.LOCALEDIR)
@@ -513,12 +505,23 @@ def run():
 
     # Create redshift child process controller
     c = RedshiftController(sys.argv[1:])
+
+    def terminate_child(data=None):
+        c.terminate_child()
+        return False
+
+    # Install signal handlers
+    GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGTERM,
+                         terminate_child, None)
+    GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT,
+                         terminate_child, None)
+
     try:
         # Create status icon
         s = RedshiftStatusIcon(c)
 
         # Run main loop
         Gtk.main()
-    finally:
-        # Always make sure that the child process is closed
-        c.termwait()
+    except:
+        c.kill_child()
+        raise
