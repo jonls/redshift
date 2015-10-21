@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://github.com/jonls/redshift/issues\n"
 "POT-Creation-Date: 2015-02-22 11:23-0500\n"
 "PO-Revision-Date: 2014-12-31 23:54+0000\n"
-"Last-Translator: Jakub Vaněk <vanek.jakub4@seznam.cz>\n"
+"Last-Translator: David Nguyen <varial88@gmail.com>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -50,11 +50,11 @@ msgstr ""
 
 #: ../data/applications/redshift-gtk.desktop.in.h:2
 msgid "Color temperature adjustment"
-msgstr ""
+msgstr "Nastavení teploty barev"
 
 #: ../data/applications/redshift-gtk.desktop.in.h:3
 msgid "Color temperature adjustment tool"
-msgstr ""
+msgstr "Nástroj pro nastavení teploty barev"
 
 #. TRANSLATORS: Name printed when period of day is unknown
 #: ../src/redshift.c:319
@@ -63,15 +63,15 @@ msgstr ""
 
 #: ../src/redshift.c:320 ../src/redshift.c:1546
 msgid "Daytime"
-msgstr ""
+msgstr "Den"
 
 #: ../src/redshift.c:321 ../src/redshift.c:1549
 msgid "Night"
-msgstr ""
+msgstr "Noc"
 
 #: ../src/redshift.c:322
 msgid "Transition"
-msgstr ""
+msgstr "Přechod"
 
 #: ../src/redshift.c:389
 #, c-format
@@ -86,22 +86,22 @@ msgstr ""
 #. TRANSLATORS: Abbreviation for `north'
 #: ../src/redshift.c:404
 msgid "N"
-msgstr ""
+msgstr "S"
 
 #. TRANSLATORS: Abbreviation for `south'
 #: ../src/redshift.c:406
 msgid "S"
-msgstr ""
+msgstr "J"
 
 #. TRANSLATORS: Abbreviation for `east'
 #: ../src/redshift.c:408
 msgid "E"
-msgstr ""
+msgstr "V"
 
 #. TRANSLATORS: Abbreviation for `west'
 #: ../src/redshift.c:410
 msgid "W"
-msgstr ""
+msgstr "Z"
 
 #. TRANSLATORS: Append degree symbols after %f if possible.
 #. The string following each number is an abreviation for
@@ -723,7 +723,7 @@ msgstr ""
 #: ../src/location-geoclue2.c:114
 #, c-format
 msgid "Unable to obtain location: %s.\n"
-msgstr ""
+msgstr "Nelze zjistit polohu: %s. \n"
 
 #: ../src/location-geoclue2.c:153
 #, c-format
@@ -733,12 +733,12 @@ msgstr ""
 #: ../src/location-geoclue2.c:168
 #, c-format
 msgid "Unable to obtain GeoClue client path: %s.\n"
-msgstr ""
+msgstr "Nelze zjistit umístění klienta GeoClue: %s. \n"
 
 #: ../src/location-geoclue2.c:189
 #, c-format
 msgid "Unable to obtain GeoClue Client: %s.\n"
-msgstr ""
+msgstr "Nelze použít klienta GeoClue: %s. \n"
 
 #: ../src/location-geoclue2.c:228
 #, c-format
@@ -748,12 +748,12 @@ msgstr ""
 #: ../src/location-geoclue2.c:251
 #, c-format
 msgid "Unable to start GeoClue client: %s.\n"
-msgstr ""
+msgstr "Nelze spustit klienta GeoClue: %s. \n"
 
 #: ../src/location-geoclue2.c:269
 #, c-format
 msgid "Unable to connect to GeoClue.\n"
-msgstr ""
+msgstr "Nelze se připojit do GeoClue. \n"
 
 #: ../src/location-corelocation.m:59
 msgid "Not authorized to obtain location from CoreLocation.\n"
@@ -770,7 +770,7 @@ msgstr ""
 
 #: ../src/location-corelocation.m:99
 msgid "Request for location was not authorized!\n"
-msgstr ""
+msgstr "Poždavek na zjištění polohy nebyl autorizován! \n"
 
 #: ../src/location-corelocation.m:128
 msgid "Use the location as discovered by the Corelocation provider.\n"
