@@ -29,6 +29,9 @@ import signal
 import re
 import gettext
 
+import gi
+gi.require_version('Gtk', '3.0')
+
 from gi.repository import Gtk, GLib, GObject
 
 try:
