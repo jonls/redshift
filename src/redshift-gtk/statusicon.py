@@ -35,6 +35,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, GObject
 
 try:
+    gi.require_version('AppIndicator3', '0.1')
     from gi.repository import AppIndicator3 as appindicator
 except ImportError:
     appindicator = None
