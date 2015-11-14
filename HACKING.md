@@ -47,7 +47,7 @@ $ $HOME/redshift/root/bin/redshift-gtk
 Dependencies
 ------------
 
-* autotools, gettext
+* autotools, gettext, autopoint
 * intltool, libtool
 * libdrm (Optional, for DRM support)
 * libxcb, libxcb-randr (Optional, for RandR support)
