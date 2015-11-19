@@ -63,11 +63,11 @@ msgstr ""
 
 #: ../src/redshift.c:320 ../src/redshift.c:1546
 msgid "Daytime"
-msgstr ""
+msgstr "白天"
 
 #: ../src/redshift.c:321 ../src/redshift.c:1549
 msgid "Night"
-msgstr ""
+msgstr "夜晚"
 
 #: ../src/redshift.c:322
 msgid "Transition"
@@ -265,11 +265,11 @@ msgstr ""
 #: ../src/redshift.c:870 ../src/redshift.c:899
 #: ../src/redshift-gtk/statusicon.py:260 ../src/redshift-gtk/statusicon.py:466
 msgid "Enabled"
-msgstr "启用"
+msgstr "已启用"
 
 #: ../src/redshift.c:899 ../src/redshift-gtk/statusicon.py:466
 msgid "Disabled"
-msgstr "禁用"
+msgstr "已禁用"
 
 #: ../src/redshift.c:927 ../src/redshift.c:1600
 msgid "Unable to read system time.\n"
@@ -799,7 +799,7 @@ msgstr "关闭"
 
 #: ../src/redshift-gtk/statusicon.py:466
 msgid "<b>Status:</b> {}"
-msgstr "状态"
+msgstr "<b>状态:</b> {}"
 
 #: ../src/redshift-gtk/statusicon.py:470
 msgid "Color temperature"
