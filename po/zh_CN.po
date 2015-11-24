@@ -50,16 +50,16 @@ msgstr ""
 
 #: ../data/applications/redshift-gtk.desktop.in.h:2
 msgid "Color temperature adjustment"
-msgstr ""
+msgstr "色温调节"
 
 #: ../data/applications/redshift-gtk.desktop.in.h:3
 msgid "Color temperature adjustment tool"
-msgstr ""
+msgstr "色温调节工具"
 
 #. TRANSLATORS: Name printed when period of day is unknown
 #: ../src/redshift.c:319
 msgid "None"
-msgstr ""
+msgstr "无"
 
 #: ../src/redshift.c:320 ../src/redshift.c:1546
 msgid "Daytime"
@@ -71,17 +71,17 @@ msgstr "夜晚"
 
 #: ../src/redshift.c:322
 msgid "Transition"
-msgstr ""
+msgstr "过渡"
 
 #: ../src/redshift.c:389
 #, c-format
 msgid "Period: %s\n"
-msgstr ""
+msgstr "时段: %s\n"
 
 #: ../src/redshift.c:392
 #, c-format
 msgid "Period: %s (%.2f%% day)\n"
-msgstr ""
+msgstr "时段: %s (%.2f%% 白天)\n"
 
 #. TRANSLATORS: Abbreviation for `north'
 #: ../src/redshift.c:404
