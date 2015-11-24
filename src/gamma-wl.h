@@ -34,6 +34,7 @@ typedef struct {
 	struct gamma_control_manager *gamma_control_manager;
 	int num_outputs;
 	struct output *outputs;
+	int authorized;
 } wayland_state_t;
 
 

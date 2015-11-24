@@ -38,6 +38,7 @@
 #include "colorramp.h"
 
 #include "gamma-control-client-protocol.h"
+#include "orbital-authorizer-client-protocol.h"
 
 struct output {
 	uint32_t global_id;
@@ -53,6 +54,25 @@ wayland_init(wayland_state_t *state)
 	memset(state, 0, sizeof *state);
 	return 0;
 }
+
+static void
+authorizer_feedback_granted(void *data, struct orbital_authorizer_feedback *feedback)
+{
+	wayland_state_t *state = data;
+	state->authorized = 1;
+}
+
+static void
+authorizer_feedback_denied(void *data, struct orbital_authorizer_feedback *feedback)
+{
+	fprintf(stderr, _("Fatal: redshift was not authorized to bind the 'gamma_control_manager' interface.\n"));
+	exit(EXIT_FAILURE);
+}
+
+static const struct orbital_authorizer_feedback_listener authorizer_feedback_listener = {
+	authorizer_feedback_granted,
+	authorizer_feedback_denied
+};
 
 static void
 registry_global(void *data, struct wl_registry *registry, uint32_t id, const char *interface, uint32_t version)
@@ -77,6 +97,23 @@ registry_global(void *data, struct wl_registry *registry, uint32_t id, const cha
 		output->global_id = id;
 		output->output = wl_registry_bind(registry, id, &wl_output_interface, 1);
 		output->gamma_control = NULL;
+	} else if (strcmp(interface, "orbital_authorizer") == 0) {
+		struct wl_event_queue *queue = wl_display_create_queue(state->display);
+
+		struct orbital_authorizer *auth = wl_registry_bind(registry, id, &orbital_authorizer_interface, 1u);
+		wl_proxy_set_queue((struct wl_proxy *)auth, queue);
+
+		struct orbital_authorizer_feedback *feedback = orbital_authorizer_authorize(auth, "gamma_control_manager");
+		orbital_authorizer_feedback_add_listener(feedback, &authorizer_feedback_listener, state);
+
+		int ret = 0;
+		while (!state->authorized && ret >= 0) {
+			ret = wl_display_dispatch_queue(state->display, queue);
+		}
+
+		orbital_authorizer_feedback_destroy(feedback);
+		orbital_authorizer_destroy(auth);
+		wl_event_queue_destroy(queue);
 	}
 }
 

@@ -1,0 +1,61 @@
+<protocol name="orbital_authorizer">
+
+    <interface name="orbital_authorizer" version="1">
+        <description summary="authorize clients to use certain interfaces">
+            The orbital_authorizer global interface allows clients to
+            ask the compositor the authorization to bind certain restricted
+            global interfaces.
+            Any client that aims to bind restricted interfaces should first
+            request the authorization by using this interface. Failing to do
+            so will result in the compositor sending a protocol error to the
+            client when it binds the restricted interface.
+
+            The list of restricted interfaces is compositor dependant, but must
+            not include the core interfaces defined in wayland.xml.
+        </description>
+
+        <request name="destroy" type="destructor">
+            <description summary="destroy this orbital_authorizer object"/>
+        </request>
+
+        <request name="authorize">
+            <description summary="authorize a global interface">
+                The authorize request allows the client to ask the compositor the
+                authorization to bind a restricted global interface. The newly
+                created orbital_authorizer_feedback will be invalid after the
+                compositor send either the granted or denied event so the client
+                must destroy it immediately after.
+            </description>
+            <arg name="id" type="new_id" interface="orbital_authorizer_feedback" summary="the new feedback object"/>
+            <arg name="global" type="string" summary="the global interface the client wants to bind"/>
+        </request>
+    </interface>
+
+    <interface name="orbital_authorizer_feedback" version="1">
+        <description summary="feedback for an authorization request">
+            The orbital_authorizer_feedback interface is used by requesting
+            an authorization with the orbital_authorizer.authorize request.
+            The compositor will send either the granted or denied event based
+            on the system and user configuration. How the authorization process
+            works is compositor specific, but a compositor is allowed to ask
+            for user input, so the response for an authorization request may
+            come after some time.
+        </description>
+
+        <event name="granted">
+            <description summary="the authorization was granted">
+                The authorization was granted. The client can now bind the restricted
+                interface.
+            </description>
+        </event>
+
+        <event name="denied">
+            <description summary="the authorization was denied">
+                The authorization was denied. The client is not allowed to bind the
+                restricted interface and trying to do so will trigger a protocol
+                error killing the client.
+            </description>
+        </event>
+    </interface>
+
+</protocol>
