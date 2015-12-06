@@ -48,6 +48,7 @@
 #include "solar.h"
 #include "systemtime.h"
 #include "hooks.h"
+#include "settings.h"
 
 /* pause() is not defined on windows platform but is not needed either.
    Use a noop macro instead. */
@@ -709,48 +710,6 @@ method_try_start(const gamma_method_t *method,
 	return 0;
 }
 
-/* A gamma string contains either one floating point value,
-   or three values separated by colon. */
-static int
-parse_gamma_string(const char *str, float gamma[])
-{
-	char *s = strchr(str, ':');
-	if (s == NULL) {
-		/* Use value for all channels */
-		float g = atof(str);
-		gamma[0] = gamma[1] = gamma[2] = g;
-	} else {
-		/* Parse separate value for each channel */
-		*(s++) = '\0';
-		char *g_s = s;
-		s = strchr(s, ':');
-		if (s == NULL) return -1;
-
-		*(s++) = '\0';
-		gamma[0] = atof(str); /* Red */
-		gamma[1] = atof(g_s); /* Blue */
-		gamma[2] = atof(s); /* Green */
-	}
-
-	return 0;
-}
-
-/* A brightness string contains either one floating point value,
-   or two values separated by a colon. */
-static void
-parse_brightness_string(const char *str, float *bright_day, float *bright_night)
-{
-	char *s = strchr(str, ':');
-	if (s == NULL) {
-		/* Same value for day and night. */
-		*bright_day = *bright_night = atof(str);
-	} else {
-		*(s++) = '\0';
-		*bright_day = atof(str);
-		*bright_night = atof(s);
-	}
-}
-
 /* Check whether gamma is within allowed levels. */
 static int
 gamma_is_valid(const float gamma[3])
@@ -1087,6 +1046,7 @@ main(int argc, char *argv[])
 	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:prt:vVx")) != -1) {
 		switch (opt) {
 		case 'b':
+			cmdline_brightness = 1;
 			parse_brightness_string(optarg,
 						&scheme.day.brightness,
 						&scheme.night.brightness);
@@ -1096,6 +1056,7 @@ main(int argc, char *argv[])
 			config_filepath = strdup(optarg);
 			break;
 		case 'g':
+			cmdline_gamma = 1;
 			r = parse_gamma_string(optarg, scheme.day.gamma);
 			if (r < 0) {
 				fputs(_("Malformed gamma argument.\n"),
@@ -1201,9 +1162,11 @@ main(int argc, char *argv[])
 			mode = PROGRAM_MODE_PRINT;
 			break;
 		case 'r':
+			cmdline_transition = 1;
 			transition = 0;
 			break;
 		case 't':
+			cmdline_temperature = 1;
 			s = strchr(optarg, ':');
 			if (s == NULL) {
 				fputs(_("Malformed temperature argument.\n"),
@@ -1247,114 +1210,68 @@ main(int argc, char *argv[])
 	config_ini_section_t *section = config_ini_get_section(&config_state,
 							       "redshift");
 	if (section != NULL) {
+#define TEST(key, var)  ((strcasecmp(setting->name, key) == 0) && !var)
 		config_ini_setting_t *setting = section->settings;
 		while (setting != NULL) {
-			if (strcasecmp(setting->name, "temp-day") == 0) {
-				if (scheme.day.temperature < 0) {
-					scheme.day.temperature =
-						atoi(setting->value);
-				}
-			} else if (strcasecmp(setting->name,
-					      "temp-night") == 0) {
-				if (scheme.night.temperature < 0) {
-					scheme.night.temperature =
-						atoi(setting->value);
-				}
-			} else if (strcasecmp(setting->name,
-					      "transition") == 0) {
-				if (transition < 0) {
-					transition = !!atoi(setting->value);
-				}
-			} else if (strcasecmp(setting->name,
-					      "brightness") == 0) {
-				if (isnan(scheme.day.brightness)) {
-					scheme.day.brightness =
-						atof(setting->value);
-				}
-				if (isnan(scheme.night.brightness)) {
-					scheme.night.brightness =
-						atof(setting->value);
-				}
-			} else if (strcasecmp(setting->name,
-					      "brightness-day") == 0) {
-				if (isnan(scheme.day.brightness)) {
-					scheme.day.brightness =
-						atof(setting->value);
-				}
-			} else if (strcasecmp(setting->name,
-					      "brightness-night") == 0) {
-				if (isnan(scheme.night.brightness)) {
-					scheme.night.brightness =
-						atof(setting->value);
-				}
-			} else if (strcasecmp(setting->name,
-					      "elevation-high") == 0) {
+			if (TEST("temp-day", cmdline_temperature)) {
+				scheme.day.temperature = atoi(setting->value);
+			} else if (TEST("temp-night", cmdline_temperature)) {
+				scheme.night.temperature = atoi(setting->value);
+			} else if (TEST("transition", cmdline_transition)) {
+				transition = !!atoi(setting->value);
+			} else if (TEST("brightness", cmdline_brightness)) {
+				scheme.day.brightness = atof(setting->value);
+				scheme.night.brightness = atof(setting->value);
+			} else if (TEST("brightness-day", cmdline_brightness)) {
+				scheme.day.brightness = atof(setting->value);
+			} else if (TEST("brightness-night", cmdline_brightness)) {
+				scheme.night.brightness = atof(setting->value);
+			} else if (TEST("elevation-high", cmdline_elevation)) {
 				scheme.high = atof(setting->value);
-			} else if (strcasecmp(setting->name,
-					      "elevation-low") == 0) {
+			} else if (TEST("elevation-low", cmdline_elevation)) {
 				scheme.low = atof(setting->value);
-			} else if (strcasecmp(setting->name, "gamma") == 0) {
-				if (isnan(scheme.day.gamma[0])) {
-					r = parse_gamma_string(setting->value,
-							       scheme.day.gamma);
-					if (r < 0) {
-						fputs(_("Malformed gamma"
-							" setting.\n"),
-						      stderr);
-						exit(EXIT_FAILURE);
-					}
-					memcpy(scheme.night.gamma, scheme.day.gamma,
-					       sizeof(scheme.night.gamma));
+			} else if (TEST("gamma", cmdline_gamma)) {
+				r = parse_gamma_string(setting->value,
+						       scheme.day.gamma);
+				if (r < 0) {
+					fputs(_("Malformed gamma setting.\n"),
+					      stderr);
+					exit(EXIT_FAILURE);
 				}
-			} else if (strcasecmp(setting->name, "gamma-day") == 0) {
-				if (isnan(scheme.day.gamma[0])) {
-					r = parse_gamma_string(setting->value,
-							       scheme.day.gamma);
-					if (r < 0) {
-						fputs(_("Malformed gamma"
-							" setting.\n"),
-						      stderr);
-						exit(EXIT_FAILURE);
-					}
+				memcpy(scheme.night.gamma, scheme.day.gamma,
+				       sizeof(scheme.night.gamma));
+			} else if (TEST("gamma-day", cmdline_gamma)) {
+				r = parse_gamma_string(setting->value,
+						       scheme.day.gamma);
+				if (r < 0) {
+					fputs(_("Malformed gamma setting.\n"),
+					      stderr);
+					exit(EXIT_FAILURE);
 				}
-			} else if (strcasecmp(setting->name, "gamma-night") == 0) {
-				if (isnan(scheme.night.gamma[0])) {
-					r = parse_gamma_string(setting->value,
-							       scheme.night.gamma);
-					if (r < 0) {
-						fputs(_("Malformed gamma"
-							" setting.\n"),
-						      stderr);
-						exit(EXIT_FAILURE);
-					}
+			} else if (TEST("gamma-night", cmdline_gamma)) {
+				r = parse_gamma_string(setting->value,
+						       scheme.night.gamma);
+				if (r < 0) {
+					fputs(_("Malformed gamma setting.\n"),
+					      stderr);
+					exit(EXIT_FAILURE);
 				}
-			} else if (strcasecmp(setting->name,
-					      "adjustment-method") == 0) {
+			} else if (TEST("adjustment-method", method)) {
+				method = find_gamma_method(setting->value);
 				if (method == NULL) {
-					method = find_gamma_method(
+					fprintf(stderr, _("Unknown adjustment"
+							  " method `%s'.\n"),
 						setting->value);
-					if (method == NULL) {
-						fprintf(stderr, _("Unknown"
-								  " adjustment"
-								  " method"
-								  " `%s'.\n"),
-							setting->value);
-						exit(EXIT_FAILURE);
-					}
+					exit(EXIT_FAILURE);
 				}
-			} else if (strcasecmp(setting->name,
-					      "location-provider") == 0) {
+			} else if (TEST("location-provider", provider)) {
+				provider = find_location_provider(
+					setting->value);
 				if (provider == NULL) {
-					provider = find_location_provider(
+					fprintf(stderr, _("Unknown location"
+							  " provider `%s'.\n"),
 						setting->value);
-					if (provider == NULL) {
-						fprintf(stderr, _("Unknown"
-								  " location"
-								  " provider"
-								  " `%s'.\n"),
-							setting->value);
-						exit(EXIT_FAILURE);
-					}
+					exit(EXIT_FAILURE);
 				}
 			} else {
 				fprintf(stderr, _("Unknown configuration"
@@ -1363,6 +1280,7 @@ main(int argc, char *argv[])
 			}
 			setting = setting->next;
 		}
+#undef TEST
 	}
 
 	/* Use default values for settings that were neither defined in
