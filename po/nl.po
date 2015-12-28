@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://github.com/jonls/redshift/issues\n"
 "POT-Creation-Date: 2015-02-22 11:23-0500\n"
-"PO-Revision-Date: 2014-12-31 23:56+0000\n"
+"PO-Revision-Date: 2015-07-25 12:12+0200\n"
 "Last-Translator: xatr0z <xatr0z@users.sourceforge.net>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "Language: nl\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2015-01-04 20:00+0000\n"
-"X-Generator: Launchpad (build 17286)\n"
+"X-Generator: Poedit 1.8.2\n"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
 msgid ""
@@ -24,6 +24,9 @@ msgid ""
 "surroundings. This may help your eyes hurt less if you are working in front "
 "of the screen at night."
 msgstr ""
+"Redshift stelt de kleurtemperatuur bij van uw scherm aan de hand van uw "
+"omgeving. Dit kan u helpen om oogpijn te verminderen als er 's avonds of 's "
+"nachts aan een computerscherm gewerkt wordt."
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:2
 msgid ""
@@ -32,17 +35,24 @@ msgid ""
 "and early morning, the color temperature transitions smoothly from night to "
 "daytime temperature to allow your eyes to slowly adapt."
 msgstr ""
+"De kleurtemperatuur wordt gezet aan de hand van de positie van de zon. Een "
+"andere kleurtemperatuur wordt ingesteld bij nacht en dag. Als het schemert "
+"of vroeg in de ochtend is, wordt de kleurtemperatuur langzaam en soepel van "
+"nacht naar dag ingesteld, zodat uw ogen langzaam kunnen wennen."
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:3
 msgid ""
 "This program provides a status icon that allows the user to control Redshift."
 msgstr ""
+"Dit programma bevat een statusicoon die de gebruiker in staat stelt om "
+"Redshift te gebruiken."
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:4
 msgid ""
 "The Redshift information window overlaid with an example of the redness "
 "effect"
 msgstr ""
+"Het Redshift-informatievenster getoond met een voorbeeld van het rode effect."
 
 #: ../data/applications/redshift-gtk.desktop.in.h:1
 msgid "Redshift"
@@ -50,38 +60,38 @@ msgstr ""
 
 #: ../data/applications/redshift-gtk.desktop.in.h:2
 msgid "Color temperature adjustment"
-msgstr ""
+msgstr "Kleurtemperatuur aanpassing"
 
 #: ../data/applications/redshift-gtk.desktop.in.h:3
 msgid "Color temperature adjustment tool"
-msgstr ""
+msgstr "Kleurtemperatuur aanpassingsprogramma"
 
 #. TRANSLATORS: Name printed when period of day is unknown
 #: ../src/redshift.c:319
 msgid "None"
-msgstr ""
+msgstr "Geen"
 
 #: ../src/redshift.c:320 ../src/redshift.c:1546
 msgid "Daytime"
-msgstr ""
+msgstr "Overdag"
 
 #: ../src/redshift.c:321 ../src/redshift.c:1549
 msgid "Night"
-msgstr ""
+msgstr "Nacht"
 
 #: ../src/redshift.c:322
 msgid "Transition"
-msgstr ""
+msgstr "Transitie"
 
 #: ../src/redshift.c:389
 #, c-format
 msgid "Period: %s\n"
-msgstr ""
+msgstr "Periode: %s\n"
 
 #: ../src/redshift.c:392
 #, c-format
 msgid "Period: %s (%.2f%% day)\n"
-msgstr ""
+msgstr "Periode: %s (%.2f%% dag)\n"
 
 #. TRANSLATORS: Abbreviation for `north'
 #: ../src/redshift.c:404
@@ -109,7 +119,7 @@ msgstr ""
 #: ../src/redshift.c:415
 #, c-format
 msgid "Location: %.2f %s, %.2f %s\n"
-msgstr ""
+msgstr "Locatie: %.2f %s, %.2f %s\n"
 
 #. TRANSLATORS: help output 1
 #. LAT is latitude, LON is longitude,
@@ -261,7 +271,7 @@ msgstr "Probeer '-l%s:help' voor meer informatie.\n"
 #: ../src/redshift.c:601 ../src/redshift.c:682
 #, c-format
 msgid "Failed to parse option `%s'.\n"
-msgstr ""
+msgstr "Niet gelukt om optie '%s' in te lezen.\n"
 
 #: ../src/redshift.c:628
 #, c-format
@@ -289,16 +299,16 @@ msgstr "Starten van aanpassingsmethode %s is mislukt.\n"
 #: ../src/redshift.c:870 ../src/redshift.c:898
 #, c-format
 msgid "Status: %s\n"
-msgstr ""
+msgstr "Status: %s\n"
 
 #: ../src/redshift.c:870 ../src/redshift.c:899
 #: ../src/redshift-gtk/statusicon.py:260 ../src/redshift-gtk/statusicon.py:466
 msgid "Enabled"
-msgstr ""
+msgstr "Ingeschakeld"
 
 #: ../src/redshift.c:899 ../src/redshift-gtk/statusicon.py:466
 msgid "Disabled"
-msgstr ""
+msgstr "Uitgeschakeld"
 
 #: ../src/redshift.c:927 ../src/redshift.c:1600
 msgid "Unable to read system time.\n"
@@ -450,7 +460,7 @@ msgstr "Zonshoogte: %f\n"
 
 #: ../src/redshift.c:1645 ../src/redshift.c:1669 ../src/redshift.c:1689
 msgid "Press ctrl-c to stop...\n"
-msgstr ""
+msgstr "Druk ctrl-c om te annuleren...\n"
 
 #: ../src/config-ini.c:167
 msgid "Malformed section header in config file.\n"
@@ -487,7 +497,7 @@ msgstr "Alleen CRTC 0 bestaat.\n"
 #: ../src/gamma-drm.c:132
 #, c-format
 msgid "CRTC %i lost, skipping\n"
-msgstr ""
+msgstr "CRTC %i verloren, overslaan\n"
 
 #: ../src/gamma-drm.c:138
 #, c-format
@@ -641,11 +651,12 @@ msgid ""
 "Does not affect the display but prints the color temperature to the "
 "terminal.\n"
 msgstr ""
+"Verandert niks aan de weergave maar toont kleurtemperatuur op de terminal.\n"
 
 #: ../src/gamma-dummy.c:73
 #, c-format
 msgid "Temperature: %i\n"
-msgstr ""
+msgstr "Temperatuur: %i\n"
 
 #: ../src/location-geoclue.c:76
 #, c-format
@@ -682,7 +693,7 @@ msgstr "Probeer de naam en het pad aan te geven welke te gebruiken.\n"
 
 #: ../src/location-geoclue.c:133
 msgid "Use the location as discovered by a Geoclue provider.\n"
-msgstr ""
+msgstr "Gebruik de locatie zoals ontdekt door de Geoclue-aanbieder\n"
 
 #. TRANSLATORS: Geoclue help output
 #. left column must not be translated
@@ -691,6 +702,8 @@ msgid ""
 "  name=N\tName of Geoclue provider (or `default')\n"
 "  path=N\tPath of Geoclue provider (or `default')\n"
 msgstr ""
+"  name=N\tName of Geoclue provider (or `default')\n"
+"  path=N\tPath of Geoclue provider (or `default')\n"
 
 #: ../src/location-geoclue.c:141 ../src/location-geoclue2.c:72
 #: ../src/location-corelocation.m:131
@@ -699,11 +712,14 @@ msgid ""
 "NOTE: currently Redshift doesn't recheck %s once started,\n"
 "which means it has to be restarted to take notice after travel.\n"
 msgstr ""
+"LET OP: Redshift hercontroleert %s wanneer het is opgestart,\n"
+"dat betekent dat het herstart moet worden om de effecten op te merken na een "
+"reis.\n"
 
 #: ../src/location-geoclue.c:199
 #, c-format
 msgid "Could not get location: %s.\n"
-msgstr ""
+msgstr "Kon de locatie niet krijgen: %s.\n"
 
 #: ../src/location-geoclue.c:206
 #, c-format
@@ -716,17 +732,17 @@ msgstr "Aanbieder heeft geen geldige locatie beschikbaar."
 
 #: ../src/location-geoclue2.c:69
 msgid "Use the location as discovered by a GeoClue2 provider.\n"
-msgstr ""
+msgstr "Gebruik de locatie die ontdekt is door de GeoClue2 aanbieder.\n"
 
 #: ../src/location-geoclue2.c:114
 #, c-format
 msgid "Unable to obtain location: %s.\n"
-msgstr ""
+msgstr "Kon deze locatie niet krijgen: %s.\n"
 
 #: ../src/location-geoclue2.c:153
 #, c-format
 msgid "Unable to obtain GeoClue Manager: %s.\n"
-msgstr ""
+msgstr "Kon GeoClue-beheerder niet ophalen: %s.\n"
 
 #: ../src/location-geoclue2.c:168
 #, c-format
@@ -751,28 +767,28 @@ msgstr ""
 #: ../src/location-geoclue2.c:269
 #, c-format
 msgid "Unable to connect to GeoClue.\n"
-msgstr ""
+msgstr "Kan niet verbinden met GeoClue.\n"
 
 #: ../src/location-corelocation.m:59
 msgid "Not authorized to obtain location from CoreLocation.\n"
-msgstr ""
+msgstr "Niet geautoriseerd om de locatie te verkrijgen van CoreLocation.\n"
 
 #: ../src/location-corelocation.m:87
 #, c-format
 msgid "Error obtaining location from CoreLocation: %s\n"
-msgstr ""
+msgstr "Fout bij het ophalen van de locatie van CoreLocation: %s\n"
 
 #: ../src/location-corelocation.m:96
 msgid "Waiting for authorization to obtain location...\n"
-msgstr ""
+msgstr "Wachten voor autorisatie om locatie op te halen...\n"
 
 #: ../src/location-corelocation.m:99
 msgid "Request for location was not authorized!\n"
-msgstr ""
+msgstr "Aanvraag voor locatie was niet geautoriseerd!\n"
 
 #: ../src/location-corelocation.m:128
 msgid "Use the location as discovered by the Corelocation provider.\n"
-msgstr ""
+msgstr "Gebruik de locatie die is ontdekt door de Corelocation-aanbieder.\n"
 
 #: ../src/location-manual.c:50
 msgid "Latitude and longitude must be set.\n"
