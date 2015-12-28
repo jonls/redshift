@@ -48,6 +48,7 @@
 #include "solar.h"
 #include "systemtime.h"
 #include "hooks.h"
+#include "signals.h"
 
 /* pause() is not defined on windows platform but is not needed either.
    Use a noop macro instead. */
@@ -318,32 +319,6 @@ static const char *period_names[] = {
 	N_("Night"),
 	N_("Transition")
 };
-
-#if defined(HAVE_SIGNAL_H) && !defined(__WIN32__)
-
-static volatile sig_atomic_t exiting = 0;
-static volatile sig_atomic_t disable = 0;
-
-/* Signal handler for exit signals */
-static void
-sigexit(int signo)
-{
-	exiting = 1;
-}
-
-/* Signal handler for disable signal */
-static void
-sigdisable(int signo)
-{
-	disable = 1;
-}
-
-#else /* ! HAVE_SIGNAL_H || __WIN32__ */
-
-static int exiting = 0;
-static int disable = 0;
-
-#endif /* ! HAVE_SIGNAL_H || __WIN32__ */
 
 
 /* Determine which period we are currently in. */
@@ -817,51 +792,10 @@ run_continual_mode(const location_t *loc,
 	   will be exactly 6500K. */
 	double adjustment_alpha = 1.0;
 
-#if defined(HAVE_SIGNAL_H) && !defined(__WIN32__)
-	struct sigaction sigact;
-	sigset_t sigset;
-	sigemptyset(&sigset);
-
-	/* Install signal handler for INT and TERM signals */
-	sigact.sa_handler = sigexit;
-	sigact.sa_mask = sigset;
-	sigact.sa_flags = 0;
-
-	r = sigaction(SIGINT, &sigact, NULL);
+	r = signals_install_handlers();
 	if (r < 0) {
-		perror("sigaction");
-		return -1;
+		return r;
 	}
-
-	r = sigaction(SIGTERM, &sigact, NULL);
-	if (r < 0) {
-		perror("sigaction");
-		return -1;
-	}
-
-	/* Install signal handler for USR1 signal */
-	sigact.sa_handler = sigdisable;
-	sigact.sa_mask = sigset;
-	sigact.sa_flags = 0;
-
-	r = sigaction(SIGUSR1, &sigact, NULL);
-	if (r < 0) {
-		perror("sigaction");
-		return -1;
-	}
-
-	/* Ignore CHLD signal. This causes child processes
-	   (hooks) to be reaped automatically. */
-	sigact.sa_handler = SIG_IGN;
-	sigact.sa_mask = sigset;
-	sigact.sa_flags = 0;
-
-	r = sigaction(SIGCHLD, &sigact, NULL);
-	if (r < 0) {
-		perror("sigaction");
-		return -1;
-	}
-#endif /* HAVE_SIGNAL_H && ! __WIN32__ */
 
 	if (verbose) {
 		printf(_("Status: %s\n"), _("Enabled"));
