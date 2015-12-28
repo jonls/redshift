@@ -50,7 +50,7 @@ location_geoclue_init(location_geoclue_state_t *state)
 	state->position = NULL;
 	state->provider = NULL;
 	state->provider_path = NULL;
-	
+
 	return 0;
 }
 
@@ -200,7 +200,7 @@ location_geoclue_get_location(location_geoclue_state_t *state,
 		g_error_free(error);
 		return -1;
 	}
-	
+
 	if (fields & GEOCLUE_POSITION_FIELDS_LATITUDE &&
 	    fields & GEOCLUE_POSITION_FIELDS_LONGITUDE) {
 		fprintf(stdout, _("According to the geoclue provider"

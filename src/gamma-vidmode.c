@@ -167,7 +167,7 @@ vidmode_restore(vidmode_state_t *state)
 	if (!r) {
 		fprintf(stderr, _("X request failed: %s\n"),
 			"XF86VidModeSetGammaRamp");
-	}	
+	}
 }
 
 int
