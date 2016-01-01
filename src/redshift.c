@@ -1554,6 +1554,8 @@ main(int argc, char *argv[])
 			       interp.temperature);
 			printf(_("Brightness: %.2f\n"),
 			       interp.brightness);
+			printf(_("Status: %s\n"), disable ?
+ 			       _("Disabled") : _("Enabled"));
 		}
 
 		if (mode == PROGRAM_MODE_PRINT) {
