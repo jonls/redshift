@@ -1,5 +1,5 @@
 Name: redshift
-Version: 1.10
+Version: 1.11
 Release: 1%{dist}
 Summary: Adjusts the color temperature of your screen according to time of day
 Group: Applications/System
@@ -78,10 +78,14 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_bindir}/redshift-gtk
 %{python3_sitelib}/redshift_gtk/
 %{_datadir}/icons/hicolor/scalable/apps/redshift*.svg
+%{_datadir}/applications/redshift.desktop
 %{_datadir}/applications/redshift-gtk.desktop
 %{_datadir}/appdata/redshift-gtk.appdata.xml
 
 %changelog
+* Sat Jan 2 2016 Jon Lund Steffensen <jonlst@gmail.com> - 1.11-1
+- Update to 1.11
+
 * Sun Jan 4 2015 Jon Lund Steffensen <jonlst@gmail.com> - 1.10-1
 - Update to 1.10
 
