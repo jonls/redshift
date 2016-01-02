@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://github.com/jonls/redshift/issues\n"
 "POT-Creation-Date: 2015-02-22 11:23-0500\n"
-"PO-Revision-Date: 2014-12-31 23:53+0000\n"
-"Last-Translator: Rodrigo Exterckötter Tjäder <rodrigo@tjader.com.br>\n"
+"PO-Revision-Date: 2015-02-28 21:47+0000\n"
+"Last-Translator: Ramon <Unknown>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
-"Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-01-04 20:00+0000\n"
-"X-Generator: Launchpad (build 17286)\n"
+"X-Launchpad-Export-Date: 2016-01-02 22:24+0000\n"
+"X-Generator: Launchpad (build 17865)\n"
+"Language: pt_BR\n"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
 msgid ""
@@ -46,7 +46,7 @@ msgstr ""
 
 #: ../data/applications/redshift-gtk.desktop.in.h:1
 msgid "Redshift"
-msgstr ""
+msgstr "Redshift"
 
 #: ../data/applications/redshift-gtk.desktop.in.h:2
 msgid "Color temperature adjustment"
@@ -63,15 +63,15 @@ msgstr ""
 
 #: ../src/redshift.c:320 ../src/redshift.c:1546
 msgid "Daytime"
-msgstr ""
+msgstr "Manhã"
 
 #: ../src/redshift.c:321 ../src/redshift.c:1549
 msgid "Night"
-msgstr ""
+msgstr "Noite"
 
 #: ../src/redshift.c:322
 msgid "Transition"
-msgstr ""
+msgstr "Transição"
 
 #: ../src/redshift.c:389
 #, c-format
@@ -86,22 +86,22 @@ msgstr ""
 #. TRANSLATORS: Abbreviation for `north'
 #: ../src/redshift.c:404
 msgid "N"
-msgstr ""
+msgstr "N"
 
 #. TRANSLATORS: Abbreviation for `south'
 #: ../src/redshift.c:406
 msgid "S"
-msgstr ""
+msgstr "S"
 
 #. TRANSLATORS: Abbreviation for `east'
 #: ../src/redshift.c:408
 msgid "E"
-msgstr ""
+msgstr "L"
 
 #. TRANSLATORS: Abbreviation for `west'
 #: ../src/redshift.c:410
 msgid "W"
-msgstr ""
+msgstr "O"
 
 #. TRANSLATORS: Append degree symbols after %f if possible.
 #. The string following each number is an abreviation for
@@ -125,7 +125,8 @@ msgstr "Utilização: %s -l LAT:LON -t DIA:NOITE [OPÇÕES...]\n"
 #. no-wrap
 #: ../src/redshift.c:458
 msgid "Set color temperature of display according to time of day.\n"
-msgstr "Regula a temperatura da cor do monitor de acordo com a hora do dia.\n"
+msgstr ""
+"Regula a temperatura da cor do monitor de acordo com a hora do dia.\n"
 
 #. TRANSLATORS: help output 3
 #. no-wrap
@@ -202,7 +203,8 @@ msgstr "Métodos de ajuste disponíveis:\n"
 
 #: ../src/redshift.c:522
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
-msgstr "Especifique opções separadas por dois pontos com `-m MÉTODO:OPÇÕES'.\n"
+msgstr ""
+"Especifique opções separadas por dois pontos com `-m MÉTODO:OPÇÕES'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: ../src/redshift.c:525
@@ -278,11 +280,11 @@ msgstr ""
 #: ../src/redshift.c:870 ../src/redshift.c:899
 #: ../src/redshift-gtk/statusicon.py:260 ../src/redshift-gtk/statusicon.py:466
 msgid "Enabled"
-msgstr ""
+msgstr "Ativado"
 
 #: ../src/redshift.c:899 ../src/redshift-gtk/statusicon.py:466
 msgid "Disabled"
-msgstr ""
+msgstr "Desativado"
 
 #: ../src/redshift.c:927 ../src/redshift.c:1600
 msgid "Unable to read system time.\n"
@@ -546,14 +548,11 @@ msgstr "Ajuste as curvas gama com a extensão X RANDR.\n"
 #. TRANSLATORS: RANDR help output
 #. left column must not be translated
 #: ../src/gamma-randr.c:279
-#, fuzzy
 msgid ""
 "  screen=N\t\tX screen to apply adjustments to\n"
 "  crtc=N\t\tCRTC to apply adjustments to\n"
 "  preserve={0,1}\tWhether existing gamma should be preserved\n"
 msgstr ""
-"  screen=N\tAplicar ajustes a tela X\n"
-"  crtc=N\tAplicar ajustes a CRTC\n"
 
 #: ../src/gamma-vidmode.c:51 ../src/gamma-vidmode.c:72
 #: ../src/gamma-vidmode.c:81 ../src/gamma-vidmode.c:108
@@ -569,13 +568,10 @@ msgstr "Ajuste as curvas gama com a extensão X VidMode.\n"
 #. TRANSLATORS: VidMode help output
 #. left column must not be translated
 #: ../src/gamma-vidmode.c:134
-#, fuzzy
 msgid ""
 "  screen=N\t\tX screen to apply adjustments to\n"
 "  preserve={0,1}\tWhether existing gamma should be preserved\n"
 msgstr ""
-"  screen=N\tAplicar ajustes a tela X\n"
-"  crtc=N\tAplicar ajustes a CRTC\n"
 
 #: ../src/gamma-quartz.c:126 ../src/gamma-w32gdi.c:82
 msgid "Unable to save current gamma ramp.\n"
@@ -833,6 +829,3 @@ msgstr ""
 #: ../src/redshift-gtk/statusicon.py:478
 msgid "Location"
 msgstr ""
-
-#~ msgid "  screen=N\tX screen to apply adjustments to\n"
-#~ msgstr "  screen=N\tAplicar ajustes a tela X\n"

@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://github.com/jonls/redshift/issues\n"
 "POT-Creation-Date: 2015-02-22 11:23-0500\n"
-"PO-Revision-Date: 2015-08-04 14:42+0100\n"
-"Last-Translator: Michael Vetter <jubalh@openmailbox.org>\n"
+"PO-Revision-Date: 2015-12-29 01:37+0000\n"
+"Last-Translator: Michael Vetter <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
-"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-01-04 20:00+0000\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Launchpad-Export-Date: 2016-01-02 22:24+0000\n"
+"X-Generator: Launchpad (build 17865)\n"
+"Language: de\n"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
 msgid ""
@@ -69,11 +69,11 @@ msgstr "Farbtemperatur Anpassungswerkzeug"
 #. TRANSLATORS: Name printed when period of day is unknown
 #: ../src/redshift.c:319
 msgid "None"
-msgstr "Keine"
+msgstr "Unbekannt"
 
 #: ../src/redshift.c:320 ../src/redshift.c:1546
 msgid "Daytime"
-msgstr "Tags"
+msgstr "Tagsüber"
 
 #: ../src/redshift.c:321 ../src/redshift.c:1549
 msgid "Night"
@@ -119,7 +119,7 @@ msgstr "W"
 #: ../src/redshift.c:415
 #, c-format
 msgid "Location: %.2f %s, %.2f %s\n"
-msgstr "Lage: %.2f %s, %.2f %s\n"
+msgstr "Position: %.2f° %s, %.2f° %s\n"
 
 #. TRANSLATORS: help output 1
 #. LAT is latitude, LON is longitude,
@@ -369,7 +369,7 @@ msgstr "Konnte Standort nicht vom Dienst erhalten.\n"
 #: ../src/redshift.c:1460
 #, c-format
 msgid "Temperatures: %dK at day, %dK at night\n"
-msgstr "Farben: %dK am Tag, %dK nachts\n"
+msgstr "Farbtemperatur: %dK tagsüber, %dK nachts\n"
 
 #. TRANSLATORS: Append degree symbols if possible.
 #: ../src/redshift.c:1465
@@ -402,7 +402,7 @@ msgstr ""
 #: ../src/redshift.c:1523
 #, c-format
 msgid "Brightness values must be between %.1f and %.1f.\n"
-msgstr "Der Helligkeitswert muss zwischen %.1f und %.1f liegen.\n"
+msgstr "Helligkeit muss zwischen %.1f und % .1f liegen.\n"
 
 #: ../src/redshift.c:1529
 #, c-format
@@ -554,14 +554,11 @@ msgstr "Gamma-Anstieg mit der X-RANDR-Erweiterung ändern.\n"
 #. TRANSLATORS: RANDR help output
 #. left column must not be translated
 #: ../src/gamma-randr.c:279
-#, fuzzy
 msgid ""
 "  screen=N\t\tX screen to apply adjustments to\n"
 "  crtc=N\t\tCRTC to apply adjustments to\n"
 "  preserve={0,1}\tWhether existing gamma should be preserved\n"
 msgstr ""
-"  screen=N\tX-Bildschirm, auf den die Veränderungen angewandt werden\n"
-"  crtc=N\tCRTC, auf den die Veränderungen angewandt werden\n"
 
 #: ../src/gamma-vidmode.c:51 ../src/gamma-vidmode.c:72
 #: ../src/gamma-vidmode.c:81 ../src/gamma-vidmode.c:108
@@ -577,13 +574,10 @@ msgstr "Gamma-Änstiegswerte mit der X-VidMode-Erweiterung ändern.\n"
 #. TRANSLATORS: VidMode help output
 #. left column must not be translated
 #: ../src/gamma-vidmode.c:134
-#, fuzzy
 msgid ""
 "  screen=N\t\tX screen to apply adjustments to\n"
 "  preserve={0,1}\tWhether existing gamma should be preserved\n"
 msgstr ""
-"  screen=N\tX-Bildschirm, auf den die Veränderungen angewandt werden\n"
-"  crtc=N\tCRTC, auf den die Veränderungen angewandt werden\n"
 
 #: ../src/gamma-quartz.c:126 ../src/gamma-w32gdi.c:82
 msgid "Unable to save current gamma ramp.\n"
@@ -807,7 +801,7 @@ msgstr "Fehlerhaftes Kommando.\n"
 
 #: ../src/redshift-gtk/statusicon.py:265
 msgid "Suspend for"
-msgstr "Unterbrechen für"
+msgstr "Pausieren für"
 
 #: ../src/redshift-gtk/statusicon.py:267
 msgid "30 minutes"
@@ -827,7 +821,7 @@ msgstr "Automatischer Start"
 
 #: ../src/redshift-gtk/statusicon.py:289 ../src/redshift-gtk/statusicon.py:300
 msgid "Info"
-msgstr "Info"
+msgstr "Informationen"
 
 #: ../src/redshift-gtk/statusicon.py:294
 msgid "Quit"
@@ -835,7 +829,7 @@ msgstr "Beenden"
 
 #: ../src/redshift-gtk/statusicon.py:301
 msgid "Close"
-msgstr "Schliessen"
+msgstr "Schließen"
 
 #: ../src/redshift-gtk/statusicon.py:466
 msgid "<b>Status:</b> {}"
@@ -851,7 +845,4 @@ msgstr "Zeitraum"
 
 #: ../src/redshift-gtk/statusicon.py:478
 msgid "Location"
-msgstr "Lage"
-
-#~ msgid "  screen=N\tX screen to apply adjustments to\n"
-#~ msgstr "  screen=N\tX-Bildschirm, auf den die Änderungen angewandt werden\n"
+msgstr "Position"

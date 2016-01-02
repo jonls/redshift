@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://github.com/jonls/redshift/issues\n"
 "POT-Creation-Date: 2015-02-22 11:23-0500\n"
-"PO-Revision-Date: 2014-10-07 10:05+0000\n"
-"Last-Translator: krnkris <Unknown>\n"
+"PO-Revision-Date: 2015-03-31 13:29+0000\n"
+"Last-Translator: miku84 <miku84@gmail.com>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
-"Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-01-04 20:00+0000\n"
-"X-Generator: Launchpad (build 17286)\n"
+"X-Launchpad-Export-Date: 2016-01-02 22:24+0000\n"
+"X-Generator: Launchpad (build 17865)\n"
+"Language: hu\n"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
 msgid ""
@@ -24,6 +24,9 @@ msgid ""
 "surroundings. This may help your eyes hurt less if you are working in front "
 "of the screen at night."
 msgstr ""
+"Redshift beállítja a kijelzője színhőmérsékletét a környezetétől függően. Ez "
+"segít, hogy kevésbé fájjon a szeme, ha képernyő előtt dolgozik az éjszaka "
+"folyamán."
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:2
 msgid ""
@@ -32,76 +35,83 @@ msgid ""
 "and early morning, the color temperature transitions smoothly from night to "
 "daytime temperature to allow your eyes to slowly adapt."
 msgstr ""
+"A szín hőmérsékletet a nap helyzetéhez igazítja. Különböző szín "
+"hőmérsékletet állít be nappal és éjszaka. Szürkületben és kora reggel, a "
+"szín hőmérséklet átmenet az éjszakiról a napplai hőmérsékletre lehetővé "
+"teszi, hogy a szem lassan alkalmazkodhasson."
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:3
 msgid ""
 "This program provides a status icon that allows the user to control Redshift."
 msgstr ""
+"Ez a program elérhetővé tesz egy állapot ikont, melyen keresztül a "
+"felhasználó beállíthatja a Redshift alkalmazást."
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:4
 msgid ""
 "The Redshift information window overlaid with an example of the redness "
 "effect"
 msgstr ""
+"A Redshift információs ablak egy példa vörös effektus átmenettel borított"
 
 #: ../data/applications/redshift-gtk.desktop.in.h:1
 msgid "Redshift"
-msgstr ""
+msgstr "Redshift"
 
 #: ../data/applications/redshift-gtk.desktop.in.h:2
 msgid "Color temperature adjustment"
-msgstr ""
+msgstr "Szín hőmérséklet beállítás"
 
 #: ../data/applications/redshift-gtk.desktop.in.h:3
 msgid "Color temperature adjustment tool"
-msgstr ""
+msgstr "Színhőmérséklet beállító eszköz"
 
 #. TRANSLATORS: Name printed when period of day is unknown
 #: ../src/redshift.c:319
 msgid "None"
-msgstr ""
+msgstr "Egyik sem"
 
 #: ../src/redshift.c:320 ../src/redshift.c:1546
 msgid "Daytime"
-msgstr ""
+msgstr "Nappal"
 
 #: ../src/redshift.c:321 ../src/redshift.c:1549
 msgid "Night"
-msgstr ""
+msgstr "Éjszaka"
 
 #: ../src/redshift.c:322
 msgid "Transition"
-msgstr ""
+msgstr "Átmenet"
 
 #: ../src/redshift.c:389
 #, c-format
 msgid "Period: %s\n"
-msgstr ""
+msgstr "Periódus: %s\n"
 
 #: ../src/redshift.c:392
 #, c-format
 msgid "Period: %s (%.2f%% day)\n"
-msgstr ""
+msgstr "Periódus: %s (%.2f%% nap)\n"
 
 #. TRANSLATORS: Abbreviation for `north'
 #: ../src/redshift.c:404
 msgid "N"
-msgstr ""
+msgstr "Ész"
 
 #. TRANSLATORS: Abbreviation for `south'
 #: ../src/redshift.c:406
 msgid "S"
-msgstr ""
+msgstr "D"
 
 #. TRANSLATORS: Abbreviation for `east'
 #: ../src/redshift.c:408
 msgid "E"
-msgstr ""
+msgstr "K"
 
 #. TRANSLATORS: Abbreviation for `west'
 #: ../src/redshift.c:410
 msgid "W"
-msgstr ""
+msgstr "NY"
 
 #. TRANSLATORS: Append degree symbols after %f if possible.
 #. The string following each number is an abreviation for
@@ -109,7 +119,7 @@ msgstr ""
 #: ../src/redshift.c:415
 #, c-format
 msgid "Location: %.2f %s, %.2f %s\n"
-msgstr ""
+msgstr "Helyzet: %.2f %s, %.2f %s\n"
 
 #. TRANSLATORS: help output 1
 #. LAT is latitude, LON is longitude,
@@ -219,8 +229,8 @@ msgstr "Elérhető beállítási módok:\n"
 #: ../src/redshift.c:522
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
 msgstr ""
-"Határozzon meg kettősponttal elválasztott lehetőségeket így `-m METHOD:"
-"OPTIONS'.\n"
+"Határozzon meg kettősponttal elválasztott lehetőségeket így `-m "
+"METHOD:OPTIONS'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: ../src/redshift.c:525
@@ -234,8 +244,8 @@ msgstr "Elérhető helyzet szolgáltatók:\n"
 #: ../src/redshift.c:537
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
 msgstr ""
-"Határozzon meg kettősponttal elválasztott lehetőségeket így `-l PROVIDER:"
-"OPTIONS'.\n"
+"Határozzon meg kettősponttal elválasztott lehetőségeket így `-l "
+"PROVIDER:OPTIONS'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: ../src/redshift.c:540
@@ -292,7 +302,7 @@ msgstr "%s beállítási mód elindítása sikertelen.\n"
 #: ../src/redshift.c:870 ../src/redshift.c:898
 #, c-format
 msgid "Status: %s\n"
-msgstr ""
+msgstr "Állapot: %s\n"
 
 #: ../src/redshift.c:870 ../src/redshift.c:899
 #: ../src/redshift-gtk/statusicon.py:260 ../src/redshift-gtk/statusicon.py:466
@@ -409,6 +419,8 @@ msgid ""
 "High transition elevation cannot be lower than the low transition "
 "elevation.\n"
 msgstr ""
+"A magas átmeneti emelkedés nem lehet alacsonyabb mint az alacsony átmeneti "
+"emelkedés.\n"
 
 #: ../src/redshift.c:1523
 #, c-format
@@ -430,7 +442,7 @@ msgstr "Gamma értéknek %.1f and %.1f közt kell lennie.\n"
 #: ../src/redshift.c:1545 ../src/redshift.c:1548
 #, c-format
 msgid "Gamma (%s): %.3f, %.3f, %.3f\n"
-msgstr ""
+msgstr "Gamma (%s): %.3f, %.3f, %.3f\n"
 
 #: ../src/redshift.c:1572
 msgid "Trying next method...\n"
@@ -453,7 +465,7 @@ msgstr "Nap emelkedési szög: %f\n"
 
 #: ../src/redshift.c:1645 ../src/redshift.c:1669 ../src/redshift.c:1689
 msgid "Press ctrl-c to stop...\n"
-msgstr ""
+msgstr "Nyomj Ctrl + C -t a leállításhoz\n"
 
 #: ../src/config-ini.c:167
 msgid "Malformed section header in config file.\n"
@@ -571,14 +583,14 @@ msgstr "Gamma emelkedés beállítása a X RANDR kiterjesztéssel.\n"
 #. TRANSLATORS: RANDR help output
 #. left column must not be translated
 #: ../src/gamma-randr.c:279
-#, fuzzy
 msgid ""
 "  screen=N\t\tX screen to apply adjustments to\n"
 "  crtc=N\t\tCRTC to apply adjustments to\n"
 "  preserve={0,1}\tWhether existing gamma should be preserved\n"
 msgstr ""
-"  képernyő=N\tX képernyő amihez a beállítást végzi\n"
-"  crtc=N\tCRTC amihez a beállítást végzi\n"
+"  screen=N\t\tbeállítások alkalmazása a képernyőre\n"
+"  crtc=N\t\tCtrl +C a beállítások alkalmázásához\n"
+"  preserve={0,1}\ta jelenlegi fényerő megtartása\n"
 
 #: ../src/gamma-vidmode.c:51 ../src/gamma-vidmode.c:72
 #: ../src/gamma-vidmode.c:81 ../src/gamma-vidmode.c:108
@@ -594,13 +606,12 @@ msgstr "Gamma emelkedés beállításai az X VidMode kiterjesztéssel.\n"
 #. TRANSLATORS: VidMode help output
 #. left column must not be translated
 #: ../src/gamma-vidmode.c:134
-#, fuzzy
 msgid ""
 "  screen=N\t\tX screen to apply adjustments to\n"
 "  preserve={0,1}\tWhether existing gamma should be preserved\n"
 msgstr ""
-"  képernyő=N\tX képernyő amihez a beállítást végzi\n"
-"  crtc=N\tCRTC amihez a beállítást végzi\n"
+"  screen=N\t\ta beállítások alkalmazása a képernyőre\n"
+"  preserve={0,1}\ta jelenlegi fényerő megtartása\n"
 
 #: ../src/gamma-quartz.c:126 ../src/gamma-w32gdi.c:82
 msgid "Unable to save current gamma ramp.\n"
@@ -608,7 +619,7 @@ msgstr "Nem tudja menteni a jelenlegi gamma emelkedést.\n"
 
 #: ../src/gamma-quartz.c:155
 msgid "Adjust gamma ramps on OSX using Quartz.\n"
-msgstr ""
+msgstr "Gamma emelkedés beállítása az OSX rendszeren Quartz használatával.\n"
 
 #. TRANSLATORS: Quartz help output
 #. left column must not be translated
@@ -616,7 +627,7 @@ msgstr ""
 #. left column must not be translated
 #: ../src/gamma-quartz.c:160 ../src/gamma-w32gdi.c:109
 msgid "  preserve={0,1}\tWhether existing gamma should be preserved\n"
-msgstr ""
+msgstr "  preserve={0,1}\tA létező fényerő megtartása\n"
 
 #: ../src/gamma-w32gdi.c:59 ../src/gamma-w32gdi.c:134
 #: ../src/gamma-w32gdi.c:155
@@ -644,17 +655,21 @@ msgid ""
 "WARNING: Using dummy gamma method! Display will not be affected by this "
 "gamma method.\n"
 msgstr ""
+"VIGYÁZAT: Látszólagos gamma érték használata! A kijelzést nem befolyásolja "
+"ez a gamma mód.\n"
 
 #: ../src/gamma-dummy.c:59
 msgid ""
 "Does not affect the display but prints the color temperature to the "
 "terminal.\n"
 msgstr ""
+"Nem befolyásolja a kijelzőt, de kinyomtatja a szín hőmérsékletet a "
+"terminálra.\n"
 
 #: ../src/gamma-dummy.c:73
 #, c-format
 msgid "Temperature: %i\n"
-msgstr ""
+msgstr "Hőmérséklet: %i\n"
 
 #: ../src/location-geoclue.c:76
 #, c-format
@@ -712,6 +727,10 @@ msgid ""
 "NOTE: currently Redshift doesn't recheck %s once started,\n"
 "which means it has to be restarted to take notice after travel.\n"
 msgstr ""
+"MEGJEGYZÉST: jelenleg a Redshift nem ismétli meg %s ellenőrzését, ha már "
+"fut,\n"
+"mely azt jelenti, ismét el kell indítani, hogy a helyzet változtatás "
+"alkalmazva legyen.\n"
 
 #: ../src/location-geoclue.c:199
 #, c-format
@@ -729,63 +748,66 @@ msgstr "A szolgáltató nem közöl érvényes helyszínt."
 
 #: ../src/location-geoclue2.c:69
 msgid "Use the location as discovered by a GeoClue2 provider.\n"
-msgstr ""
+msgstr "Használja a helyzetét melyet a GeoClue2 szolgáltatótól kapott.\n"
 
 #: ../src/location-geoclue2.c:114
 #, c-format
 msgid "Unable to obtain location: %s.\n"
-msgstr ""
+msgstr "Nem éri el a helyszín: %s.\n"
 
 #: ../src/location-geoclue2.c:153
 #, c-format
 msgid "Unable to obtain GeoClue Manager: %s.\n"
-msgstr ""
+msgstr "Nem éri el a GeoClue kezelőt: %s.\n"
 
 #: ../src/location-geoclue2.c:168
 #, c-format
 msgid "Unable to obtain GeoClue client path: %s.\n"
-msgstr ""
+msgstr "Nem éri el a GeoClue kliens szolgáltató elérési útját: %s.\n"
 
 #: ../src/location-geoclue2.c:189
 #, c-format
 msgid "Unable to obtain GeoClue Client: %s.\n"
-msgstr ""
+msgstr "Nem éri el a GeoClue kliens szolgáltatót: %s.\n"
 
 #: ../src/location-geoclue2.c:228
 #, c-format
 msgid "Unable to set distance threshold: %s.\n"
-msgstr ""
+msgstr "Nem tudja beállítani a távolsági küszöbértéket: %s.\n"
 
 #: ../src/location-geoclue2.c:251
 #, c-format
 msgid "Unable to start GeoClue client: %s.\n"
-msgstr ""
+msgstr "Nem tudja elindítani a GeoClue klienst: %s.\n"
 
 #: ../src/location-geoclue2.c:269
 #, c-format
 msgid "Unable to connect to GeoClue.\n"
-msgstr ""
+msgstr "Nem tud csatlakozni a GeoClue szolgáltatóhoz.\n"
 
 #: ../src/location-corelocation.m:59
 msgid "Not authorized to obtain location from CoreLocation.\n"
 msgstr ""
+"Nincs felhatalmazása helyzet lekérésére a helyiség fő adatbázisából.\n"
 
 #: ../src/location-corelocation.m:87
 #, c-format
 msgid "Error obtaining location from CoreLocation: %s\n"
 msgstr ""
+"Hiba a helyiség fő adatbázisából történő helyzet lekérése közben: %s\n"
 
 #: ../src/location-corelocation.m:96
 msgid "Waiting for authorization to obtain location...\n"
-msgstr ""
+msgstr "Hozzáférési  engedély kérése a helyzet eléréséhez...\n"
 
 #: ../src/location-corelocation.m:99
 msgid "Request for location was not authorized!\n"
-msgstr ""
+msgstr "A helyzet igénylése nem engedélyezett!\n"
 
 #: ../src/location-corelocation.m:128
 msgid "Use the location as discovered by the Corelocation provider.\n"
 msgstr ""
+"A fő helyiség adatbázis szolgáltató által elővett helyzet használata.\n"
 
 #: ../src/location-manual.c:50
 msgid "Latitude and longitude must be set.\n"
@@ -851,7 +873,7 @@ msgstr "Bezárás"
 
 #: ../src/redshift-gtk/statusicon.py:466
 msgid "<b>Status:</b> {}"
-msgstr ""
+msgstr "<b>Állapot:</b> {}"
 
 #: ../src/redshift-gtk/statusicon.py:470
 msgid "Color temperature"
@@ -864,6 +886,3 @@ msgstr "Időszak"
 #: ../src/redshift-gtk/statusicon.py:478
 msgid "Location"
 msgstr "Tartózkodási hely"
-
-#~ msgid "  screen=N\tX screen to apply adjustments to\n"
-#~ msgstr "  képernyő=N\tX képernyő amihez a beállítást végzi\n"

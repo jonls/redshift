@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://github.com/jonls/redshift/issues\n"
 "POT-Creation-Date: 2015-02-22 11:23-0500\n"
-"PO-Revision-Date: 2014-12-31 23:55+0000\n"
-"Last-Translator: Michał Kułach <michalkulach@gmail.com>\n"
+"PO-Revision-Date: 2015-12-30 13:38+0000\n"
+"Last-Translator: Robert Wąsik <robertwasik@poczta.fm>\n"
 "Language-Team: Polish <pl@li.org>\n"
-"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-01-04 20:00+0000\n"
-"X-Generator: Launchpad (build 17286)\n"
+"X-Launchpad-Export-Date: 2016-01-02 22:24+0000\n"
+"X-Generator: Launchpad (build 17865)\n"
+"Language: pl\n"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
 msgid ""
@@ -24,6 +24,8 @@ msgid ""
 "surroundings. This may help your eyes hurt less if you are working in front "
 "of the screen at night."
 msgstr ""
+"Redshift dostosowuję temperaturę barwową wyświetlacza do warunków "
+"zewnętrznych. Pomaga w ten sposób uniknąć zmęczenia oczy przy pracy w nocy."
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:2
 msgid ""
@@ -32,76 +34,82 @@ msgid ""
 "and early morning, the color temperature transitions smoothly from night to "
 "daytime temperature to allow your eyes to slowly adapt."
 msgstr ""
+"Temperatura barwowa jest ustawiana w zależności od pozycji słońca. Różnią "
+"się one w dzień i w nocy. Podczas zmierzchania (i świtania), temperatura "
+"łagodnie zmienia się z dziennej na nocną (i odwrotnie), pozwalając oczom na "
+"powolne przyzwyczajanie się."
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:3
 msgid ""
 "This program provides a status icon that allows the user to control Redshift."
 msgstr ""
+"Program dostarcza ikonę, która pozwala użytkownikowi kontrolować Redshift."
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:4
 msgid ""
 "The Redshift information window overlaid with an example of the redness "
 "effect"
 msgstr ""
+"Okno Redshift przedstawia przykład dostosowania przesunięcia ku czerwieni."
 
 #: ../data/applications/redshift-gtk.desktop.in.h:1
 msgid "Redshift"
-msgstr ""
+msgstr "Redshift"
 
 #: ../data/applications/redshift-gtk.desktop.in.h:2
 msgid "Color temperature adjustment"
-msgstr ""
+msgstr "Dostosowanie temperatury barwowej"
 
 #: ../data/applications/redshift-gtk.desktop.in.h:3
 msgid "Color temperature adjustment tool"
-msgstr ""
+msgstr "Narzędzie do dostosowywania temperatury barwowej"
 
 #. TRANSLATORS: Name printed when period of day is unknown
 #: ../src/redshift.c:319
 msgid "None"
-msgstr ""
+msgstr "Nie rozpoznano"
 
 #: ../src/redshift.c:320 ../src/redshift.c:1546
 msgid "Daytime"
-msgstr ""
+msgstr "Dzień"
 
 #: ../src/redshift.c:321 ../src/redshift.c:1549
 msgid "Night"
-msgstr ""
+msgstr "Noc"
 
 #: ../src/redshift.c:322
 msgid "Transition"
-msgstr ""
+msgstr "Przejście"
 
 #: ../src/redshift.c:389
 #, c-format
 msgid "Period: %s\n"
-msgstr ""
+msgstr "Czas: %s\n"
 
 #: ../src/redshift.c:392
 #, c-format
 msgid "Period: %s (%.2f%% day)\n"
-msgstr ""
+msgstr "Czas: %s (%.2f%% dni(a))\n"
 
 #. TRANSLATORS: Abbreviation for `north'
 #: ../src/redshift.c:404
 msgid "N"
-msgstr ""
+msgstr "Pn"
 
 #. TRANSLATORS: Abbreviation for `south'
 #: ../src/redshift.c:406
 msgid "S"
-msgstr ""
+msgstr "Pd"
 
 #. TRANSLATORS: Abbreviation for `east'
 #: ../src/redshift.c:408
 msgid "E"
-msgstr ""
+msgstr "Wsch."
 
 #. TRANSLATORS: Abbreviation for `west'
 #: ../src/redshift.c:410
 msgid "W"
-msgstr ""
+msgstr "Zach."
 
 #. TRANSLATORS: Append degree symbols after %f if possible.
 #. The string following each number is an abreviation for
@@ -109,7 +117,7 @@ msgstr ""
 #: ../src/redshift.c:415
 #, c-format
 msgid "Location: %.2f %s, %.2f %s\n"
-msgstr ""
+msgstr "Pozycja: %.2f %s, %.2f %s\n"
 
 #. TRANSLATORS: help output 1
 #. LAT is latitude, LON is longitude,
@@ -244,7 +252,7 @@ msgstr "Spróbuj `-l %s:help' aby uzyskać więcej informacji.\n"
 #: ../src/redshift.c:601 ../src/redshift.c:682
 #, c-format
 msgid "Failed to parse option `%s'.\n"
-msgstr ""
+msgstr "Nieudane parsowanie opcji \"%s\".\n"
 
 #: ../src/redshift.c:628
 #, c-format
@@ -272,16 +280,16 @@ msgstr "Uruchomienie metody dostosowania %s nie powiodło się.\n"
 #: ../src/redshift.c:870 ../src/redshift.c:898
 #, c-format
 msgid "Status: %s\n"
-msgstr ""
+msgstr "Stan: %s\n"
 
 #: ../src/redshift.c:870 ../src/redshift.c:899
 #: ../src/redshift-gtk/statusicon.py:260 ../src/redshift-gtk/statusicon.py:466
 msgid "Enabled"
-msgstr ""
+msgstr "Włączony"
 
 #: ../src/redshift.c:899 ../src/redshift-gtk/statusicon.py:466
 msgid "Disabled"
-msgstr ""
+msgstr "Wyłączony"
 
 #: ../src/redshift.c:927 ../src/redshift.c:1600
 msgid "Unable to read system time.\n"
@@ -338,7 +346,7 @@ msgstr "Nieznane ustawienie konfiguracji `%s'.\n"
 #: ../src/redshift.c:1422
 #, c-format
 msgid "Trying location provider `%s'...\n"
-msgstr ""
+msgstr "Sprawdzanie dostawcy pozycji \"%s\"…\n"
 
 #: ../src/redshift.c:1427
 msgid "Trying next provider...\n"
@@ -360,13 +368,13 @@ msgstr "Nie udało się uzyskać lokalizacji od dostawcy.\n"
 #: ../src/redshift.c:1460
 #, c-format
 msgid "Temperatures: %dK at day, %dK at night\n"
-msgstr ""
+msgstr "Temperatury: %d K w dzień, %d K w nocy\n"
 
 #. TRANSLATORS: Append degree symbols if possible.
 #: ../src/redshift.c:1465
 #, c-format
 msgid "Solar elevations: day above %.1f, night below %.1f\n"
-msgstr ""
+msgstr "Wysokość słońca (°): w dzień powyżej %.1f, nocą poniżej %.1f\n"
 
 #: ../src/redshift.c:1473
 #, c-format
@@ -388,17 +396,17 @@ msgstr "Temperatura barwowa musi być pomiędzy %uK i %uK.\n"
 msgid ""
 "High transition elevation cannot be lower than the low transition "
 "elevation.\n"
-msgstr ""
+msgstr "Maksymalna wysokość nie może być mniejsza od minimalnej.\n"
 
 #: ../src/redshift.c:1523
 #, c-format
 msgid "Brightness values must be between %.1f and %.1f.\n"
-msgstr ""
+msgstr "Jasność musi zawierać się w przedziale od %.1f do %.1f\n"
 
 #: ../src/redshift.c:1529
 #, c-format
 msgid "Brightness: %.2f:%.2f\n"
-msgstr ""
+msgstr "Jasność: %.2f:%.2f\n"
 
 #: ../src/redshift.c:1537
 #, c-format
@@ -410,7 +418,7 @@ msgstr "Wartość gammy musi być pomiędzy %.1f i %.1f.\n"
 #: ../src/redshift.c:1545 ../src/redshift.c:1548
 #, c-format
 msgid "Gamma (%s): %.3f, %.3f, %.3f\n"
-msgstr ""
+msgstr "Gamma (%s): %.3f, %.3f, %.3f\n"
 
 #: ../src/redshift.c:1572
 msgid "Trying next method...\n"
@@ -433,7 +441,7 @@ msgstr "Pozycja słońca: %f°\n"
 
 #: ../src/redshift.c:1645 ../src/redshift.c:1669 ../src/redshift.c:1689
 msgid "Press ctrl-c to stop...\n"
-msgstr ""
+msgstr "Naciśnij ctrl+c aby zakończyć\n"
 
 #: ../src/config-ini.c:167
 msgid "Malformed section header in config file.\n"
@@ -450,7 +458,7 @@ msgstr "Przypisanie poza sekcją w pliku konfiguracyjnym.\n"
 #: ../src/gamma-drm.c:78
 #, c-format
 msgid "Failed to get DRM mode resources\n"
-msgstr ""
+msgstr "Nie powiodło się pobieranie zasobów DRM\n"
 
 #: ../src/gamma-drm.c:88 ../src/gamma-randr.c:311
 #, c-format
@@ -470,7 +478,7 @@ msgstr "Istnieje tylko CRTC 0.\n"
 #: ../src/gamma-drm.c:132
 #, c-format
 msgid "CRTC %i lost, skipping\n"
-msgstr ""
+msgstr "Zgubiono CRTC %i, pomijanie\n"
 
 #: ../src/gamma-drm.c:138
 #, c-format
@@ -478,6 +486,8 @@ msgid ""
 "Could not get gamma ramp size for CRTC %i\n"
 "on graphics card %i, ignoring device.\n"
 msgstr ""
+"Nie udało się pobrać przedziału gamma dla CRTC %i\n"
+"dla karty graficznej %i, urządzenie pominięto.\n"
 
 #: ../src/gamma-drm.c:151
 #, c-format
@@ -485,10 +495,12 @@ msgid ""
 "DRM could not read gamma ramps on CRTC %i on\n"
 "graphics card %i, ignoring device.\n"
 msgstr ""
+"DRM nie może odczytać zakresu gamma na CRTC %i na\n"
+"karcie graficznej %i, urządzenie pominięto.\n"
 
 #: ../src/gamma-drm.c:214
 msgid "Adjust gamma ramps with Direct Rendering Manager.\n"
-msgstr ""
+msgstr "Dostosuj zakres gamma dzięki Direct Rendering Manager\n"
 
 #. TRANSLATORS: DRM help output
 #. left column must not be translated
@@ -501,7 +513,7 @@ msgstr ""
 #: ../src/gamma-drm.c:232
 #, c-format
 msgid "CRTC must be a non-negative integer\n"
-msgstr ""
+msgstr "CRTC musi być dodatni\n"
 
 #: ../src/gamma-drm.c:236 ../src/gamma-randr.c:297 ../src/gamma-vidmode.c:149
 #: ../src/gamma-quartz.c:172 ../src/gamma-w32gdi.c:121 ../src/gamma-dummy.c:66
@@ -545,14 +557,11 @@ msgstr "Dopasuj gamma ramp przy pomocy rozszerzenia X RANDR\n"
 #. TRANSLATORS: RANDR help output
 #. left column must not be translated
 #: ../src/gamma-randr.c:279
-#, fuzzy
 msgid ""
 "  screen=N\t\tX screen to apply adjustments to\n"
 "  crtc=N\t\tCRTC to apply adjustments to\n"
 "  preserve={0,1}\tWhether existing gamma should be preserved\n"
 msgstr ""
-"  screen=N\tEkran X-ów, który ma być dostosowywany\n"
-"  crtc=N\tCRTC, które ma być dostosowywane\n"
 
 #: ../src/gamma-vidmode.c:51 ../src/gamma-vidmode.c:72
 #: ../src/gamma-vidmode.c:81 ../src/gamma-vidmode.c:108
@@ -568,13 +577,10 @@ msgstr "Dopasuj gamma ramp przy pomocy rozszerzenia X VidMode\n"
 #. TRANSLATORS: VidMode help output
 #. left column must not be translated
 #: ../src/gamma-vidmode.c:134
-#, fuzzy
 msgid ""
 "  screen=N\t\tX screen to apply adjustments to\n"
 "  preserve={0,1}\tWhether existing gamma should be preserved\n"
 msgstr ""
-"  screen=N\tEkran X-ów, który ma być dostosowywany\n"
-"  crtc=N\tCRTC, które ma być dostosowywane\n"
 
 #: ../src/gamma-quartz.c:126 ../src/gamma-w32gdi.c:82
 msgid "Unable to save current gamma ramp.\n"
@@ -582,7 +588,7 @@ msgstr "Nie udało się zapisać aktualnego gamma ramp.\n"
 
 #: ../src/gamma-quartz.c:155
 msgid "Adjust gamma ramps on OSX using Quartz.\n"
-msgstr ""
+msgstr "Dostosuj zakresy gamma na OSX dzięki Quartz\n"
 
 #. TRANSLATORS: Quartz help output
 #. left column must not be translated
@@ -618,54 +624,56 @@ msgid ""
 "WARNING: Using dummy gamma method! Display will not be affected by this "
 "gamma method.\n"
 msgstr ""
+"UWAGA: użyto atrapy metody gamma, ta metoda nie wpłynie na wygląd obrazu.\n"
 
 #: ../src/gamma-dummy.c:59
 msgid ""
 "Does not affect the display but prints the color temperature to the "
 "terminal.\n"
 msgstr ""
+"Nie zmienia wyglądu ekranu, ale wyświetla temperaturę barwową w terminalu.\n"
 
 #: ../src/gamma-dummy.c:73
 #, c-format
 msgid "Temperature: %i\n"
-msgstr ""
+msgstr "Temperatura: %i\n"
 
 #: ../src/location-geoclue.c:76
 #, c-format
 msgid "Unable to obtain master client: %s\n"
-msgstr ""
+msgstr "Nie udało się skontaktować z: %s\n"
 
 #: ../src/location-geoclue.c:80
 #, c-format
 msgid "Unable to obtain master client\n"
-msgstr ""
+msgstr "Błąd klienta\n"
 
 #: ../src/location-geoclue.c:91
 #, c-format
 msgid "Can't set requirements for master: %s\n"
-msgstr ""
+msgstr "Nie udało się ustawić wymagań dla\" %s\n"
 
 #: ../src/location-geoclue.c:95
 #, c-format
 msgid "Can't set requirements for master\n"
-msgstr ""
+msgstr "Nie udało się ustawić wymagań\n"
 
 #: ../src/location-geoclue.c:111
 #, c-format
 msgid "Started Geoclue provider `%s'.\n"
-msgstr ""
+msgstr "Uruchomiono dostawcę Geoclue: \"%s\"\n"
 
 #: ../src/location-geoclue.c:114
 msgid "Could not find a usable Geoclue provider.\n"
-msgstr ""
+msgstr "Nie znaleziono użytecznego dostawcy Geoclue\n"
 
 #: ../src/location-geoclue.c:115
 msgid "Try setting name and path to specify which to use.\n"
-msgstr ""
+msgstr "Spróbuj ustawić nazwę i ścieżkę, której należy użyć.\n"
 
 #: ../src/location-geoclue.c:133
 msgid "Use the location as discovered by a Geoclue provider.\n"
-msgstr ""
+msgstr "Użyj pozycji dostarczonej przez dostawcę Geoclue.\n"
 
 #. TRANSLATORS: Geoclue help output
 #. left column must not be translated
@@ -682,80 +690,82 @@ msgid ""
 "NOTE: currently Redshift doesn't recheck %s once started,\n"
 "which means it has to be restarted to take notice after travel.\n"
 msgstr ""
+"UWAGA: Redschift nie sprawdził %s od startu,\n"
+"zrestartuj Redshift po podróży.\n"
 
 #: ../src/location-geoclue.c:199
 #, c-format
 msgid "Could not get location: %s.\n"
-msgstr ""
+msgstr "Nie udało się pobrać pozycji: %s.\n"
 
 #: ../src/location-geoclue.c:206
 #, c-format
 msgid "According to the geoclue provider we're at: %.2f, %.2f\n"
-msgstr ""
+msgstr "Geoclue podaje następującą pozycję: %.2f, %.2f\n"
 
 #: ../src/location-geoclue.c:210
 msgid "Provider does not have a valid location available."
-msgstr ""
+msgstr "Dostawca nie podaje poprawnej pozycji."
 
 #: ../src/location-geoclue2.c:69
 msgid "Use the location as discovered by a GeoClue2 provider.\n"
-msgstr ""
+msgstr "Użyj pozycji dostarczonej przez dostawcę GeoClue2.\n"
 
 #: ../src/location-geoclue2.c:114
 #, c-format
 msgid "Unable to obtain location: %s.\n"
-msgstr ""
+msgstr "Nie można pobrac lokalizacji: %s.\n"
 
 #: ../src/location-geoclue2.c:153
 #, c-format
 msgid "Unable to obtain GeoClue Manager: %s.\n"
-msgstr ""
+msgstr "Brak kontaktu z menadżerem GeoClue: %s.\n"
 
 #: ../src/location-geoclue2.c:168
 #, c-format
 msgid "Unable to obtain GeoClue client path: %s.\n"
-msgstr ""
+msgstr "Nie można czytać ścieżki klienta GeoClue: %s.\n"
 
 #: ../src/location-geoclue2.c:189
 #, c-format
 msgid "Unable to obtain GeoClue Client: %s.\n"
-msgstr ""
+msgstr "Brak kontaktu z klientem GeoClue: %s.\n"
 
 #: ../src/location-geoclue2.c:228
 #, c-format
 msgid "Unable to set distance threshold: %s.\n"
-msgstr ""
+msgstr "Nie można ustawić interwału odległości: %s.\n"
 
 #: ../src/location-geoclue2.c:251
 #, c-format
 msgid "Unable to start GeoClue client: %s.\n"
-msgstr ""
+msgstr "Nie udało się uruchomić klienta GeoClue\" %s.\n"
 
 #: ../src/location-geoclue2.c:269
 #, c-format
 msgid "Unable to connect to GeoClue.\n"
-msgstr ""
+msgstr "Nie udało się połączyć z GeoClue.\n"
 
 #: ../src/location-corelocation.m:59
 msgid "Not authorized to obtain location from CoreLocation.\n"
-msgstr ""
+msgstr "Brak uprawnień do pobrania pozycji z CoreLocation.\n"
 
 #: ../src/location-corelocation.m:87
 #, c-format
 msgid "Error obtaining location from CoreLocation: %s\n"
-msgstr ""
+msgstr "Błąd przy pobieraniu pozycji z CoreLocation: %s\n"
 
 #: ../src/location-corelocation.m:96
 msgid "Waiting for authorization to obtain location...\n"
-msgstr ""
+msgstr "Czekanie na autoryzację przed pobraniem pozycji…\n"
 
 #: ../src/location-corelocation.m:99
 msgid "Request for location was not authorized!\n"
-msgstr ""
+msgstr "Pytanie o pozycje nie zostało autoryzowane!\n"
 
 #: ../src/location-corelocation.m:128
 msgid "Use the location as discovered by the Corelocation provider.\n"
-msgstr ""
+msgstr "Użyj pozycji podanej przez dostawcę Corelocation.\n"
 
 #: ../src/location-manual.c:50
 msgid "Latitude and longitude must be set.\n"
@@ -780,6 +790,8 @@ msgid ""
 "Both values are expected to be floating point numbers,\n"
 "negative values representing west / south, respectively.\n"
 msgstr ""
+"Obie wartości powinny być liczbami zmiennoprzecinkowymi,\n"
+"ujemne opisują zachód i południe.\n"
 
 #: ../src/location-manual.c:87
 msgid "Malformed argument.\n"
@@ -787,19 +799,19 @@ msgstr "Nieprawidłowy argument.\n"
 
 #: ../src/redshift-gtk/statusicon.py:265
 msgid "Suspend for"
-msgstr ""
+msgstr "Zawieś na"
 
 #: ../src/redshift-gtk/statusicon.py:267
 msgid "30 minutes"
-msgstr ""
+msgstr "30 minut"
 
 #: ../src/redshift-gtk/statusicon.py:268
 msgid "1 hour"
-msgstr ""
+msgstr "1 godzinę"
 
 #: ../src/redshift-gtk/statusicon.py:269
 msgid "2 hours"
-msgstr ""
+msgstr "2 godziny"
 
 #: ../src/redshift-gtk/statusicon.py:277
 msgid "Autostart"
@@ -807,15 +819,15 @@ msgstr "Uruchamiaj automatycznie"
 
 #: ../src/redshift-gtk/statusicon.py:289 ../src/redshift-gtk/statusicon.py:300
 msgid "Info"
-msgstr ""
+msgstr "Informacje"
 
 #: ../src/redshift-gtk/statusicon.py:294
 msgid "Quit"
-msgstr ""
+msgstr "Zakończ"
 
 #: ../src/redshift-gtk/statusicon.py:301
 msgid "Close"
-msgstr ""
+msgstr "Zamknij"
 
 #: ../src/redshift-gtk/statusicon.py:466
 msgid "<b>Status:</b> {}"
@@ -823,7 +835,7 @@ msgstr ""
 
 #: ../src/redshift-gtk/statusicon.py:470
 msgid "Color temperature"
-msgstr ""
+msgstr "Temperatura barwowa"
 
 #: ../src/redshift-gtk/statusicon.py:474
 msgid "Period"
@@ -831,7 +843,4 @@ msgstr ""
 
 #: ../src/redshift-gtk/statusicon.py:478
 msgid "Location"
-msgstr ""
-
-#~ msgid "  screen=N\tX screen to apply adjustments to\n"
-#~ msgstr "  screen=N\tEkran X-ów, który ma być dostosowywany\n"
+msgstr "Pozycja"
