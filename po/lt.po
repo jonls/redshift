@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://github.com/jonls/redshift/issues\n"
 "POT-Creation-Date: 2015-02-22 11:23-0500\n"
-"PO-Revision-Date: 2014-12-31 23:52+0000\n"
-"Last-Translator: Jon Lund Steffensen <Unknown>\n"
+"PO-Revision-Date: 2015-10-27 16:07+0000\n"
+"Last-Translator: Moo <hazap@hotmail.com>\n"
 "Language-Team: Lithuanian <lt@li.org>\n"
-"Language: lt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-01-04 20:00+0000\n"
-"X-Generator: Launchpad (build 17286)\n"
+"X-Launchpad-Export-Date: 2016-01-02 22:24+0000\n"
+"X-Generator: Launchpad (build 17865)\n"
+"Language: lt\n"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
 msgid ""
@@ -24,6 +24,9 @@ msgid ""
 "surroundings. This may help your eyes hurt less if you are working in front "
 "of the screen at night."
 msgstr ""
+"Redshift reguliuoja jūsų ekrano spalvos temperatūrą, priklausomai nuo jus "
+"supančios aplinkos. Tai gali sumažinti akių skausmą tuo atveju, jei naktį "
+"dirbate priešais kompiuterio ekraną."
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:2
 msgid ""
@@ -32,46 +35,51 @@ msgid ""
 "and early morning, the color temperature transitions smoothly from night to "
 "daytime temperature to allow your eyes to slowly adapt."
 msgstr ""
+"Spalvos temperatūra nustatoma pagal Saulės vietą. Dienos metu ir nakties "
+"metu yra nustatomos skirtingos spalvos temperatūros. Sutemus ir ankstų rytą, "
+"spalvos temperatūra glotniai pereina iš nakties temperatūros į dienos "
+"temperatūrą, taip leisdama jūsų akims po truputį prisitaikyti."
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:3
 msgid ""
 "This program provides a status icon that allows the user to control Redshift."
 msgstr ""
+"Ši programa pateikia būsenos piktogramą, kuri leidžia valdyti Redshift."
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:4
 msgid ""
 "The Redshift information window overlaid with an example of the redness "
 "effect"
-msgstr ""
+msgstr "Redshift informacinis langas, padengtas pavyzdiniu raudonumo efektu"
 
 #: ../data/applications/redshift-gtk.desktop.in.h:1
 msgid "Redshift"
-msgstr ""
+msgstr "Redshift"
 
 #: ../data/applications/redshift-gtk.desktop.in.h:2
 msgid "Color temperature adjustment"
-msgstr ""
+msgstr "Spalvos temperatūros reguliavimas"
 
 #: ../data/applications/redshift-gtk.desktop.in.h:3
 msgid "Color temperature adjustment tool"
-msgstr ""
+msgstr "Spalvos temperatūros reguliavimo įrankis"
 
 #. TRANSLATORS: Name printed when period of day is unknown
 #: ../src/redshift.c:319
 msgid "None"
-msgstr ""
+msgstr "Nėra"
 
 #: ../src/redshift.c:320 ../src/redshift.c:1546
 msgid "Daytime"
-msgstr ""
+msgstr "Dienos metas"
 
 #: ../src/redshift.c:321 ../src/redshift.c:1549
 msgid "Night"
-msgstr ""
+msgstr "Naktis"
 
 #: ../src/redshift.c:322
 msgid "Transition"
-msgstr ""
+msgstr "Perėjimas"
 
 #: ../src/redshift.c:389
 #, c-format
@@ -86,22 +94,22 @@ msgstr ""
 #. TRANSLATORS: Abbreviation for `north'
 #: ../src/redshift.c:404
 msgid "N"
-msgstr ""
+msgstr "Š"
 
 #. TRANSLATORS: Abbreviation for `south'
 #: ../src/redshift.c:406
 msgid "S"
-msgstr ""
+msgstr "P"
 
 #. TRANSLATORS: Abbreviation for `east'
 #: ../src/redshift.c:408
 msgid "E"
-msgstr ""
+msgstr "R"
 
 #. TRANSLATORS: Abbreviation for `west'
 #: ../src/redshift.c:410
 msgid "W"
-msgstr ""
+msgstr "V"
 
 #. TRANSLATORS: Append degree symbols after %f if possible.
 #. The string following each number is an abreviation for
@@ -135,6 +143,9 @@ msgid ""
 "  -v\t\tVerbose output\n"
 "  -V\t\tShow program version\n"
 msgstr ""
+"  -h\t\tRodyti šį pagalbos pranešimą\n"
+"  -v\t\tIšsamioji išvestis\n"
+"  -V\t\tRodyti programos versiją\n"
 
 #. TRANSLATORS: help output 4
 #. `list' must not be translated
@@ -167,6 +178,11 @@ msgid ""
 "more blue light, and setting a lower value will result in\n"
 "more red light.\n"
 msgstr ""
+"Neutrali temperatūra yra %uK. Naudojant šią reikšmę,\n"
+"ekrano temperatūra nepasikeis. Nustačius spalvos \n"
+"temperatūrą į didesnę, negu ši reikšmė, ekranas taps\n"
+"labiau mėlynos spalvos, o nustačius į mažesnę reikšmę,\n"
+"ekranas taps labiau raudonos spalvos.\n"
 
 #. TRANSLATORS: help output 6
 #: ../src/redshift.c:502
@@ -238,7 +254,7 @@ msgstr "Norėdami gauti daugiau informacijos, mėginkite „-l %s:help“.\n"
 #: ../src/redshift.c:601 ../src/redshift.c:682
 #, c-format
 msgid "Failed to parse option `%s'.\n"
-msgstr ""
+msgstr "Nepavyko išanalizuoti parinkties \"%s\".\n"
 
 #: ../src/redshift.c:628
 #, c-format
@@ -250,7 +266,7 @@ msgstr "Nepavyko paleisti tiekėjo %s.\n"
 #: ../src/redshift.c:665
 #, c-format
 msgid "Try `-m %s:help' for more information.\n"
-msgstr ""
+msgstr "Išsamesnei informacijai pabandykite `-m %s:help'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: ../src/redshift.c:695
@@ -266,16 +282,16 @@ msgstr "Nepavyko paleisti sureguliavimo metodo %s.\n"
 #: ../src/redshift.c:870 ../src/redshift.c:898
 #, c-format
 msgid "Status: %s\n"
-msgstr ""
+msgstr "Būsena: %s\n"
 
 #: ../src/redshift.c:870 ../src/redshift.c:899
 #: ../src/redshift-gtk/statusicon.py:260 ../src/redshift-gtk/statusicon.py:466
 msgid "Enabled"
-msgstr ""
+msgstr "Įjungta"
 
 #: ../src/redshift.c:899 ../src/redshift-gtk/statusicon.py:466
 msgid "Disabled"
-msgstr ""
+msgstr "Išjungta"
 
 #: ../src/redshift.c:927 ../src/redshift.c:1600
 msgid "Unable to read system time.\n"
@@ -314,7 +330,7 @@ msgstr "Nežinomas vietos tiekėjas „%s“.\n"
 #: ../src/redshift.c:1185 ../src/redshift.c:1341
 #, c-format
 msgid "Unknown adjustment method `%s'.\n"
-msgstr ""
+msgstr "Nežinomas reguliavimo metodas `%s'.\n"
 
 #: ../src/redshift.c:1213
 msgid "Malformed temperature argument.\n"
@@ -322,17 +338,17 @@ msgstr "Blogai suformuotas temperatūros argumentas.\n"
 
 #: ../src/redshift.c:1305 ../src/redshift.c:1318 ../src/redshift.c:1329
 msgid "Malformed gamma setting.\n"
-msgstr ""
+msgstr "Netaisyklingas gamos nustatymas.\n"
 
 #: ../src/redshift.c:1364
 #, c-format
 msgid "Unknown configuration setting `%s'.\n"
-msgstr ""
+msgstr "Nežinomas konfigūracijos nustatymas `%s'.\n"
 
 #: ../src/redshift.c:1422
 #, c-format
 msgid "Trying location provider `%s'...\n"
-msgstr ""
+msgstr "Bandoma vietos tiekėją `%s'...\n"
 
 #: ../src/redshift.c:1427
 msgid "Trying next provider...\n"
@@ -354,7 +370,7 @@ msgstr "Nepavyko gauti vietos iš tiekėjo.\n"
 #: ../src/redshift.c:1460
 #, c-format
 msgid "Temperatures: %dK at day, %dK at night\n"
-msgstr ""
+msgstr "Temperatūros: %dK dieną, %dK naktį\n"
 
 #. TRANSLATORS: Append degree symbols if possible.
 #: ../src/redshift.c:1465
@@ -404,7 +420,7 @@ msgstr "Gamos reikšmė turi būti tarp %.1f ir %.1f.\n"
 #: ../src/redshift.c:1545 ../src/redshift.c:1548
 #, c-format
 msgid "Gamma (%s): %.3f, %.3f, %.3f\n"
-msgstr ""
+msgstr "Gama (%s): %.3f, %.3f, %.3f\n"
 
 #: ../src/redshift.c:1572
 msgid "Trying next method...\n"
@@ -427,19 +443,19 @@ msgstr "Saulės aukštis virš horizonto: %f\n"
 
 #: ../src/redshift.c:1645 ../src/redshift.c:1669 ../src/redshift.c:1689
 msgid "Press ctrl-c to stop...\n"
-msgstr ""
+msgstr "Spauskite ctrl-c, kad sustabdytumėte...\n"
 
 #: ../src/config-ini.c:167
 msgid "Malformed section header in config file.\n"
-msgstr ""
+msgstr "Netaisyklinga sekcijos antraštė konfigūracijos faile.\n"
 
 #: ../src/config-ini.c:203
 msgid "Malformed assignment in config file.\n"
-msgstr ""
+msgstr "Netaisyklingas paskirstymas konfigūracijos faile.\n"
 
 #: ../src/config-ini.c:214
 msgid "Assignment outside section in config file.\n"
-msgstr ""
+msgstr "Konfigūracijos faile paskirstymas už sekcijos ribų.\n"
 
 #: ../src/gamma-drm.c:78
 #, c-format
@@ -539,14 +555,11 @@ msgstr "Gamos lentelių sureguliavimas naudojant X RANDR plėtinį.\n"
 #. TRANSLATORS: RANDR help output
 #. left column must not be translated
 #: ../src/gamma-randr.c:279
-#, fuzzy
 msgid ""
 "  screen=N\t\tX screen to apply adjustments to\n"
 "  crtc=N\t\tCRTC to apply adjustments to\n"
 "  preserve={0,1}\tWhether existing gamma should be preserved\n"
 msgstr ""
-"  ekranas=N\tX ekranas sureguliavimui taikyti\n"
-"  crtc=N\tCRTC sureguliavimui taikyti\n"
 
 #: ../src/gamma-vidmode.c:51 ../src/gamma-vidmode.c:72
 #: ../src/gamma-vidmode.c:81 ../src/gamma-vidmode.c:108
@@ -562,13 +575,10 @@ msgstr "Gamos lentelių sureguliavimas naudojant X VidMode plėtinį.\n"
 #. TRANSLATORS: VidMode help output
 #. left column must not be translated
 #: ../src/gamma-vidmode.c:134
-#, fuzzy
 msgid ""
 "  screen=N\t\tX screen to apply adjustments to\n"
 "  preserve={0,1}\tWhether existing gamma should be preserved\n"
 msgstr ""
-"  ekranas=N\tX ekranas sureguliavimui taikyti\n"
-"  crtc=N\tCRTC sureguliavimui taikyti\n"
 
 #: ../src/gamma-quartz.c:126 ../src/gamma-w32gdi.c:82
 msgid "Unable to save current gamma ramp.\n"
@@ -622,7 +632,7 @@ msgstr ""
 #: ../src/gamma-dummy.c:73
 #, c-format
 msgid "Temperature: %i\n"
-msgstr ""
+msgstr "Temperatūra: %i\n"
 
 #: ../src/location-geoclue.c:76
 #, c-format
@@ -685,7 +695,7 @@ msgstr ""
 #: ../src/location-geoclue.c:206
 #, c-format
 msgid "According to the geoclue provider we're at: %.2f, %.2f\n"
-msgstr ""
+msgstr "Pasak geoclue tiekėjo, mes esame ties: %.2f, %.2f\n"
 
 #: ../src/location-geoclue.c:210
 msgid "Provider does not have a valid location available."
@@ -723,12 +733,12 @@ msgstr ""
 #: ../src/location-geoclue2.c:251
 #, c-format
 msgid "Unable to start GeoClue client: %s.\n"
-msgstr ""
+msgstr "Nepavyksta paleisti GeoClue kliento: %s.\n"
 
 #: ../src/location-geoclue2.c:269
 #, c-format
 msgid "Unable to connect to GeoClue.\n"
-msgstr ""
+msgstr "Nepavyksta prisijungti prie GeoClue.\n"
 
 #: ../src/location-corelocation.m:59
 msgid "Not authorized to obtain location from CoreLocation.\n"
@@ -813,7 +823,7 @@ msgstr ""
 
 #: ../src/redshift-gtk/statusicon.py:466
 msgid "<b>Status:</b> {}"
-msgstr ""
+msgstr "<b>Būsena:</b> {}"
 
 #: ../src/redshift-gtk/statusicon.py:470
 msgid "Color temperature"
@@ -825,7 +835,4 @@ msgstr ""
 
 #: ../src/redshift-gtk/statusicon.py:478
 msgid "Location"
-msgstr ""
-
-#~ msgid "  screen=N\tX screen to apply adjustments to\n"
-#~ msgstr "  ekranas=N\tX ekranas sureguliavimui taikyti\n"
+msgstr "Vieta"

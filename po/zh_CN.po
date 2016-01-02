@@ -8,22 +8,22 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://github.com/jonls/redshift/issues\n"
 "POT-Creation-Date: 2015-02-22 11:23-0500\n"
-"PO-Revision-Date: 2014-12-31 23:56+0000\n"
-"Last-Translator: Jon Lund Steffensen <Unknown>\n"
+"PO-Revision-Date: 2015-12-11 09:28+0000\n"
+"Last-Translator: wsxy162 <wsxy162@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-01-04 20:00+0000\n"
-"X-Generator: Launchpad (build 17286)\n"
+"X-Launchpad-Export-Date: 2016-01-02 22:24+0000\n"
+"X-Generator: Launchpad (build 17865)\n"
+"Language: \n"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
 msgid ""
 "Redshift adjusts the color temperature of your screen according to your "
 "surroundings. This may help your eyes hurt less if you are working in front "
 "of the screen at night."
-msgstr ""
+msgstr "红移(Redshift) 根据你的周围环境调节你的屏幕色温。如果夜晚在屏幕前工作，这可以减少你眼睛受到的伤害。"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:2
 msgid ""
@@ -31,22 +31,22 @@ msgid ""
 "different color temperature is set during night and daytime. During twilight "
 "and early morning, the color temperature transitions smoothly from night to "
 "daytime temperature to allow your eyes to slowly adapt."
-msgstr ""
+msgstr "该软件可以根据日照位置、日夜变化来设置屏幕色温，随着时间推移，色温会逐渐转变，保证让您的眼睛能够舒舒服服地适应。"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:3
 msgid ""
 "This program provides a status icon that allows the user to control Redshift."
-msgstr ""
+msgstr "该程序提供了状态图标允许用户通过它控制 Redshift 。"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:4
 msgid ""
 "The Redshift information window overlaid with an example of the redness "
 "effect"
-msgstr ""
+msgstr "Redshift 信息窗口覆盖了红移效果的示例。"
 
 #: ../data/applications/redshift-gtk.desktop.in.h:1
 msgid "Redshift"
-msgstr ""
+msgstr "红移"
 
 #: ../data/applications/redshift-gtk.desktop.in.h:2
 msgid "Color temperature adjustment"
@@ -63,11 +63,11 @@ msgstr "无"
 
 #: ../src/redshift.c:320 ../src/redshift.c:1546
 msgid "Daytime"
-msgstr "白天"
+msgstr "日间"
 
 #: ../src/redshift.c:321 ../src/redshift.c:1549
 msgid "Night"
-msgstr "夜晚"
+msgstr "夜间"
 
 #: ../src/redshift.c:322
 msgid "Transition"
@@ -81,27 +81,27 @@ msgstr "时段: %s\n"
 #: ../src/redshift.c:392
 #, c-format
 msgid "Period: %s (%.2f%% day)\n"
-msgstr "时段: %s (%.2f%% 白天)\n"
+msgstr "时段: %s (%.2f%% 日间)\n"
 
 #. TRANSLATORS: Abbreviation for `north'
 #: ../src/redshift.c:404
 msgid "N"
-msgstr ""
+msgstr "北纬"
 
 #. TRANSLATORS: Abbreviation for `south'
 #: ../src/redshift.c:406
 msgid "S"
-msgstr ""
+msgstr "南纬"
 
 #. TRANSLATORS: Abbreviation for `east'
 #: ../src/redshift.c:408
 msgid "E"
-msgstr ""
+msgstr "东经"
 
 #. TRANSLATORS: Abbreviation for `west'
 #: ../src/redshift.c:410
 msgid "W"
-msgstr ""
+msgstr "西经"
 
 #. TRANSLATORS: Append degree symbols after %f if possible.
 #. The string following each number is an abreviation for
@@ -109,7 +109,7 @@ msgstr ""
 #: ../src/redshift.c:415
 #, c-format
 msgid "Location: %.2f %s, %.2f %s\n"
-msgstr ""
+msgstr "位置：%.2f %s, %.2f %s\n"
 
 #. TRANSLATORS: help output 1
 #. LAT is latitude, LON is longitude,
@@ -119,13 +119,13 @@ msgstr ""
 #: ../src/redshift.c:452
 #, c-format
 msgid "Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
-msgstr ""
+msgstr "用法：%s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
 
 #. TRANSLATORS: help output 2
 #. no-wrap
 #: ../src/redshift.c:458
 msgid "Set color temperature of display according to time of day.\n"
-msgstr ""
+msgstr "根据一天中的时间设置显示器的色温。\n"
 
 #. TRANSLATORS: help output 3
 #. no-wrap
@@ -135,6 +135,9 @@ msgid ""
 "  -v\t\tVerbose output\n"
 "  -V\t\tShow program version\n"
 msgstr ""
+"  -h\t\t显示此帮助信息\n"
+"  -v\t\t详细输出\n"
+"  -V\t\t显示程序版本\n"
 
 #. TRANSLATORS: help output 4
 #. `list' must not be translated
@@ -156,6 +159,20 @@ msgid ""
 "  -r\t\tDisable temperature transitions\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
+"  -b DAY:NIGHT\t应用的屏幕亮度 (介于 0.1 和 1.0)\n"
+"  -c FILE\t从指定的配置文件加载设置\n"
+"  -g R:G:B\t应用的附加伽马校正设置\n"
+"  -l LAT:LON\t你当前的位置\n"
+"  -l PROVIDER\t选择自动位置更新的服务提供者\n"
+"  \t\t(输入“list”来查看可用的服务提供者)\n"
+"  -m METHOD\t用来设置色温的模式\n"
+"  \t\t(输入“list”来查看可用的模式)\n"
+"  -o\t\t单触发模式 (不要平滑地调节色温)\n"
+"  -O TEMP\t单触发手动模式 (设置色温)\n"
+"  -p\t\t打印模式 (只打印参数值并退出)\n"
+"  -x\t\t重置模式 (从屏幕上移除调节)\n"
+"  -r\t\t禁用色温过渡\n"
+"  -t DAY:NIGHT\t设置日间/夜间的色温\n"
 
 #. TRANSLATORS: help output 5
 #: ../src/redshift.c:492
@@ -167,6 +184,10 @@ msgid ""
 "more blue light, and setting a lower value will result in\n"
 "more red light.\n"
 msgstr ""
+"中性色温为 %uK。使用该值不会改变\n"
+"显示器的色温。设置色温值高于它会\n"
+"导致更多的蓝光，而设置低于它的色\n"
+"温值会导致更多的红光。\n"
 
 #. TRANSLATORS: help output 6
 #: ../src/redshift.c:502
@@ -177,49 +198,53 @@ msgid ""
 "  Daytime temperature: %uK\n"
 "  Night temperature: %uK\n"
 msgstr ""
+"默认值：\n"
+"\n"
+"  日间色温：%uK\n"
+"  夜间色温：%uK\n"
 
 #. TRANSLATORS: help output 7
 #: ../src/redshift.c:510
 #, c-format
 msgid "Please report bugs to <%s>\n"
-msgstr ""
+msgstr "请报告 bugs 到 <%s>\n"
 
 #: ../src/redshift.c:516
 msgid "Available adjustment methods:\n"
-msgstr ""
+msgstr "可用的调节模式：\n"
 
 #: ../src/redshift.c:522
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
-msgstr ""
+msgstr "以冒号分隔格式指定选项 ”-m METHOD:OPTIONS“\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: ../src/redshift.c:525
 msgid "Try `-m METHOD:help' for help.\n"
-msgstr ""
+msgstr "尝试 ”-m METHOD:help“ 获取帮助。\n"
 
 #: ../src/redshift.c:531
 msgid "Available location providers:\n"
-msgstr ""
+msgstr "可用的位置服务：\n"
 
 #: ../src/redshift.c:537
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
-msgstr ""
+msgstr "以冒号分格的格式指定 “-l PROVIDER:OPTIONS” 选项。\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: ../src/redshift.c:540
 msgid "Try `-l PROVIDER:help' for help.\n"
-msgstr ""
+msgstr "尝试 “-l PROVIDER:help” 来获取帮助。\n"
 
 #: ../src/redshift.c:553 ../src/redshift.c:645
 #, c-format
 msgid "Initialization of %s failed.\n"
-msgstr ""
+msgstr "%s 初始化进程失败。\n"
 
 #: ../src/redshift.c:568 ../src/redshift.c:612 ../src/redshift.c:660
 #: ../src/redshift.c:692
 #, c-format
 msgid "Failed to set %s option.\n"
-msgstr ""
+msgstr "设置 %s 选项失败。\n"
 
 #. TRANSLATORS: `help' must not be
 #. translated.
@@ -227,40 +252,40 @@ msgstr ""
 #: ../src/redshift.c:573 ../src/redshift.c:615
 #, c-format
 msgid "Try `-l %s:help' for more information.\n"
-msgstr ""
+msgstr "尝试“-l %s:help”来获取更多信息。\n"
 
 #: ../src/redshift.c:601 ../src/redshift.c:682
 #, c-format
 msgid "Failed to parse option `%s'.\n"
-msgstr ""
+msgstr "解析“%s”选项失败。\n"
 
 #: ../src/redshift.c:628
 #, c-format
 msgid "Failed to start provider %s.\n"
-msgstr ""
+msgstr "启动服务 %s 失败。\n"
 
 #. TRANSLATORS: `help' must not be
 #. translated.
 #: ../src/redshift.c:665
 #, c-format
 msgid "Try `-m %s:help' for more information.\n"
-msgstr ""
+msgstr "尝试“-m %s:help”来获取更多信息。\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: ../src/redshift.c:695
 #, c-format
 msgid "Try -m %s:help' for more information.\n"
-msgstr ""
+msgstr "尝试“-m %s:help”来获取更多信息。\n"
 
 #: ../src/redshift.c:707
 #, c-format
 msgid "Failed to start adjustment method %s.\n"
-msgstr ""
+msgstr "启动调节模式 %s 失败。\n"
 
 #: ../src/redshift.c:870 ../src/redshift.c:898
 #, c-format
 msgid "Status: %s\n"
-msgstr ""
+msgstr "状态：%s\n"
 
 #: ../src/redshift.c:870 ../src/redshift.c:899
 #: ../src/redshift-gtk/statusicon.py:260 ../src/redshift-gtk/statusicon.py:466
@@ -273,210 +298,210 @@ msgstr "已禁用"
 
 #: ../src/redshift.c:927 ../src/redshift.c:1600
 msgid "Unable to read system time.\n"
-msgstr ""
+msgstr "无法读取系统时间。\n"
 
 #: ../src/redshift.c:999 ../src/redshift.c:1623 ../src/redshift.c:1652
 #, c-format
 msgid "Color temperature: %uK\n"
-msgstr ""
+msgstr "色温：%uK\n"
 
 #: ../src/redshift.c:1004 ../src/redshift.c:1625
 #, c-format
 msgid "Brightness: %.2f\n"
-msgstr ""
+msgstr "亮度：%.2f\n"
 
 #: ../src/redshift.c:1013 ../src/redshift.c:1636 ../src/redshift.c:1660
 #: ../src/redshift.c:1680
 msgid "Temperature adjustment failed.\n"
-msgstr ""
+msgstr "色温调节失败。\n"
 
 #: ../src/redshift.c:1105
 msgid "Malformed gamma argument.\n"
-msgstr ""
+msgstr "异常的伽马参数。\n"
 
 #: ../src/redshift.c:1107 ../src/redshift.c:1215 ../src/redshift.c:1234
 msgid "Try `-h' for more information.\n"
-msgstr ""
+msgstr "尝试“-h”来获取更多信息。\n"
 
 #: ../src/redshift.c:1154 ../src/redshift.c:1355
 #, c-format
 msgid "Unknown location provider `%s'.\n"
-msgstr ""
+msgstr "未知的位置服务“%s”。\n"
 
 #. TRANSLATORS: This refers to the method
 #. used to adjust colors e.g VidMode
 #: ../src/redshift.c:1185 ../src/redshift.c:1341
 #, c-format
 msgid "Unknown adjustment method `%s'.\n"
-msgstr ""
+msgstr "未知的调节模式“%s”。\n"
 
 #: ../src/redshift.c:1213
 msgid "Malformed temperature argument.\n"
-msgstr ""
+msgstr "异常的色温参数。\n"
 
 #: ../src/redshift.c:1305 ../src/redshift.c:1318 ../src/redshift.c:1329
 msgid "Malformed gamma setting.\n"
-msgstr ""
+msgstr "异常的伽马设置。\n"
 
 #: ../src/redshift.c:1364
 #, c-format
 msgid "Unknown configuration setting `%s'.\n"
-msgstr ""
+msgstr "未知的配置设置“%s”。\n"
 
 #: ../src/redshift.c:1422
 #, c-format
 msgid "Trying location provider `%s'...\n"
-msgstr ""
+msgstr "正在尝试位置服务”%s“。\n"
 
 #: ../src/redshift.c:1427
 msgid "Trying next provider...\n"
-msgstr ""
+msgstr "正在尝试下一个服务…\n"
 
 #: ../src/redshift.c:1433
 #, c-format
 msgid "Using provider `%s'.\n"
-msgstr ""
+msgstr "正在使用服务”%s“。\n"
 
 #: ../src/redshift.c:1441
 msgid "No more location providers to try.\n"
-msgstr ""
+msgstr "没有更多的位置服务可供尝试。\n"
 
 #: ../src/redshift.c:1450
 msgid "Unable to get location from provider.\n"
-msgstr ""
+msgstr "无法从服务获取位置信息。\n"
 
 #: ../src/redshift.c:1460
 #, c-format
 msgid "Temperatures: %dK at day, %dK at night\n"
-msgstr ""
+msgstr "色温：日间 %dK，夜间 %dK\n"
 
 #. TRANSLATORS: Append degree symbols if possible.
 #: ../src/redshift.c:1465
 #, c-format
 msgid "Solar elevations: day above %.1f, night below %.1f\n"
-msgstr ""
+msgstr "太阳高度：日间高于 %.1f 度，夜间低于 %.1f 度\n"
 
 #: ../src/redshift.c:1473
 #, c-format
 msgid "Latitude must be between %.1f and %.1f.\n"
-msgstr ""
+msgstr "纬度必须介于  %.1f 和 %.1f。\n"
 
 #: ../src/redshift.c:1482
 #, c-format
 msgid "Longitude must be between %.1f and %.1f.\n"
-msgstr ""
+msgstr "经度必须介于  %.1f 和 %.1f。\n"
 
 #: ../src/redshift.c:1493 ../src/redshift.c:1511
 #, c-format
 msgid "Temperature must be between %uK and %uK.\n"
-msgstr ""
+msgstr "色温必须介于 %uK 和 %uK。\n"
 
 #: ../src/redshift.c:1501
 #, c-format
 msgid ""
 "High transition elevation cannot be lower than the low transition "
 "elevation.\n"
-msgstr ""
+msgstr "高过渡值不能低于低过渡值。\n"
 
 #: ../src/redshift.c:1523
 #, c-format
 msgid "Brightness values must be between %.1f and %.1f.\n"
-msgstr ""
+msgstr "亮度必须介于 %.1f 和 %.1f。\n"
 
 #: ../src/redshift.c:1529
 #, c-format
 msgid "Brightness: %.2f:%.2f\n"
-msgstr ""
+msgstr "亮度：%.2f:%.2f\n"
 
 #: ../src/redshift.c:1537
 #, c-format
 msgid "Gamma value must be between %.1f and %.1f.\n"
-msgstr ""
+msgstr "伽马值必须介于 %.1f 和 %.1f。\n"
 
 #. TRANSLATORS: The string in parenthesis is either
 #. Daytime or Night (translated).
 #: ../src/redshift.c:1545 ../src/redshift.c:1548
 #, c-format
 msgid "Gamma (%s): %.3f, %.3f, %.3f\n"
-msgstr ""
+msgstr "伽马 (%s)：%.3f, %.3f, %.3f\n"
 
 #: ../src/redshift.c:1572
 msgid "Trying next method...\n"
-msgstr ""
+msgstr "正在尝试下一个模式…\n"
 
 #: ../src/redshift.c:1577
 #, c-format
 msgid "Using method `%s'.\n"
-msgstr ""
+msgstr "正在使用模式 ”%s“。\n"
 
 #: ../src/redshift.c:1584
 msgid "No more methods to try.\n"
-msgstr ""
+msgstr "没有更多的模式可供尝试。\n"
 
 #. TRANSLATORS: Append degree symbol if possible.
 #: ../src/redshift.c:1609
 #, c-format
 msgid "Solar elevation: %f\n"
-msgstr ""
+msgstr "太阳高度：%f度\n"
 
 #: ../src/redshift.c:1645 ../src/redshift.c:1669 ../src/redshift.c:1689
 msgid "Press ctrl-c to stop...\n"
-msgstr ""
+msgstr "按 Ctrl-C 来停止…\n"
 
 #: ../src/config-ini.c:167
 msgid "Malformed section header in config file.\n"
-msgstr ""
+msgstr "异常的段头存在于配置文件中。\n"
 
 #: ../src/config-ini.c:203
 msgid "Malformed assignment in config file.\n"
-msgstr ""
+msgstr "异常的分配存在于配置文件中。\n"
 
 #: ../src/config-ini.c:214
 msgid "Assignment outside section in config file.\n"
-msgstr ""
+msgstr "分配在段外存在于配置文件中。\n"
 
 #: ../src/gamma-drm.c:78
 #, c-format
 msgid "Failed to get DRM mode resources\n"
-msgstr ""
+msgstr "无法获取 DRM 模式资源\n"
 
 #: ../src/gamma-drm.c:88 ../src/gamma-randr.c:311
 #, c-format
 msgid "CRTC %d does not exist. "
-msgstr ""
+msgstr "CRTC %d 没有退出。 "
 
 #: ../src/gamma-drm.c:91 ../src/gamma-randr.c:314
 #, c-format
 msgid "Valid CRTCs are [0-%d].\n"
-msgstr ""
+msgstr "有效的 CRTCs 为 [0-%d]。\n"
 
 #: ../src/gamma-drm.c:94 ../src/gamma-randr.c:317
 #, c-format
 msgid "Only CRTC 0 exists.\n"
-msgstr ""
+msgstr "只有 CRTC 0 存在。\n"
 
 #: ../src/gamma-drm.c:132
 #, c-format
 msgid "CRTC %i lost, skipping\n"
-msgstr ""
+msgstr "CRTC %i 丢失，跳过中\n"
 
 #: ../src/gamma-drm.c:138
 #, c-format
 msgid ""
 "Could not get gamma ramp size for CRTC %i\n"
 "on graphics card %i, ignoring device.\n"
-msgstr ""
+msgstr "无法在显卡 %i 上获取 CTRC %i 的伽马斜面大小，忽略设备中。\n"
 
 #: ../src/gamma-drm.c:151
 #, c-format
 msgid ""
 "DRM could not read gamma ramps on CRTC %i on\n"
 "graphics card %i, ignoring device.\n"
-msgstr ""
+msgstr "DRM 无法在显卡 %i 上获取 CTRC %i 的伽马斜面，忽略设备中。\n"
 
 #: ../src/gamma-drm.c:214
 msgid "Adjust gamma ramps with Direct Rendering Manager.\n"
-msgstr ""
+msgstr "使用 Direct Rendering Manager 调整伽马斜面。\n"
 
 #. TRANSLATORS: DRM help output
 #. left column must not be translated
@@ -485,11 +510,13 @@ msgid ""
 "  card=N\tGraphics card to apply adjustments to\n"
 "  crtc=N\tCRTC to apply adjustments to\n"
 msgstr ""
+"  card=N\t用来应用调节的显卡\n"
+"  crtc=N\t用来应用调节的CRTC\n"
 
 #: ../src/gamma-drm.c:232
 #, c-format
 msgid "CRTC must be a non-negative integer\n"
-msgstr ""
+msgstr "CRTC 必须是非负整数\n"
 
 #: ../src/gamma-drm.c:236 ../src/gamma-randr.c:297 ../src/gamma-vidmode.c:149
 #: ../src/gamma-quartz.c:172 ../src/gamma-w32gdi.c:121 ../src/gamma-dummy.c:66
@@ -497,38 +524,38 @@ msgstr ""
 #: ../src/location-corelocation.m:141 ../src/location-manual.c:96
 #, c-format
 msgid "Unknown method parameter: `%s'.\n"
-msgstr ""
+msgstr "位置的模式参数：”%s“。\n"
 
 #: ../src/gamma-randr.c:72 ../src/gamma-randr.c:129 ../src/gamma-randr.c:168
 #: ../src/gamma-randr.c:194 ../src/gamma-randr.c:251 ../src/gamma-randr.c:362
 #, c-format
 msgid "`%s' returned error %d\n"
-msgstr ""
+msgstr "”%s“ 返回了错误 %d。\n"
 
 #: ../src/gamma-randr.c:80
 #, c-format
 msgid "Unsupported RANDR version (%u.%u)\n"
-msgstr ""
+msgstr "不支持的 RANDR 版本 (%u.%u)\n"
 
 #: ../src/gamma-randr.c:114
 #, c-format
 msgid "Screen %i could not be found.\n"
-msgstr ""
+msgstr "屏幕 %i 无法找到。\n"
 
 #: ../src/gamma-randr.c:180 ../src/gamma-vidmode.c:87
 #: ../src/gamma-quartz.c:100
 #, c-format
 msgid "Gamma ramp size too small: %i\n"
-msgstr ""
+msgstr "伽马斜面值太小：%i\n"
 
 #: ../src/gamma-randr.c:253
 #, c-format
 msgid "Unable to restore CRTC %i\n"
-msgstr ""
+msgstr "无法保存 CRTC %i\n"
 
 #: ../src/gamma-randr.c:274
 msgid "Adjust gamma ramps with the X RANDR extension.\n"
-msgstr ""
+msgstr "使用 X RANDR 扩展调整伽马斜面。\n"
 
 #. TRANSLATORS: RANDR help output
 #. left column must not be translated
@@ -538,17 +565,20 @@ msgid ""
 "  crtc=N\t\tCRTC to apply adjustments to\n"
 "  preserve={0,1}\tWhether existing gamma should be preserved\n"
 msgstr ""
+"  screen=N\t\t用来应用调节的 X 屏幕\n"
+"  ctrc=N\t\t用来应用调节的 CRTC\n"
+"  preserve={0,1}\t\t是否显示现有的伽马值\n"
 
 #: ../src/gamma-vidmode.c:51 ../src/gamma-vidmode.c:72
 #: ../src/gamma-vidmode.c:81 ../src/gamma-vidmode.c:108
 #: ../src/gamma-vidmode.c:168 ../src/gamma-vidmode.c:213
 #, c-format
 msgid "X request failed: %s\n"
-msgstr ""
+msgstr "X 请求失败：%s\n"
 
 #: ../src/gamma-vidmode.c:129
 msgid "Adjust gamma ramps with the X VidMode extension.\n"
-msgstr ""
+msgstr "使用 X VidMode 扩展调整伽马斜面。\n"
 
 #. TRANSLATORS: VidMode help output
 #. left column must not be translated
@@ -557,14 +587,16 @@ msgid ""
 "  screen=N\t\tX screen to apply adjustments to\n"
 "  preserve={0,1}\tWhether existing gamma should be preserved\n"
 msgstr ""
+"  screen=N\t\t用来应用调节的 X 屏幕\n"
+"  preserve={0,1}\t\t是否显示已有的伽马值\n"
 
 #: ../src/gamma-quartz.c:126 ../src/gamma-w32gdi.c:82
 msgid "Unable to save current gamma ramp.\n"
-msgstr ""
+msgstr "无法保存当前的伽马斜面。\n"
 
 #: ../src/gamma-quartz.c:155
 msgid "Adjust gamma ramps on OSX using Quartz.\n"
-msgstr ""
+msgstr "在 OSX 上使用 Quartz 调整伽马斜面。\n"
 
 #. TRANSLATORS: Quartz help output
 #. left column must not be translated
@@ -572,82 +604,82 @@ msgstr ""
 #. left column must not be translated
 #: ../src/gamma-quartz.c:160 ../src/gamma-w32gdi.c:109
 msgid "  preserve={0,1}\tWhether existing gamma should be preserved\n"
-msgstr ""
+msgstr "  preserve={0,1}\t是否显示已有的伽马值\n"
 
 #: ../src/gamma-w32gdi.c:59 ../src/gamma-w32gdi.c:134
 #: ../src/gamma-w32gdi.c:155
 msgid "Unable to open device context.\n"
-msgstr ""
+msgstr "无法打开设备上下文。\n"
 
 #: ../src/gamma-w32gdi.c:66
 msgid "Display device does not support gamma ramps.\n"
-msgstr ""
+msgstr "显示设备不支持伽马斜面。\n"
 
 #: ../src/gamma-w32gdi.c:104
 msgid "Adjust gamma ramps with the Windows GDI.\n"
-msgstr ""
+msgstr "使用 Windows GDI 调整伽马斜面。\n"
 
 #: ../src/gamma-w32gdi.c:140
 msgid "Unable to restore gamma ramps.\n"
-msgstr ""
+msgstr "无法保存伽马斜面。\n"
 
 #: ../src/gamma-w32gdi.c:195
 msgid "Unable to set gamma ramps.\n"
-msgstr ""
+msgstr "无法设置伽马斜面。\n"
 
 #: ../src/gamma-dummy.c:42
 msgid ""
 "WARNING: Using dummy gamma method! Display will not be affected by this "
 "gamma method.\n"
-msgstr ""
+msgstr "警告：正在使用虚拟伽马模式！显示器不受此伽马模式影响。\n"
 
 #: ../src/gamma-dummy.c:59
 msgid ""
 "Does not affect the display but prints the color temperature to the "
 "terminal.\n"
-msgstr ""
+msgstr "不要影响显示器但打印色温到终端上。\n"
 
 #: ../src/gamma-dummy.c:73
 #, c-format
 msgid "Temperature: %i\n"
-msgstr ""
+msgstr "色温：%i\n"
 
 #: ../src/location-geoclue.c:76
 #, c-format
 msgid "Unable to obtain master client: %s\n"
-msgstr ""
+msgstr "无法获取主客户端：%s\n"
 
 #: ../src/location-geoclue.c:80
 #, c-format
 msgid "Unable to obtain master client\n"
-msgstr ""
+msgstr "无法获取主客户端\n"
 
 #: ../src/location-geoclue.c:91
 #, c-format
 msgid "Can't set requirements for master: %s\n"
-msgstr ""
+msgstr "无法设置需求来为主客户端：%s\n"
 
 #: ../src/location-geoclue.c:95
 #, c-format
 msgid "Can't set requirements for master\n"
-msgstr ""
+msgstr "无法设置需求来为主客户端\n"
 
 #: ../src/location-geoclue.c:111
 #, c-format
 msgid "Started Geoclue provider `%s'.\n"
-msgstr ""
+msgstr "已启动的 Geoclue 服务 ”%s“。\n"
 
 #: ../src/location-geoclue.c:114
 msgid "Could not find a usable Geoclue provider.\n"
-msgstr ""
+msgstr "无法找到可用的 Geoclue 服务提供者。\n"
 
 #: ../src/location-geoclue.c:115
 msgid "Try setting name and path to specify which to use.\n"
-msgstr ""
+msgstr "尝试设置名称和路径来指定使用哪个位置服务。\n"
 
 #: ../src/location-geoclue.c:133
 msgid "Use the location as discovered by a Geoclue provider.\n"
-msgstr ""
+msgstr "使用设定位置当做 Geoclue 服务检测到的。\n"
 
 #. TRANSLATORS: Geoclue help output
 #. left column must not be translated
@@ -656,6 +688,8 @@ msgid ""
 "  name=N\tName of Geoclue provider (or `default')\n"
 "  path=N\tPath of Geoclue provider (or `default')\n"
 msgstr ""
+"  name=N\tGeoclue 服务提供者的名称(或者”默认“)\n"
+"  path=N\tGeoclue 服务提供者的路径(或者”默认“)\n"
 
 #: ../src/location-geoclue.c:141 ../src/location-geoclue2.c:72
 #: ../src/location-corelocation.m:131
@@ -663,89 +697,89 @@ msgstr ""
 msgid ""
 "NOTE: currently Redshift doesn't recheck %s once started,\n"
 "which means it has to be restarted to take notice after travel.\n"
-msgstr ""
+msgstr "注意：当前 Redshift 一旦开启不会重新检查 %s，这表示在旅行后必须重新启动来记录变化。\n"
 
 #: ../src/location-geoclue.c:199
 #, c-format
 msgid "Could not get location: %s.\n"
-msgstr ""
+msgstr "无法获取位置：%s\n"
 
 #: ../src/location-geoclue.c:206
 #, c-format
 msgid "According to the geoclue provider we're at: %.2f, %.2f\n"
-msgstr ""
+msgstr "根据 Geoclue 服务，我们位于：%.2f, %.2f\n"
 
 #: ../src/location-geoclue.c:210
 msgid "Provider does not have a valid location available."
-msgstr ""
+msgstr "服务提供者没有可用的有效位置。"
 
 #: ../src/location-geoclue2.c:69
 msgid "Use the location as discovered by a GeoClue2 provider.\n"
-msgstr ""
+msgstr "使用 GeoClue2 服务检测到的位置。\n"
 
 #: ../src/location-geoclue2.c:114
 #, c-format
 msgid "Unable to obtain location: %s.\n"
-msgstr ""
+msgstr "无法获取位置：%s。\n"
 
 #: ../src/location-geoclue2.c:153
 #, c-format
 msgid "Unable to obtain GeoClue Manager: %s.\n"
-msgstr ""
+msgstr "无法获取 GeoClue 管理器：%s。\n"
 
 #: ../src/location-geoclue2.c:168
 #, c-format
 msgid "Unable to obtain GeoClue client path: %s.\n"
-msgstr ""
+msgstr "无法获取 GeoClue 客户端路径：%s。\n"
 
 #: ../src/location-geoclue2.c:189
 #, c-format
 msgid "Unable to obtain GeoClue Client: %s.\n"
-msgstr ""
+msgstr "无法获取 GeoClue 客户端：%s。\n"
 
 #: ../src/location-geoclue2.c:228
 #, c-format
 msgid "Unable to set distance threshold: %s.\n"
-msgstr ""
+msgstr "无法设置距离阀值：%s。\n"
 
 #: ../src/location-geoclue2.c:251
 #, c-format
 msgid "Unable to start GeoClue client: %s.\n"
-msgstr ""
+msgstr "无法启动 GeoClue 客户端：%s。\n"
 
 #: ../src/location-geoclue2.c:269
 #, c-format
 msgid "Unable to connect to GeoClue.\n"
-msgstr ""
+msgstr "无法连接到 GeoClue。\n"
 
 #: ../src/location-corelocation.m:59
 msgid "Not authorized to obtain location from CoreLocation.\n"
-msgstr ""
+msgstr "没有授权来从 CoreLocation 获取位置。\n"
 
 #: ../src/location-corelocation.m:87
 #, c-format
 msgid "Error obtaining location from CoreLocation: %s\n"
-msgstr ""
+msgstr "从 CoreLocation 获取位置时出错：%s\n"
 
 #: ../src/location-corelocation.m:96
 msgid "Waiting for authorization to obtain location...\n"
-msgstr ""
+msgstr "正在等待授权来获取位置…\n"
 
 #: ../src/location-corelocation.m:99
 msgid "Request for location was not authorized!\n"
-msgstr ""
+msgstr "位置请求还未授权！\n"
 
 #: ../src/location-corelocation.m:128
 msgid "Use the location as discovered by the Corelocation provider.\n"
-msgstr ""
+msgstr "使用指定位置当做 Corelocation 服务检测到的。\n"
 
 #: ../src/location-manual.c:50
 msgid "Latitude and longitude must be set.\n"
-msgstr ""
+msgstr "纬度和经度必须设置。\n"
 
 #: ../src/location-manual.c:65
 msgid "Specify location manually.\n"
-msgstr ""
+msgstr "手动指定位置。\n"
 
 #. TRANSLATORS: Manual location help output
 #. left column must not be translated
@@ -754,32 +788,36 @@ msgid ""
 "  lat=N\t\tLatitude\n"
 "  lon=N\t\tLongitude\n"
 msgstr ""
+"  lat=N\t\t纬度\n"
+"  lon=N\t\t经度\n"
 
 #: ../src/location-manual.c:73
 msgid ""
 "Both values are expected to be floating point numbers,\n"
 "negative values representing west / south, respectively.\n"
 msgstr ""
+"两个数值均为浮点数字，\n"
+"负数分表代表南纬/西经。\n"
 
 #: ../src/location-manual.c:87
 msgid "Malformed argument.\n"
-msgstr ""
+msgstr "异常参数。\n"
 
 #: ../src/redshift-gtk/statusicon.py:265
 msgid "Suspend for"
-msgstr "停用"
+msgstr "挂起于"
 
 #: ../src/redshift-gtk/statusicon.py:267
 msgid "30 minutes"
-msgstr "30 分钟"
+msgstr "30 分钟后"
 
 #: ../src/redshift-gtk/statusicon.py:268
 msgid "1 hour"
-msgstr "1 小时"
+msgstr "1 小时后"
 
 #: ../src/redshift-gtk/statusicon.py:269
 msgid "2 hours"
-msgstr "2 小时"
+msgstr "2 小时后"
 
 #: ../src/redshift-gtk/statusicon.py:277
 msgid "Autostart"
