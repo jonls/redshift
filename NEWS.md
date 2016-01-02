@@ -1,6 +1,23 @@
 News
 ====
 
+v1.11 (2016-01-02)
+------------------
+- Add option `preserve` for gamma adjustment methods (`randr`, `vidmode`,
+  `quartz`, `w32gdi`) to apply redness on top of current gamma correction.
+- Fix #158: Add redshift.desktop file to resolve an issue where Geoclue2
+  would not allow redshift to obtain the current location (Laurent Bigonville)
+- Fix #263: Make sure that the child process is terminated when redshift-gtk
+  exits.
+- Fix #284: A sample configuation file has been added to the distribution
+  tarball.
+- Fix warning message in redshift-gtk that is some cases caused redshift-gtk
+  to fail (#271) (Christian Stadelmann, Javier Cantero)
+- Fix #174: Use nanosleep() for sleeping to avoid high CPU load on platforms
+  (NetBSD, ...) with limitations in usleep() (Piotr Meyer)
+- Various updates to man page and translations.
+
+
 v1.10 (2015-01-04)
 ------------------
 * Fix #80: Add Geoclue2 location provider.
