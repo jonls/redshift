@@ -64,13 +64,22 @@ redshift -m dbus:session=1 -l -33.867716:151.207699
 
 Redshift will emit messages from `dk.jonls.redshift.dbus` to `/dk/jonls/Redshift`, with the `dk.jonls.Redshift` interface.
 
-You can test this with `mdbus2` with the following:
+You can test it with `dbus-monitor` wth the following:
+
+```
+dbus-monitor --system "type='signal',sender='dk.jonls.redshift.dbus',interface='dk.jonls.Redshift'"
+```
+
+Or with `mdbus2` with the following:
 
 ```
 mdbus2 -s -l dk.jonls.redshift.dbus
 ```
 
-Omit the `-s` option to work with the Session bus rather than the System bus.
+The signals will be of type `dk.jonls.Redshift.Temperature`, which takes a single int16 argument, the desired colour temperature:
 
-The signals will be of type `dk.jonls.Redshift.Temperature`, which takes a single int16 argument, the desired colour temperature.
+```
+signal sender=:1.3738 -> dest=(null destination) serial=102 path=/dk/jonls/Redshift; interface=dk.jonls.Redshift; member=Temperature
+   int16 5500
+```
 
