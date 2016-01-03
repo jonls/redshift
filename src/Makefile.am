@@ -20,6 +20,7 @@ redshift_SOURCES = \
 	gamma-dummy.c gamma-dummy.h
 
 EXTRA_redshift_SOURCES = \
+	gamma-dbus.c gamma-dbus.h \
 	gamma-drm.c gamma-drm.h \
 	gamma-randr.c gamma-randr.h \
 	gamma-vidmode.c gamma-vidmode.h \
@@ -30,6 +31,13 @@ EXTRA_redshift_SOURCES = \
 AM_CFLAGS =
 redshift_LDADD = @LIBINTL@
 EXTRA_DIST =
+
+if ENABLE_DBUS
+redshift_SOURCES += gamma-dbus.c gamma-dbus.h
+AM_CFLAGS += $(DBUS_CFLAGS)
+redshift_LDADD += \
+	$(DBUS_LIBS) $(DBUS_CFLAGS)
+endif
 
 if ENABLE_DRM
 redshift_SOURCES += gamma-drm.c gamma-drm.h

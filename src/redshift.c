@@ -58,6 +58,10 @@
 
 #include "gamma-dummy.h"
 
+#ifdef ENABLE_DBUS
+# include "gamma-dbus.h"
+#endif
+
 #ifdef ENABLE_DRM
 # include "gamma-drm.h"
 #endif
@@ -98,6 +102,9 @@
 
 /* Union of state data for gamma adjustment methods */
 typedef union {
+#ifdef ENABLE_DBUS
+	dbus_state_t dbus;
+#endif
 #ifdef ENABLE_DRM
 	drm_state_t drm;
 #endif
@@ -176,6 +183,19 @@ static const gamma_method_t gamma_methods[] = {
 		(gamma_method_set_option_func *)w32gdi_set_option,
 		(gamma_method_restore_func *)w32gdi_restore,
 		(gamma_method_set_temperature_func *)w32gdi_set_temperature
+	},
+#endif
+#ifdef ENABLE_DBUS
+	// do this late, so we don't conflict with other methods
+	{
+		"dbus", 0,
+		(gamma_method_init_func *)gamma_dbus_init,
+		(gamma_method_start_func *)gamma_dbus_start,
+		(gamma_method_free_func *)gamma_dbus_free,
+		(gamma_method_print_help_func *)gamma_dbus_print_help,
+		(gamma_method_set_option_func *)gamma_dbus_set_option,
+		(gamma_method_restore_func *)gamma_dbus_restore,
+		(gamma_method_set_temperature_func *)gamma_dbus_set_temperature
 	},
 #endif
 	{
