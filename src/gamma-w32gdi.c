@@ -149,18 +149,10 @@ w32gdi_set_temperature(w32gdi_state_t *state,
 {
 	BOOL r;
 
-	/* Open device context */
-	HDC hDC = GetDC(NULL);
-	if (hDC == NULL) {
-		fputs(_("Unable to open device context.\n"), stderr);
-		return -1;
-	}
-
 	/* Create new gamma ramps */
 	WORD *gamma_ramps = malloc(3*GAMMA_RAMP_SIZE*sizeof(WORD));
 	if (gamma_ramps == NULL) {
 		perror("malloc");
-		ReleaseDC(NULL, hDC);
 		return -1;
 	}
 
@@ -186,22 +178,51 @@ w32gdi_set_temperature(w32gdi_state_t *state,
 	colorramp_fill(gamma_r, gamma_g, gamma_b, GAMMA_RAMP_SIZE,
 		       setting);
 
-	/* Set new gamma ramps */
-	r = SetDeviceGammaRamp(hDC, gamma_ramps);
-	if (!r) {
-		/* TODO it happens that SetDeviceGammaRamp returns FALSE on
-		   occasions where the adjustment seems to be successful.
-		   Does this only happen with multiple monitors connected? */
-		fputs(_("Unable to set gamma ramps.\n"), stderr);
-		free(gamma_ramps);
-		ReleaseDC(NULL, hDC);
-		return -1;
+	DISPLAY_DEVICE dd;
+	HDC hDC;
+	dd.cb = sizeof(dd);
+	int dev = 0;
+	BOOL deviceFound;
+
+	/* To get a handle for each monitor we need to run EnumDisplayDevices twice.
+	   See https://msdn.microsoft.com/en-us/library/windows/desktop/dd162609(v=vs.85).aspx */
+	while (EnumDisplayDevices(NULL, dev, &dd, EDD_GET_DEVICE_INTERFACE_NAME)) {
+		DISPLAY_DEVICE ddMon;
+		ddMon.cb = sizeof(ddMon);
+		int devMon = 0;
+
+		while (EnumDisplayDevices(dd.DeviceName, devMon, &ddMon, 0)) {
+			devMon++;
+			hDC = CreateDC(NULL, dd.DeviceName, NULL, NULL);
+
+			if (hDC == NULL) {
+				continue;
+			}
+
+			/* Set new gamma ramps */
+			r = SetDeviceGammaRamp(hDC, gamma_ramps);
+			if (!r) {
+				fputs(_("Unable to set gamma ramps.\n"), stderr);
+				free(gamma_ramps);
+				ReleaseDC(NULL, hDC);
+				return -1;
+			}
+
+			/* Release device context */
+			ReleaseDC(NULL, hDC);
+			deviceFound = 1;
+			break;
+		}
+
+		dev++;
 	}
 
 	free(gamma_ramps);
 
-	/* Release device context */
-	ReleaseDC(NULL, hDC);
+	if (!deviceFound) {
+		fputs(_("Unable to open device context.\n"), stderr);
+		return -1;
+	}
 
 	return 0;
 }
