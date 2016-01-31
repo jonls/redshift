@@ -190,7 +190,7 @@ msgstr ""
 "  -p \t \t Mode d'impression (Impression des paramètres et fermeture)\n"
 "  -x \t \t Mode de réinitialisation (Supprimer les réglages de l'écran)\n"
 "  -r \t \t Désactiver les transitions de température\n"
-"  -t JOUR/NUIT \t Température des couleurs à appliquer le jour / la nuit\n"
+"  -t JOUR:NUIT \t Température des couleurs à appliquer le jour / la nuit\n"
 
 #. TRANSLATORS: help output 5
 #: ../src/redshift.c:492
