@@ -17,11 +17,52 @@
 
 # Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
 
-import sys
+import sys, os
+import signal
+import gettext
 
 # Some non-standard install paths may need to be added
 sys.path.append('@pythondir@')
 
+
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, GLib
+
+from redshift_gtk import defs
+from redshift_gtk import utils
+from redshift_gtk.redshift_controller import RedshiftController
+from redshift_gtk.redshift_statusicon import RedshiftStatusIcon
+
+def run():
+    utils.setproctitle('redshift-gtk')
+
+    # Internationalisation
+    gettext.bindtextdomain('redshift', defs.LOCALEDIR)
+    gettext.textdomain('redshift')
+
+    # Create redshift child process controller
+    c = RedshiftController(sys.argv[1:])
+
+    def terminate_child(data=None):
+        c.terminate_child()
+        return False
+
+    # Install signal handlers
+    GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGTERM,
+                         terminate_child, None)
+    GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT,
+                         terminate_child, None)
+
+    try:
+        # Create status icon
+        s = RedshiftStatusIcon(c)
+
+        # Run main loop
+        Gtk.main()
+    except:
+        c.kill_child()
+        raise
+
 if __name__ == '__main__':
-    from redshift_gtk.statusicon import run
     run()
