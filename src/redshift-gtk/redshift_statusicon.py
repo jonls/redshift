@@ -79,6 +79,7 @@ class RedshiftStatusIcon(object):
         self.info_dialog = Gtk.Dialog()
         self.info_dialog.set_title(_('Info'))
         self.info_dialog.add_button(_('Close'), Gtk.ButtonsType.CLOSE)
+        self.info_dialog.connect('delete-event', self.close_dialog)
         self.info_dialog.set_resizable(False)
         self.info_dialog.set_property('border-width', 6)
 
@@ -269,4 +270,9 @@ class RedshiftStatusIcon(object):
         self.info_dialog.destroy()
         self._controller.terminate_child()
         return False
+
+    def close_dialog(self, widget, data=None):
+        '''Just returning true to hide the dialog'''
+        self.info_dialog.hide()
+        return True
 
