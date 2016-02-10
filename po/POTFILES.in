@@ -20,4 +20,4 @@ src/location-geoclue2.c
 src/location-corelocation.m
 src/location-manual.c
 
-src/redshift-gtk/statusicon.py
+src/redshift-gtk/redshift_statusicon.py
