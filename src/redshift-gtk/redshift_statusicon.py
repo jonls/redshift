@@ -266,6 +266,7 @@ class RedshiftStatusIcon(object):
         '''Callback when a request to quit the application is made'''
         if not appindicator:
             self.status_icon.set_visible(False)
+        self.info_dialog.destroy()
         self._controller.terminate_child()
         return False
 
