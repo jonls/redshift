@@ -154,7 +154,7 @@ Cross-compile for Windows
 -------------------------
 
 Install MinGW and run `configure` using the following command line. Use
-`i686-w64-migw32` as host for 32-bit builds.
+`i686-w64-mingw32` as host for 32-bit builds.
 
 ``` shell
 $ ./configure --disable-drm --disable-randr --disable-vidmode --enable-wingdi \
