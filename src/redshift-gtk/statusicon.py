@@ -473,7 +473,7 @@ class RedshiftStatusIcon(object):
 
     def change_temperature(self, temperature):
         '''Change interface to new temperature'''
-        self.temperature_label.set_markup('<b>{}:</b> {}K'.format(_('Color temperature'), temperature))
+        self.temperature_label.set_markup('<b>{}:</b> {} K'.format(_('Color temperature'), temperature))
 
     def change_period(self, period):
         '''Change interface to new period'''
