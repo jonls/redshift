@@ -3,7 +3,8 @@ if ENABLE_GUI
 redshift_gtk_PYTHON = \
 	__init__.py \
 	utils.py \
-	statusicon.py
+  redshift_controller.py \
+  redshift_statusicon.py
 nodist_redshift_gtk_PYTHON = \
 	defs.py
 redshift_gtkdir = $(pythondir)/redshift_gtk

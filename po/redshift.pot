@@ -262,11 +262,11 @@ msgid "Status: %s\n"
 msgstr ""
 
 #: ../src/redshift.c:870 ../src/redshift.c:899
-#: ../src/redshift-gtk/statusicon.py:260 ../src/redshift-gtk/statusicon.py:466
+#: ../src/redshift-gtk/redshift_statusicon.py:40 ../src/redshift-gtk/redshift_statusicon.py:247
 msgid "Enabled"
 msgstr ""
 
-#: ../src/redshift.c:899 ../src/redshift-gtk/statusicon.py:466
+#: ../src/redshift.c:899 ../src/redshift-gtk/redshift_statusicon.py:247
 msgid "Disabled"
 msgstr ""
 
@@ -764,50 +764,50 @@ msgstr ""
 msgid "Malformed argument.\n"
 msgstr ""
 
-#: ../src/redshift-gtk/statusicon.py:265
+#: ../src/redshift-gtk/redshift_statusicon.py:45
 msgid "Suspend for"
 msgstr ""
 
-#: ../src/redshift-gtk/statusicon.py:267
+#: ../src/redshift-gtk/redshift_statusicon.py:47
 msgid "30 minutes"
 msgstr ""
 
-#: ../src/redshift-gtk/statusicon.py:268
+#: ../src/redshift-gtk/redshift_statusicon.py:48
 msgid "1 hour"
 msgstr ""
 
-#: ../src/redshift-gtk/statusicon.py:269
+#: ../src/redshift-gtk/redshift_statusicon.py:49
 msgid "2 hours"
 msgstr ""
 
-#: ../src/redshift-gtk/statusicon.py:277
+#: ../src/redshift-gtk/redshift_statusicon.py:57
 msgid "Autostart"
 msgstr ""
 
-#: ../src/redshift-gtk/statusicon.py:289 ../src/redshift-gtk/statusicon.py:300
+#: ../src/redshift-gtk/redshift_statusicon.py:69 ../src/redshift-gtk/redshift_statusicon.py:80
 msgid "Info"
 msgstr ""
 
-#: ../src/redshift-gtk/statusicon.py:294
+#: ../src/redshift-gtk/redshift_statusicon.py:74
 msgid "Quit"
 msgstr ""
 
-#: ../src/redshift-gtk/statusicon.py:301
+#: ../src/redshift-gtk/redshift_statusicon.py:81
 msgid "Close"
 msgstr ""
 
-#: ../src/redshift-gtk/statusicon.py:466
+#: ../src/redshift-gtk/redshift_statusicon.py:247
 msgid "<b>Status:</b> {}"
 msgstr ""
 
-#: ../src/redshift-gtk/statusicon.py:470
+#: ../src/redshift-gtk/redshift_statusicon.py:251
 msgid "Color temperature"
 msgstr ""
 
-#: ../src/redshift-gtk/statusicon.py:474
+#: ../src/redshift-gtk/redshift_statusicon.py:255
 msgid "Period"
 msgstr ""
 
-#: ../src/redshift-gtk/statusicon.py:478
+#: ../src/redshift-gtk/redshift_statusicon.py:259
 msgid "Location"
 msgstr ""
