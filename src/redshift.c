@@ -15,6 +15,7 @@
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
    Copyright (c) 2009-2015  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2014-2015  Mattias Andrée <maandree@member.fsf.org>
 */
 
 #ifdef HAVE_CONFIG_H
@@ -366,6 +367,55 @@ print_period(period_t period, double transition)
 		       transition*100);
 		break;
 	}
+}
+
+static void
+twilight_print(const char* string, double value)
+{
+	if (isnan(value)) {
+		printf(_("%s: never\n"), string);
+	} else {
+		printf(_("%s: %i\n"), string, (int)(value + 0.5));
+	}
+}
+
+static void
+print_twilight_period(double now, double elevation, const location_t *loc, const transition_scheme_t *scheme)
+{
+#define __less(a, b)  ((isnan(a) || isnan(b)) ? (isnan(b) && !isnan(a)) : (a < b))
+#define __min(a, b)  (__less(a, b) ? a : b)
+#define __max(a, b)  (__less(a, b) ? b : a)
+
+	double next_low, next_high, prev_low, prev_high;
+	double next_sunset_sunset, prev_sunset_sunset;
+
+	next_low  = future_elevation(now, loc->lat, loc->lon, scheme->low);
+	next_high = future_elevation(now, loc->lat, loc->lon, scheme->high);
+	prev_low  =   past_elevation(now, loc->lat, loc->lon, scheme->low);
+	prev_high =   past_elevation(now, loc->lat, loc->lon, scheme->high);
+	next_sunset_sunset = future_elevation(now, loc->lat, loc->lon, 0.0);
+	prev_sunset_sunset =   past_elevation(now, loc->lat, loc->lon, 0.0);
+
+	if (elevation > 0.0)  twilight_print(_("Previous sunrise"), prev_sunset_sunset);
+	else                  twilight_print(_("Previous sunset"),  prev_sunset_sunset);
+
+	if (elevation > 0.0)  twilight_print(_("Next sunset"),  next_sunset_sunset);
+	else                  twilight_print(_("Next sunrise"), next_sunset_sunset);
+
+	if (elevation >= scheme->high) {
+		twilight_print(_("Twilight ended"),  prev_high);
+		twilight_print(_("Twilight starts"), next_high);
+	} else if (elevation >= scheme->low) {
+		twilight_print(_("Twilight ended"),  prev_low);
+		twilight_print(_("Twilight starts"), next_low);
+	} else {
+		twilight_print(_("Twilight started"), __max(prev_high, prev_low));
+		twilight_print(_("Twilight ends"),    __min(prev_high, prev_low));
+	}
+
+#undef __max
+#undef __min
+#undef __more
 }
 
 /* Print location */
@@ -891,9 +941,12 @@ run_continual_mode(const location_t *loc,
 			print_period(period, transition);
 		}
 
-		/* Activate hooks if period changed */
+		/* Activate hooks and print twilight period if period changed */
 		if (period != prev_period) {
 			hooks_signal_period_change(prev_period, period);
+			if (verbose) {
+				print_twilight_period(now, elevation, loc, scheme);
+			}
 		}
 
 		/* Ongoing short transition */

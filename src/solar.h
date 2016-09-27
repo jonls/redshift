@@ -15,6 +15,7 @@
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
    Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2014  Mattias Andrée <maandree@member.fsf.org>
 */
 
 #ifndef REDSHIFT_SOLAR_H
@@ -47,5 +48,9 @@ typedef enum {
 
 double solar_elevation(double date, double lat, double lon);
 void solar_table_fill(double date, double lat, double lon, double *table);
+
+double future_elevation(double date, double lat, double lon, double elevation);
+double past_elevation(double date, double lat, double lon, double elevation);
+
 
 #endif /* ! REDSHIFT_SOLAR_H */
