@@ -385,13 +385,13 @@ msgstr "Não foi possível determinar a localização pelo provedor.\n"
 #: ../src/redshift.c:1460
 #, c-format
 msgid "Temperatures: %dK at day, %dK at night\n"
-msgstr "Temperaturas: %dK at day, %dK at night\n"
+msgstr "Temperaturas: %dK de dia, %dK de noite\n"
 
 #. TRANSLATORS: Append degree symbols if possible.
 #: ../src/redshift.c:1465
 #, c-format
 msgid "Solar elevations: day above %.1f, night below %.1f\n"
-msgstr "Elevacao Solar: day above %.1f, night below %.1f\n"
+msgstr "Elevacao Solar: dia acima %.1f, noite abaixo %.1f\n"
 
 #: ../src/redshift.c:1473
 #, c-format
@@ -401,7 +401,7 @@ msgstr "Latitude deve estar entre %.1f e %.1f.\n"
 #: ../src/redshift.c:1482
 #, c-format
 msgid "Longitude must be between %.1f and %.1f.\n"
-msgstr "Longitude deve estar entre %.1f and %.1f.\n"
+msgstr "Longitude deve estar entre %.1f e %.1f.\n"
 
 #: ../src/redshift.c:1493 ../src/redshift.c:1511
 #, c-format
@@ -418,7 +418,7 @@ msgstr ""
 #: ../src/redshift.c:1523
 #, c-format
 msgid "Brightness values must be between %.1f and %.1f.\n"
-msgstr "Os valores do Brilho devem estar entre %.1f and %.1f.\n"
+msgstr "Os valores do Brilho devem estar entre %.1f e %.1f.\n"
 
 #: ../src/redshift.c:1529
 #, c-format
@@ -428,7 +428,7 @@ msgstr "Brilho: %.2f:%.2f\n"
 #: ../src/redshift.c:1537
 #, c-format
 msgid "Gamma value must be between %.1f and %.1f.\n"
-msgstr "Valor Gamma deve estar entre %.1f and %.1f.\n"
+msgstr "Valor Gamma deve estar entre %.1f e %.1f.\n"
 
 #. TRANSLATORS: The string in parenthesis is either
 #. Daytime or Night (translated).
@@ -448,13 +448,13 @@ msgstr "Usando o método `%s'.\n"
 
 #: ../src/redshift.c:1584
 msgid "No more methods to try.\n"
-msgstr "Não há mais métodos a serem tentados.\n"
+msgstr "Não há mais métodos a testar.\n"
 
 #. TRANSLATORS: Append degree symbol if possible.
 #: ../src/redshift.c:1609
 #, c-format
 msgid "Solar elevation: %f\n"
-msgstr "Elevação solar: %fº\n"
+msgstr "Elevação solar: %f\n"
 
 #: ../src/redshift.c:1645 ../src/redshift.c:1669 ../src/redshift.c:1689
 msgid "Press ctrl-c to stop...\n"
