@@ -24,7 +24,7 @@ msgid ""
 "surroundings. This may help your eyes hurt less if you are working in front "
 "of the screen at night."
 msgstr ""
-"Redshift ajusta a temperatora da cor de sua tela de acordo com o que o "
+"Redshift ajusta a temperatura da cor de sua tela de acordo com o que o "
 "cerca. Isso ajuda a irritar menos os olhos se você está trabalhando em frente "
 "a uma tela à noite."
 
@@ -38,7 +38,7 @@ msgstr ""
 "A temperatura da cor é definida de acordo com a posição do Sol. Diferentes "
 "temperaturas de cores são utilizadas durante a noite e o dia. Ao anoitecer "
 "e ao amanhecer, ocorre uma transição suave entre a temperatura de cor da "
-"para o dia para que seus olhos lentamente se adaptem."
+"noite para o dia para que seus olhos lentamente se adaptem."
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:3
 msgid ""
