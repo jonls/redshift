@@ -21,7 +21,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include <alloca.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -60,7 +59,7 @@ drm_start(drm_state_t *state)
 {
 	/* Acquire access to a graphics card. */
 	long maxlen = strlen(DRM_DIR_NAME) + strlen(DRM_DEV_NAME) + 10;
-	char *pathname = alloca(maxlen * sizeof(char));
+	char pathname[maxlen];
 
 	sprintf(pathname, DRM_DEV_NAME, DRM_DIR_NAME, state->card_num);
 
@@ -69,6 +68,8 @@ drm_start(drm_state_t *state)
 		/* TODO check if access permissions, normally root or
 		        membership of the video group is required. */
 		perror("open");
+		fprintf(stderr, _("Failed to open DRM device: %s\n"),
+			pathname);
 		return -1;
 	}
 
