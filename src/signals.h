@@ -27,8 +27,8 @@ extern volatile sig_atomic_t exiting;
 extern volatile sig_atomic_t disable;
 
 #else /* ! HAVE_SIGNAL_H || __WIN32__ */
-#  define exiting  0
-#  define disable  0
+extern int exiting;
+extern int disable;
 #endif /* ! HAVE_SIGNAL_H || __WIN32__ */
 
 
