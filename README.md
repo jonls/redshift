@@ -24,6 +24,20 @@ Building from source
 
 See the file [HACKING](HACKING.md) for more details on building from source.
 
+Known issues
+------------
+
+* The Wayland protocol does not support Redshift.
+
+* Mir does not support Redshift.
+
+* Haiku does not support Redshift.
+
+* Windows may does not support Redshift on some multimonitor setups.
+
+* Redshift has no restriction on the numbers instances that can be started,
+starting two instances of Redshift can cause flickering effects.
+
 Donations
 ---------
 
