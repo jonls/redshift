@@ -42,6 +42,7 @@ except (ImportError, ValueError):
 
 from . import defs
 from . import utils
+from . import watch_events
 
 _ = gettext.gettext
 
@@ -54,6 +55,7 @@ class RedshiftController(GObject.GObject):
         'temperature-changed': (GObject.SIGNAL_RUN_FIRST, None, (int,)),
         'period-changed': (GObject.SIGNAL_RUN_FIRST, None, (str,)),
         'location-changed': (GObject.SIGNAL_RUN_FIRST, None, (float, float)),
+        'fullscreen-changed': (GObject.SIGNAL_RUN_FIRST, None, (bool,)),
         'error-occured': (GObject.SIGNAL_RUN_FIRST, None, (str,))
         }
 
@@ -70,6 +72,14 @@ class RedshiftController(GObject.GObject):
         self._temperature = 0
         self._period = 'Unknown'
         self._location = (0.0, 0.0)
+        self._fullscreen = False
+        self._manually_inhibited = False
+        self._thread = None
+
+        # Toggle fullscreen detection
+        if '-f' in args:
+            args.remove('-f')
+            self._fullscreen = True
 
         # Start redshift with arguments
         args.insert(0, os.path.join(defs.BINDIR, 'redshift'))
@@ -83,6 +93,9 @@ class RedshiftController(GObject.GObject):
                                          flags=GLib.SPAWN_DO_NOT_REAP_CHILD,
                                          standard_output=True, standard_error=True)
 
+        # Start thread to detect fullscreen
+        self.set_run_threads(self._fullscreen)
+        
         # Wrap remaining contructor in try..except to avoid that the child
         # process is not closed properly.
         try:
@@ -137,6 +150,24 @@ class RedshiftController(GObject.GObject):
     def location(self):
         '''Current location'''
         return self._location
+
+    @property
+    def fullscreen(self):
+        '''Current state of fullscreen detection'''
+        return self._fullscreen
+
+    @fullscreen.setter
+    def fullscreen(self, state):
+        '''Set the fullscreen detection state'''
+        if self._fullscreen != state:
+            self._fullscreen == self.set_run_threads(state)
+
+    def set_manually_inhibit(self, inhibit):
+        '''Set manual inhibition state'''
+        self._manually_inhibited = inhibit
+        if self.fullscreen:
+            self.set_run_threads(not inhibit)
+        self.set_inhibit(inhibit)
 
     def set_inhibit(self, inhibit):
         '''Set inhibition state'''
@@ -230,12 +261,58 @@ class RedshiftController(GObject.GObject):
 
         return True
 
+    def set_run_threads(self, state):
+        '''Set the threads running if state=True or stop them.'''
+        if state and self._thread is None:
+            self.start_threads()
+        elif not state and self._thread is not None:
+            self.stop_threads()
+        return state
+    
+    def start_threads(self):
+        '''Start the threads
+        
+        Watch asynchronously for the active window getting fullscreen
+        '''
+        self._thread = watch_events.WatchThread()
+
+        # Connect the thread signals
+        self._thread.connect("completed", self._register_thread_cancelled)
+        self._thread.connect("inhibit-triggered", self.set_auto_inhibit)
+
+        # Start thread
+        self._thread.start()
+
+    def stop_threads(self, block=False):
+        """Stops all threads. If block is True then actually wait for 
+        the thread to finish (may block the UI) 
+        """
+        if self._thread:
+            self._thread.cancel()
+            if block:
+                if self._thread.isAlive():
+                    self._thread.join()
+        self._thread = None
+
+    def _register_thread_cancelled(self, thread, state):
+        '''Relaunch the thread if failed'''
+        pass
+
+    def set_auto_inhibit(self, thread, state):
+        '''Set inhibit if the active window change fullscreen state'''
+        if state != self.inhibited:
+            if not self._manually_inhibited:
+                print(_("[{}] Change of fullscreen mode detected, redshift {}.").format(self.__class__.__name__, _('disabled') if state else _('enabled')))
+                self.set_inhibit(state)
+ 
     def terminate_child(self):
         """Send SIGINT to child process."""
+        self.stop_threads()
         self._child_signal(signal.SIGINT)
 
     def kill_child(self):
         """Send SIGKILL to child process."""
+        self.stop_threads()
         self._child_signal(signal.SIGKILL)
 
 
@@ -278,6 +355,11 @@ class RedshiftStatusIcon(object):
             suspend_menu.append(suspend_item)
         suspend_menu_item.set_submenu(suspend_menu)
         self.status_menu.append(suspend_menu_item)
+
+        # Add fullscreen menu
+        self.fullscreen_item = Gtk.CheckMenuItem.new_with_label(_('Disable on fullscreen'))
+        self.fullscreen_item.connect('activate', self.fullscreen_item_cb)
+        self.status_menu.append(self.fullscreen_item)
 
         # Add autostart option
         autostart_item = Gtk.CheckMenuItem.new_with_label(_('Autostart'))
@@ -339,6 +421,7 @@ class RedshiftStatusIcon(object):
         self._controller.connect('period-changed', self.period_change_cb)
         self._controller.connect('temperature-changed', self.temperature_change_cb)
         self._controller.connect('location-changed', self.location_change_cb)
+        self._controller.connect('fullscreen-changed', self.fullscreen_change_cb)
         self._controller.connect('error-occured', self.error_occured_cb)
 
         # Set info box text
@@ -346,6 +429,7 @@ class RedshiftStatusIcon(object):
         self.change_period(self._controller.period)
         self.change_temperature(self._controller.temperature)
         self.change_location(self._controller.location)
+        self.change_fullscreen(self._controller.fullscreen)
 
         if appindicator:
             self.status_menu.show_all()
@@ -367,6 +451,12 @@ class RedshiftStatusIcon(object):
             GLib.source_remove(self.suspend_timer)
             self.suspend_timer = None
 
+    def manually_inhibit(self, inhibit):
+        '''Callback that handles manual inhibition'''
+
+        # Inhibit
+        self._controller.set_manually_inhibit(inhibit)
+
     def suspend_cb(self, item, minutes):
         '''Callback that handles activation of a suspend timer
 
@@ -375,7 +465,7 @@ class RedshiftStatusIcon(object):
         reactive redshift when the timer is up.'''
 
         # Inhibit
-        self._controller.set_inhibit(True)
+        self.manually_inhibit(True)
 
         # If "suspend" is clicked while redshift is disabled, we reenable
         # it after the last selected timespan is over.
@@ -386,7 +476,7 @@ class RedshiftStatusIcon(object):
 
     def reenable_cb(self):
         '''Callback to reenable redshift when a suspend timer expires'''
-        self._controller.set_inhibit(False)
+        self.manually_inhibit(False)
 
     def popup_menu_cb(self, widget, button, time, data=None):
         '''Callback when the popup menu on the status icon has to open'''
@@ -397,7 +487,7 @@ class RedshiftStatusIcon(object):
     def toggle_cb(self, widget, data=None):
         '''Callback when a request to toggle redshift was made'''
         self.remove_suspend_timer()
-        self._controller.set_inhibit(not self._controller.inhibited)
+        self.manually_inhibit(not self._controller.inhibited)
 
     def toggle_item_cb(self, widget, data=None):
         '''Callback then a request to toggle redshift was made from a toggle item
@@ -408,7 +498,17 @@ class RedshiftStatusIcon(object):
         active = not self._controller.inhibited
         if active != widget.get_active():
             self.remove_suspend_timer()
-            self._controller.set_inhibit(not self._controller.inhibited)
+            self.manually_inhibit(not self._controller.inhibited)
+
+    def fullscreen_item_cb(self, widget, data=None):
+        '''Callback then a request to disable redshift on fullscreen was made from a fullscreen item
+
+        This ensures that the state of redshift is synchronised with
+        the fullscreen state of the widget (e.g. Gtk.CheckMenuItem).'''
+
+        fullscreen = self._controller.fullscreen
+        if fullscreen != widget.get_active():
+            self._controller.fullscreen = not fullscreen
 
     # Info dialog callbacks
     def show_info_cb(self, widget, data=None):
@@ -454,6 +554,10 @@ class RedshiftStatusIcon(object):
         '''Callback when controlled changes location'''
         self.change_location((lat, lon))
 
+    def fullscreen_change_cb(self, controller, state):
+        '''Callback when controlled changes fullscreen'''
+        self.change_fullscreen(state)
+
     def error_occured_cb(self, controller, error):
         '''Callback when an error occurs in the controller'''
         error_dialog = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR,
@@ -484,6 +588,10 @@ class RedshiftStatusIcon(object):
     def change_location(self, location):
         '''Change interface to new location'''
         self.location_label.set_markup('<b>{}:</b> {}, {}'.format(_('Location'), *location))
+
+    def change_fullscreen(self, state):
+        '''Change interface to new fullscreen status'''
+        self.fullscreen_item.set_active(state)
 
     def update_tooltip_text(self):
         '''Update text of tooltip status icon '''
