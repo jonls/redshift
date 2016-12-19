@@ -31,7 +31,7 @@
 typedef struct {
 	int crtc_num;
 	int crtc_id;
-	int gamma_size;
+	int64_t gamma_size;
 	uint16_t* r_gamma;
 	uint16_t* g_gamma;
 	uint16_t* b_gamma;
@@ -47,7 +47,7 @@ typedef struct {
 
 
 int drm_init(drm_state_t *state);
-int drm_start(drm_state_t *state);
+int drm_start(drm_state_t *state, program_mode_t mode);
 void drm_free(drm_state_t *state);
 
 void drm_print_help(FILE *f);

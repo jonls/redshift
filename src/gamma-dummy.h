@@ -24,7 +24,7 @@
 
 
 int gamma_dummy_init(void *state);
-int gamma_dummy_start(void *state);
+int gamma_dummy_start(void *state, program_mode_t mode);
 void gamma_dummy_free(void *state);
 
 void gamma_dummy_print_help(FILE *f);

@@ -55,7 +55,7 @@ drm_init(drm_state_t *state)
 }
 
 int
-drm_start(drm_state_t *state)
+drm_start(drm_state_t *state, program_mode_t mode)
 {
 	/* Acquire access to a graphics card. */
 	long maxlen = strlen(DRM_DIR_NAME) + strlen(DRM_DEV_NAME) + 10;
@@ -244,7 +244,7 @@ int
 drm_set_temperature(drm_state_t *state, const color_setting_t *setting)
 {
 	drm_crtc_state_t *crtcs = state->crtcs;
-	int last_gamma_size = 0;
+	uint32_t last_gamma_size = 0;
 	uint16_t *r_gamma = NULL;
 	uint16_t *g_gamma = NULL;
 	uint16_t *b_gamma = NULL;
@@ -270,16 +270,16 @@ drm_set_temperature(drm_state_t *state, const color_setting_t *setting)
 		}
 
 		/* Initialize gamma ramps to pure state */
-		int ramp_size = crtcs->gamma_size;
-		for (int i = 0; i < ramp_size; i++) {
+		uint32_t ramp_size = crtcs->gamma_size;
+		for (uint32_t i = 0; i < ramp_size; i++) {
 			uint16_t value = (double)i/ramp_size * (UINT16_MAX+1);
 			r_gamma[i] = value;
 			g_gamma[i] = value;
 			b_gamma[i] = value;
 		}
 
-		colorramp_fill(r_gamma, g_gamma, b_gamma, crtcs->gamma_size,
-			       setting);
+		colorramp_fill_u16(r_gamma, g_gamma, b_gamma, crtcs->gamma_size,
+				   crtcs->gamma_size, crtcs->gamma_size, setting);
 		drmModeCrtcSetGamma(state->fd, crtcs->crtc_id, crtcs->gamma_size,
 				    r_gamma, g_gamma, b_gamma);
 	}

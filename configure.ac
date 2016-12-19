@@ -77,6 +77,9 @@ AS_IF([test "x$have_objc_compiler" = xyes], [
 # Windows header
 AC_CHECK_HEADER([windows.h], [have_windows_h=yes], [have_windows_h=no])
 
+# libcoopgamma header
+AC_CHECK_HEADER([libcoopgamma.h], [have_libcoopgamma_h=yes], [have_libcoopgamma_h=no])
+
 # Check for Python
 AM_PATH_PYTHON([3.2], [have_python=yes], [have_python=no])
 
@@ -203,6 +206,30 @@ AS_IF([test "x$enable_wingdi" != xno], [
 	enable_wingdi=no
 ])
 AM_CONDITIONAL([ENABLE_WINGDI], [test "x$enable_wingdi" = xyes])
+
+# Check coopgamma method 
+AC_MSG_CHECKING([whether to enable coopgamma method])
+AC_ARG_ENABLE([coopgamma], [AC_HELP_STRING([--enable-coopgamma],
+	[enable coopgamma method])],
+	[enable_coopgamma=$enableval],[enable_coopgamma=maybe])
+AS_IF([test "x$enable_coopgamma" != xno], [
+	AS_IF([test $have_libcoopgamma_h = yes], [
+		AC_DEFINE([ENABLE_COOPGAMMA], 1,
+			[Define to 1 to enable coopgamma method])
+		AC_MSG_RESULT([yes])
+		enable_coopgamma=yes
+	], [
+		AC_MSG_RESULT([missing dependencies])
+		AS_IF([test "x$enable_coopgamma" = xyes], [
+			AC_MSG_ERROR([missing libcoopgamma headers for coopgamma method])
+		])
+		enable_coopgamma=no
+	])
+], [
+	AC_MSG_RESULT([no])
+	enable_coopgamma=no
+])
+AM_CONDITIONAL([ENABLE_COOPGAMMA], [test "x$enable_coopgamma" = xyes])
 
 
 # Check Geoclue location provider
@@ -369,6 +396,7 @@ echo "
     VidMode:		${enable_vidmode}
     Quartz (OSX):	${enable_quartz}
     WinGDI (Windows):	${enable_wingdi}
+    coopgamma:		${enable_coopgamma}
 
     Location providers:
     Geoclue:		${enable_geoclue}

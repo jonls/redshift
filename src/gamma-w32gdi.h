@@ -33,7 +33,7 @@ typedef struct {
 
 
 int w32gdi_init(w32gdi_state_t *state);
-int w32gdi_start(w32gdi_state_t *state);
+int w32gdi_start(w32gdi_state_t *state, program_mode_t mode);
 void w32gdi_free(w32gdi_state_t *state);
 
 void w32gdi_print_help(FILE *f);

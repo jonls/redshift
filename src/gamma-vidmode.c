@@ -57,7 +57,7 @@ vidmode_init(vidmode_state_t *state)
 }
 
 int
-vidmode_start(vidmode_state_t *state)
+vidmode_start(vidmode_state_t *state, program_mode_t mode)
 {
 	int r;
 	int screen_num = state->screen_num;
@@ -202,8 +202,8 @@ vidmode_set_temperature(vidmode_state_t *state,
 		}
 	}
 
-	colorramp_fill(gamma_r, gamma_g, gamma_b, state->ramp_size,
-		       setting);
+	colorramp_fill_u16(gamma_r, gamma_g, gamma_b, state->ramp_size,
+			   state->ramp_size, state->ramp_size, setting);
 
 	/* Set new gamma ramps */
 	r = XF86VidModeSetGammaRamp(state->display, state->screen_num,

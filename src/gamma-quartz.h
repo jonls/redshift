@@ -41,7 +41,7 @@ typedef struct {
 
 
 int quartz_init(quartz_state_t *state);
-int quartz_start(quartz_state_t *state);
+int quartz_start(quartz_state_t *state, program_mode_t mode);
 void quartz_free(quartz_state_t *state);
 
 void quartz_print_help(FILE *f);

@@ -48,7 +48,7 @@ typedef struct {
 
 
 int randr_init(randr_state_t *state);
-int randr_start(randr_state_t *state);
+int randr_start(randr_state_t *state, program_mode_t mode);
 void randr_free(randr_state_t *state);
 
 void randr_print_help(FILE *f);
