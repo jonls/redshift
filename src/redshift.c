@@ -62,6 +62,10 @@
 # include "gamma-drm.h"
 #endif
 
+#ifdef ENABLE_WAYLAND
+# include "gamma-wl.h"
+#endif
+
 #ifdef ENABLE_RANDR
 # include "gamma-randr.h"
 #endif
@@ -101,6 +105,9 @@ typedef union {
 #ifdef ENABLE_DRM
 	drm_state_t drm;
 #endif
+#ifdef ENABLE_WAYLAND
+	wayland_state_t wayland;
+#endif
 #ifdef ENABLE_RANDR
 	randr_state_t randr;
 #endif
@@ -128,6 +135,18 @@ static const gamma_method_t gamma_methods[] = {
 		(gamma_method_set_option_func *)drm_set_option,
 		(gamma_method_restore_func *)drm_restore,
 		(gamma_method_set_temperature_func *)drm_set_temperature
+	},
+#endif
+#ifdef ENABLE_WAYLAND
+	{
+		"wayland", 0,
+		(gamma_method_init_func *)wayland_init,
+		(gamma_method_start_func *)wayland_start,
+		(gamma_method_free_func *)wayland_free,
+		(gamma_method_print_help_func *)wayland_print_help,
+		(gamma_method_set_option_func *)wayland_set_option,
+		(gamma_method_restore_func *)wayland_restore,
+		(gamma_method_set_temperature_func *)wayland_set_temperature
 	},
 #endif
 #ifdef ENABLE_RANDR
