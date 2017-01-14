@@ -273,8 +273,8 @@ static const location_provider_t location_providers[] = {
 #define MAX_GAMMA  10.0
 
 /* Default values for parameters. */
-#define DEFAULT_DAY_TEMP    5500
-#define DEFAULT_NIGHT_TEMP  3500
+#define DEFAULT_DAY_TEMP    6500
+#define DEFAULT_NIGHT_TEMP  4500
 #define DEFAULT_BRIGHTNESS   1.0
 #define DEFAULT_GAMMA        1.0
 
