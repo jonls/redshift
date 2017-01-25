@@ -28,6 +28,9 @@ _UBUNTU_MONO_LIGHT_FILES = \
 	data/icons/ubuntu-mono-light/scalable/apps/redshift-status-on.svg \
 	data/icons/ubuntu-mono-light/scalable/apps/redshift-status-off.svg
 
+UPSTART_FILES = \
+	data/upstart/redshift.conf
+
 DESKTOP_IN_FILES = \
 	data/applications/redshift.desktop.in \
 	data/applications/redshift-gtk.desktop.in
@@ -52,6 +55,11 @@ ubuntu_mono_dark_icon_DATA = $(_UBUNTU_MONO_DARK_FILES)
 ubuntu_mono_light_icondir = @datadir@/icons/ubuntu-mono-light/scalable/apps
 ubuntu_mono_light_icon_DATA = $(_UBUNTU_MONO_LIGHT_FILES)
 endif
+endif
+
+if ENABLE_UPSTART
+upstartdir = @datadir@/upstart/sessions
+upstart_DATA = $(UPSTART_FILES)
 endif
 
 
@@ -109,6 +117,7 @@ EXTRA_DIST = \
 	$(_HICOLOR_FILES) \
 	$(_UBUNTU_MONO_DARK_FILES) \
 	$(_UBUNTU_MONO_LIGHT_FILES) \
+	$(UPSTART_FILES) \
 	$(DESKTOP_IN_FILES) \
 	$(SYSTEMD_USER_UNIT_IN_FILES) \
 	$(APPDATA_IN_FILES)
