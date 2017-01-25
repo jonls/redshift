@@ -41,6 +41,7 @@ adjustment-method=randr
 ; ex: 'redshift -l manual:help'
 ; Keep in mind that longitudes west of Greenwich (e.g. the Americas)
 ; are negative numbers.
+; http://www.latlong.net/ provides a service getting the longitudes.
 [manual]
 lat=48.1
 lon=11.6
