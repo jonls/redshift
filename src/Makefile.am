@@ -12,6 +12,7 @@ redshift_SOURCES = \
 	redshift.c redshift.h \
 	signals.c signals.h \
 	colorramp.c colorramp.h \
+	sleep.c sleep.h \
 	config-ini.c config-ini.h \
 	location-manual.c location-manual.h \
 	solar.c solar.h \

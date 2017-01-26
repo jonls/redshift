@@ -15,6 +15,7 @@
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
    Copyright (c) 2009-2015  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2015  Mattias andrée <maandree@member.fsf.org>
 */
 
 #ifdef HAVE_CONFIG_H
@@ -45,6 +46,7 @@
 
 #include "redshift.h"
 #include "config-ini.h"
+#include "sleep.h"
 #include "solar.h"
 #include "systemtime.h"
 #include "hooks.h"
@@ -288,10 +290,6 @@ static const location_provider_t location_providers[] = {
 #define TRANSITION_LOW     SOLAR_CIVIL_TWILIGHT_ELEV
 #define TRANSITION_HIGH    3.0
 
-/* Duration of sleep between screen updates (milliseconds). */
-#define SLEEP_DURATION        5000
-#define SLEEP_DURATION_SHORT  100
-
 /* Program modes. */
 typedef enum {
 	PROGRAM_MODE_CONTINUAL,
@@ -443,6 +441,7 @@ print_help(const char *program_name)
 	   no-wrap */
 	fputs(_("  -b DAY:NIGHT\tScreen brightness to apply (between 0.1 and 1.0)\n"
                 "  -c FILE\tLoad settings from specified configuration file\n"
+		"  -s LONG:SHORT\tSet sleep intervals\n"
 		"  -g R:G:B\tAdditional gamma correction to apply\n"
 		"  -l LAT:LON\tYour current location\n"
 		"  -l PROVIDER\tSelect provider for automatic"
@@ -953,9 +952,9 @@ run_continual_mode(const location_t *loc,
 
 		/* Sleep for 5 seconds or 0.1 second. */
 		if (short_trans_delta) {
-			systemtime_msleep(SLEEP_DURATION_SHORT);
+			systemtime_msleep(sleep_duration_short);
 		} else {
-			systemtime_msleep(SLEEP_DURATION);
+			systemtime_msleep(sleep_duration);
 		}
 	}
 
@@ -1018,7 +1017,7 @@ main(int argc, char *argv[])
 
 	/* Parse command line arguments. */
 	int opt;
-	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:prt:vVx")) != -1) {
+	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:prs:t:vVx")) != -1) {
 		switch (opt) {
 		case 'b':
 			parse_brightness_string(optarg,
@@ -1137,6 +1136,9 @@ main(int argc, char *argv[])
 		case 'r':
 			transition = 0;
 			break;
+		case 's':
+			parse_sleep_string(optarg, &sleep_duration, &sleep_duration_short);
+			break;
 		case 't':
 			s = strchr(optarg, ':');
 			if (s == NULL) {
@@ -1220,6 +1222,18 @@ main(int argc, char *argv[])
 				if (isnan(scheme.night.brightness)) {
 					scheme.night.brightness =
 						atof(setting->value);
+				}
+			} else if (strcasecmp(setting->name,
+					      "sleep-long") == 0) {
+				if (sleep_duration == 0) {
+					sleep_duration =
+						(unsigned int)(1000 * atof(setting->value));
+				}
+			} else if (strcasecmp(setting->name,
+					      "sleep-short") == 0) {
+				if (sleep_duration_short == 0) {
+					sleep_duration_short =
+						(unsigned int)(1000 * atof(setting->value));
 				}
 			} else if (strcasecmp(setting->name,
 					      "elevation-high") == 0) {
@@ -1324,6 +1338,13 @@ main(int argc, char *argv[])
 		scheme.night.gamma[0] = DEFAULT_GAMMA;
 		scheme.night.gamma[1] = DEFAULT_GAMMA;
 		scheme.night.gamma[2] = DEFAULT_GAMMA;
+	}
+
+	if (sleep_duration == 0) {
+		sleep_duration = SLEEP_DURATION;
+	}
+	if (sleep_duration_short == 0) {
+		sleep_duration_short = SLEEP_DURATION_SHORT;
 	}
 
 	if (transition < 0) transition = 1;
