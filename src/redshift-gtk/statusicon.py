@@ -344,6 +344,11 @@ def run():
     gettext.bindtextdomain('redshift', defs.LOCALEDIR)
     gettext.textdomain('redshift')
 
+    for help_arg in ('-h', '--help'):
+        if help_arg in sys.argv:
+            print(_('Please run `redshift -h` for help output.'))
+            sys.exit(-1)
+
     # Create redshift child process controller
     c = RedshiftController(sys.argv[1:])
 
