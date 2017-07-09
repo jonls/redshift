@@ -1,0 +1,24 @@
+image:
+- Visual Studio 2015
+
+environment:
+  MSYS_ARCH: x86_64
+
+build:
+  verbosity: detailed
+
+build_script:
+- echo %PATH%
+- set PATH=C:\msys64\usr\bin;C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin;%PATH%
+- set CC=gcc
+- set MSYSTEM=MINGW64
+- bash -lc "pwd"
+- bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./bootstrap"
+- bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./configure --disable-drm --disable-randr --disable-vidmode --enable-wingdi --disable-geoclue --disable-gui --disable-ubuntu --host=x86_64-w64-mingw32"
+- bash -lc "cd $APPVEYOR_BUILD_FOLDER && make"
+
+after_build:
+- cmd: >-
+    7z a redshift.zip ./src/redshift.exe COPYING NEWS README.md
+
+    appveyor PushArtifact redshift.zip
