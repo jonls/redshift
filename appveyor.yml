@@ -14,7 +14,7 @@ build_script:
 - set MSYSTEM=MINGW64
 - bash -lc "pwd"
 - bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./bootstrap"
-- bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./configure --disable-drm --disable-randr --disable-vidmode --enable-wingdi --disable-geoclue --disable-gui --disable-ubuntu --host=x86_64-w64-mingw32"
+- bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./configure --enable-static --disable-shared --disable-drm --disable-randr --disable-vidmode --enable-wingdi --disable-quartz --disable-geoclue --disable-geoclue2 --disable-corelocation --disable-gui --disable-ubuntu --disable-nls --host=x86_64-w64-mingw32"
 - bash -lc "cd $APPVEYOR_BUILD_FOLDER && make"
 
 after_build:
