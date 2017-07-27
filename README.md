@@ -27,6 +27,20 @@ FAQ
 
 Use the packages provided by your distribution, e.g. for Ubuntu: `apt-get install redshift` or `apt-get install redshift-gtk`. For developers, please see _Building from source_ and _Latest builds from master branch_ below.
 
+**How do I setup a configuration file?**
+
+A configuration file is not required but is useful for saving custom
+configurations and manually defining the location in case of issues with the
+automatic location provider. An example configuration can be found in
+[redshift.conf.sample](redshift.conf.sample).
+
+The configuration file should be saved in the following location depending on
+the platform:
+
+- Linux/macOS: `~/.config/redshift.conf`.
+- Windows: Put `redshift.conf` in `%USERPROFILE%\AppData\Local\`
+    (aka `%localappdata%`).
+
 **Where can I find my coordinates to put in the configuration file?**
 
 There are multiple web sites that provide coordinates for map locations, for
@@ -45,13 +59,13 @@ adjustments to the gamma ramp.
 Redshift has a brightness adjustment setting but it does not work the way most
 people might expect. In fact it is a fake brightness adjustment obtained by
 manipulating the gamma ramps which means that it does not reduce the backlight
-of the screen. Preferable only use it if your normal backlight adjustment is
+of the screen. Preferably only use it if your normal backlight adjustment is
 too coarse-grained.
 
 **Why doesn't Redshift work on Wayland (e.g. Fedora 25)?**
 
 The Wayland protocol does not support Redshift. There is currently no way for
-Redshift adjust the color temperature in Wayland.
+Redshift to adjust the color temperature in Wayland.
 
 **Why doesn't Redshift work on Ubuntu with Mir enabled?**
 
