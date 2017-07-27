@@ -1,3 +1,5 @@
+dist: trusty
+sudo: required
 language: c
 before_install:
   - sed -i -e 's|AC_PREREQ(\[2.69\])|AC_PREREQ([2.68])|' configure.ac
