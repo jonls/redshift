@@ -18,14 +18,14 @@ Build status
 ------------
 
 [![Build Status](https://travis-ci.org/jonls/redshift.svg?branch=master)](https://travis-ci.org/jonls/redshift)
-
-Building from source
---------------------
-
-See the file [HACKING](HACKING.md) for more details on building from source.
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/jonls/redshift?branch=master&svg=true)](https://ci.appveyor.com/project/jonls/redshift)
 
 FAQ
 ---
+
+**How do I install Redshift?**
+
+Use the packages provided by your distribution, e.g. for Ubuntu: `apt-get install redshift` or `apt-get install redshift-gtk`. For developers, please see _Building from source_ and _Latest builds from master branch_ below.
 
 **Where can I find my coordinates to put in the configuration file?**
 
@@ -91,7 +91,13 @@ Please go to [the issue tracker](https://github.com/jonls/redshift/issues) and
 check if your issue has already been reported. If not, please open a new issue
 describing you problem.
 
-Donations
----------
+Latest builds from master branch
+--------------------------------
 
-[![Flattr](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/thing/57936/Redshift)
+- [Ubuntu PPA](https://launchpad.net/~dobey/+archive/ubuntu/redshift-daily/+packages) (`sudo add-apt-repository ppa:dobey/redshift-daily`)
+- [Windows x64](https://ci.appveyor.com/api/projects/jonls/redshift/artifacts/redshift.zip?branch=master)
+
+Building from source
+--------------------
+
+See the file [HACKING](HACKING.md) for more details on building from source.
