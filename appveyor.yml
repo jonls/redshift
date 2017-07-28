@@ -6,6 +6,9 @@ environment:
 
 build:
   verbosity: detailed
+  
+install:
+    - ps: (new-object net.webclient).DownloadFile('https://github.com/electron/rcedit/releases/download/v0.1.0/rcedit.exe', "$pwd\rcedit.exe")
 
 build_script:
 - echo %PATH%
@@ -18,6 +21,7 @@ build_script:
 - bash -lc "cd $APPVEYOR_BUILD_FOLDER && make"
 
 after_build:
+- ps: .\rcedit.exe ./src/redshift.exe --set-icon ./data/icons/windows/redshift.ico
 - cmd: >-
     7z a redshift.zip ./src/redshift.exe COPYING NEWS README.md
 
