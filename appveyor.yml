@@ -8,7 +8,7 @@ build:
   verbosity: detailed
   
 install:
-    - ps: (new-object net.webclient).DownloadFile('https://github.com/electron/rcedit/releases/download/v0.1.0/rcedit.exe', "$pwd\rcedit.exe")
+    - ps: (new-object net.webclient).DownloadFile("https://github.com/electron/rcedit/releases/download/v0.1.0/rcedit.exe", "$pwd\rcedit.exe")
 
 build_script:
 - echo %PATH%
