@@ -25,11 +25,13 @@ EXTRA_redshift_SOURCES = \
 	gamma-vidmode.c gamma-vidmode.h \
 	gamma-quartz.c gamma-quartz.h \
 	gamma-w32gdi.c gamma-w32gdi.h \
-	location-geoclue.c location-geoclue.h
+	location-geoclue.c location-geoclue.h \
+	windows/appicon.rc \
+	windows/versioninfo.rc
 
 AM_CFLAGS =
 redshift_LDADD = @LIBINTL@
-EXTRA_DIST =
+EXTRA_DIST = windows/redshift.ico
 
 if ENABLE_DRM
 redshift_SOURCES += gamma-drm.c gamma-drm.h
@@ -99,3 +101,12 @@ liblocation_corelocation_la_LIBADD = \
 	$(CORELOCATION_CFLAGS) $(CORELOCATION_LIBS)
 redshift_LDADD += liblocation-corelocation.la
 endif
+
+
+# Windows resources
+if ENABLE_WINDOWS_RESOURCE
+redshift_SOURCES += windows/appicon.rc windows/versioninfo.rc
+endif
+
+.rc.o:
+	$(AM_V_GEN)$(WINDRES) -I$(top_builddir) -i $< -o $@
