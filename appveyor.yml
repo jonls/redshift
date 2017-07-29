@@ -4,21 +4,23 @@ image:
 environment:
   matrix:
     - arch: x86_64
-      HOST_ARCH_ARG: --host=x86_64-w64-mingw32
-      ADD_PATH_CMD: C:\msys64\usr\bin;C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin
-      MSYSTEM: MINGW64
     - arch: i686
-      HOST_ARCH_ARG: --host=i686-w64-mingw32
-      ADD_PATH_CMD: C:\msys64\usr\bin;C:\mingw-w64\i686-5.3.0-posix-dwarf-rt_v4-rev0\mingw32\bin
-      MSYSTEM: MINGW32
 
 build:
   verbosity: detailed
 
 build_script:
+- if [%arch%]==[x86_64] (
+      SET "ADD_PATH_CMD=C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin" &&
+      SET "MSYSTEM=MINGW64"
+    )
+- if [%arch%]==[i686] (
+      SET "ADD_PATH_CMD=C:\msys64\usr\bin;C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin" &&
+      SET "MSYSTEM=MINGW32"
+    )
 - set PATH=%ADD_PATH_CMD%;%PATH%
 - bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./bootstrap"
-- bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./configure --enable-static --disable-shared --disable-drm --disable-randr --disable-vidmode --enable-wingdi --disable-quartz --disable-geoclue --disable-geoclue2 --disable-corelocation --disable-gui --disable-ubuntu --disable-nls $HOST_ARCH_ARG"
+- bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./configure --enable-static --disable-shared --disable-drm --disable-randr --disable-vidmode --enable-wingdi --disable-quartz --disable-geoclue --disable-geoclue2 --disable-corelocation --disable-gui --disable-ubuntu --disable-nls --host=$arch-w64-mingw32"
 - bash -lc "cd $APPVEYOR_BUILD_FOLDER && make"
 
 after_build:
