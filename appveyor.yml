@@ -11,7 +11,7 @@ build:
 
 build_script:
 - if [%arch%]==[x86_64] (
-      SET "ADD_PATH_CMD=C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin" &&
+      SET "ADD_PATH_CMD=C:\msys64\usr\bin;C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin" &&
       SET "MSYSTEM=MINGW64"
     )
 - if [%arch%]==[i686] (
