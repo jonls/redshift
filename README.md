@@ -109,8 +109,8 @@ Latest builds from master branch
 --------------------------------
 
 - [Ubuntu PPA](https://launchpad.net/~dobey/+archive/ubuntu/redshift-daily/+packages) (`sudo add-apt-repository ppa:dobey/redshift-daily`)
-- [Windows x86_64](https://ci.appveyor.com/api/projects/jonls/redshift/artifacts/redshift-windows-x86_64.zip?branch=master)
-- [Windows x86](https://ci.appveyor.com/api/projects/jonls/redshift/artifacts/redshift-windows-i686.zip?branch=master)
+- [Windows x86_64](https://ci.appveyor.com/api/projects/jonls/redshift/artifacts/redshift-windows-x86_64.zip?branch=master&job=Environment%3A+arch%3Dx86_64)
+- [Windows x86](https://ci.appveyor.com/api/projects/jonls/redshift/artifacts/redshift-windows-i686.zip?branch=master&job=Environment%3A+arch%3Di686)
 
 Building from source
 --------------------
