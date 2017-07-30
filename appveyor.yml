@@ -2,27 +2,43 @@ image:
 - Visual Studio 2015
 
 environment:
-  MSYS_ARCH: x86_64
+  matrix:
+    - arch: x86_64
+    - arch: i686
 
 build:
   verbosity: detailed
   
 install:
-    - ps: (new-object net.webclient).DownloadFile('https://github.com/electron/rcedit/releases/download/v0.1.0/rcedit.exe', "$pwd\rcedit.exe")
+    - ps: (new-object net.webclient).DownloadFile("https://github.com/electron/rcedit/releases/download/v0.1.0/rcedit.exe", "$pwd\rcedit.exe")
 
 build_script:
-- echo %PATH%
-- set PATH=C:\msys64\usr\bin;C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin;%PATH%
-- set CC=gcc
-- set MSYSTEM=MINGW64
-- bash -lc "pwd"
+- if [%arch%]==[x86_64] (
+    SET "ADD_PATH_CMD=C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin"
+  )
+- if [%arch%]==[i686] (
+    SET "ADD_PATH_CMD=C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin"
+  )
+- set PATH=C:\msys64\usr\bin;%ADD_PATH_CMD%;%PATH%
+- set CONFIGURE_FLAGS=--disable-drm --disable-randr --disable-vidmode --enable-wingdi --disable-quartz --disable-geoclue --disable-geoclue2 --disable-corelocation --disable-gui --disable-ubuntu --disable-nls --host=%arch%-w64-mingw32
+- bash -lc "mkdir $APPVEYOR_BUILD_FOLDER/root"
 - bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./bootstrap"
-- bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./configure --enable-static --disable-shared --disable-drm --disable-randr --disable-vidmode --enable-wingdi --disable-quartz --disable-geoclue --disable-geoclue2 --disable-corelocation --disable-gui --disable-ubuntu --disable-nls --host=x86_64-w64-mingw32"
-- bash -lc "cd $APPVEYOR_BUILD_FOLDER && make"
+- bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./configure --prefix=\"$APPVEYOR_BUILD_FOLDER/root\" $CONFIGURE_FLAGS"
+- bash -lc "cd $APPVEYOR_BUILD_FOLDER && make distcheck DISTCHECK_CONFIGURE_FLAGS=\"$CONFIGURE_FLAGS\""
+- bash -lc "cd $APPVEYOR_BUILD_FOLDER && make install"
 
 after_build:
 - ps: .\rcedit.exe ./src/redshift.exe --set-icon ./data/icons/windows/redshift.ico
-- cmd: >-
-    7z a redshift.zip ./src/redshift.exe COPYING NEWS README.md
+- ps: |
+    $ZIP_NAME = "redshift-windows-$env:arch"
+    $ZIP_FILE = "redshift-windows-$env:arch.zip"
 
-    appveyor PushArtifact redshift.zip
+    md $ZIP_NAME
+    Copy-Item -Path $env:APPVEYOR_BUILD_FOLDER\root\bin\redshift.exe -Destination $ZIP_NAME
+    Copy-Item -Path README.md -Destination $ZIP_NAME/README.txt
+    Copy-Item -Path NEWS.md -Destination $ZIP_NAME/NEWS.txt
+    Copy-Item -Path COPYING -Destination $ZIP_NAME/COPYING.txt
+    Copy-Item -Path redshift.conf.sample -Destination $ZIP_NAME
+    7z a $ZIP_FILE $ZIP_NAME/
+
+- ps: Push-AppveyorArtifact $ZIP_FILE
