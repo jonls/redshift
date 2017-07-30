@@ -28,7 +28,7 @@ build_script:
 - bash -lc "cd $APPVEYOR_BUILD_FOLDER && make install"
 
 after_build:
-- ps: .\rcedit.exe ./src/redshift.exe --set-icon ./data/icons/windows/redshift.ico
+- ps: .\rcedit.exe $env:APPVEYOR_BUILD_FOLDER\root\bin\redshift.exe --set-icon ./data/icons/windows/redshift.ico
 - ps: |
     $ZIP_NAME = "redshift-windows-$env:arch"
     $ZIP_FILE = "redshift-windows-$env:arch.zip"
