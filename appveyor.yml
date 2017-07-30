@@ -17,12 +17,15 @@ build_script:
     SET "ADD_PATH_CMD=C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin"
   )
 - set PATH=C:\msys64\usr\bin;%ADD_PATH_CMD%;%PATH%
+- set CONFIGURE_FLAGS=--disable-drm --disable-randr --disable-vidmode --enable-wingdi --disable-quartz --disable-geoclue --disable-geoclue2 --disable-corelocation --disable-gui --disable-ubuntu --disable-nls --host=%arch%-w64-mingw32
+- bash -lc "mkdir $APPVEYOR_BUILD_FOLDER/root"
 - bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./bootstrap"
-- bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./configure --enable-static --disable-shared --disable-drm --disable-randr --disable-vidmode --enable-wingdi --disable-quartz --disable-geoclue --disable-geoclue2 --disable-corelocation --disable-gui --disable-ubuntu --disable-nls --host=$arch-w64-mingw32"
-- bash -lc "cd $APPVEYOR_BUILD_FOLDER && make"
+- bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./configure --prefix=\"$APPVEYOR_BUILD_FOLDER/root\" $CONFIGURE_FLAGS"
+- bash -lc "cd $APPVEYOR_BUILD_FOLDER && make distcheck DISTCHECK_CONFIGURE_FLAGS=\"$CONFIGURE_FLAGS\""
+- bash -lc "cd $APPVEYOR_BUILD_FOLDER && make install"
 
 after_build:
 - cmd: >-
-    7z a redshift-windows-%arch%.zip ./src/redshift.exe COPYING NEWS README.md
+    7z a redshift-windows-%arch%.zip "%APPVEYOR_BUILD_FOLDER%/root/bin/redshift.exe" COPYING NEWS README.md
 
     appveyor PushArtifact redshift-windows-%arch%.zip
