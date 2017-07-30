@@ -461,11 +461,10 @@ print_help(const char *program_name)
 	fputs("\n", stdout);
 
 	/* TRANSLATORS: help output 5 */
-	printf(_("The neutral temperature is %uK. Using this value will not\n"
-		 "change the color temperature of the display. Setting the\n"
-		 "color temperature to a value higher than this results in\n"
-		 "more blue light, and setting a lower value will result in\n"
-		 "more red light.\n"),
+	printf(_("The neutral temperature is %uK. Using this value will not change "
+		 "the color\ntemperature of the display. Setting the color temperature "
+		 "to a value higher\nthan this results in more blue light, and setting "
+		 "a lower value will result in\nmore red light.\n"),
 		 NEUTRAL_TEMP);
 
 	fputs("\n", stdout);
