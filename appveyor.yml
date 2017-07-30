@@ -25,7 +25,16 @@ build_script:
 - bash -lc "cd $APPVEYOR_BUILD_FOLDER && make install"
 
 after_build:
-- cmd: >-
-    7z a redshift-windows-%arch%.zip "%APPVEYOR_BUILD_FOLDER%/root/bin/redshift.exe" COPYING NEWS README.md
+- ps: |
+    $ZIP_NAME = "redshift-windows-$env:arch"
+    $ZIP_FILE = "redshift-windows-$env:arch.zip"
 
-    appveyor PushArtifact redshift-windows-%arch%.zip
+    md $ZIP_NAME
+    Copy-Item -Path $env:APPVEYOR_BUILD_FOLDER\root\bin\redshift.exe -Destination $ZIP_NAME
+    Copy-Item -Path README.md -Destination $ZIP_NAME/README.txt
+    Copy-Item -Path NEWS.md -Destination $ZIP_NAME/NEWS.txt
+    Copy-Item -Path COPYING -Destination $ZIP_NAME/COPYING.txt
+    Copy-Item -Path redshift.conf.sample -Destination $ZIP_NAME
+    7z a $ZIP_FILE $ZIP_NAME/
+
+- ps: Push-AppveyorArtifact $ZIP_FILE
