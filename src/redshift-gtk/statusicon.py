@@ -110,41 +110,43 @@ class RedshiftStatusIcon(object):
         self.status_menu.append(quit_item)
 
         # Create info dialog
-        self.info_dialog = Gtk.Dialog()
-        self.info_dialog.set_title(_('Info'))
-        self.info_dialog.add_button(_('Close'), Gtk.ButtonsType.CLOSE)
+        self.info_dialog = Gtk.Window(title=_('Info'))
         self.info_dialog.set_resizable(False)
         self.info_dialog.set_property('border-width', 6)
+        self.info_dialog.connect('delete-event', self.close_info_dialog_cb)
+
+        content_area = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        self.info_dialog.add(content_area)
+        content_area.show()
 
         self.status_label = Gtk.Label()
         self.status_label.set_alignment(0.0, 0.5)
         self.status_label.set_padding(6, 6)
-        self.info_dialog.get_content_area().pack_start(
-            self.status_label, True, True, 0)
+        content_area.pack_start(self.status_label, True, True, 0)
         self.status_label.show()
 
         self.location_label = Gtk.Label()
         self.location_label.set_alignment(0.0, 0.5)
         self.location_label.set_padding(6, 6)
-        self.info_dialog.get_content_area().pack_start(
-            self.location_label, True, True, 0)
+        content_area.pack_start(self.location_label, True, True, 0)
         self.location_label.show()
 
         self.temperature_label = Gtk.Label()
         self.temperature_label.set_alignment(0.0, 0.5)
         self.temperature_label.set_padding(6, 6)
-        self.info_dialog.get_content_area().pack_start(
-            self.temperature_label, True, True, 0)
+        content_area.pack_start(self.temperature_label, True, True, 0)
         self.temperature_label.show()
 
         self.period_label = Gtk.Label()
         self.period_label.set_alignment(0.0, 0.5)
         self.period_label.set_padding(6, 6)
-        self.info_dialog.get_content_area().pack_start(
-            self.period_label, True, True, 0)
+        content_area.pack_start(self.period_label, True, True, 0)
         self.period_label.show()
 
-        self.info_dialog.connect('response', self.response_info_cb)
+        self.close_button = Gtk.Button(label=_('Close'))
+        content_area.pack_start(self.close_button, True, True, 0)
+        self.close_button.connect('clicked', self.close_info_dialog_cb)
+        self.close_button.show()
 
         # Setup signals to property changes
         self._controller.connect('inhibit-changed', self.inhibit_change_cb)
@@ -233,6 +235,11 @@ class RedshiftStatusIcon(object):
     def response_info_cb(self, widget, data=None):
         """Callback when a button in the info dialog was activated."""
         self.info_dialog.hide()
+
+    def close_info_dialog_cb(self, widget, data=None):
+        """Callback when the info dialog is closed."""
+        self.info_dialog.hide()
+        return True
 
     def update_status_icon(self):
         """Update the status icon according to the internally recorded state.
@@ -325,6 +332,7 @@ class RedshiftStatusIcon(object):
         """Callback when a request to quit the application is made."""
         if not appindicator:
             self.status_icon.set_visible(False)
+        self.info_dialog.destroy()
         self._controller.terminate_child()
         return False
 
