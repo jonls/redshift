@@ -87,16 +87,17 @@ class RedshiftStatusIcon(object):
         self.status_menu.append(suspend_menu_item)
 
         # Add autostart option
-        autostart_item = Gtk.CheckMenuItem.new_with_label(_('Autostart'))
-        try:
-            autostart_item.set_active(utils.get_autostart())
-        except IOError as strerror:
-            print(strerror)
-            autostart_item.set_property('sensitive', False)
-        else:
-            autostart_item.connect('toggled', self.autostart_cb)
-        finally:
-            self.status_menu.append(autostart_item)
+        if utils.supports_autostart():
+            autostart_item = Gtk.CheckMenuItem.new_with_label(_('Autostart'))
+            try:
+                autostart_item.set_active(utils.get_autostart())
+            except IOError as strerror:
+                print(strerror)
+                autostart_item.set_property('sensitive', False)
+            else:
+                autostart_item.connect('toggled', self.autostart_cb)
+            finally:
+                self.status_menu.append(autostart_item)
 
         # Add info action
         info_item = Gtk.MenuItem.new_with_label(_('Info'))
