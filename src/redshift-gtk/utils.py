@@ -20,8 +20,12 @@
 import ctypes
 import os
 import sys
-from xdg import BaseDirectory as base
-from xdg import DesktopEntry as desktop
+
+try:
+    import xdg
+except ImportError:
+    xdg = None
+
 
 REDSHIFT_DESKTOP = 'redshift-gtk.desktop'
 
@@ -32,12 +36,13 @@ AUTOSTART_KEYS = (('Hidden', ('true', 'false')),
 
 
 def open_autostart_file():
-    autostart_dir = base.save_config_path("autostart")
+    autostart_dir = xdg.BaseDirectory.save_config_path("autostart")
     autostart_file = os.path.join(autostart_dir, REDSHIFT_DESKTOP)
 
     if not os.path.exists(autostart_file):
-        desktop_files = list(base.load_data_paths("applications",
-                                                  REDSHIFT_DESKTOP))
+        desktop_files = list(
+            xdg.BaseDirectory.load_data_paths(
+                "applications", REDSHIFT_DESKTOP))
 
         if not desktop_files:
             raise IOError("Installed redshift desktop file not found!")
@@ -45,21 +50,33 @@ def open_autostart_file():
         desktop_file_path = desktop_files[0]
 
         # Read installed file
-        dfile = desktop.DesktopEntry(desktop_file_path)
+        dfile = xdg.DesktopEntry.DesktopEntry(desktop_file_path)
         for key, values in AUTOSTART_KEYS:
             dfile.set(key, values[False])
         dfile.write(filename=autostart_file)
     else:
-        dfile = desktop.DesktopEntry(autostart_file)
+        dfile = xdg.DesktopEntry.DesktopEntry(autostart_file)
 
     return dfile, autostart_file
 
+
+def supports_autostart():
+    return xdg is not None
+
+
 def get_autostart():
+    if xdg is None:
+        return False
+
     dfile, path = open_autostart_file()
     check_key, check_values = AUTOSTART_KEYS[0]
     return dfile.get(check_key) == check_values[True]
 
+
 def set_autostart(active):
+    if xdg is None:
+        return
+
     dfile, path = open_autostart_file()
     for key, values in AUTOSTART_KEYS:
         dfile.set(key, values[active])
@@ -67,6 +84,7 @@ def set_autostart(active):
 
 
 def setproctitle(title):
+    """Set process title."""
     title_bytes = title.encode(sys.getdefaultencoding(), 'replace')
     buf = ctypes.create_string_buffer(title_bytes)
     if 'linux' in sys.platform:
