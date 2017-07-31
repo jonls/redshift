@@ -58,6 +58,10 @@
 
 #include "gamma-dummy.h"
 
+#ifdef ENABLE_COOPGAMMA
+# include "gamma-coopgamma.h"
+#endif
+
 #ifdef ENABLE_DRM
 # include "gamma-drm.h"
 #endif
@@ -98,6 +102,9 @@
 
 /* Union of state data for gamma adjustment methods */
 typedef union {
+#ifdef ENABLE_COOPGAMMA
+	coopgamma_state_t coopgamma;
+#endif
 #ifdef ENABLE_DRM
 	drm_state_t drm;
 #endif
@@ -118,6 +125,18 @@ typedef union {
 
 /* Gamma adjustment method structs */
 static const gamma_method_t gamma_methods[] = {
+#ifdef ENABLE_COOPGAMMA
+	{
+		"coopgamma", 1,
+		(gamma_method_init_func *)coopgamma_init,
+		(gamma_method_start_func *)coopgamma_start,
+		(gamma_method_free_func *)coopgamma_free,
+		(gamma_method_print_help_func *)coopgamma_print_help,
+		(gamma_method_set_option_func *)coopgamma_set_option,
+		(gamma_method_restore_func *)coopgamma_restore,
+		(gamma_method_set_temperature_func *)coopgamma_set_temperature
+	},
+#endif
 #ifdef ENABLE_DRM
 	{
 		"drm", 0,
@@ -291,15 +310,6 @@ static const location_provider_t location_providers[] = {
 /* Duration of sleep between screen updates (milliseconds). */
 #define SLEEP_DURATION        5000
 #define SLEEP_DURATION_SHORT  100
-
-/* Program modes. */
-typedef enum {
-	PROGRAM_MODE_CONTINUAL,
-	PROGRAM_MODE_ONE_SHOT,
-	PROGRAM_MODE_PRINT,
-	PROGRAM_MODE_RESET,
-	PROGRAM_MODE_MANUAL
-} program_mode_t;
 
 /* Transition scheme.
    The solar elevations at which the transition begins/ends,
@@ -605,9 +615,9 @@ provider_try_start(const location_provider_t *provider,
 }
 
 static int
-method_try_start(const gamma_method_t *method,
-		 gamma_state_t *state,
-		 config_ini_state_t *config, char *args)
+method_try_start(const gamma_method_t *method, gamma_state_t *state,
+		 program_mode_t mode, config_ini_state_t *config,
+		 char *args)
 {
 	int r;
 
@@ -672,7 +682,7 @@ method_try_start(const gamma_method_t *method,
 	}
 
 	/* Start method. */
-	r = method->start(state);
+	r = method->start(state, mode);
 	if (r < 0) {
 		method->free(state);
 		fprintf(stderr, _("Failed to start adjustment method %s.\n"),
@@ -1487,8 +1497,8 @@ main(int argc, char *argv[])
 	if (mode != PROGRAM_MODE_PRINT) {
 		if (method != NULL) {
 			/* Use method specified on command line. */
-			r = method_try_start(method, &state, &config_state,
-					     method_args);
+			r = method_try_start(method, &state, mode,
+					     &config_state, method_args);
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
 			/* Try all methods, use the first that works. */
@@ -1496,7 +1506,8 @@ main(int argc, char *argv[])
 				const gamma_method_t *m = &gamma_methods[i];
 				if (!m->autostart) continue;
 
-				r = method_try_start(m, &state, &config_state, NULL);
+				r = method_try_start(m, &state, mode,
+						     &config_state, NULL);
 				if (r < 0) {
 					fputs(_("Trying next method...\n"), stderr);
 					continue;

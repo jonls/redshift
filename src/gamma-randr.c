@@ -92,7 +92,7 @@ randr_init(randr_state_t *state)
 }
 
 int
-randr_start(randr_state_t *state)
+randr_start(randr_state_t *state, program_mode_t mode)
 {
 	xcb_generic_error_t *error;
 
@@ -394,8 +394,8 @@ randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num,
 		}
 	}
 
-	colorramp_fill(gamma_r, gamma_g, gamma_b, ramp_size,
-		       setting);
+	colorramp_fill_u16(gamma_r, gamma_g, gamma_b, ramp_size,
+			   ramp_size, ramp_size, setting);
 
 	/* Set new gamma ramps */
 	xcb_void_cookie_t gamma_set_cookie =

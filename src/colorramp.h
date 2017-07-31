@@ -24,9 +24,19 @@
 
 #include "redshift.h"
 
-void colorramp_fill(uint16_t *gamma_r, uint16_t *gamma_g, uint16_t *gamma_b,
-		    int size, const color_setting_t *setting);
-void colorramp_fill_float(float *gamma_r, float *gamma_g, float *gamma_b,
-			  int size, const color_setting_t *setting);
+#define LIST_RAMPS_STOP_VALUE_TYPES\
+	X(u8, uint8_t, UINT8_MAX + 1ULL, UINT8_MAX, 8)\
+	X(u16, uint16_t, UINT16_MAX + 1ULL, UINT16_MAX, 16)\
+	X(u32, uint32_t, UINT32_MAX + 1ULL, UINT32_MAX, 32)\
+	X(u64, uint64_t, UINT64_MAX, UINT64_MAX, 64)\
+	X(float, float, 1, 1, -1)\
+	X(double, double, 1, 1, -2)
+
+#define X(SUFFIX, TYPE, MAX, TRUE_MAX, DEPTH)\
+	void colorramp_fill_##SUFFIX(TYPE *gamma_r, TYPE *gamma_g, TYPE *gamma_b,\
+				     size_t size_r, size_t size_g, size_t size_b,\
+				     const color_setting_t *setting);
+LIST_RAMPS_STOP_VALUE_TYPES
+#undef X
 
 #endif /* ! REDSHIFT_COLORRAMP_H */

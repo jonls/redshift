@@ -24,6 +24,15 @@
 #include <stdlib.h>
 
 
+/* Program modes. */
+typedef enum {
+	PROGRAM_MODE_CONTINUAL,
+	PROGRAM_MODE_ONE_SHOT,
+	PROGRAM_MODE_PRINT,
+	PROGRAM_MODE_RESET,
+	PROGRAM_MODE_MANUAL
+} program_mode_t;
+
 /* Location */
 typedef struct {
 	float lat;
@@ -48,7 +57,7 @@ typedef struct {
 
 /* Gamma adjustment method */
 typedef int gamma_method_init_func(void *state);
-typedef int gamma_method_start_func(void *state);
+typedef int gamma_method_start_func(void *state, program_mode_t mode);
 typedef void gamma_method_free_func(void *state);
 typedef void gamma_method_print_help_func(FILE *f);
 typedef int gamma_method_set_option_func(void *state, const char *key,

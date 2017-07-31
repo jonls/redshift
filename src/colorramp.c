@@ -21,6 +21,7 @@
 #include <stdint.h>
 #include <math.h>
 
+#include "colorramp.h"
 #include "redshift.h"
 
 /* Whitepoint values for temperatures at 100K intervals.
@@ -285,43 +286,29 @@ interpolate_color(float a, const float *c1, const float *c2, float *c)
 #define F(Y, C)  pow((Y) * setting->brightness * \
 		     white_point[C], 1.0/setting->gamma[C])
 
-void
-colorramp_fill(uint16_t *gamma_r, uint16_t *gamma_g, uint16_t *gamma_b,
-	       int size, const color_setting_t *setting)
-{
-	/* Approximate white point */
-	float white_point[3];
-	float alpha = (setting->temperature % 100) / 100.0;
-	int temp_index = ((setting->temperature - 1000) / 100)*3;
-	interpolate_color(alpha, &blackbody_color[temp_index],
-			  &blackbody_color[temp_index+3], white_point);
 
-	for (int i = 0; i < size; i++) {
-		gamma_r[i] = F((double)gamma_r[i]/(UINT16_MAX+1), 0) *
-			(UINT16_MAX+1);
-		gamma_g[i] = F((double)gamma_g[i]/(UINT16_MAX+1), 1) *
-			(UINT16_MAX+1);
-		gamma_b[i] = F((double)gamma_b[i]/(UINT16_MAX+1), 2) *
-			(UINT16_MAX+1);
+#define X(SUFFIX, TYPE, MAX, TRUE_MAX, DEPTH)\
+	void\
+	colorramp_fill_##SUFFIX(TYPE *gamma_r, TYPE *gamma_g, TYPE *gamma_b,\
+				size_t size_r, size_t size_g, size_t size_b,\
+				const color_setting_t *setting)\
+	{\
+		/* Approximate white point */\
+		float white_point[3];\
+		float alpha = (setting->temperature % 100) / 100.0;\
+		int temp_index = ((setting->temperature - 1000) / 100) * 3;\
+		interpolate_color(alpha, &blackbody_color[temp_index],\
+				  &blackbody_color[temp_index+3], white_point);\
+		\
+		for (size_t i = 0; i < size_r; i++)\
+			gamma_r[i] = F((double)gamma_r[i] / (MAX), 0) * (MAX);\
+		for (size_t i = 0; i < size_g; i++)\
+			gamma_g[i] = F((double)gamma_g[i] / (MAX), 1) * (MAX);\
+		for (size_t i = 0; i < size_b; i++)\
+			gamma_b[i] = F((double)gamma_b[i] / (MAX), 2) * (MAX);\
 	}
-}
 
-void
-colorramp_fill_float(float *gamma_r, float *gamma_g, float *gamma_b,
-		     int size, const color_setting_t *setting)
-{
-	/* Approximate white point */
-	float white_point[3];
-	float alpha = (setting->temperature % 100) / 100.0;
-	int temp_index = ((setting->temperature - 1000) / 100)*3;
-	interpolate_color(alpha, &blackbody_color[temp_index],
-			  &blackbody_color[temp_index+3], white_point);
-
-	for (int i = 0; i < size; i++) {
-		gamma_r[i] = F((double)gamma_r[i], 0);
-		gamma_g[i] = F((double)gamma_g[i], 1);
-		gamma_b[i] = F((double)gamma_b[i], 2);
-	}
-}
+LIST_RAMPS_STOP_VALUE_TYPES
+#undef X
 
 #undef F
