@@ -152,6 +152,7 @@ class RedshiftStatusIcon(object):
             'temperature-changed', self.temperature_change_cb)
         self._controller.connect('location-changed', self.location_change_cb)
         self._controller.connect('error-occured', self.error_occured_cb)
+        self._controller.connect('stopped', self.controller_stopped_cb)
 
         # Set info box text
         self.change_inhibited(self._controller.inhibited)
@@ -277,6 +278,10 @@ class RedshiftStatusIcon(object):
 
         # Quit when the model dialog is closed
         sys.exit(-1)
+
+    def controller_stopped_cb(self, controller):
+        """Callback when controlled is stopped successfully."""
+        Gtk.main_quit()
 
     # Update interface
     def change_inhibited(self, inhibited):

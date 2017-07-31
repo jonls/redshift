@@ -37,8 +37,9 @@ class RedshiftController(GObject.GObject):
         'temperature-changed': (GObject.SIGNAL_RUN_FIRST, None, (int,)),
         'period-changed': (GObject.SIGNAL_RUN_FIRST, None, (str,)),
         'location-changed': (GObject.SIGNAL_RUN_FIRST, None, (float, float)),
-        'error-occured': (GObject.SIGNAL_RUN_FIRST, None, (str,))
-        }
+        'error-occured': (GObject.SIGNAL_RUN_FIRST, None, (str,)),
+        'stopped': (GObject.SIGNAL_RUN_FIRST, None, ()),
+    }
 
     def __init__(self, args):
         """Initialize controller and start child process.
@@ -159,6 +160,7 @@ class RedshiftController(GObject.GObject):
             self.emit('error-occured', self._errors)
 
         GLib.spawn_close_pid(self._process[0])
+        self.emit('stopped')
 
     def _child_key_change_cb(self, key, value):
         """Called when the child process reports a change of internal state."""
