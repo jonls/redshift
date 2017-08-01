@@ -18,6 +18,27 @@ AC_LANG([C])
 
 AC_PROG_INTLTOOL([0.50])
 
+AC_CANONICAL_HOST
+
+# Test host platform
+build_windows=no
+case "${host_os}" in
+	mingw*)
+		build_windows=yes
+		;;
+esac
+
+# Test whether to compile Windows resources
+AC_CHECK_TOOL([WINDRES], [windres], [])
+AS_IF([test "x$build_windows" = "xyes" -a -n "x$WINDRES"], [
+	enable_windows_resource=yes
+], [
+	enable_windows_resource=no
+])
+AM_CONDITIONAL([ENABLE_WINDOWS_RESOURCE],
+	[test "x$enable_windows_resource" = xyes])
+
+
 # Test whether Objective C compiler works
 AC_MSG_CHECKING([whether Objective C compiler works])
 AC_LANG_PUSH([Objective C])
@@ -128,7 +149,7 @@ AS_IF([test "x$enable_randr" != xno], [
 ])
 AM_CONDITIONAL([ENABLE_RANDR], [test "x$enable_randr" = xyes])
 
-# Check VidMode method 
+# Check VidMode method
 AC_MSG_CHECKING([whether to enable VidMode method])
 AC_ARG_ENABLE([vidmode], [AC_HELP_STRING([--enable-vidmode],
 	[enable VidMode method])],
@@ -180,7 +201,7 @@ AM_CONDITIONAL([ENABLE_QUARTZ], [test "x$enable_quartz" = xyes])
 AC_SUBST([QUARTZ_CFLAGS])
 AC_SUBST([QUARTZ_LIBS])
 
-# Check Windows GDI method 
+# Check Windows GDI method
 AC_MSG_CHECKING([whether to enable WinGDI method])
 AC_ARG_ENABLE([wingdi], [AC_HELP_STRING([--enable-wingdi],
 	[enable WinGDI method])],
