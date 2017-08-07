@@ -22,9 +22,11 @@ import os
 import sys
 
 try:
-    import xdg
+    from xdg import BaseDirectory
+    from xdg import DesktopEntry
+    has_xdg = True
 except ImportError:
-    xdg = None
+    has_xdg = False
 
 
 REDSHIFT_DESKTOP = 'redshift-gtk.desktop'
@@ -36,12 +38,12 @@ AUTOSTART_KEYS = (('Hidden', ('true', 'false')),
 
 
 def open_autostart_file():
-    autostart_dir = xdg.BaseDirectory.save_config_path("autostart")
+    autostart_dir = BaseDirectory.save_config_path("autostart")
     autostart_file = os.path.join(autostart_dir, REDSHIFT_DESKTOP)
 
     if not os.path.exists(autostart_file):
         desktop_files = list(
-            xdg.BaseDirectory.load_data_paths(
+            BaseDirectory.load_data_paths(
                 "applications", REDSHIFT_DESKTOP))
 
         if not desktop_files:
@@ -50,22 +52,22 @@ def open_autostart_file():
         desktop_file_path = desktop_files[0]
 
         # Read installed file
-        dfile = xdg.DesktopEntry.DesktopEntry(desktop_file_path)
+        dfile = DesktopEntry.DesktopEntry(desktop_file_path)
         for key, values in AUTOSTART_KEYS:
             dfile.set(key, values[False])
         dfile.write(filename=autostart_file)
     else:
-        dfile = xdg.DesktopEntry.DesktopEntry(autostart_file)
+        dfile = DesktopEntry.DesktopEntry(autostart_file)
 
     return dfile, autostart_file
 
 
 def supports_autostart():
-    return xdg is not None
+    return has_xdg
 
 
 def get_autostart():
-    if xdg is None:
+    if not has_xdg:
         return False
 
     dfile, path = open_autostart_file()
@@ -74,7 +76,7 @@ def get_autostart():
 
 
 def set_autostart(active):
-    if xdg is None:
+    if not has_xdg:
         return
 
     dfile, path = open_autostart_file()
