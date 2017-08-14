@@ -71,6 +71,7 @@ PKG_CHECK_MODULES([XCB_RANDR], [xcb-randr],
 PKG_CHECK_MODULES([GLIB], [glib-2.0 gobject-2.0], [have_glib=yes], [have_glib=no])
 PKG_CHECK_MODULES([GEOCLUE], [geoclue], [have_geoclue=yes], [have_geoclue=no])
 PKG_CHECK_MODULES([GEOCLUE2], [glib-2.0 gio-2.0 >= 2.26], [have_geoclue2=yes], [have_geoclue2=no])
+PKG_CHECK_MODULES([DBUS], [dbus-1], [have_dbus=yes], [have_dbus=no])
 
 # OSX headers
 AC_CHECK_HEADER([ApplicationServices/ApplicationServices.h], [have_appserv_h=yes], [have_appserv_h=no])
@@ -100,6 +101,30 @@ AC_CHECK_HEADER([windows.h], [have_windows_h=yes], [have_windows_h=no])
 
 # Check for Python
 AM_PATH_PYTHON([3.2], [have_python=yes], [have_python=no])
+
+# Check DBUS method
+AC_MSG_CHECKING([whether to enable DBUS method])
+AC_ARG_ENABLE([dbus], [AC_HELP_STRING([--enable-dbus],
+	[enable DBUS method])],
+	[enable_dbus=$enableval],[enable_dbus=maybe])
+AS_IF([test "x$enable_dbus" != xno], [
+	AS_IF([test $have_dbus = yes], [
+		AC_DEFINE([ENABLE_DBUS], 1,
+			[Define to 1 to enable DBUS method])
+		AC_MSG_RESULT([yes])
+		enable_dbus=yes
+	], [
+		AC_MSG_RESULT([missing dependencies])
+		AS_IF([test "x$enable_dbus" = xyes], [
+			AC_MSG_ERROR([missing dependencies for DBUS method])
+		])
+		enable_dbus=no
+	])
+], [
+	AC_MSG_RESULT([no])
+	enable_dbus=no
+])
+AM_CONDITIONAL([ENABLE_DBUS], [test "x$enable_dbus" = xyes])
 
 # Check DRM method
 AC_MSG_CHECKING([whether to enable DRM method])
@@ -385,6 +410,7 @@ echo "
     ldflags:		${LDFLAGS}
 
     Adjustment methods:
+    DBUS:		${enable_dbus}
     DRM:		${enable_drm}
     RANDR:		${enable_randr}
     VidMode:		${enable_vidmode}
