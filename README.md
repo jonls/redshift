@@ -115,4 +115,4 @@ Latest builds from master branch
 Building from source
 --------------------
 
-See the file [HACKING](HACKING.md) for more details on building from source.
+See the file [CONTRIBUTING](CONTRIBUTING.md) for more details on building from source.
