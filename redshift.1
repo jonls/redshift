@@ -3,7 +3,7 @@
 redshift \- set color temperature of display according to time of day
 .SH SYNOPSIS
 .B redshift
-\fI[\-l LAT:LON | \-l PROVIDER:OPTIONS] [\-t DAY:NIGHT] \fR[\fIOPTIONS\fR...]
+\fI[\-l LAT:LON | \-l PROVIDER OPTIONS] [\-t DAY:NIGHT] \fR[\fIOPTIONS\fR...]
 .SH DESCRIPTION
 .B redshift
 adjusts the color temperature of your screen according to your
@@ -46,11 +46,11 @@ Your current location, in degrees, given as floating point numbers,
 towards north and east, with negative numbers representing south and
 west, respectively.
 .TP
-\fB\-l\fR PROVIDER[:OPTIONS]
+\fB\-l\fR PROVIDER [OPTIONS]
 Select provider for automatic location updates
 (Use `-l list' to see available providers)
 .TP
-\fB\-m\fR METHOD[:OPTIONS]
+\fB\-m\fR METHOD [OPTIONS]
 Method to use to set color temperature
 (Use `-m list' to see available methods)
 .TP
