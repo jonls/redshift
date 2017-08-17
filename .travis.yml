@@ -7,8 +7,8 @@ matrix:
       compiler: gcc
       dist: trusty
       sudo: false
-#    - os: osx
-#      compiler: clang
+    - os: osx
+      compiler: clang
 
 addons:
   apt:
@@ -31,8 +31,17 @@ addons:
 install: |
   if [ "$TRAVIS_OS_NAME" == "osx" ]; then
     brew install gettext
+    brew link --force gettext
     brew install intltool
+    brew install python3
   fi
 
-script: |
-  ./bootstrap && ./configure --enable-drm --enable-vidmode --enable-randr --enable-geoclue2 --enable-gui && make -j2 distcheck
+script:
+  - ./bootstrap
+  - |
+    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      ./configure --enable-drm --enable-vidmode --enable-randr --enable-geoclue2 --enable-gui
+    elif [ "$TRAVIS_OS_NAME" == "osx" ]; then
+      ./configure --enable-corelocation --enable-quartz --enable-gui
+    fi
+  - make -j2 distcheck
