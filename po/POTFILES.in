@@ -15,7 +15,6 @@ src/gamma-quartz.c
 src/gamma-w32gdi.c
 src/gamma-dummy.c
 
-src/location-geoclue.c
 src/location-geoclue2.c
 src/location-corelocation.m
 src/location-manual.c
