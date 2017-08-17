@@ -26,6 +26,7 @@
 
 #include "location-geoclue2.h"
 #include "redshift.h"
+#include "pipeutils.h"
 
 #ifdef ENABLE_NLS
 # include <libintl.h>
@@ -35,22 +36,26 @@
 #endif
 
 
-typedef struct {
-	GMainLoop *loop;
+/* Indicate an unrecoverable error during GeoClue2 communication. */
+static void
+mark_error(location_geoclue2_state_t *state)
+{
+	g_mutex_lock(&state->lock);
 
-	int available;
-	int error;
-	location_t location;
-} get_location_data_t;
+	state->error = 1;
 
+	g_mutex_unlock(&state->lock);
+
+	pipeutils_signal(state->pipe_fd_write);
+}
 
 /* Handle position change callbacks */
 static void
 geoclue_client_signal_cb(GDBusProxy *client, gchar *sender_name,
 			 gchar *signal_name, GVariant *parameters,
-			 gpointer *user_data)
+			 gpointer user_data)
 {
-	get_location_data_t *data = (get_location_data_t *)user_data;
+	location_geoclue2_state_t *state = user_data;
 
 	/* Only handle LocationUpdated signals */
 	if (g_strcmp0(signal_name, "LocationUpdated") != 0) {
@@ -63,34 +68,38 @@ geoclue_client_signal_cb(GDBusProxy *client, gchar *sender_name,
 
 	/* Obtain location */
 	GError *error = NULL;
-	GDBusProxy *location =
-		g_dbus_proxy_new_for_bus_sync(G_BUS_TYPE_SYSTEM,
-					      G_DBUS_PROXY_FLAGS_NONE,
-					      NULL,
-					      "org.freedesktop.GeoClue2",
-					      location_path,
-					      "org.freedesktop.GeoClue2.Location",
-					      NULL, &error);
+	GDBusProxy *location = g_dbus_proxy_new_for_bus_sync(
+		G_BUS_TYPE_SYSTEM,
+		G_DBUS_PROXY_FLAGS_NONE,
+		NULL,
+		"org.freedesktop.GeoClue2",
+		location_path,
+		"org.freedesktop.GeoClue2.Location",
+		NULL, &error);
 	if (location == NULL) {
 		g_printerr(_("Unable to obtain location: %s.\n"),
 			   error->message);
 		g_error_free(error);
+		mark_error(state);
 		return;
 	}
 
+	g_mutex_lock(&state->lock);
+
 	/* Read location properties */
-	GVariant *lat_v = g_dbus_proxy_get_cached_property(location,
-							   "Latitude");
-	data->location.lat = g_variant_get_double(lat_v);
+	GVariant *lat_v = g_dbus_proxy_get_cached_property(
+		location, "Latitude");
+	state->latitude = g_variant_get_double(lat_v);
 
-	GVariant *lon_v = g_dbus_proxy_get_cached_property(location,
-							   "Longitude");
-	data->location.lon = g_variant_get_double(lon_v);
+	GVariant *lon_v = g_dbus_proxy_get_cached_property(
+		location, "Longitude");
+	state->longitude = g_variant_get_double(lon_v);
 
-	data->available = 1;
+	state->available = 1;
 
-	/* Return from main loop */
-	g_main_loop_quit(data->loop);
+	g_mutex_unlock(&state->lock);
+
+	pipeutils_signal(state->pipe_fd_write);
 }
 
 /* Callback when GeoClue name appears on the bus */
@@ -98,22 +107,23 @@ static void
 on_name_appeared(GDBusConnection *conn, const gchar *name,
 		 const gchar *name_owner, gpointer user_data)
 {
-	get_location_data_t *data = (get_location_data_t *)user_data;
+	location_geoclue2_state_t *state = user_data;
 
 	/* Obtain GeoClue Manager */
 	GError *error = NULL;
-	GDBusProxy *geoclue_manager =
-		g_dbus_proxy_new_for_bus_sync(G_BUS_TYPE_SYSTEM,
-					      G_DBUS_PROXY_FLAGS_NONE,
-					      NULL,
-					      "org.freedesktop.GeoClue2",
-					      "/org/freedesktop/GeoClue2/Manager",
-					      "org.freedesktop.GeoClue2.Manager",
-					      NULL, &error);
+	GDBusProxy *geoclue_manager = g_dbus_proxy_new_for_bus_sync(
+		G_BUS_TYPE_SYSTEM,
+		G_DBUS_PROXY_FLAGS_NONE,
+		NULL,
+		"org.freedesktop.GeoClue2",
+		"/org/freedesktop/GeoClue2/Manager",
+		"org.freedesktop.GeoClue2.Manager",
+		NULL, &error);
 	if (geoclue_manager == NULL) {
 		g_printerr(_("Unable to obtain GeoClue Manager: %s.\n"),
 			   error->message);
 		g_error_free(error);
+		mark_error(state);
 		return;
 	}
 
@@ -130,6 +140,7 @@ on_name_appeared(GDBusConnection *conn, const gchar *name,
 			   error->message);
 		g_error_free(error);
 		g_object_unref(geoclue_manager);
+		mark_error(state);
 		return;
 	}
 
@@ -138,20 +149,21 @@ on_name_appeared(GDBusConnection *conn, const gchar *name,
 
 	/* Obtain GeoClue client */
 	error = NULL;
-	GDBusProxy *geoclue_client =
-		g_dbus_proxy_new_for_bus_sync(G_BUS_TYPE_SYSTEM,
-					      G_DBUS_PROXY_FLAGS_NONE,
-					      NULL,
-					      "org.freedesktop.GeoClue2",
-					      client_path,
-					      "org.freedesktop.GeoClue2.Client",
-					      NULL, &error);
+	GDBusProxy *geoclue_client = g_dbus_proxy_new_for_bus_sync(
+		G_BUS_TYPE_SYSTEM,
+		G_DBUS_PROXY_FLAGS_NONE,
+		NULL,
+		"org.freedesktop.GeoClue2",
+		client_path,
+		"org.freedesktop.GeoClue2.Client",
+		NULL, &error);
 	if (geoclue_client == NULL) {
 		g_printerr(_("Unable to obtain GeoClue Client: %s.\n"),
 			   error->message);
 		g_error_free(error);
 		g_variant_unref(client_path_v);
 		g_object_unref(geoclue_manager);
+		mark_error(state);
 		return;
 	}
 
@@ -159,15 +171,15 @@ on_name_appeared(GDBusConnection *conn, const gchar *name,
 
 	/* Set desktop id (basename of the .desktop file) */
 	error = NULL;
-	GVariant *ret_v =
-		g_dbus_proxy_call_sync(geoclue_client,
-				       "org.freedesktop.DBus.Properties.Set",
-				       g_variant_new("(ssv)",
-						     "org.freedesktop.GeoClue2.Client",
-						     "DesktopId",
-						     g_variant_new("s", "redshift")),
-				       G_DBUS_CALL_FLAGS_NONE,
-				       -1, NULL, &error);
+	GVariant *ret_v = g_dbus_proxy_call_sync(
+		geoclue_client,
+		"org.freedesktop.DBus.Properties.Set",
+		g_variant_new("(ssv)",
+		"org.freedesktop.GeoClue2.Client",
+		"DesktopId",
+		g_variant_new("s", "redshift")),
+		G_DBUS_CALL_FLAGS_NONE,
+		-1, NULL, &error);
 	if (ret_v == NULL) {
 		/* Ignore this error for now. The property is not available
 		   in early versions of GeoClue2. */
@@ -177,20 +189,22 @@ on_name_appeared(GDBusConnection *conn, const gchar *name,
 
 	/* Set distance threshold */
 	error = NULL;
-	ret_v = g_dbus_proxy_call_sync(geoclue_client,
-				       "org.freedesktop.DBus.Properties.Set",
-				       g_variant_new("(ssv)",
-						     "org.freedesktop.GeoClue2.Client",
-						     "DistanceThreshold",
-						     g_variant_new("u", 50000)),
-				       G_DBUS_CALL_FLAGS_NONE,
-				       -1, NULL, &error);
+	ret_v = g_dbus_proxy_call_sync(
+		geoclue_client,
+		"org.freedesktop.DBus.Properties.Set",
+		g_variant_new("(ssv)",
+		"org.freedesktop.GeoClue2.Client",
+		"DistanceThreshold",
+		g_variant_new("u", 50000)),
+		G_DBUS_CALL_FLAGS_NONE,
+		-1, NULL, &error);
 	if (ret_v == NULL) {
 		g_printerr(_("Unable to set distance threshold: %s.\n"),
 			   error->message);
 		g_error_free(error);
 		g_object_unref(geoclue_client);
 		g_object_unref(geoclue_manager);
+		mark_error(state);
 		return;
 	}
 
@@ -199,7 +213,7 @@ on_name_appeared(GDBusConnection *conn, const gchar *name,
 	/* Attach signal callback to client */
 	g_signal_connect(geoclue_client, "g-signal",
 			 G_CALLBACK(geoclue_client_signal_cb),
-			 data);
+			 user_data);
 
 	/* Start GeoClue client */
 	error = NULL;
@@ -214,6 +228,7 @@ on_name_appeared(GDBusConnection *conn, const gchar *name,
 		g_error_free(error);
 		g_object_unref(geoclue_client);
 		g_object_unref(geoclue_manager);
+		mark_error(state);
 		return;
 	}
 
@@ -225,16 +240,70 @@ static void
 on_name_vanished(GDBusConnection *connection, const gchar *name,
 		 gpointer user_data)
 {
-	get_location_data_t *data = (get_location_data_t *)user_data;
+	location_geoclue2_state_t *state = user_data;
 
-	g_fprintf(stderr, _("Unable to connect to GeoClue.\n"));
-	data->error = 1;
+	g_mutex_lock(&state->lock);
 
-	g_main_loop_quit(data->loop);
+	state->available = 0;
+
+	g_mutex_unlock(&state->lock);
+
+	pipeutils_signal(state->pipe_fd_write);
+}
+
+/* Callback when the pipe to the main thread is closed. */
+static gboolean
+on_pipe_closed(GIOChannel *channel, GIOCondition condition, gpointer user_data)
+{
+	location_geoclue2_state_t *state = user_data;
+	g_main_loop_quit(state->loop);
+
+	return FALSE;
+}
+
+
+/* Run loop for location provider thread. */
+void *
+run_geoclue2_loop(void *state_)
+{
+	location_geoclue2_state_t *state = state_;
+
+	GMainContext *context = g_main_context_new();
+	g_main_context_push_thread_default(context);
+	state->loop = g_main_loop_new(context, FALSE);
+
+	guint watcher_id = g_bus_watch_name(
+		G_BUS_TYPE_SYSTEM,
+		"org.freedesktop.GeoClue2",
+		G_BUS_NAME_WATCHER_FLAGS_AUTO_START,
+		on_name_appeared,
+		on_name_vanished,
+		state, NULL);
+
+	/* Listen for closure of pipe */
+	GIOChannel *pipe_channel = g_io_channel_unix_new(state->pipe_fd_write);
+	GSource *pipe_source = g_io_create_watch(
+		pipe_channel, G_IO_IN | G_IO_HUP | G_IO_ERR);
+        g_source_set_callback(
+		pipe_source, (GSourceFunc)on_pipe_closed, state, NULL);
+        g_source_attach(pipe_source, context);
+
+	g_main_loop_run(state->loop);
+
+	g_source_unref(pipe_source);
+	g_io_channel_unref(pipe_channel);
+	close(state->pipe_fd_write);
+
+	g_bus_unwatch_name(watcher_id);
+
+	g_main_loop_unref(state->loop);
+	g_main_context_unref(context);
+
+	return NULL;
 }
 
 int
-location_geoclue2_init(void *state)
+location_geoclue2_init(location_geoclue2_state_t *state)
 {
 #if !GLIB_CHECK_VERSION(2, 35, 0)
 	g_type_init();
@@ -243,64 +312,87 @@ location_geoclue2_init(void *state)
 }
 
 int
-location_geoclue2_start(void *state)
+location_geoclue2_start(location_geoclue2_state_t *state)
 {
+	state->pipe_fd_read = -1;
+	state->pipe_fd_write = -1;
+
+	state->available = 0;
+	state->error = 0;
+	state->latitude = 0;
+	state->longitude = 0;
+
+	int pipefds[2];
+	int r = pipeutils_create_nonblocking(pipefds);
+	if (r < 0) {
+		fputs(_("Failed to start GeoClue2 provider!\n"), stderr);
+		return -1;
+	}
+
+	state->pipe_fd_read = pipefds[0];
+	state->pipe_fd_write = pipefds[1];
+
+	pipeutils_signal(state->pipe_fd_write);
+
+	g_mutex_init(&state->lock);
+	state->thread = g_thread_new("geoclue2", run_geoclue2_loop, state);
+
 	return 0;
 }
 
 void
-location_geoclue2_free(void *state)
+location_geoclue2_free(location_geoclue2_state_t *state)
 {
+	if (state->pipe_fd_read != -1) {
+		close(state->pipe_fd_read);
+	}
+
+	/* Closing the pipe should cause the thread to exit. */
+	g_thread_join(state->thread);
+	state->thread = NULL;
+
+	g_mutex_clear(&state->lock);
 }
 
 void
 location_geoclue2_print_help(FILE *f)
 {
-	fputs(_("Use the location as discovered by a GeoClue2 provider.\n"), f);
-	fputs("\n", f);
-
-	fprintf(f, _("NOTE: currently Redshift doesn't recheck %s once started,\n"
-		     "which means it has to be restarted to take notice after travel.\n"),
-		"GeoClue2");
+	fputs(_("Use the location as discovered by a GeoClue2 provider.\n"),
+	      f);
 	fputs("\n", f);
 }
 
 int
-location_geoclue2_set_option(void *state,
-			    const char *key, const char *value)
+location_geoclue2_set_option(location_geoclue2_state_t *state,
+			     const char *key, const char *value)
 {
 	fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
 	return -1;
 }
 
 int
-location_geoclue2_get_fd(void *state)
+location_geoclue2_get_fd(location_geoclue2_state_t *state)
 {
-	return -1;
+	return state->pipe_fd_read;
 }
 
 int
-location_geoclue2_handle(void *state, location_t *location, int *available)
+location_geoclue2_handle(
+	location_geoclue2_state_t *state,
+	location_t *location, int *available)
 {
-	get_location_data_t data;
-	data.available = 0;
-	data.error = 0;
+	pipeutils_handle_signal(state->pipe_fd_read);
 
-	guint watcher_id = g_bus_watch_name(G_BUS_TYPE_SYSTEM,
-					    "org.freedesktop.GeoClue2",
-					    G_BUS_NAME_WATCHER_FLAGS_AUTO_START,
-					    on_name_appeared,
-					    on_name_vanished,
-					    &data, NULL);
-	data.loop = g_main_loop_new(NULL, FALSE);
-	g_main_loop_run(data.loop);
+	g_mutex_lock(&state->lock);
 
-	g_bus_unwatch_name(watcher_id);
+	int error = state->error;
+	location->lat = state->latitude;
+	location->lon = state->longitude;
+	*available = state->available;
 
-	if (data.error) return -1;
+	g_mutex_unlock(&state->lock);
 
-	*available = data.available;
-	*location = data.location;
+	if (error) return -1;
 
 	return 0;
 }

@@ -206,6 +206,9 @@ static const gamma_method_t gamma_methods[] = {
 /* Union of state data for location providers */
 typedef union {
 	location_manual_state_t manual;
+#ifdef ENABLE_GEOCLUE2
+	location_geoclue2_state_t geoclue2;
+#endif
 #ifdef ENABLE_CORELOCATION
 	location_corelocation_state_t corelocation;
 #endif
