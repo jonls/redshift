@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2014  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2014-2017  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #include <stdio.h>
@@ -39,49 +39,10 @@ typedef struct {
 	GMainLoop *loop;
 
 	int available;
+	int error;
 	location_t location;
 } get_location_data_t;
 
-
-int
-location_geoclue2_init(void *state)
-{
-#if !GLIB_CHECK_VERSION(2, 35, 0)
-	g_type_init();
-#endif
-	return 0;
-}
-
-int
-location_geoclue2_start(void *state)
-{
-	return 0;
-}
-
-void
-location_geoclue2_free(void *state)
-{
-}
-
-void
-location_geoclue2_print_help(FILE *f)
-{
-	fputs(_("Use the location as discovered by a GeoClue2 provider.\n"), f);
-	fputs("\n", f);
-
-	fprintf(f, _("NOTE: currently Redshift doesn't recheck %s once started,\n"
-		     "which means it has to be restarted to take notice after travel.\n"),
-		"GeoClue2");
-	fputs("\n", f);
-}
-
-int
-location_geoclue2_set_option(void *state,
-			    const char *key, const char *value)
-{
-	fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
-	return -1;
-}
 
 /* Handle position change callbacks */
 static void
@@ -267,16 +228,63 @@ on_name_vanished(GDBusConnection *connection, const gchar *name,
 	get_location_data_t *data = (get_location_data_t *)user_data;
 
 	g_fprintf(stderr, _("Unable to connect to GeoClue.\n"));
+	data->error = 1;
 
 	g_main_loop_quit(data->loop);
 }
 
 int
-location_geoclue2_get_location(void *state,
-			       location_t *location)
+location_geoclue2_init(void *state)
+{
+#if !GLIB_CHECK_VERSION(2, 35, 0)
+	g_type_init();
+#endif
+	return 0;
+}
+
+int
+location_geoclue2_start(void *state)
+{
+	return 0;
+}
+
+void
+location_geoclue2_free(void *state)
+{
+}
+
+void
+location_geoclue2_print_help(FILE *f)
+{
+	fputs(_("Use the location as discovered by a GeoClue2 provider.\n"), f);
+	fputs("\n", f);
+
+	fprintf(f, _("NOTE: currently Redshift doesn't recheck %s once started,\n"
+		     "which means it has to be restarted to take notice after travel.\n"),
+		"GeoClue2");
+	fputs("\n", f);
+}
+
+int
+location_geoclue2_set_option(void *state,
+			    const char *key, const char *value)
+{
+	fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
+	return -1;
+}
+
+int
+location_geoclue2_get_fd(void *state)
+{
+	return -1;
+}
+
+int
+location_geoclue2_handle(void *state, location_t *location, int *available)
 {
 	get_location_data_t data;
 	data.available = 0;
+	data.error = 0;
 
 	guint watcher_id = g_bus_watch_name(G_BUS_TYPE_SYSTEM,
 					    "org.freedesktop.GeoClue2",
@@ -289,8 +297,9 @@ location_geoclue2_get_location(void *state,
 
 	g_bus_unwatch_name(watcher_id);
 
-	if (!data.available) return -1;
+	if (data.error) return -1;
 
+	*available = data.available;
 	*location = data.location;
 
 	return 0;

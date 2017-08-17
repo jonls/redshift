@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2014  Jon Lund Steffense <jonlst@gmail.com>
+   Copyright (c) 2014-2017  Jon Lund Steffense <jonlst@gmail.com>
 */
 
 #ifndef REDSHIFT_LOCATION_CORELOCATION_H
@@ -33,8 +33,9 @@ void location_corelocation_print_help(FILE *f);
 int location_corelocation_set_option(void *state,
 				     const char *key, const char *value);
 
-int location_corelocation_get_location(void *state,
-				       location_t *location);
+int location_corelocation_get_fd(void *state);
+int location_corelocation_handle(
+	void *state, location_t *location, int *available);
 
 
 #endif /* ! REDSHIFT_LOCATION_CORELOCATION_H */

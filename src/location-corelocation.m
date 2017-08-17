@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2014  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2014-2017  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #ifdef HAVE_CONFIG_H
@@ -40,6 +40,7 @@
 @interface Delegate : NSObject <CLLocationManagerDelegate>
 @property (strong, nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) BOOL success;
+@property (nonatomic) BOOL error;
 @property (nonatomic) float latitude;
 @property (nonatomic) float longitude;
 @end
@@ -48,58 +49,61 @@
 
 - (void)start
 {
-	self.locationManager = [[CLLocationManager alloc] init];
-	self.locationManager.delegate = self;
+  self.locationManager = [[CLLocationManager alloc] init];
+  self.locationManager.delegate = self;
 
-	CLAuthorizationStatus authStatus =
-		[CLLocationManager authorizationStatus];
+  CLAuthorizationStatus authStatus =
+    [CLLocationManager authorizationStatus];
 
-	if (authStatus != kCLAuthorizationStatusNotDetermined &&
-	    authStatus != kCLAuthorizationStatusAuthorized) {
-		fputs(_("Not authorized to obtain location"
-			" from CoreLocation.\n"), stderr);
-		CFRunLoopStop(CFRunLoopGetCurrent());
-	}
+  if (authStatus != kCLAuthorizationStatusNotDetermined &&
+      authStatus != kCLAuthorizationStatusAuthorized) {
+    fputs(_("Not authorized to obtain location"
+            " from CoreLocation.\n"), stderr);
+    self.error = YES;
+    CFRunLoopStop(CFRunLoopGetCurrent());
+  }
 
-	[self.locationManager startUpdatingLocation];
+  [self.locationManager startUpdatingLocation];
 }
 
 - (void)stop
 {
-	[self.locationManager stopUpdatingLocation];
-	CFRunLoopStop(CFRunLoopGetCurrent());
+  [self.locationManager stopUpdatingLocation];
+  CFRunLoopStop(CFRunLoopGetCurrent());
 }
 
 - (void)locationManager:(CLLocationManager *)manager
      didUpdateLocations:(NSArray *)locations
 {
-	CLLocation *newLocation = [locations firstObject];
-	self.latitude = newLocation.coordinate.latitude;
-	self.longitude = newLocation.coordinate.longitude;
-	self.success = YES;
+  CLLocation *newLocation = [locations firstObject];
+  self.latitude = newLocation.coordinate.latitude;
+  self.longitude = newLocation.coordinate.longitude;
+  self.success = YES;
 
-	[self stop];
+  [self stop];
 }
 
 - (void)locationManager:(CLLocationManager *)manager
        didFailWithError:(NSError *)error
 {
-	fprintf(stderr, _("Error obtaining location from CoreLocation: %s\n"),
-	       [[error localizedDescription] UTF8String]);
-	[self stop];
+  fprintf(stderr, _("Error obtaining location from CoreLocation: %s\n"),
+         [[error localizedDescription] UTF8String]);
+  self.error = YES;
+  [self stop];
 }
 
 - (void)locationManager:(CLLocationManager *)manager
        didChangeAuthorizationStatus:(CLAuthorizationStatus)status
 {
-	if (status == kCLAuthorizationStatusNotDetermined) {
-		fputs(_("Waiting for authorization to obtain location...\n"),
-		      stderr);
-	} else if (status != kCLAuthorizationStatusAuthorized) {
-		fputs(_("Request for location was not authorized!\n"),
-		      stderr);
-		[self stop];
-	}
+  if (status == kCLAuthorizationStatusNotDetermined) {
+    fputs(_("Waiting for authorization to obtain location...\n"),
+          stderr);
+  } else if (status != kCLAuthorizationStatusAuthorized) {
+    fputs(_("Request for location was not authorized!\n"),
+          stderr);
+    self.error = YES;
+    [self stop];
+  }
 }
 
 @end
@@ -108,13 +112,13 @@
 int
 location_corelocation_init(void *state)
 {
-	return 0;
+  return 0;
 }
 
 int
 location_corelocation_start(void *state)
 {
-	return 0;
+  return 0;
 }
 
 void
@@ -125,40 +129,46 @@ location_corelocation_free(void *state)
 void
 location_corelocation_print_help(FILE *f)
 {
-	fputs(_("Use the location as discovered by the Corelocation provider.\n"), f);
-	fputs("\n", f);
+  fputs(_("Use the location as discovered by the Corelocation provider.\n"), f);
+  fputs("\n", f);
 
-	fprintf(f, _("NOTE: currently Redshift doesn't recheck %s once started,\n"
-		     "which means it has to be restarted to take notice after travel.\n"),
-		"CoreLocation");
-	fputs("\n", f);
+  fprintf(f, _("NOTE: currently Redshift doesn't recheck %s once started,\n"
+       "which means it has to be restarted to take notice after travel.\n"),
+  "CoreLocation");
+  fputs("\n", f);
 }
 
 int
 location_corelocation_set_option(void *state,
-				 const char *key, const char *value)
+   const char *key, const char *value)
 {
-	fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
-	return -1;
+  fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
+  return -1;
 }
 
 int
-location_corelocation_get_location(void *state,
-				   location_t *location)
+location_corelocation_get_fd(void *state)
 {
-	int result = -1;
+  return -1;
+}
 
-	@autoreleasepool {
-		Delegate *delegate = [[Delegate alloc] init];
-		[delegate performSelectorOnMainThread:@selector(start) withObject:nil waitUntilDone:NO];
-		CFRunLoopRun();
+int
+location_corelocation_handle(void *state, location_t *location, int *available)
+{
+  @autoreleasepool {
+    Delegate *delegate = [[Delegate alloc] init];
+    [delegate performSelectorOnMainThread:@selector(start)
+      withObject:nil waitUntilDone:NO];
+    CFRunLoopRun();
 
-		if (delegate.success) {
-			location->lat = delegate.latitude;
-			location->lon = delegate.longitude;
-			result = 0;
-		}
-	}
+    if (delegate.error) return -1;
 
-	return result;
+    if (delegate.success) {
+      location->lat = delegate.latitude;
+      location->lon = delegate.longitude;
+      *available = 1;
+    }
+  }
+
+  return 0;
 }

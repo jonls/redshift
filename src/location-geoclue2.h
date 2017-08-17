@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2014  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2014-2017  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #ifndef REDSHIFT_LOCATION_GEOCLUE2_H
@@ -33,8 +33,9 @@ void location_geoclue2_print_help(FILE *f);
 int location_geoclue2_set_option(void *state,
 				 const char *key, const char *value);
 
-int location_geoclue2_get_location(void *state,
-				   location_t *loc);
+int location_geoclue2_get_fd(void *state);
+int location_geoclue2_handle(void *state,
+			     location_t *location, int *available);
 
 
 #endif /* ! REDSHIFT_LOCATION_GEOCLUE2_H */

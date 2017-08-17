@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010-2014  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2010-2017  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #ifndef REDSHIFT_LOCATION_MANUAL_H
@@ -38,8 +38,9 @@ void location_manual_print_help(FILE *f);
 int location_manual_set_option(location_manual_state_t *state,
 			       const char *key, const char *value);
 
-int location_manual_get_location(location_manual_state_t *state,
-				 location_t *loc);
+int location_manual_get_fd(location_manual_state_t *state);
+int location_manual_handle(
+	location_manual_state_t *state, location_t *location, int *available);
 
 
 #endif /* ! REDSHIFT_LOCATION_MANUAL_H */
