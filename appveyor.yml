@@ -17,7 +17,7 @@ build_script:
       $env:MSYSTEM = "MINGW32"
     }
 
-    $env:CONFIGURE_FLAGS = "--disable-drm --disable-randr --disable-vidmode --enable-wingdi --disable-quartz --disable-geoclue --disable-geoclue2 --disable-corelocation --disable-gui --disable-ubuntu --disable-nls --host=$env:arch-w64-mingw32"
+    $env:CONFIGURE_FLAGS = "--disable-drm --disable-randr --disable-vidmode --enable-wingdi --disable-quartz --disable-geoclue2 --disable-corelocation --disable-gui --disable-ubuntu --disable-nls --host=$env:arch-w64-mingw32"
 
 - ps: md (Join-Path $env:APPVEYOR_BUILD_FOLDER root)
 - C:\msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./bootstrap"

@@ -9,15 +9,15 @@ AM_CPPFLAGS = -DLOCALEDIR=\"$(localedir)\"
 bin_PROGRAMS = redshift
 
 redshift_SOURCES = \
-	redshift.c redshift.h \
-	signals.c signals.h \
 	colorramp.c colorramp.h \
 	config-ini.c config-ini.h \
-	location-manual.c location-manual.h \
-	solar.c solar.h \
-	systemtime.c systemtime.h \
+	gamma-dummy.c gamma-dummy.h \
 	hooks.c hooks.h \
-	gamma-dummy.c gamma-dummy.h
+	location-manual.c location-manual.h \
+	redshift.c redshift.h \
+	signals.c signals.h \
+	solar.c solar.h \
+	systemtime.c systemtime.h
 
 EXTRA_redshift_SOURCES = \
 	gamma-drm.c gamma-drm.h \
@@ -25,7 +25,8 @@ EXTRA_redshift_SOURCES = \
 	gamma-vidmode.c gamma-vidmode.h \
 	gamma-quartz.c gamma-quartz.h \
 	gamma-w32gdi.c gamma-w32gdi.h \
-	location-geoclue.c location-geoclue.h \
+	location-geoclue2.c location-geoclue2.h \
+	location-corelocation.m location-corelocation.h \
 	windows/appicon.rc \
 	windows/versioninfo.rc
 
@@ -68,16 +69,6 @@ redshift_SOURCES += gamma-w32gdi.c gamma-w32gdi.h
 redshift_LDADD += -lgdi32
 endif
 
-
-if ENABLE_GEOCLUE
-redshift_SOURCES += location-geoclue.c location-geoclue.h
-AM_CFLAGS += \
-	$(GEOCLUE_CFLAGS) $(GEOCLUE_LIBS) \
-	$(GLIB_CFLAGS) $(GLIB_LIBS)
-redshift_LDADD += \
-	$(GEOCLUE_LIBS) $(GEOCLUE_CFLAGS)
-	$(GLIB_LIBS) $(GLIB_CFLAGS)
-endif
 
 if ENABLE_GEOCLUE2
 redshift_SOURCES += location-geoclue2.c location-geoclue2.h

@@ -24,7 +24,7 @@ gamma=0.8
 ;gamma-day=0.8:0.7:0.8
 ;gamma-night=0.6
 
-; Set the location-provider: 'geoclue', 'geoclue2', 'manual'
+; Set the location-provider: 'geoclue2', 'manual'
 ; type 'redshift -l list' to see possible values.
 ; The location provider settings are in a different section.
 location-provider=manual

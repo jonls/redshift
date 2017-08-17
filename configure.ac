@@ -13,7 +13,7 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 # Checks for programs.
 AC_PROG_CC_C99
 AC_PROG_LIBTOOL
-AC_PROG_OBJC # For OSX support modules
+AC_PROG_OBJC # For macOS support modules
 AC_LANG([C])
 
 AC_PROG_INTLTOOL([0.50])
@@ -69,10 +69,9 @@ PKG_CHECK_MODULES([XCB_RANDR], [xcb-randr],
 	[have_xcb_randr=yes], [have_xcb_randr=no])
 
 PKG_CHECK_MODULES([GLIB], [glib-2.0 gobject-2.0], [have_glib=yes], [have_glib=no])
-PKG_CHECK_MODULES([GEOCLUE], [geoclue], [have_geoclue=yes], [have_geoclue=no])
 PKG_CHECK_MODULES([GEOCLUE2], [glib-2.0 gio-2.0 >= 2.26], [have_geoclue2=yes], [have_geoclue2=no])
 
-# OSX headers
+# macOS headers
 AC_CHECK_HEADER([ApplicationServices/ApplicationServices.h], [have_appserv_h=yes], [have_appserv_h=no])
 
 # CoreLocation.h is an Objective C header. Only test if
@@ -173,10 +172,10 @@ AS_IF([test "x$enable_vidmode" != xno], [
 ])
 AM_CONDITIONAL([ENABLE_VIDMODE], [test "x$enable_vidmode" = xyes])
 
-# Check Quartz (OSX) method
+# Check Quartz (macOS) method
 AC_MSG_CHECKING([whether to enable Quartz method])
 AC_ARG_ENABLE([quartz], [AC_HELP_STRING([--enable-quartz],
-	[enable Quartz (OSX) method])],
+	[enable Quartz (macOS) method])],
 	[enable_quartz=$enableval],[enable_quartz=maybe])
 AS_IF([test "x$enable_quartz" != xno], [
 	AS_IF([test $have_appserv_h = yes], [
@@ -226,30 +225,6 @@ AS_IF([test "x$enable_wingdi" != xno], [
 AM_CONDITIONAL([ENABLE_WINGDI], [test "x$enable_wingdi" = xyes])
 
 
-# Check Geoclue location provider
-AC_MSG_CHECKING([whether to enable Geoclue location provider])
-AC_ARG_ENABLE([geoclue], [AC_HELP_STRING([--enable-geoclue],
-	[enable Geoclue location provider])],
-	[enable_geoclue=$enableval],[enable_geoclue=maybe])
-AS_IF([test "x$enable_geoclue" != xno], [
-	AS_IF([test "x$have_geoclue" = xyes -a "x$have_glib" = xyes], [
-		AC_DEFINE([ENABLE_GEOCLUE], 1,
-			[Define to 1 to enable Geoclue location provider])
-		AC_MSG_RESULT([yes])
-		enable_geoclue=yes
-	], [
-		AC_MSG_RESULT([missing dependencies])
-		AS_IF([test "x$enable_geoclue" = xyes], [
-			AC_MSG_ERROR([missing dependencies for Geoclue location provider])
-		])
-		enable_geoclue=no
-	])
-], [
-	AC_MSG_RESULT([no])
-	enable_geoclue=no
-])
-AM_CONDITIONAL([ENABLE_GEOCLUE], [test "x$enable_geoclue" = xyes])
-
 # Check Geoclue2 location provider
 AC_MSG_CHECKING([whether to enable Geoclue2 location provider])
 AC_ARG_ENABLE([geoclue2], [AC_HELP_STRING([--enable-geoclue2],
@@ -274,10 +249,10 @@ AS_IF([test "x$enable_geoclue2" != xno], [
 ])
 AM_CONDITIONAL([ENABLE_GEOCLUE2], [test "x$enable_geoclue2" = xyes])
 
-# Check CoreLocation (OSX) provider
+# Check CoreLocation (macOS) provider
 AC_MSG_CHECKING([whether to enable CoreLocation method])
 AC_ARG_ENABLE([corelocation], [AC_HELP_STRING([--enable-corelocation],
-	[enable CoreLocation (OSX) provider])],
+	[enable CoreLocation (macOS) provider])],
 	[enable_corelocation=$enableval],[enable_corelocation=maybe])
 AS_IF([test "x$enable_corelocation" != xno], [
 	AS_IF([test "x$have_corelocation_h" = xyes], [
@@ -388,13 +363,12 @@ echo "
     DRM:		${enable_drm}
     RANDR:		${enable_randr}
     VidMode:		${enable_vidmode}
-    Quartz (OSX):	${enable_quartz}
+    Quartz (macOS):	${enable_quartz}
     WinGDI (Windows):	${enable_wingdi}
 
     Location providers:
-    Geoclue:		${enable_geoclue}
-    Geoclue2:		${enable_geoclue2}
-    CoreLocation (OSX)	${enable_corelocation}
+    Geoclue2:			${enable_geoclue2}
+    CoreLocation (macOS):	${enable_corelocation}
 
     GUI:		${enable_gui}
     Ubuntu icons:	${enable_ubuntu}
