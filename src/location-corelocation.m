@@ -25,9 +25,11 @@
 #import <CoreLocation/CoreLocation.h>
 
 #include "location-corelocation.h"
+#include "pipeutils.h"
 #include "redshift.h"
 
 #include <stdio.h>
+#include <unistd.h>
 
 #ifdef ENABLE_NLS
 # include <libintl.h>
@@ -37,20 +39,25 @@
 #endif
 
 
-@interface Delegate : NSObject <CLLocationManagerDelegate>
+struct location_corelocation_private {
+  NSThread *thread;
+  NSLock *lock;
+};
+
+
+@interface LocationDelegate : NSObject <CLLocationManagerDelegate>
 @property (strong, nonatomic) CLLocationManager *locationManager;
-@property (nonatomic) BOOL success;
-@property (nonatomic) BOOL error;
-@property (nonatomic) float latitude;
-@property (nonatomic) float longitude;
+@property (nonatomic) location_corelocation_state_t *state;
 @end
 
-@implementation Delegate;
+@implementation LocationDelegate;
 
 - (void)start
 {
   self.locationManager = [[CLLocationManager alloc] init];
   self.locationManager.delegate = self;
+  self.locationManager.distanceFilter = 50000;
+  self.locationManager.desiredAccuracy = kCLLocationAccuracyKilometer;
 
   CLAuthorizationStatus authStatus =
     [CLLocationManager authorizationStatus];
@@ -59,50 +66,106 @@
       authStatus != kCLAuthorizationStatusAuthorized) {
     fputs(_("Not authorized to obtain location"
             " from CoreLocation.\n"), stderr);
-    self.error = YES;
-    CFRunLoopStop(CFRunLoopGetCurrent());
+    [self markError];
+  } else {
+    [self.locationManager startUpdatingLocation];
   }
-
-  [self.locationManager startUpdatingLocation];
 }
 
-- (void)stop
+- (void)markError
 {
-  [self.locationManager stopUpdatingLocation];
-  CFRunLoopStop(CFRunLoopGetCurrent());
+  [self.state->private->lock lock];
+
+  self.state->error = 1;
+
+  [self.state->private->lock unlock];
+
+  pipeutils_signal(self.state->pipe_fd_write);
 }
 
 - (void)locationManager:(CLLocationManager *)manager
-     didUpdateLocations:(NSArray *)locations
+    didUpdateLocations:(NSArray *)locations
 {
   CLLocation *newLocation = [locations firstObject];
-  self.latitude = newLocation.coordinate.latitude;
-  self.longitude = newLocation.coordinate.longitude;
-  self.success = YES;
 
-  [self stop];
+  [self.state->private->lock lock];
+
+  self.state->latitude = newLocation.coordinate.latitude;
+  self.state->longitude = newLocation.coordinate.longitude;
+  self.state->available = 1;
+
+  [self.state->private->lock unlock];
+
+  pipeutils_signal(self.state->pipe_fd_write);
 }
 
 - (void)locationManager:(CLLocationManager *)manager
-       didFailWithError:(NSError *)error
+    didFailWithError:(NSError *)error
 {
   fprintf(stderr, _("Error obtaining location from CoreLocation: %s\n"),
          [[error localizedDescription] UTF8String]);
-  self.error = YES;
-  [self stop];
+  [self markError];
 }
 
 - (void)locationManager:(CLLocationManager *)manager
-       didChangeAuthorizationStatus:(CLAuthorizationStatus)status
+    didChangeAuthorizationStatus:(CLAuthorizationStatus)status
 {
   if (status == kCLAuthorizationStatusNotDetermined) {
-    fputs(_("Waiting for authorization to obtain location...\n"),
-          stderr);
+    fputs(_("Waiting for authorization to obtain location...\n"), stderr);
   } else if (status != kCLAuthorizationStatusAuthorized) {
-    fputs(_("Request for location was not authorized!\n"),
-          stderr);
-    self.error = YES;
-    [self stop];
+    fputs(_("Request for location was not authorized!\n"), stderr);
+    [self markError];
+  }
+}
+
+@end
+
+
+// Callback when the pipe is closed.
+//
+// Stops the run loop causing the thread to end.
+static void
+pipe_close_callback(
+    CFFileDescriptorRef fdref, CFOptionFlags callBackTypes, void *info)
+{
+  CFFileDescriptorInvalidate(fdref);
+  CFRelease(fdref);
+
+  CFRunLoopStop(CFRunLoopGetCurrent());
+}
+
+
+@interface LocationThread : NSThread
+@property (nonatomic) location_corelocation_state_t *state;
+@end
+
+@implementation LocationThread;
+
+// Run loop for location provider thread.
+- (void)main
+{
+  @autoreleasepool {
+    LocationDelegate *locationDelegate = [[LocationDelegate alloc] init];
+    locationDelegate.state = self.state;
+
+    // Start the location delegate on the run loop in this thread.
+    [locationDelegate performSelector:@selector(start)
+      withObject:nil afterDelay:0];
+
+    // Create a callback that is triggered when the pipe is closed. This will
+    // trigger the main loop to quit and the thread to stop.
+    CFFileDescriptorRef fdref = CFFileDescriptorCreate(
+      kCFAllocatorDefault, self.state->pipe_fd_write, false,
+      pipe_close_callback, NULL);
+    CFFileDescriptorEnableCallBacks(fdref, kCFFileDescriptorReadCallBack);
+    CFRunLoopSourceRef source = CFFileDescriptorCreateRunLoopSource(
+      kCFAllocatorDefault, fdref, 0);
+    CFRunLoopAddSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
+
+    // Run the loop
+    CFRunLoopRun();
+
+    close(self.state->pipe_fd_write);
   }
 }
 
@@ -110,20 +173,56 @@
 
 
 int
-location_corelocation_init(void *state)
+location_corelocation_init(location_corelocation_state_t *state)
 {
   return 0;
 }
 
 int
-location_corelocation_start(void *state)
+location_corelocation_start(location_corelocation_state_t *state)
 {
+  state->pipe_fd_read = -1;
+  state->pipe_fd_write = -1;
+
+  state->available = 0;
+  state->error = 0;
+  state->latitude = 0;
+  state->longitude = 0;
+
+  state->private = malloc(sizeof(location_corelocation_private_t));
+  if (state->private == NULL) return -1;
+
+  int pipefds[2];
+  int r = pipeutils_create_nonblocking(pipefds);
+  if (r < 0) {
+    fputs(_("Failed to start CoreLocation provider!\n"), stderr);
+    free(state->private);
+    return -1;
+  }
+
+  state->pipe_fd_read = pipefds[0];
+  state->pipe_fd_write = pipefds[1];
+
+  pipeutils_signal(state->pipe_fd_write);
+
+  state->private->lock = [[NSLock alloc] init];
+
+  LocationThread *thread = [[LocationThread alloc] init];
+  thread.state = state;
+  [thread start];
+  state->private->thread = thread;
+
   return 0;
 }
 
 void
-location_corelocation_free(void *state)
+location_corelocation_free(location_corelocation_state_t *state)
 {
+  if (state->pipe_fd_read != -1) {
+    close(state->pipe_fd_read);
+  }
+
+  free(state->private);
 }
 
 void
@@ -131,44 +230,38 @@ location_corelocation_print_help(FILE *f)
 {
   fputs(_("Use the location as discovered by the Corelocation provider.\n"), f);
   fputs("\n", f);
-
-  fprintf(f, _("NOTE: currently Redshift doesn't recheck %s once started,\n"
-       "which means it has to be restarted to take notice after travel.\n"),
-  "CoreLocation");
-  fputs("\n", f);
 }
 
 int
-location_corelocation_set_option(void *state,
-   const char *key, const char *value)
+location_corelocation_set_option(
+    location_corelocation_state_t *state, const char *key, const char *value)
 {
   fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
   return -1;
 }
 
 int
-location_corelocation_get_fd(void *state)
+location_corelocation_get_fd(location_corelocation_state_t *state)
 {
-  return -1;
+  return state->pipe_fd_read;
 }
 
-int
-location_corelocation_handle(void *state, location_t *location, int *available)
+int location_corelocation_handle(
+    location_corelocation_state_t *state,
+    location_t *location, int *available)
 {
-  @autoreleasepool {
-    Delegate *delegate = [[Delegate alloc] init];
-    [delegate performSelectorOnMainThread:@selector(start)
-      withObject:nil waitUntilDone:NO];
-    CFRunLoopRun();
+  pipeutils_handle_signal(state->pipe_fd_read);
 
-    if (delegate.error) return -1;
+  [state->private->lock lock];
 
-    if (delegate.success) {
-      location->lat = delegate.latitude;
-      location->lon = delegate.longitude;
-      *available = 1;
-    }
-  }
+  int error = state->error;
+  location->lat = state->latitude;
+  location->lon = state->longitude;
+  *available = state->available;
+
+  [state->private->lock unlock];
+
+  if (error) return -1;
 
   return 0;
 }

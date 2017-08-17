@@ -24,18 +24,33 @@
 
 #include "redshift.h"
 
+typedef struct location_corelocation_private location_corelocation_private_t;
 
-int location_corelocation_init(void *state);
-int location_corelocation_start(void *state);
-void location_corelocation_free(void *state);
+typedef struct {
+	location_corelocation_private_t *private;
+	int pipe_fd_read;
+	int pipe_fd_write;
+	int available;
+	int error;
+	float latitude;
+	float longitude;
+} location_corelocation_state_t;
+
+
+int location_corelocation_init(location_corelocation_state_t *state);
+int location_corelocation_start(location_corelocation_state_t *state);
+void location_corelocation_free(location_corelocation_state_t *state);
 
 void location_corelocation_print_help(FILE *f);
-int location_corelocation_set_option(void *state,
-				     const char *key, const char *value);
+int location_corelocation_set_option(
+	location_corelocation_state_t *state,
+	const char *key, const char *value);
 
-int location_corelocation_get_fd(void *state);
+int location_corelocation_get_fd(
+	location_corelocation_state_t *state);
 int location_corelocation_handle(
-	void *state, location_t *location, int *available);
+	location_corelocation_state_t *state,
+	location_t *location, int *available);
 
 
 #endif /* ! REDSHIFT_LOCATION_CORELOCATION_H */

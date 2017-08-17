@@ -257,7 +257,7 @@ AC_ARG_ENABLE([corelocation], [AC_HELP_STRING([--enable-corelocation],
 AS_IF([test "x$enable_corelocation" != xno], [
 	AS_IF([test "x$have_corelocation_h" = xyes], [
 		CORELOCATION_CFLAGS=""
-		CORELOCATION_LIBS="-framework Foundation -framework CoreLocation"
+		CORELOCATION_LIBS="-framework Foundation -framework Cocoa -framework CoreLocation"
 		AC_DEFINE([ENABLE_CORELOCATION], 1,
 			[Define to 1 to enable CoreLocation provider])
 		AC_MSG_RESULT([yes])
