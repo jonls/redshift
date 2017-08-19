@@ -28,7 +28,7 @@ addons:
       # GUI
       - python3
 
-install: |
+before_install: |
   if [ "$TRAVIS_OS_NAME" == "osx" ]; then
     brew install gettext
     brew link --force gettext
@@ -36,12 +36,20 @@ install: |
     brew install python3
   fi
 
-script:
+install:
   - ./bootstrap
+  - mkdir "$TRAVIS_BUILD_DIR/root"
   - |
     if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-      ./configure --enable-drm --enable-vidmode --enable-randr --enable-geoclue2 --enable-gui
+      ./configure --prefix="$TRAVIS_BUILD_DIR/root" --enable-drm --enable-vidmode --enable-randr --enable-geoclue2 --enable-gui
     elif [ "$TRAVIS_OS_NAME" == "osx" ]; then
-      ./configure --enable-corelocation --enable-quartz --enable-gui
+      ./configure --prefix="$TRAVIS_BUILD_DIR/root" --enable-corelocation --enable-quartz --enable-gui
     fi
+  - make -j2 install
   - make -j2 distcheck
+
+script:
+  - |
+    "$TRAVIS_BUILD_DIR"/root/bin/redshift -l 12:-34 -pv
+  - |
+    "$TRAVIS_BUILD_DIR"/root/bin/redshift -l 12:-34 -m dummy -vo

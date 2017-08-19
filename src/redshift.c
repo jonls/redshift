@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2009-2015  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2009-2017  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #ifdef HAVE_CONFIG_H
@@ -28,6 +28,21 @@
 #include <math.h>
 #include <locale.h>
 #include <errno.h>
+
+/* poll.h is not available on Windows but there is no Windows location provider
+   using polling. On Windows, we just define some stubs to make things compile.
+   */
+#ifndef _WIN32
+# include <poll.h>
+#else
+#define POLLIN 0
+struct pollfd {
+	int fd;
+	short events;
+	short revents;
+};
+int poll(struct pollfd *fds, int nfds, int timeout) { abort(); return -1; }
+#endif
 
 #if defined(HAVE_SIGNAL_H) && !defined(__WIN32__)
 # include <signal.h>
@@ -191,6 +206,12 @@ static const gamma_method_t gamma_methods[] = {
 /* Union of state data for location providers */
 typedef union {
 	location_manual_state_t manual;
+#ifdef ENABLE_GEOCLUE2
+	location_geoclue2_state_t geoclue2;
+#endif
+#ifdef ENABLE_CORELOCATION
+	location_corelocation_state_t corelocation;
+#endif
 } location_state_t;
 
 
@@ -206,8 +227,8 @@ static const location_provider_t location_providers[] = {
 		location_geoclue2_print_help,
 		(location_provider_set_option_func *)
 		location_geoclue2_set_option,
-		(location_provider_get_location_func *)
-		location_geoclue2_get_location
+		(location_provider_get_fd_func *)location_geoclue2_get_fd,
+		(location_provider_handle_func *)location_geoclue2_handle
 	},
 #endif
 #ifdef ENABLE_CORELOCATION
@@ -220,8 +241,8 @@ static const location_provider_t location_providers[] = {
 		location_corelocation_print_help,
 		(location_provider_set_option_func *)
 		location_corelocation_set_option,
-		(location_provider_get_location_func *)
-		location_corelocation_get_location
+		(location_provider_get_fd_func *)location_corelocation_get_fd,
+		(location_provider_handle_func *)location_corelocation_handle
 	},
 #endif
 	{
@@ -233,8 +254,8 @@ static const location_provider_t location_providers[] = {
 		location_manual_print_help,
 		(location_provider_set_option_func *)
 		location_manual_set_option,
-		(location_provider_get_location_func *)
-		location_manual_get_location
+		(location_provider_get_fd_func *)location_manual_get_fd,
+		(location_provider_handle_func *)location_manual_handle
 	},
 	{ NULL }
 };
@@ -717,6 +738,33 @@ gamma_is_valid(const float gamma[3])
 
 }
 
+/* Check whether location is valid.
+   Prints error message on stderr and returns 0 if invalid, otherwise
+   returns 1. */
+static int
+location_is_valid(const location_t *location)
+{
+	/* Latitude */
+	if (location->lat < MIN_LAT || location->lat > MAX_LAT) {
+		/* TRANSLATORS: Append degree symbols if possible. */
+		fprintf(stderr,
+			_("Latitude must be between %.1f and %.1f.\n"),
+			MIN_LAT, MAX_LAT);
+		return 0;
+	}
+
+	/* Longitude */
+	if (location->lon < MIN_LON || location->lon > MAX_LON) {
+		/* TRANSLATORS: Append degree symbols if possible. */
+		fprintf(stderr,
+			_("Longitude must be between"
+			  " %.1f and %.1f.\n"), MIN_LON, MAX_LON);
+		return 0;
+	}
+
+	return 1;
+}
+
 static const gamma_method_t *
 find_gamma_method(const char *name)
 {
@@ -747,13 +795,71 @@ find_location_provider(const char *name)
 	return provider;
 }
 
+/* Wait for location to become available from provider.
+   Waits until timeout (milliseconds) has elapsed or forever if timeout
+   is -1. Writes location to loc. Returns -1 on error,
+   0 if timeout was reached, 1 if location became available. */
+static int
+provider_get_location(
+	const location_provider_t *provider, location_state_t *state,
+	int timeout, location_t *loc)
+{
+	int available = 0;
+	struct pollfd pollfds[1];
+	while (!available) {
+		int loc_fd = provider->get_fd(state);
+		if (loc_fd >= 0) {
+			/* Provider is dynamic. */
+			double now;
+			int r = systemtime_get_time(&now);
+			if (r < 0) {
+				fputs(_("Unable to read system time.\n"),
+				      stderr);
+				return -1;
+			}
+
+			/* Poll on file descriptor until ready. */
+			pollfds[0].fd = loc_fd;
+			pollfds[0].events = POLLIN;
+			r = poll(pollfds, 1, timeout);
+			if (r < 0) {
+				perror("poll");
+				return -1;
+			} else if (r == 0) {
+				return 0;
+			}
+
+			double later;
+			r = systemtime_get_time(&later);
+			if (r < 0) {
+				fputs(_("Unable to read system time.\n"),
+				      stderr);
+				return -1;
+			}
+
+			/* Adjust timeout by elapsed time */
+			if (timeout >= 0) {
+				timeout -= (later - now) * 1000;
+				timeout = timeout < 0 ? 0 : timeout;
+			}
+		}
+
+
+		int r = provider->handle(state, loc, &available);
+		if (r < 0) return -1;
+	}
+
+	return 1;
+}
+
 
 /* Run continual mode loop
    This is the main loop of the continual mode which keeps track of the
    current time and continuously updates the screen to the appropriate
    color temperature. */
 static int
-run_continual_mode(const location_t *loc,
+run_continual_mode(const location_provider_t *provider,
+		   location_state_t *location_state,
 		   const transition_scheme_t *scheme,
 		   const gamma_method_t *method,
 		   gamma_state_t *state,
@@ -786,9 +892,29 @@ run_continual_mode(const location_t *loc,
 	color_setting_t prev_interp =
 		{ -1, { NAN, NAN, NAN }, NAN };
 
+	fputs(_("Waiting for initial location"
+		" to become available...\n"), stderr);
+
+	/* Get initial location from provider */
+	location_t loc = { NAN, NAN };
+	r = provider_get_location(provider, location_state, -1, &loc);
+	if (r < 0) {
+		fputs(_("Unable to get location"
+			" from provider.\n"), stderr);
+		return -1;
+	}
+
+	if (!location_is_valid(&loc)) {
+		fputs(_("Invalid location returned from provider.\n"), stderr);
+		return -1;
+	}
+
+	print_location(&loc);
+
 	/* Continuously adjust color temperature */
 	int done = 0;
 	int disabled = 0;
+	int location_available = 1;
 	while (1) {
 		/* Check to see if disable signal was caught */
 		if (disable) {
@@ -849,8 +975,7 @@ run_continual_mode(const location_t *loc,
 		}
 
 		/* Current angular elevation of the sun */
-		double elevation = solar_elevation(now, loc->lat,
-						   loc->lon);
+		double elevation = solar_elevation(now, loc.lat, loc.lon);
 
 		/* Use elevation of sun to set color temperature */
 		color_setting_t interp;
@@ -918,8 +1043,8 @@ run_continual_mode(const location_t *loc,
 		if (!disabled || short_trans_delta || set_adjustments) {
 			r = method->set_temperature(state, &interp);
 			if (r < 0) {
-				fputs(_("Temperature adjustment"
-					" failed.\n"), stderr);
+				fputs(_("Temperature adjustment failed.\n"),
+				      stderr);
 				return -1;
 			}
 		}
@@ -930,10 +1055,64 @@ run_continual_mode(const location_t *loc,
 		       sizeof(color_setting_t));
 
 		/* Sleep for 5 seconds or 0.1 second. */
+		int delay = SLEEP_DURATION;
 		if (short_trans_delta) {
-			systemtime_msleep(SLEEP_DURATION_SHORT);
+			delay = SLEEP_DURATION_SHORT;
+		}
+
+		int loc_fd = provider->get_fd(location_state);
+		if (loc_fd >= 0) {
+			/* Provider is dynamic. */
+			struct pollfd pollfds[1];
+			pollfds[0].fd = loc_fd;
+			pollfds[0].events = POLLIN;
+			int r = poll(pollfds, 1, delay);
+			if (r < 0) {
+				if (errno == EINTR) continue;
+				perror("poll");
+				fputs(_("Unable to get location"
+					" from provider.\n"), stderr);
+				return -1;
+			} else if (r == 0) {
+				continue;
+			}
+
+			/* Get new location and availability information. */
+			location_t new_loc;
+			int new_available;
+			provider->handle(
+				location_state, &new_loc,
+				&new_available);
+			if (r < 0) {
+				fputs(_("Unable to get location"
+					" from provider.\n"), stderr);
+				return -1;
+			}
+
+			if (!new_available &&
+			    new_available != location_available) {
+				fputs(_("Location is temporarily unavailable;"
+					" Using previous location until it"
+					" becomes available...\n"), stderr);
+			}
+
+			if (new_available &&
+			    (new_loc.lat != loc.lat ||
+			     new_loc.lon != loc.lon ||
+			     new_available != location_available)) {
+				loc = new_loc;
+				print_location(&loc);
+			}
+
+			location_available = new_available;
+
+			if (!location_is_valid(&loc)) {
+				fputs(_("Invalid location returned"
+					" from provider.\n"), stderr);
+				return -1;
+			}
 		} else {
-			systemtime_msleep(SLEEP_DURATION);
+			systemtime_msleep(delay);
 		}
 	}
 
@@ -1306,8 +1485,6 @@ main(int argc, char *argv[])
 
 	if (transition < 0) transition = 1;
 
-	location_t loc = { NAN, NAN };
-
 	/* Initialize location provider. If provider is NULL
 	   try all providers until one that works is found. */
 	location_state_t location_state;
@@ -1352,19 +1529,7 @@ main(int argc, char *argv[])
 			}
 		}
 
-		/* Get current location. */
-		r = provider->get_location(&location_state, &loc);
-		if (r < 0) {
-		        fputs(_("Unable to get location from provider.\n"),
-		              stderr);
-		        exit(EXIT_FAILURE);
-		}
-
-		provider->free(&location_state);
-
 		if (verbose) {
-			print_location(&loc);
-
 			printf(_("Temperatures: %dK at day, %dK at night\n"),
 			       scheme.day.temperature,
 			       scheme.night.temperature);
@@ -1372,24 +1537,6 @@ main(int argc, char *argv[])
 		        /* TRANSLATORS: Append degree symbols if possible. */
 			printf(_("Solar elevations: day above %.1f, night below %.1f\n"),
 			       scheme.high, scheme.low);
-		}
-
-		/* Latitude */
-		if (loc.lat < MIN_LAT || loc.lat > MAX_LAT) {
-		        /* TRANSLATORS: Append degree symbols if possible. */
-		        fprintf(stderr,
-		                _("Latitude must be between %.1f and %.1f.\n"),
-		                MIN_LAT, MAX_LAT);
-		        exit(EXIT_FAILURE);
-		}
-
-		/* Longitude */
-		if (loc.lon < MIN_LON || loc.lon > MAX_LON) {
-		        /* TRANSLATORS: Append degree symbols if possible. */
-		        fprintf(stderr,
-		                _("Longitude must be between"
-		                  " %.1f and %.1f.\n"), MIN_LON, MAX_LON);
-		        exit(EXIT_FAILURE);
 		}
 
 		/* Color temperature */
@@ -1501,6 +1648,25 @@ main(int argc, char *argv[])
 	case PROGRAM_MODE_ONE_SHOT:
 	case PROGRAM_MODE_PRINT:
 	{
+		fputs(_("Waiting for current location"
+			" to become available...\n"), stderr);
+
+		/* Wait for location provider. */
+		location_t loc = { NAN, NAN };
+		int r = provider_get_location(
+			provider, &location_state, -1, &loc);
+		if (r < 0) {
+			fputs(_("Unable to get location"
+				" from provider.\n"), stderr);
+			exit(EXIT_FAILURE);
+		}
+
+		if (!location_is_valid(&loc)) {
+			exit(EXIT_FAILURE);
+		}
+
+		print_location(&loc);
+
 		/* Current angular elevation of the sun */
 		double now;
 		r = systemtime_get_time(&now);
@@ -1534,24 +1700,24 @@ main(int argc, char *argv[])
 			       interp.brightness);
 		}
 
-		if (mode == PROGRAM_MODE_PRINT) {
-			exit(EXIT_SUCCESS);
-		}
+		if (mode != PROGRAM_MODE_PRINT) {
+			/* Adjust temperature */
+			r = method->set_temperature(&state, &interp);
+			if (r < 0) {
+				fputs(_("Temperature adjustment failed.\n"),
+				      stderr);
+				method->free(&state);
+				exit(EXIT_FAILURE);
+			}
 
-		/* Adjust temperature */
-		r = method->set_temperature(&state, &interp);
-		if (r < 0) {
-			fputs(_("Temperature adjustment failed.\n"), stderr);
-			method->free(&state);
-			exit(EXIT_FAILURE);
-		}
-
-		/* In Quartz (OSX) the gamma adjustments will automatically
-		   revert when the process exits. Therefore, we have to loop
-		   until CTRL-C is received. */
-		if (strcmp(method->name, "quartz") == 0) {
-			fputs(_("Press ctrl-c to stop...\n"), stderr);
-			pause();
+			/* In Quartz (macOS) the gamma adjustments will
+			   automatically revert when the process exits.
+			   Therefore, we have to loop until CTRL-C is received.
+			   */
+			if (strcmp(method->name, "quartz") == 0) {
+				fputs(_("Press ctrl-c to stop...\n"), stderr);
+				pause();
+			}
 		}
 	}
 	break;
@@ -1601,7 +1767,7 @@ main(int argc, char *argv[])
 	break;
 	case PROGRAM_MODE_CONTINUAL:
 	{
-		r = run_continual_mode(&loc, &scheme,
+		r = run_continual_mode(provider, &location_state, &scheme,
 				       method, &state,
 				       transition, verbose);
 		if (r < 0) exit(EXIT_FAILURE);
@@ -1610,7 +1776,15 @@ main(int argc, char *argv[])
 	}
 
 	/* Clean up gamma adjustment state */
-	method->free(&state);
+	if (mode != PROGRAM_MODE_PRINT) {
+		method->free(&state);
+	}
+
+	/* Clean up location provider state */
+	if (mode != PROGRAM_MODE_RESET &&
+	    mode != PROGRAM_MODE_MANUAL) {
+		provider->free(&location_state);
+	}
 
 	return EXIT_SUCCESS;
 }

@@ -89,7 +89,9 @@ typedef void location_provider_free_func(void *state);
 typedef void location_provider_print_help_func(FILE *f);
 typedef int location_provider_set_option_func(void *state, const char *key,
 					      const char *value);
-typedef int location_provider_get_location_func(void *state, location_t *loc);
+typedef int location_provider_get_fd_func(void *state);
+typedef int location_provider_handle_func(
+	void *state, location_t *location, int *available);
 
 typedef struct {
 	char *name;
@@ -106,8 +108,9 @@ typedef struct {
 	/* Set an option key, value-pair. */
 	location_provider_set_option_func *set_option;
 
-	/* Get current location. */
-	location_provider_get_location_func *get_location;
+	/* Listen and handle location updates. */
+	location_provider_get_fd_func *get_fd;
+	location_provider_handle_func *handle;
 } location_provider_t;
 
 
