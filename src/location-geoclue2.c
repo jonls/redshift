@@ -225,6 +225,9 @@ on_name_appeared(GDBusConnection *conn, const gchar *name,
 	if (ret_v == NULL) {
 		g_printerr(_("Unable to start GeoClue client: %s.\n"),
 			   error->message);
+		g_printerr(_("Note: If you are using GNOME, make "
+					 "sure that Location Services are enabled in "
+					 "Privacy settings.\n"));
 		g_error_free(error);
 		g_object_unref(geoclue_client);
 		g_object_unref(geoclue_manager);
