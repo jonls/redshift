@@ -307,6 +307,11 @@ typedef enum {
 typedef struct {
 	double high;
 	double low;
+	/* use localtime for operation */
+	float dawn_start;
+	float dawn_end;
+	float dusk_start;
+	float dusk_end;
 	color_setting_t day;
 	color_setting_t night;
 } transition_scheme_t;
@@ -319,7 +324,6 @@ static const char *period_names[] = {
 	N_("Night"),
 	N_("Transition")
 };
-
 
 /* Determine which period we are currently in. */
 static period_t
@@ -448,6 +452,8 @@ print_help(const char *program_name)
 		"  -l PROVIDER\tSelect provider for automatic"
 		" location updates\n"
 		"  \t\t(Type `list' to see available providers)\n"
+		"  -D hh:mm-hh:mm\tPeriod for transition from night to day (dawn)\n"
+		"  -d hh:mm-hh:mm\tPeriod for transition from day to night (dusk)\n"
 		"  -m METHOD\tMethod to use to set color temperature\n"
 		"  \t\t(Type `list' to see available methods)\n"
 		"  -o\t\tOne shot mode (do not continuously adjust"
@@ -725,6 +731,30 @@ parse_brightness_string(const char *str, float *bright_day, float *bright_night)
 	}
 }
 
+static void
+parse_transition_time(const char *str, float *start, float *end)
+{
+	char *e = strchr(str, '-');
+	if (e != NULL) {
+		char *s, *sm, *em;
+		*start = *end = 0;
+		*(e++) = '\0';
+		s = (char *)str;
+		sm = strchr(s, ':');
+		if (sm) {
+			*sm++ = 0;
+			*start += atoi( sm ) / 60.0;
+		}
+		*start += atoi(s);
+		em = strchr(e, ':');
+		if (em) {
+			*em++ = 0;
+			*end += atoi( em ) / 60.0;
+		}
+		*end += atoi(e);
+	}
+}
+
 /* Check whether gamma is within allowed levels. */
 static int
 gamma_is_valid(const float gamma[3])
@@ -793,6 +823,41 @@ find_location_provider(const char *name)
 	}
 
 	return provider;
+}
+
+static double
+solar_elevation_time( double now, double lat, double lon, double dawn_start,
+	double dawn_end, double dusk_start, double dusk_end)
+{
+	double elevation = NAN;
+	if (isnan(dawn_start)) {
+		elevation = solar_elevation(now, lat, lon);
+	} else {
+		time_t now_sec = (time_t)now;
+		struct tm *tm = localtime( &now_sec );
+		now = tm->tm_hour + (tm->tm_min + tm->tm_sec/60.0)/60.0;
+		if (dusk_end < dusk_start)
+			dusk_end += 24;
+		if (dawn_start > dusk_end) {
+			dusk_start += 24;
+			dusk_end += 24;
+		}
+		if (dawn_start > dawn_end) {
+			dawn_end += 24;
+		}
+		if (now < dawn_start)
+			now += 24;
+		if (dawn_start <= now && now <= dawn_end)
+			elevation = 1 - (dawn_end - now) / (dawn_end - dawn_start);
+		else if (dawn_end < now && now < dusk_start)
+			elevation = 2;
+		else if (dusk_start <= now && now <= dusk_end)
+			elevation = (dusk_end - now) / (dusk_end - dusk_start);
+		else
+			elevation = -1;
+ 
+	}
+	return elevation;
 }
 
 /* Wait for location to become available from provider.
@@ -975,7 +1040,9 @@ run_continual_mode(const location_provider_t *provider,
 		}
 
 		/* Current angular elevation of the sun */
-		double elevation = solar_elevation(now, loc.lat, loc.lon);
+		double elevation = solar_elevation_time(now, loc.lat, loc.lon,
+			scheme->dawn_start, scheme->dawn_end,
+			scheme->dusk_start, scheme->dusk_end);
 
 		/* Use elevation of sun to set color temperature */
 		color_setting_t interp;
@@ -1143,7 +1210,7 @@ main(int argc, char *argv[])
 	/* Settings for day, night and transition.
 	   Initialized to indicate that the values are not set yet. */
 	transition_scheme_t scheme =
-		{ TRANSITION_HIGH, TRANSITION_LOW };
+		{ TRANSITION_HIGH, TRANSITION_LOW, NAN, NAN, NAN, NAN };
 
 	scheme.day.temperature = -1;
 	scheme.day.gamma[0] = NAN;
@@ -1175,8 +1242,14 @@ main(int argc, char *argv[])
 
 	/* Parse command line arguments. */
 	int opt;
-	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:prt:vVx")) != -1) {
+	while ((opt = getopt(argc, argv, "D:d:b:c:g:hl:m:oO:prt:vVx")) != -1) {
 		switch (opt) {
+		case 'D':
+			parse_transition_time(optarg, &scheme.dawn_start, &scheme.dawn_end);
+			break;
+		case 'd':
+			parse_transition_time(optarg, &scheme.dusk_start, &scheme.dusk_end);
+			break;
 		case 'b':
 			parse_brightness_string(optarg,
 						&scheme.day.brightness,
@@ -1447,6 +1520,30 @@ main(int argc, char *argv[])
 						exit(EXIT_FAILURE);
 					}
 				}
+			} else if (strcasecmp(setting->name,
+					      "dawn-time") == 0) {
+				if (isnan(scheme.dawn_start)) {
+					parse_transition_time(setting->value,
+						&scheme.dawn_start, &scheme.dawn_end);
+					if (isnan(scheme.dawn_start)) {
+						fputs(_("Malformed dawn-time"
+							" setting.\n"),
+						      stderr);
+						exit(EXIT_FAILURE);
+					}
+				}
+			} else if (strcasecmp(setting->name,
+					      "dusk-time") == 0) {
+				if (isnan(scheme.dusk_start)) {
+					parse_transition_time(setting->value,
+						&scheme.dusk_start, &scheme.dusk_end);
+					if (isnan(scheme.dusk_start)) {
+						fputs(_("Malformed dusk-time"
+							" setting.\n"),
+						      stderr);
+						exit(EXIT_FAILURE);
+					}
+				}
 			} else {
 				fprintf(stderr, _("Unknown configuration"
 						  " setting `%s'.\n"),
@@ -1485,13 +1582,28 @@ main(int argc, char *argv[])
 
 	if (transition < 0) transition = 1;
 
+	int n_time_conf = !isnan(scheme.dusk_start) + !isnan(scheme.dusk_end) +
+		!isnan(scheme.dusk_start) + !isnan(scheme.dusk_end);
+ 
+	if (n_time_conf != 0 && n_time_conf != 4) {
+		fputs(_("Partitial time-configuration not supported"),
+		      stderr);
+		exit(EXIT_FAILURE);
+	}
+ 
+	if (n_time_conf != 0) {
+		scheme.high = 1;
+		scheme.low = 0;
+	}
+
 	/* Initialize location provider. If provider is NULL
 	   try all providers until one that works is found. */
 	location_state_t location_state;
 
-	/* Location is not needed for reset mode and manual mode. */
+	/* Location is not needed for reset mode and manual mode and specified dusk+dawn. */
 	if (mode != PROGRAM_MODE_RESET &&
-	    mode != PROGRAM_MODE_MANUAL) {
+	    mode != PROGRAM_MODE_MANUAL &&
+	    n_time_conf == 0) {
 		if (provider != NULL) {
 			/* Use provider specified on command line. */
 			r = provider_try_start(provider, &location_state,
@@ -1676,7 +1788,8 @@ main(int argc, char *argv[])
 			exit(EXIT_FAILURE);
 		}
 
-		double elevation = solar_elevation(now, loc.lat, loc.lon);
+		double elevation = solar_elevation_time(now, loc.lat, loc.lon,
+			scheme.dawn_start, scheme.dawn_end, scheme.dusk_start, scheme.dusk_end);
 
 		if (verbose) {
 			/* TRANSLATORS: Append degree symbol if possible. */
