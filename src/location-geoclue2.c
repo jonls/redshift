@@ -68,8 +68,8 @@ geoclue_client_signal_cb(GDBusProxy *client, gchar *sender_name,
 
 	/* Obtain location */
 	GError *error = NULL;
-	GDBusProxy *location = g_dbus_proxy_new_for_bus_sync(
-		G_BUS_TYPE_SYSTEM,
+	GDBusProxy *location = g_dbus_proxy_new_sync(
+		g_dbus_proxy_get_connection(client),
 		G_DBUS_PROXY_FLAGS_NONE,
 		NULL,
 		"org.freedesktop.GeoClue2",
@@ -111,8 +111,8 @@ on_name_appeared(GDBusConnection *conn, const gchar *name,
 
 	/* Obtain GeoClue Manager */
 	GError *error = NULL;
-	GDBusProxy *geoclue_manager = g_dbus_proxy_new_for_bus_sync(
-		G_BUS_TYPE_SYSTEM,
+	GDBusProxy *geoclue_manager = g_dbus_proxy_new_sync(
+		conn,
 		G_DBUS_PROXY_FLAGS_NONE,
 		NULL,
 		"org.freedesktop.GeoClue2",
@@ -149,8 +149,8 @@ on_name_appeared(GDBusConnection *conn, const gchar *name,
 
 	/* Obtain GeoClue client */
 	error = NULL;
-	GDBusProxy *geoclue_client = g_dbus_proxy_new_for_bus_sync(
-		G_BUS_TYPE_SYSTEM,
+	GDBusProxy *geoclue_client = g_dbus_proxy_new_sync(
+		conn,
 		G_DBUS_PROXY_FLAGS_NONE,
 		NULL,
 		"org.freedesktop.GeoClue2",
