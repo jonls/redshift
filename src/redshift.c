@@ -410,6 +410,10 @@ interpolate_color_settings(const transition_scheme_t *transition,
 		result->gamma[i] = (1.0-alpha)*night->gamma[i] +
 			alpha*day->gamma[i];
 	}
+
+	result->backlight = (1.0-alpha)*night->backlight +
+		alpha*day->backlight;
+
 }
 
 
@@ -920,6 +924,9 @@ run_continual_mode(const location_t *loc,
 		interp.brightness = adjustment_alpha*1.0 +
 			(1.0-adjustment_alpha)*interp.brightness;
 
+		interp.backlight = adjustment_alpha*1.0 +
+			(1.0-adjustment_alpha)*interp.backlight;
+
 		/* Quit loop when done */
 		if (done && !short_trans_delta) break;
 
@@ -934,6 +941,11 @@ run_continual_mode(const location_t *loc,
 				printf(_("Brightness: %.2f\n"),
 				       interp.brightness);
 			}
+			if (interp.backlight !=
+			    prev_interp.backlight) {
+				printf(_("Backlight: %.2f\n"),
+					interp.backlight);
+                        }
 		}
 
 		/* Adjust temperature */
@@ -991,10 +1003,12 @@ main(int argc, char *argv[])
 	scheme.day.temperature = -1;
 	scheme.day.gamma[0] = NAN;
 	scheme.day.brightness = NAN;
+	scheme.day.backlight = NAN;
 
 	scheme.night.temperature = -1;
 	scheme.night.gamma[0] = NAN;
 	scheme.night.brightness = NAN;
+	scheme.night.backlight = NAN;
 
 	/* Temperature for manual mode */
 	int temp_set = -1;
@@ -1326,6 +1340,18 @@ main(int argc, char *argv[])
 		scheme.night.gamma[2] = DEFAULT_GAMMA;
 	}
 
+	/* XXX those values are complete arbitrary, used just as a prototype
+	   those values should be set from
+	    - the command line
+	    - the config file
+	    - or have a default value if they are NAN
+	   we maybe want to add some safe limits here like backlight > 0.2 or 
+	   something, otherwise the user could set his monitor black and the
+	   game will be over
+        */
+	scheme.day.backlight = 0.8;
+	scheme.night.backlight = 0.4;
+
 	if (transition < 0) transition = 1;
 
 	location_t loc = { NAN, NAN };
@@ -1554,6 +1580,8 @@ main(int argc, char *argv[])
 			       interp.temperature);
 			printf(_("Brightness: %.2f\n"),
 			       interp.brightness);
+			printf(_("Backlight: %.2f\n"),
+				interp.backlight);
 		}
 
 		if (mode == PROGRAM_MODE_PRINT) {
@@ -1604,7 +1632,8 @@ main(int argc, char *argv[])
 	case PROGRAM_MODE_RESET:
 	{
 		/* Reset screen */
-		color_setting_t reset = { NEUTRAL_TEMP, { 1.0, 1.0, 1.0 }, 1.0 };
+		/* XXX the backlight==0.8 is arbitrary for this prototype */
+		color_setting_t reset = { NEUTRAL_TEMP, { 1.0, 1.0, 1.0 }, 1.0, 0.8 };
 		r = method->set_temperature(&state, &reset);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);

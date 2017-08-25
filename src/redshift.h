@@ -43,6 +43,7 @@ typedef struct {
 	int temperature;
 	float gamma[3];
 	float brightness;
+        float backlight;
 } color_setting_t;
 
 
