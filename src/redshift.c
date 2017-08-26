@@ -93,6 +93,8 @@
 # include "location-corelocation.h"
 #endif
 
+#include "backlight.h"
+
 #undef CLAMP
 #define CLAMP(lo,mid,up)  (((lo) > (mid)) ? (lo) : (((mid) < (up)) ? (mid) : (up)))
 
@@ -277,9 +279,14 @@ static const location_provider_t location_providers[] = {
 #define DEFAULT_NIGHT_TEMP  4500
 #define DEFAULT_BRIGHTNESS   1.0
 #define DEFAULT_GAMMA        1.0
+#define DEFAULT_DAY_BACKLIGHT   0.4
+#define DEFAULT_NIGHT_BACKLIGHT 0.05
 
 /* The color temperature when no adjustment is applied. */
 #define NEUTRAL_TEMP  6500
+
+/* The backlight brightness when no adjustment is applied. */
+#define NEUTRAL_BACKLIGHT 0.4
 
 /* Angular elevation of the sun at which the color temperature
    transition period starts and ends (in degress).
@@ -783,6 +790,7 @@ run_continual_mode(const location_t *loc,
 		   const transition_scheme_t *scheme,
 		   const gamma_method_t *method,
 		   gamma_state_t *state,
+		   backlight_state_t *backlight_state,
 		   int transition, int verbose)
 {
 	int r;
@@ -810,7 +818,7 @@ run_continual_mode(const location_t *loc,
 	   did not change. */
 	period_t prev_period = PERIOD_NONE;
 	color_setting_t prev_interp =
-		{ -1, { NAN, NAN, NAN }, NAN };
+		{ -1, { NAN, NAN, NAN }, NAN, NAN };
 
 	/* Continuously adjust color temperature */
 	int done = 0;
@@ -954,6 +962,15 @@ run_continual_mode(const location_t *loc,
 			if (r < 0) {
 				fputs(_("Temperature adjustment"
 					" failed.\n"), stderr);
+				return -1;
+			}
+
+			r = backlight_set_brightness(backlight_state, 
+					interp.backlight);
+			if (r != 0) {
+				fprintf(stderr, _("Backlight brightness"
+					          " adjustment failed: %s\n"),
+					strerror(errno));
 				return -1;
 			}
 		}
@@ -1347,10 +1364,14 @@ main(int argc, char *argv[])
 	    - or have a default value if they are NAN
 	   we maybe want to add some safe limits here like backlight > 0.2 or 
 	   something, otherwise the user could set his monitor black and the
-	   game will be over
+	   game will be over: use the BACKLIGHT_BRIGHTNESS_MIN_FRACTION constant
         */
-	scheme.day.backlight = 0.8;
-	scheme.night.backlight = 0.4;
+	if (isnan(scheme.day.backlight)) {
+		scheme.day.backlight = DEFAULT_DAY_BACKLIGHT;
+	}
+	if (isnan(scheme.night.backlight)) {
+		scheme.night.backlight = DEFAULT_NIGHT_BACKLIGHT;
+	}
 
 	if (transition < 0) transition = 1;
 
@@ -1485,6 +1506,14 @@ main(int argc, char *argv[])
 		printf(_("Brightness: %.2f:%.2f\n"),
 		       scheme.day.brightness, scheme.night.brightness);
 	}
+	
+	/* Initialize Backlight state*/
+	backlight_state_t backlight_state;
+	if (backlight_init(&backlight_state, 
+				"/sys/class/backlight/intel_backlight") != 0) {
+		fprintf(stderr, _("Backlight initialization failed: %s\n"),
+				strerror(errno));
+	}
 
 	/* Gamma */
 	if (!gamma_is_valid(scheme.day.gamma) ||
@@ -1542,6 +1571,9 @@ main(int argc, char *argv[])
 			}
 		}
 	}
+	
+	/* XXX  Backlight brightness
+	 * add sanity checks and verbose output */
 
 	config_ini_free(&config_state);
 
@@ -1595,6 +1627,16 @@ main(int argc, char *argv[])
 			method->free(&state);
 			exit(EXIT_FAILURE);
 		}
+		
+		r = backlight_set_brightness(&backlight_state, 
+				interp.backlight);
+		if (r != 0) {
+			fprintf(stderr, _("Backlight brightness"
+					  " adjustment failed: %s\n"),
+				strerror(errno));
+			/* I don't know if we should abort the program
+			 * execution if the backlight adjustment fails */
+		}
 
 		/* In Quartz (OSX) the gamma adjustments will automatically
 		   revert when the process exits. Therefore, we have to loop
@@ -1613,11 +1655,22 @@ main(int argc, char *argv[])
 		color_setting_t manual;
 		memcpy(&manual, &scheme.day, sizeof(color_setting_t));
 		manual.temperature = temp_set;
+		manual.backlight = NEUTRAL_BACKLIGHT; /* XXX just for now */
 		r = method->set_temperature(&state, &manual);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
 			method->free(&state);
 			exit(EXIT_FAILURE);
+		}
+		
+		r = backlight_set_brightness(&backlight_state, 
+				manual.backlight);
+		if (r != 0) {
+			fprintf(stderr, _("Backlight brightness"
+					  " adjustment failed: %s\n"),
+				strerror(errno));
+			/* I don't know if we should abort the program
+			 * execution if the backlight adjustment fails */
 		}
 
 		/* In Quartz (OSX) the gamma adjustments will automatically
@@ -1632,13 +1685,27 @@ main(int argc, char *argv[])
 	case PROGRAM_MODE_RESET:
 	{
 		/* Reset screen */
-		/* XXX the backlight==0.8 is arbitrary for this prototype */
-		color_setting_t reset = { NEUTRAL_TEMP, { 1.0, 1.0, 1.0 }, 1.0, 0.8 };
+		/* XXX NEUTRAL_BACKLIGHT is arbitrary 
+		 * for this prototype 
+		 * */
+		color_setting_t reset = { NEUTRAL_TEMP, { 1.0, 1.0, 1.0 }, 1.0, 
+						NEUTRAL_BACKLIGHT };
+
 		r = method->set_temperature(&state, &reset);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
 			method->free(&state);
 			exit(EXIT_FAILURE);
+		}
+		
+		r = backlight_set_brightness(&backlight_state, 
+				reset.backlight);
+		if (r != 0) {
+			fprintf(stderr, _("Backlight brightness"
+					  " adjustment failed: %s\n"),
+				strerror(errno));
+			/* I don't know if we should abort the program
+			 * execution if the backlight adjustment fails */
 		}
 
 		/* In Quartz (OSX) the gamma adjustments will automatically
@@ -1654,6 +1721,7 @@ main(int argc, char *argv[])
 	{
 		r = run_continual_mode(&loc, &scheme,
 				       method, &state,
+				       &backlight_state,
 				       transition, verbose);
 		if (r < 0) exit(EXIT_FAILURE);
 	}
