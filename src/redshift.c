@@ -780,6 +780,30 @@ find_location_provider(const char *name)
 	return provider;
 }
 
+static int
+set_temperature_and_brightness(const gamma_method_t *method,
+				gamma_state_t *state,
+				backlight_state_t *backlight_state,
+				color_setting_t *interp) {
+	/* XXX */
+	int r = -1;
+	r = method->set_temperature(state, interp);
+	if (r < 0) {
+		fputs(_("Temperature adjustment"
+					" failed.\n"), stderr);
+		return -1;
+	}
+
+	r = backlight_set_brightness(backlight_state, 
+			interp->backlight);
+	if (r != 0) {
+		fprintf(stderr, _("Backlight brightness"
+					" adjustment failed: %s\n"),
+				strerror(errno));
+		return -1;
+	}
+}
+
 
 /* Run continual mode loop
    This is the main loop of the continual mode which keeps track of the
@@ -958,19 +982,9 @@ run_continual_mode(const location_t *loc,
 
 		/* Adjust temperature */
 		if (!disabled || short_trans_delta || set_adjustments) {
-			r = method->set_temperature(state, &interp);
+			r = set_temperature_and_brightness(method, state,
+							backlight_state, &interp);
 			if (r < 0) {
-				fputs(_("Temperature adjustment"
-					" failed.\n"), stderr);
-				return -1;
-			}
-
-			r = backlight_set_brightness(backlight_state, 
-					interp.backlight);
-			if (r != 0) {
-				fprintf(stderr, _("Backlight brightness"
-					          " adjustment failed: %s\n"),
-					strerror(errno));
 				return -1;
 			}
 		}
@@ -1621,21 +1635,11 @@ main(int argc, char *argv[])
 		}
 
 		/* Adjust temperature */
-		r = method->set_temperature(&state, &interp);
+		r = set_temperature_and_brightness(method, &state,
+				&backlight_state, &interp);
 		if (r < 0) {
-			fputs(_("Temperature adjustment failed.\n"), stderr);
 			method->free(&state);
 			exit(EXIT_FAILURE);
-		}
-		
-		r = backlight_set_brightness(&backlight_state, 
-				interp.backlight);
-		if (r != 0) {
-			fprintf(stderr, _("Backlight brightness"
-					  " adjustment failed: %s\n"),
-				strerror(errno));
-			/* I don't know if we should abort the program
-			 * execution if the backlight adjustment fails */
 		}
 
 		/* In Quartz (OSX) the gamma adjustments will automatically
@@ -1656,21 +1660,11 @@ main(int argc, char *argv[])
 		memcpy(&manual, &scheme.day, sizeof(color_setting_t));
 		manual.temperature = temp_set;
 		manual.backlight = NEUTRAL_BACKLIGHT; /* XXX just for now */
-		r = method->set_temperature(&state, &manual);
+		r = set_temperature_and_brightness(method, &state,
+				&backlight_state, &manual);
 		if (r < 0) {
-			fputs(_("Temperature adjustment failed.\n"), stderr);
 			method->free(&state);
 			exit(EXIT_FAILURE);
-		}
-		
-		r = backlight_set_brightness(&backlight_state, 
-				manual.backlight);
-		if (r != 0) {
-			fprintf(stderr, _("Backlight brightness"
-					  " adjustment failed: %s\n"),
-				strerror(errno));
-			/* I don't know if we should abort the program
-			 * execution if the backlight adjustment fails */
 		}
 
 		/* In Quartz (OSX) the gamma adjustments will automatically
@@ -1691,21 +1685,11 @@ main(int argc, char *argv[])
 		color_setting_t reset = { NEUTRAL_TEMP, { 1.0, 1.0, 1.0 }, 1.0, 
 						NEUTRAL_BACKLIGHT };
 
-		r = method->set_temperature(&state, &reset);
+		r = set_temperature_and_brightness(method, &state,
+				&backlight_state, &reset);
 		if (r < 0) {
-			fputs(_("Temperature adjustment failed.\n"), stderr);
 			method->free(&state);
 			exit(EXIT_FAILURE);
-		}
-		
-		r = backlight_set_brightness(&backlight_state, 
-				reset.backlight);
-		if (r != 0) {
-			fprintf(stderr, _("Backlight brightness"
-					  " adjustment failed: %s\n"),
-				strerror(errno));
-			/* I don't know if we should abort the program
-			 * execution if the backlight adjustment fails */
 		}
 
 		/* In Quartz (OSX) the gamma adjustments will automatically
