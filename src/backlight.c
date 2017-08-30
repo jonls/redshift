@@ -11,9 +11,6 @@ static
 int write_unsigned_int(backlight_state_t *state, 
 		const char *object_name, unsigned int value);
 
-static
-unsigned int in_range(backlight_state_t *state, unsigned int value);
-
 
 void backlight_set_controller(backlight_state_t *state, const char *controller_path) {
 	if (!controller_path) {
@@ -39,15 +36,6 @@ int backlight_init(backlight_state_t *state) {
 	if (state->maximum <= 1)
 		return -1;
 	
-	/* define a minimum value based on a fraction of the maximum
-	 * this is a safeguard to prevent the user to set a backlight
-	 * brightness of zero and put his monitor black.
-	 * */
-	state->minimum = (state->maximum * 
-			BACKLIGHT_BRIGHTNESS_MIN_FRACTION);
-	if (state->minimum == 0)
-		state->minimum = 1;
-	
 	return 0;
 }
 
@@ -55,16 +43,15 @@ int backlight_is_enabled(backlight_state_t *state) {
 	return state->controller_path[0] != 0;
 }
 
-int backlight_set_brightness(backlight_state_t *state, float backlight) {
+int backlight_set_brightness(backlight_state_t *state, float brightness) {
 	if (!backlight_is_enabled(state))
 		return -1;
 
 	/* round the value and make sure that the value is in range */
-	unsigned int brightness = (unsigned int)(backlight *
-					state->maximum + 0.5);
-	brightness = in_range(state, brightness);
+	unsigned int scaled_brightness = (unsigned int)(brightness * 
+							state->maximum + 0.5);
 
-	if (write_unsigned_int(state, "brightness", brightness) != 0)
+	if (write_unsigned_int(state, "brightness", scaled_brightness) != 0)
 		return -1;
 
 	return 0;
@@ -111,9 +98,3 @@ int write_unsigned_int(backlight_state_t *state,
 	return 0;
 }
 
-static
-unsigned int in_range(backlight_state_t *state, unsigned int value) {
-	value = value > state->maximum ? state->maximum : value;
-	value = value < state->minimum ? state->minimum : value;
-	return value;
-}
