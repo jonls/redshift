@@ -29,6 +29,13 @@
 #include <locale.h>
 #include <errno.h>
 
+/* Needed to list the sysfs directory's entries
+ * for the backlight support. 
+ * */
+#include <sys/types.h>
+#include <dirent.h>
+
+
 #if defined(HAVE_SIGNAL_H) && !defined(__WIN32__)
 # include <signal.h>
 #endif
@@ -94,6 +101,8 @@
 #endif
 
 #include "backlight.h"
+
+#define BACKLIGHT_SYSFS_PATH "/sys/class/backlight"
 
 #undef CLAMP
 #define CLAMP(lo,mid,up)  (((lo) > (mid)) ? (lo) : (((mid) < (up)) ? (mid) : (up)))
@@ -443,9 +452,11 @@ print_help(const char *program_name)
 
 	/* TRANSLATORS: help output 4
 	   `list' must not be translated
+	   `sysfs' must not be translated
 	   no-wrap */
 	fputs(_("  -b DAY:NIGHT\tScreen brightness to apply (between 0.1 and 1.0)\n"
                 "  -k PATH\tEnable the backlight control using sysfs PATH\n"
+		"  \t\t(Type `list' to see available paths)\n"
                 "  -c FILE\tLoad settings from specified configuration file\n"
 		"  -g R:G:B\tAdditional gamma correction to apply\n"
 		"  -l LAT:LON\tYour current location\n"
@@ -514,6 +525,33 @@ print_provider_list()
 		"`-l PROVIDER:OPTIONS'.\n"), stdout);
 	/* TRANSLATORS: `help' must not be translated. */
 	fputs(_("Try `-l PROVIDER:help' for help.\n"), stdout);
+}
+
+static void 
+print_backlight_path_list() {
+	DIR *sysfs_dir = opendir(BACKLIGHT_SYSFS_PATH);
+
+	if (!sysfs_dir) {
+		/* TRANSLATORS: `sysfs' must not be translated. */
+		fprintf(stderr, _("Backlight sysfs path %s not available: %s\n"), 
+				BACKLIGHT_SYSFS_PATH, strerror(errno));
+		return;
+	}
+
+	/* Print the content in backlight sysfs.
+	 * Ignore entries like '.' and '..'
+	 * */
+	/* TRANSLATORS: `sysfs' must not be translated. */
+	fputs(_("Available backlight sysfs paths:\n"), stdout);
+	struct dirent *reg = NULL;
+	for(reg = readdir(sysfs_dir); reg != NULL; reg = readdir(sysfs_dir)) {
+		if (reg->d_name[0] != '.')
+			printf("  %s/%s\n", BACKLIGHT_SYSFS_PATH, reg->d_name);
+	}
+	
+	fputs("\n", stdout);
+
+	closedir(sysfs_dir);
 }
 
 
@@ -1070,6 +1108,12 @@ main(int argc, char *argv[])
 						&scheme.night.brightness);
 			break;
 		case 'k':
+			/* Print list of paths if argument is `list' */
+			if (strcasecmp(optarg, "list") == 0) {
+				print_backlight_path_list();
+				exit(EXIT_SUCCESS);
+			}
+
 			backlight_set_controller(&backlight_state, optarg);
 			break;
 		case 'c':
