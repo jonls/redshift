@@ -11,6 +11,8 @@ typedef struct {
 
 int backlight_init(backlight_state_t *state, const char *controller_path);
 
+int backlight_is_enabled(backlight_state_t *state);
+
 int backlight_set_brightness(backlight_state_t *state, float backlight);
 
 

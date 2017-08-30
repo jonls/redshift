@@ -279,14 +279,9 @@ static const location_provider_t location_providers[] = {
 #define DEFAULT_NIGHT_TEMP  4500
 #define DEFAULT_BRIGHTNESS   1.0
 #define DEFAULT_GAMMA        1.0
-#define DEFAULT_DAY_BACKLIGHT   0.4
-#define DEFAULT_NIGHT_BACKLIGHT 0.05
 
 /* The color temperature when no adjustment is applied. */
 #define NEUTRAL_TEMP  6500
-
-/* The backlight brightness when no adjustment is applied. */
-#define NEUTRAL_BACKLIGHT 0.4
 
 /* Angular elevation of the sun at which the color temperature
    transition period starts and ends (in degress).
@@ -417,9 +412,6 @@ interpolate_color_settings(const transition_scheme_t *transition,
 		result->gamma[i] = (1.0-alpha)*night->gamma[i] +
 			alpha*day->gamma[i];
 	}
-
-	result->backlight = (1.0-alpha)*night->backlight +
-		alpha*day->backlight;
 
 }
 
@@ -785,23 +777,36 @@ set_temperature_and_brightness(const gamma_method_t *method,
 				gamma_state_t *state,
 				backlight_state_t *backlight_state,
 				color_setting_t *interp) {
-	/* XXX */
+	
 	int r = -1;
-	r = method->set_temperature(state, interp);
+	float brightness = interp->brightness;
+	if (backlight_is_enabled(backlight_state)) {
+		interp->brightness = DEFAULT_BRIGHTNESS;
+		r = method->set_temperature(state, interp);
+		interp->brightness = brightness;
+	}
+	else {
+		r = method->set_temperature(state, interp);
+	}
+
 	if (r < 0) {
 		fputs(_("Temperature adjustment"
 					" failed.\n"), stderr);
 		return -1;
 	}
 
-	r = backlight_set_brightness(backlight_state, 
-			interp->backlight);
-	if (r != 0) {
-		fprintf(stderr, _("Backlight brightness"
-					" adjustment failed: %s\n"),
-				strerror(errno));
-		return -1;
+	if (backlight_is_enabled(backlight_state)) {
+		r = backlight_set_brightness(backlight_state, 
+				interp->brightness);
+		if (r != 0) {
+			fprintf(stderr, _("Backlight brightness"
+						" adjustment failed: %s\n"),
+					strerror(errno));
+			return -1;
+		}
 	}
+
+	return 0;
 }
 
 
@@ -956,9 +961,6 @@ run_continual_mode(const location_t *loc,
 		interp.brightness = adjustment_alpha*1.0 +
 			(1.0-adjustment_alpha)*interp.brightness;
 
-		interp.backlight = adjustment_alpha*1.0 +
-			(1.0-adjustment_alpha)*interp.backlight;
-
 		/* Quit loop when done */
 		if (done && !short_trans_delta) break;
 
@@ -973,11 +975,6 @@ run_continual_mode(const location_t *loc,
 				printf(_("Brightness: %.2f\n"),
 				       interp.brightness);
 			}
-			if (interp.backlight !=
-			    prev_interp.backlight) {
-				printf(_("Backlight: %.2f\n"),
-					interp.backlight);
-                        }
 		}
 
 		/* Adjust temperature */
@@ -1034,12 +1031,10 @@ main(int argc, char *argv[])
 	scheme.day.temperature = -1;
 	scheme.day.gamma[0] = NAN;
 	scheme.day.brightness = NAN;
-	scheme.day.backlight = NAN;
 
 	scheme.night.temperature = -1;
 	scheme.night.gamma[0] = NAN;
 	scheme.night.brightness = NAN;
-	scheme.night.backlight = NAN;
 
 	/* Temperature for manual mode */
 	int temp_set = -1;
@@ -1371,22 +1366,6 @@ main(int argc, char *argv[])
 		scheme.night.gamma[2] = DEFAULT_GAMMA;
 	}
 
-	/* XXX those values are complete arbitrary, used just as a prototype
-	   those values should be set from
-	    - the command line
-	    - the config file
-	    - or have a default value if they are NAN
-	   we maybe want to add some safe limits here like backlight > 0.2 or 
-	   something, otherwise the user could set his monitor black and the
-	   game will be over: use the BACKLIGHT_BRIGHTNESS_MIN_FRACTION constant
-        */
-	if (isnan(scheme.day.backlight)) {
-		scheme.day.backlight = DEFAULT_DAY_BACKLIGHT;
-	}
-	if (isnan(scheme.night.backlight)) {
-		scheme.night.backlight = DEFAULT_NIGHT_BACKLIGHT;
-	}
-
 	if (transition < 0) transition = 1;
 
 	location_t loc = { NAN, NAN };
@@ -1626,8 +1605,6 @@ main(int argc, char *argv[])
 			       interp.temperature);
 			printf(_("Brightness: %.2f\n"),
 			       interp.brightness);
-			printf(_("Backlight: %.2f\n"),
-				interp.backlight);
 		}
 
 		if (mode == PROGRAM_MODE_PRINT) {
@@ -1659,7 +1636,6 @@ main(int argc, char *argv[])
 		color_setting_t manual;
 		memcpy(&manual, &scheme.day, sizeof(color_setting_t));
 		manual.temperature = temp_set;
-		manual.backlight = NEUTRAL_BACKLIGHT; /* XXX just for now */
 		r = set_temperature_and_brightness(method, &state,
 				&backlight_state, &manual);
 		if (r < 0) {
@@ -1679,11 +1655,7 @@ main(int argc, char *argv[])
 	case PROGRAM_MODE_RESET:
 	{
 		/* Reset screen */
-		/* XXX NEUTRAL_BACKLIGHT is arbitrary 
-		 * for this prototype 
-		 * */
-		color_setting_t reset = { NEUTRAL_TEMP, { 1.0, 1.0, 1.0 }, 1.0, 
-						NEUTRAL_BACKLIGHT };
+		color_setting_t reset = { NEUTRAL_TEMP, { 1.0, 1.0, 1.0 }, 1.0 };
 
 		r = set_temperature_and_brightness(method, &state,
 				&backlight_state, &reset);

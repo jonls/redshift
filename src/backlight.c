@@ -16,6 +16,9 @@ unsigned int in_range(backlight_state_t *state, unsigned int value);
 
 int backlight_init(backlight_state_t *state, const char *controller_path) {
 	state->controller_path = controller_path;
+	if (!state->controller_path) {
+		return 0;
+	}
 
 	/* read the maximum value that the backlight can be set */
 	if (read_unsigned_int(state, "max_brightness", 
@@ -37,7 +40,14 @@ int backlight_init(backlight_state_t *state, const char *controller_path) {
 	return 0;
 }
 
+int backlight_is_enabled(backlight_state_t *state) {
+	return state->controller_path != 0;
+}
+
 int backlight_set_brightness(backlight_state_t *state, float backlight) {
+	if (!state->controller_path)
+		return -1;
+
 	/* round the value and make sure that the value is in range */
 	unsigned int brightness = (unsigned int)(backlight *
 					state->maximum + 0.5);
