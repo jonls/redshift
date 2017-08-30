@@ -4,10 +4,10 @@
 temp-day=5700
 temp-night=3500
 
-; Enable/Disable a smooth transition between day and night
-; 0 will cause a direct change from day to night screen temperature.
-; 1 will gradually increase or decrease the screen temperature.
-transition=1
+; Disable the smooth fade between temperatures when Redshift starts and stops.
+; 0 will cause an immediate change between screen temperatures.
+; 1 will gradually apply the new screen temperature over a couple of seconds.
+fade=1
 
 ; Set the screen brightness. Default is 1.0.
 ;brightness=0.9
