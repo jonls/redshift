@@ -1,6 +1,7 @@
 
 #include "backlight.h"
 #include <stdio.h>
+#include <string.h>
 
 static
 int read_unsigned_int(backlight_state_t *state, 
@@ -14,11 +15,21 @@ static
 unsigned int in_range(backlight_state_t *state, unsigned int value);
 
 
-int backlight_init(backlight_state_t *state, const char *controller_path) {
-	state->controller_path = controller_path;
-	if (!state->controller_path) {
-		return 0;
+void backlight_set_controller(backlight_state_t *state, const char *controller_path) {
+	if (!controller_path) {
+		state->controller_path[0] = 0;
+		return;
 	}
+
+	size_t bufsz = sizeof(state->controller_path);
+
+	strncpy(state->controller_path, controller_path, bufsz);
+	state->controller_path[bufsz-1] = 0;
+}
+
+int backlight_init(backlight_state_t *state) {
+	if (!backlight_is_enabled(state))
+		return 0;
 
 	/* read the maximum value that the backlight can be set */
 	if (read_unsigned_int(state, "max_brightness", 
@@ -41,11 +52,11 @@ int backlight_init(backlight_state_t *state, const char *controller_path) {
 }
 
 int backlight_is_enabled(backlight_state_t *state) {
-	return state->controller_path != 0;
+	return state->controller_path[0] != 0;
 }
 
 int backlight_set_brightness(backlight_state_t *state, float backlight) {
-	if (!state->controller_path)
+	if (!backlight_is_enabled(state))
 		return -1;
 
 	/* round the value and make sure that the value is in range */

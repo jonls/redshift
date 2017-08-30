@@ -445,6 +445,7 @@ print_help(const char *program_name)
 	   `list' must not be translated
 	   no-wrap */
 	fputs(_("  -b DAY:NIGHT\tScreen brightness to apply (between 0.1 and 1.0)\n"
+                "  -k PATH\tEnable the backlight control using sysfs PATH\n"
                 "  -c FILE\tLoad settings from specified configuration file\n"
 		"  -g R:G:B\tAdditional gamma correction to apply\n"
 		"  -l LAT:LON\tYour current location\n"
@@ -1035,6 +1036,9 @@ main(int argc, char *argv[])
 	scheme.night.temperature = -1;
 	scheme.night.gamma[0] = NAN;
 	scheme.night.brightness = NAN;
+	
+	/* Backlight state */
+	backlight_state_t backlight_state = { 0 };
 
 	/* Temperature for manual mode */
 	int temp_set = -1;
@@ -1058,12 +1062,15 @@ main(int argc, char *argv[])
 
 	/* Parse command line arguments. */
 	int opt;
-	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:prt:vVx")) != -1) {
+	while ((opt = getopt(argc, argv, "b:k:c:g:hl:m:oO:prt:vVx")) != -1) {
 		switch (opt) {
 		case 'b':
 			parse_brightness_string(optarg,
 						&scheme.day.brightness,
 						&scheme.night.brightness);
+			break;
+		case 'k':
+			backlight_set_controller(&backlight_state, optarg);
 			break;
 		case 'c':
 			free(config_filepath);
@@ -1500,12 +1507,15 @@ main(int argc, char *argv[])
 		       scheme.day.brightness, scheme.night.brightness);
 	}
 	
-	/* Initialize Backlight state*/
-	backlight_state_t backlight_state;
-	if (backlight_init(&backlight_state, 
-				"/sys/class/backlight/intel_backlight") != 0) {
+	/* Initialize Backlight state */
+	if (backlight_init(&backlight_state) != 0) {
 		fprintf(stderr, _("Backlight initialization failed: %s\n"),
 				strerror(errno));
+	}
+	
+	if (verbose && backlight_is_enabled(&backlight_state)) {
+		printf(_("Backlight enabled via %s\n"),
+		       backlight_state.controller_path);
 	}
 
 	/* Gamma */

@@ -4,12 +4,14 @@
 #define BACKLIGHT_BRIGHTNESS_MIN_FRACTION (0.001)
 
 typedef struct {
-	const char *controller_path;
+	char controller_path[255];
 	unsigned int maximum;
 	unsigned int minimum;
 } backlight_state_t;
 
-int backlight_init(backlight_state_t *state, const char *controller_path);
+void backlight_set_controller(backlight_state_t *state, const char *controller_path);
+
+int backlight_init(backlight_state_t *state);
 
 int backlight_is_enabled(backlight_state_t *state);
 
