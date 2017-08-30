@@ -35,6 +35,20 @@
 # define _(s) s
 #endif
 
+#define DBUS_ACCESS_ERROR  "org.freedesktop.DBus.Error.AccessDenied"
+
+
+/* Print the message explaining denial from GeoClue. */
+static void
+print_denial_message()
+{
+	g_printerr(_(
+		"Access to the current location was denied by GeoClue!\n"
+		"Make sure that location services are enabled and that"
+		" Redshift is permitted\nto use location services."
+		" See https://github.com/jonls/redshift#faq for more\n"
+		"information.\n"));
+}
 
 /* Indicate an unrecoverable error during GeoClue2 communication. */
 static void
@@ -68,8 +82,8 @@ geoclue_client_signal_cb(GDBusProxy *client, gchar *sender_name,
 
 	/* Obtain location */
 	GError *error = NULL;
-	GDBusProxy *location = g_dbus_proxy_new_for_bus_sync(
-		G_BUS_TYPE_SYSTEM,
+	GDBusProxy *location = g_dbus_proxy_new_sync(
+		g_dbus_proxy_get_connection(client),
 		G_DBUS_PROXY_FLAGS_NONE,
 		NULL,
 		"org.freedesktop.GeoClue2",
@@ -111,8 +125,8 @@ on_name_appeared(GDBusConnection *conn, const gchar *name,
 
 	/* Obtain GeoClue Manager */
 	GError *error = NULL;
-	GDBusProxy *geoclue_manager = g_dbus_proxy_new_for_bus_sync(
-		G_BUS_TYPE_SYSTEM,
+	GDBusProxy *geoclue_manager = g_dbus_proxy_new_sync(
+		conn,
 		G_DBUS_PROXY_FLAGS_NONE,
 		NULL,
 		"org.freedesktop.GeoClue2",
@@ -149,8 +163,8 @@ on_name_appeared(GDBusConnection *conn, const gchar *name,
 
 	/* Obtain GeoClue client */
 	error = NULL;
-	GDBusProxy *geoclue_client = g_dbus_proxy_new_for_bus_sync(
-		G_BUS_TYPE_SYSTEM,
+	GDBusProxy *geoclue_client = g_dbus_proxy_new_sync(
+		conn,
 		G_DBUS_PROXY_FLAGS_NONE,
 		NULL,
 		"org.freedesktop.GeoClue2",
@@ -225,6 +239,14 @@ on_name_appeared(GDBusConnection *conn, const gchar *name,
 	if (ret_v == NULL) {
 		g_printerr(_("Unable to start GeoClue client: %s.\n"),
 			   error->message);
+		if (g_dbus_error_is_remote_error(error)) {
+			gchar *dbus_error = g_dbus_error_get_remote_error(
+				error);
+			if (g_strcmp0(dbus_error, DBUS_ACCESS_ERROR) == 0) {
+				print_denial_message();
+			}
+			g_free(dbus_error);
+		}
 		g_error_free(error);
 		g_object_unref(geoclue_client);
 		g_object_unref(geoclue_manager);
