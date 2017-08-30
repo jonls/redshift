@@ -67,7 +67,7 @@ Print mode (only print parameters and exit)
 Reset mode (remove adjustment from screen)
 .TP
 \fB\-r\fR
-Disable temperature transitions
+Disable fading between color temperatures
 .TP
 \fB\-t\fR DAY:NIGHT
 Color temperature to set at daytime/night
@@ -94,8 +94,9 @@ Daytime temperature
 \fBtemp\-night\fR = integer
 Night temperature
 .TP
-\fBtransition\fR = 0 or 1
-Disable or enable transitions
+\fBfade\fR = 0 or 1
+Disable or enable fading between color temperatures when Redshift starts or
+stops
 .TP
 \fBbrightness\-day\fR = 0.1\-1.0
 Screen brightness at daytime
