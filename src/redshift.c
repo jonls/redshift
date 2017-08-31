@@ -455,7 +455,7 @@ print_help(const char *program_name)
 		"  -O TEMP\tOne shot manual mode (set color temperature)\n"
 		"  -p\t\tPrint mode (only print parameters and exit)\n"
 		"  -x\t\tReset mode (remove adjustment from screen)\n"
-		"  -r\t\tDisable temperature transitions\n"
+		"  -r\t\tDisable fading between color temperatures\n"
 		"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"),
 	      stdout);
 	fputs("\n", stdout);
@@ -863,11 +863,11 @@ run_continual_mode(const location_provider_t *provider,
 		   const transition_scheme_t *scheme,
 		   const gamma_method_t *method,
 		   gamma_state_t *state,
-		   int transition, int verbose)
+		   int use_fade, int verbose)
 {
 	int r;
 
-	/* Make an initial transition from 6500K */
+	/* Make an initial fade from 6500K */
 	int short_trans_delta = -1;
 	int short_trans_len = 10;
 
@@ -938,14 +938,12 @@ run_continual_mode(const location_provider_t *provider,
 		/* Check to see if exit signal was caught */
 		if (exiting) {
 			if (done) {
-				/* On second signal stop the ongoing
-				   transition */
+				/* On second signal stop the ongoing fade */
 				short_trans_delta = 0;
 				adjustment_alpha = 0.0;
 			} else {
 				if (!disabled) {
-					/* Make a short transition
-					   back to 6500K */
+					/* Make a short fade back to 6500K */
 					short_trans_delta = 1;
 					short_trans_len = 2;
 				}
@@ -963,9 +961,9 @@ run_continual_mode(const location_provider_t *provider,
 			return -1;
 		}
 
-		/* Skip over transition if transitions are disabled */
+		/* Skip over fade if fades are disabled */
 		int set_adjustments = 0;
-		if (!transition) {
+		if (!use_fade) {
 			if (short_trans_delta) {
 				adjustment_alpha = short_trans_delta < 0 ?
 					0.0 : 1.0;
@@ -982,7 +980,7 @@ run_continual_mode(const location_provider_t *provider,
 		interpolate_color_settings(scheme, elevation, &interp);
 
 		/* Print period if it changed during this update,
-		   or if we are in transition. In transition we
+		   or if we are in the transition period. In transition we
 		   print the progress, so we always print it in
 		   that case. */
 		period_t period = get_period(scheme, elevation);
@@ -999,13 +997,13 @@ run_continual_mode(const location_provider_t *provider,
 			hooks_signal_period_change(prev_period, period);
 		}
 
-		/* Ongoing short transition */
+		/* Ongoing short fade */
 		if (short_trans_delta) {
 			/* Calculate alpha */
 			adjustment_alpha += short_trans_delta * 0.1 /
 				(float)short_trans_len;
 
-			/* Stop transition when done */
+			/* Stop fade when done */
 			if (adjustment_alpha <= 0.0 ||
 			    adjustment_alpha >= 1.0) {
 				short_trans_delta = 0;
@@ -1140,7 +1138,7 @@ main(int argc, char *argv[])
 	/* Initialize settings to NULL values. */
 	char *config_filepath = NULL;
 
-	/* Settings for day, night and transition.
+	/* Settings for day, night and transition period.
 	   Initialized to indicate that the values are not set yet. */
 	transition_scheme_t scheme =
 		{ TRANSITION_HIGH, TRANSITION_LOW };
@@ -1162,7 +1160,7 @@ main(int argc, char *argv[])
 	const location_provider_t *provider = NULL;
 	char *provider_args = NULL;
 
-	int transition = -1;
+	int use_fade = -1;
 	program_mode_t mode = PROGRAM_MODE_CONTINUAL;
 	int verbose = 0;
 	char *s;
@@ -1292,7 +1290,7 @@ main(int argc, char *argv[])
 			mode = PROGRAM_MODE_PRINT;
 			break;
 		case 'r':
-			transition = 0;
+			use_fade = 0;
 			break;
 		case 't':
 			s = strchr(optarg, ':');
@@ -1352,9 +1350,10 @@ main(int argc, char *argv[])
 						atoi(setting->value);
 				}
 			} else if (strcasecmp(setting->name,
-					      "transition") == 0) {
-				if (transition < 0) {
-					transition = !!atoi(setting->value);
+					      "transition") == 0 ||
+				   strcasecmp(setting->name, "fade") == 0) {
+				if (use_fade < 0) {
+					use_fade = !!atoi(setting->value);
 				}
 			} else if (strcasecmp(setting->name,
 					      "brightness") == 0) {
@@ -1483,7 +1482,7 @@ main(int argc, char *argv[])
 		scheme.night.gamma[2] = DEFAULT_GAMMA;
 	}
 
-	if (transition < 0) transition = 1;
+	if (use_fade < 0) use_fade = 1;
 
 	/* Initialize location provider. If provider is NULL
 	   try all providers until one that works is found. */
@@ -1769,7 +1768,7 @@ main(int argc, char *argv[])
 	{
 		r = run_continual_mode(provider, &location_state, &scheme,
 				       method, &state,
-				       transition, verbose);
+				       use_fade, verbose);
 		if (r < 0) exit(EXIT_FAILURE);
 	}
 	break;
