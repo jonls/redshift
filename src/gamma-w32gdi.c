@@ -43,7 +43,7 @@ int
 w32gdi_init(w32gdi_state_t *state)
 {
 	state->saved_ramps = NULL;
-	state->preserve = 0;
+	state->preserve = 1;
 
 	return 0;
 }
