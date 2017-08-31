@@ -292,6 +292,9 @@ static const location_provider_t location_providers[] = {
 #define SLEEP_DURATION        5000
 #define SLEEP_DURATION_SHORT  100
 
+/* Length of fade in numbers of short sleep durations. */
+#define FADE_LENGTH  40
+
 /* Program modes. */
 typedef enum {
 	PROGRAM_MODE_CONTINUAL,
@@ -389,11 +392,32 @@ print_location(const location_t *location)
 	       fabs(location->lon), location->lon >= 0.f ? east : west);
 }
 
-/* Interpolate color setting structs based on solar elevation */
+/* Interpolate color setting structs given alpha. */
 static void
-interpolate_color_settings(const transition_scheme_t *transition,
-			   double elevation,
-			   color_setting_t *result)
+interpolate_color_settings(
+	const color_setting_t *first,
+	const color_setting_t *second,
+	double alpha,
+	color_setting_t *result)
+{
+	alpha = CLAMP(0.0, alpha, 1.0);
+
+	result->temperature = (1.0-alpha)*first->temperature +
+		alpha*second->temperature;
+	result->brightness = (1.0-alpha)*first->brightness +
+		alpha*second->brightness;
+	for (int i = 0; i < 3; i++) {
+		result->gamma[i] = (1.0-alpha)*first->gamma[i] +
+			alpha*second->gamma[i];
+	}
+}
+
+/* Interpolate color setting structs transition scheme. */
+static void
+interpolate_transition_scheme(
+	const transition_scheme_t *transition,
+	double elevation,
+	color_setting_t *result)
 {
 	const color_setting_t *day = &transition->day;
 	const color_setting_t *night = &transition->night;
@@ -401,15 +425,21 @@ interpolate_color_settings(const transition_scheme_t *transition,
 	double alpha = (transition->low - elevation) /
 		(transition->low - transition->high);
 	alpha = CLAMP(0.0, alpha, 1.0);
+	interpolate_color_settings(night, day, alpha, result);
+}
 
-	result->temperature = (1.0-alpha)*night->temperature +
-		alpha*day->temperature;
-	result->brightness = (1.0-alpha)*night->brightness +
-		alpha*day->brightness;
-	for (int i = 0; i < 3; i++) {
-		result->gamma[i] = (1.0-alpha)*night->gamma[i] +
-			alpha*day->gamma[i];
-	}
+/* Return 1 if color settings have major differences, otherwise 0.
+   Used to determine if a fade should be applied in continual mode. */
+static int
+color_setting_diff_is_major(
+	const color_setting_t *first,
+	const color_setting_t *second)
+{
+	return (abs(first->temperature - second->temperature) > 25 ||
+		fabsf(first->brightness - second->brightness) > 0.1 ||
+		fabsf(first->gamma[0] - second->gamma[0]) > 0.1 ||
+		fabsf(first->gamma[1] - second->gamma[1]) > 0.1 ||
+		fabsf(first->gamma[2] - second->gamma[2]) > 0.1);
 }
 
 
@@ -810,6 +840,7 @@ provider_get_location(
 		int loc_fd = provider->get_fd(state);
 		if (loc_fd >= 0) {
 			/* Provider is dynamic. */
+			/* TODO: This should use a monotonic time source. */
 			double now;
 			int r = systemtime_get_time(&now);
 			if (r < 0) {
@@ -852,6 +883,17 @@ provider_get_location(
 	return 1;
 }
 
+/* Easing function for fade.
+   See https://github.com/mietek/ease-tween */
+static double
+ease_fade(double t)
+{
+	if (t <= 0) return 0;
+	if (t >= 1) return 1;
+	return 1.0042954579734844 * exp(
+		-6.4041738958415664 * exp(-7.2908241330981340 * t));
+}
+
 
 /* Run continual mode loop
    This is the main loop of the continual mode which keeps track of the
@@ -867,30 +909,26 @@ run_continual_mode(const location_provider_t *provider,
 {
 	int r;
 
-	/* Make an initial fade from 6500K */
-	int short_trans_delta = -1;
-	int short_trans_len = 10;
-
-	/* Amount of adjustment to apply. At zero the color
-	   temperature will be exactly as calculated, and at one it
-	   will be exactly 6500K. */
-	double adjustment_alpha = 1.0;
+	/* Short fade parameters */
+	int fade_length = 0;
+	int fade_time = 0;
+	color_setting_t fade_start_interp;
 
 	r = signals_install_handlers();
 	if (r < 0) {
 		return r;
 	}
 
-	if (verbose) {
-		printf(_("Status: %s\n"), _("Enabled"));
-	}
-
-	/* Save previous colors so we can avoid
-	   printing status updates if the values
-	   did not change. */
+	/* Save previous parameters so we can avoid printing status updates if
+	   the values did not change. */
 	period_t prev_period = PERIOD_NONE;
-	color_setting_t prev_interp =
-		{ -1, { NAN, NAN, NAN }, NAN };
+
+	/* Previous target color setting and current actual color setting.
+	   Actual color setting takes into account the current color fade. */
+	color_setting_t prev_target_interp =
+		{ NEUTRAL_TEMP, { 1.0, 1.0, 1.0 }, 1.0 };
+	color_setting_t interp =
+		{ NEUTRAL_TEMP, { 1.0, 1.0, 1.0 }, 1.0 };
 
 	fputs(_("Waiting for initial location"
 		" to become available...\n"), stderr);
@@ -911,47 +949,42 @@ run_continual_mode(const location_provider_t *provider,
 
 	print_location(&loc);
 
+	if (verbose) {
+		printf(_("Color temperature: %uK\n"), interp.temperature);
+		printf(_("Brightness: %.2f\n"), interp.brightness);
+	}
+
 	/* Continuously adjust color temperature */
 	int done = 0;
+	int prev_disabled = 1;
 	int disabled = 0;
 	int location_available = 1;
 	while (1) {
 		/* Check to see if disable signal was caught */
-		if (disable) {
-			short_trans_len = 2;
-			if (!disabled) {
-				/* Transition to disabled state */
-				short_trans_delta = 1;
-			} else {
-				/* Transition back to enabled */
-				short_trans_delta = -1;
-			}
+		if (disable && !done) {
 			disabled = !disabled;
 			disable = 0;
-
-			if (verbose) {
-				printf(_("Status: %s\n"), disabled ?
-				       _("Disabled") : _("Enabled"));
-			}
 		}
 
 		/* Check to see if exit signal was caught */
 		if (exiting) {
 			if (done) {
-				/* On second signal stop the ongoing fade */
-				short_trans_delta = 0;
-				adjustment_alpha = 0.0;
+				/* On second signal stop the ongoing fade. */
+				break;
 			} else {
-				if (!disabled) {
-					/* Make a short fade back to 6500K */
-					short_trans_delta = 1;
-					short_trans_len = 2;
-				}
-
 				done = 1;
+				disabled = 1;
 			}
 			exiting = 0;
 		}
+
+		/* Print status change */
+		if (verbose && disabled != prev_disabled) {
+			printf(_("Status: %s\n"), disabled ?
+			       _("Disabled") : _("Enabled"));
+		}
+
+		prev_disabled = disabled;
 
 		/* Read timestamp */
 		double now;
@@ -961,35 +994,40 @@ run_continual_mode(const location_provider_t *provider,
 			return -1;
 		}
 
-		/* Skip over fade if fades are disabled */
-		int set_adjustments = 0;
-		if (!use_fade) {
-			if (short_trans_delta) {
-				adjustment_alpha = short_trans_delta < 0 ?
-					0.0 : 1.0;
-				short_trans_delta = 0;
-				set_adjustments = 1;
-			}
+		/* Current angular elevation of the sun */
+		double elevation = solar_elevation(
+			now, loc.lat, loc.lon);
+
+		/* Use elevation of sun to get target color
+		   temperature. */
+		color_setting_t target_interp;
+		interpolate_transition_scheme(
+			scheme, elevation, &target_interp);
+
+		period_t period = get_period(scheme, elevation);
+		double transition_prog = get_transition_progress(
+			scheme, elevation);
+
+		if (disabled) {
+			/* Reset to neutral */
+			target_interp.temperature = NEUTRAL_TEMP;
+			target_interp.brightness = 1.0;
+			target_interp.gamma[0] = 1.0;
+			target_interp.gamma[1] = 1.0;
+			target_interp.gamma[2] = 1.0;
 		}
 
-		/* Current angular elevation of the sun */
-		double elevation = solar_elevation(now, loc.lat, loc.lon);
-
-		/* Use elevation of sun to set color temperature */
-		color_setting_t interp;
-		interpolate_color_settings(scheme, elevation, &interp);
+		if (done) {
+			period = PERIOD_NONE;
+		}
 
 		/* Print period if it changed during this update,
 		   or if we are in the transition period. In transition we
 		   print the progress, so we always print it in
 		   that case. */
-		period_t period = get_period(scheme, elevation);
 		if (verbose && (period != prev_period ||
 				period == PERIOD_TRANSITION)) {
-			double transition =
-				get_transition_progress(scheme,
-							elevation);
-			print_period(period, transition);
+			print_period(period, transition_prog);
 		}
 
 		/* Activate hooks if period changed */
@@ -997,64 +1035,72 @@ run_continual_mode(const location_provider_t *provider,
 			hooks_signal_period_change(prev_period, period);
 		}
 
-		/* Ongoing short fade */
-		if (short_trans_delta) {
-			/* Calculate alpha */
-			adjustment_alpha += short_trans_delta * 0.1 /
-				(float)short_trans_len;
-
-			/* Stop fade when done */
-			if (adjustment_alpha <= 0.0 ||
-			    adjustment_alpha >= 1.0) {
-				short_trans_delta = 0;
+		/* Start fade if the parameter differences are too big to apply
+		   instantly. */
+		if (use_fade) {
+			if ((fade_length == 0 &&
+			     color_setting_diff_is_major(
+				     &interp,
+				     &target_interp)) ||
+			    (fade_length != 0 &&
+			     color_setting_diff_is_major(
+				     &target_interp,
+				     &prev_target_interp))) {
+				fade_length = FADE_LENGTH;
+				fade_time = 0;
+				fade_start_interp = interp;
 			}
-
-			/* Clamp alpha value */
-			adjustment_alpha = CLAMP(0.0, adjustment_alpha, 1.0);
 		}
 
-		/* Interpolate between 6500K and calculated
-		   temperature */
-		interp.temperature = adjustment_alpha*6500 +
-			(1.0-adjustment_alpha)*interp.temperature;
+		/* Handle ongoing fade */
+		if (fade_length != 0) {
+			fade_time += 1;
+			double frac = fade_time / (double)fade_length;
+			double alpha = CLAMP(0.0, ease_fade(frac), 1.0);
 
-		interp.brightness = adjustment_alpha*1.0 +
-			(1.0-adjustment_alpha)*interp.brightness;
+			interpolate_color_settings(
+				&fade_start_interp, &target_interp, alpha,
+				&interp);
 
-		/* Quit loop when done */
-		if (done && !short_trans_delta) break;
+			if (fade_time > fade_length) {
+				fade_time = 0;
+				fade_length = 0;
+			}
+		} else {
+			interp = target_interp;
+		}
+
+		/* Break loop when done and final fade is over */
+		if (done && fade_length == 0) break;
 
 		if (verbose) {
-			if (interp.temperature !=
-			    prev_interp.temperature) {
+			if (prev_target_interp.temperature !=
+			    target_interp.temperature) {
 				printf(_("Color temperature: %uK\n"),
-				       interp.temperature);
+				       target_interp.temperature);
 			}
-			if (interp.brightness !=
-			    prev_interp.brightness) {
+			if (prev_target_interp.brightness !=
+			    target_interp.brightness) {
 				printf(_("Brightness: %.2f\n"),
-				       interp.brightness);
+				       target_interp.brightness);
 			}
 		}
 
 		/* Adjust temperature */
-		if (!disabled || short_trans_delta || set_adjustments) {
-			r = method->set_temperature(state, &interp);
-			if (r < 0) {
-				fputs(_("Temperature adjustment failed.\n"),
-				      stderr);
-				return -1;
-			}
+		r = method->set_temperature(state, &interp);
+		if (r < 0) {
+			fputs(_("Temperature adjustment failed.\n"),
+			      stderr);
+			return -1;
 		}
 
-		/* Save temperature as previous */
+		/* Save period and target color setting as previous */
 		prev_period = period;
-		memcpy(&prev_interp, &interp,
-		       sizeof(color_setting_t));
+		prev_target_interp = target_interp;
 
-		/* Sleep for 5 seconds or 0.1 second. */
+		/* Sleep length depends on whether a fade is ongoing. */
 		int delay = SLEEP_DURATION;
-		if (short_trans_delta) {
+		if (fade_length != 0) {
 			delay = SLEEP_DURATION_SHORT;
 		}
 
@@ -1349,9 +1395,11 @@ main(int argc, char *argv[])
 					scheme.night.temperature =
 						atoi(setting->value);
 				}
-			} else if (strcasecmp(setting->name,
-					      "transition") == 0 ||
+			} else if (strcasecmp(
+					setting->name, "transition") == 0 ||
 				   strcasecmp(setting->name, "fade") == 0) {
+				/* "fade" is preferred, "transition" is
+				   deprecated as the setting key. */
 				if (use_fade < 0) {
 					use_fade = !!atoi(setting->value);
 				}
@@ -1666,7 +1714,6 @@ main(int argc, char *argv[])
 
 		print_location(&loc);
 
-		/* Current angular elevation of the sun */
 		double now;
 		r = systemtime_get_time(&now);
 		if (r < 0) {
@@ -1675,6 +1722,7 @@ main(int argc, char *argv[])
 			exit(EXIT_FAILURE);
 		}
 
+		/* Current angular elevation of the sun */
 		double elevation = solar_elevation(now, loc.lat, loc.lon);
 
 		if (verbose) {
@@ -1684,7 +1732,7 @@ main(int argc, char *argv[])
 
 		/* Use elevation of sun to set color temperature */
 		color_setting_t interp;
-		interpolate_color_settings(&scheme, elevation, &interp);
+		interpolate_transition_scheme(&scheme, elevation, &interp);
 
 		if (verbose || mode == PROGRAM_MODE_PRINT) {
 			period_t period = get_period(&scheme,
@@ -1725,8 +1773,7 @@ main(int argc, char *argv[])
 		if (verbose) printf(_("Color temperature: %uK\n"), temp_set);
 
 		/* Adjust temperature */
-		color_setting_t manual;
-		memcpy(&manual, &scheme.day, sizeof(color_setting_t));
+		color_setting_t manual = scheme.day;
 		manual.temperature = temp_set;
 		r = method->set_temperature(&state, &manual);
 		if (r < 0) {
