@@ -36,6 +36,10 @@ location-provider=manual
 ; The adjustment method settings are in a different section.
 adjustment-method=randr
 
+; Configuration of fixed dusk and dawn time
+;dawn-time=6:30-7:00
+;dusk-time=21:45-22:15
+
 ; Configuration of the location-provider:
 ; type 'redshift -l PROVIDER:help' to see the settings.
 ; ex: 'redshift -l manual:help'
