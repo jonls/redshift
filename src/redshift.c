@@ -1381,6 +1381,11 @@ main(int argc, char *argv[])
 						exit(EXIT_FAILURE);
 					}
 				}
+			} else if (strcasecmp(setting->name,
+					      "backlight-sysfs-path") == 0) {
+				if (!backlight_is_enabled(&backlight_state)) {
+					backlight_set_controller(&backlight_state, setting->value);
+				}
 			} else {
 				fprintf(stderr, _("Unknown configuration"
 						  " setting `%s'.\n"),
