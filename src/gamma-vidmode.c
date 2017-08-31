@@ -43,7 +43,7 @@ vidmode_init(vidmode_state_t *state)
 	state->screen_num = -1;
 	state->saved_ramps = NULL;
 
-	state->preserve = 0;
+	state->preserve = 1;
 
 	/* Open display */
 	state->display = XOpenDisplay(NULL);
