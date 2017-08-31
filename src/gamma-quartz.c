@@ -40,7 +40,7 @@
 int
 quartz_init(quartz_state_t *state)
 {
-	state->preserve = 0;
+	state->preserve = 1;
 	state->displays = NULL;
 
 	return 0;
