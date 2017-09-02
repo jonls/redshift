@@ -25,7 +25,9 @@ FAQ
 
 **How do I install Redshift?**
 
-Use the packages provided by your distribution, e.g. for Ubuntu: `apt-get install redshift` or `apt-get install redshift-gtk`. For developers, please see _Building from source_ and _Latest builds from master branch_ below.
+Use the packages provided by your distribution, e.g. for Ubuntu:
+`apt-get install redshift` or `apt-get install redshift-gtk`. For developers,
+please see _Building from source_ and _Latest builds from master branch_ below.
 
 **How do I setup a configuration file?**
 
@@ -47,6 +49,18 @@ There are multiple web sites that provide coordinates for map locations, for
 example clicking anywhere on Google Maps will bring up a box with the
 coordinates. Remember that longitudes in the western hemisphere (e.g. the
 Americas) must be provided to Redshift as negative numbers.
+
+**Why does GeoClue fail with access denied error?**
+
+It is possible that the location services have been disabled completely. The
+check for this case varies by desktop environment. For example, in GNOME the
+location services can be toggled in Settings > Privacy > Location Services.
+
+If this is not the case, it is possible that Redshift has been improperly
+installed or not been given the required permissions to obtain location
+updates from a system administrator. See
+https://github.com/jonls/redshift/issues/318 for further discussion on this
+issue.
 
 **Why doesn't Redshift work on my Chromebook/Raspberry Pi?**
 
@@ -109,9 +123,10 @@ Latest builds from master branch
 --------------------------------
 
 - [Ubuntu PPA](https://launchpad.net/~dobey/+archive/ubuntu/redshift-daily/+packages) (`sudo add-apt-repository ppa:dobey/redshift-daily`)
-- [Windows x64](https://ci.appveyor.com/api/projects/jonls/redshift/artifacts/redshift.zip?branch=master)
+- [Windows x86_64](https://ci.appveyor.com/api/projects/jonls/redshift/artifacts/redshift-windows-x86_64.zip?branch=master&job=Environment%3A+arch%3Dx86_64&pr=false)
+- [Windows x86](https://ci.appveyor.com/api/projects/jonls/redshift/artifacts/redshift-windows-i686.zip?branch=master&job=Environment%3A+arch%3Di686&pr=false)
 
 Building from source
 --------------------
 
-See the file [HACKING](HACKING.md) for more details on building from source.
+See the file [CONTRIBUTING](CONTRIBUTING.md) for more details on building from source.

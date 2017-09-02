@@ -53,7 +53,7 @@ randr_init(randr_state_t *state)
 	state->crtc_count = 0;
 	state->crtcs = NULL;
 
-	state->preserve = 0;
+	state->preserve = 1;
 
 	xcb_generic_error_t *error;
 

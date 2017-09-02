@@ -1,15 +1,55 @@
-dist: trusty
-sudo: required
+
 language: c
-before_install:
-  - sed -i -e 's|AC_PREREQ(\[2.69\])|AC_PREREQ([2.68])|' configure.ac
-  - sudo apt-get update -qq
+
+matrix:
+  include:
+    - os: linux
+      compiler: gcc
+      dist: trusty
+      sudo: false
+    - os: osx
+      compiler: clang
+
+addons:
+  apt:
+    packages:
+      - autopoint
+      - intltool
+      # DRM
+      - libdrm-dev
+      # RANDR
+      - libxcb1-dev
+      - libxcb-randr0-dev
+      # VidMode
+      - libx11-dev
+      - libxxf86vm-dev
+      # GeoClue2
+      - libglib2.0-dev
+      # GUI
+      - python3
+
+before_install: |
+  if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+    brew install gettext
+    brew link --force gettext
+    brew install intltool
+    brew install python3
+  fi
+
 install:
-  - sudo apt-get install -qq autopoint intltool
-  - sudo apt-get install -qq libdrm-dev
-  - sudo apt-get install -qq libxcb1-dev libxcb-randr0-dev
-  - sudo apt-get install -qq libx11-dev libxxf86vm-dev
-  - sudo apt-get install -qq libgeoclue-dev
-  - sudo apt-get install -qq libglib2.0-dev
-  - sudo apt-get install -qq python3
-script: ./bootstrap && ./configure --enable-drm --enable-vidmode --enable-randr --enable-geoclue --enable-geoclue2 --enable-gui && make -j2 distcheck
+  - ./bootstrap
+  - mkdir "$TRAVIS_BUILD_DIR/root"
+  - |
+    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      ./configure --prefix="$TRAVIS_BUILD_DIR/root" --enable-drm --enable-vidmode --enable-randr --enable-geoclue2 --enable-gui
+    elif [ "$TRAVIS_OS_NAME" == "osx" ]; then
+      ./configure --prefix="$TRAVIS_BUILD_DIR/root" --enable-corelocation --enable-quartz --enable-gui
+    fi
+  - make -j2 install
+  - make -j2 distcheck
+
+script:
+  - |
+    "$TRAVIS_BUILD_DIR"/root/bin/redshift -l 12:-34 -pv
+  - |
+    "$TRAVIS_BUILD_DIR"/root/bin/redshift -l 12:-34 -m dummy -vo
