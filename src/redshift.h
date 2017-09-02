@@ -23,7 +23,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 /* Location */
 typedef struct {
 	float lat;

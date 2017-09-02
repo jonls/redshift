@@ -29,6 +29,12 @@
 #include <locale.h>
 #include <errno.h>
 
+/* Needed to list the sysfs directory's entries
+ * for the backlight support. 
+ * */
+#include <sys/types.h>
+#include <dirent.h>
+
 /* poll.h is not available on Windows but there is no Windows location provider
    using polling. On Windows, we just define some stubs to make things compile.
    */
@@ -103,6 +109,10 @@ int poll(struct pollfd *fds, int nfds, int timeout) { abort(); return -1; }
 #ifdef ENABLE_CORELOCATION
 # include "location-corelocation.h"
 #endif
+
+#include "backlight.h"
+
+#define BACKLIGHT_SYSFS_PATH "/sys/class/backlight"
 
 #undef CLAMP
 #define CLAMP(lo,mid,up)  (((lo) > (mid)) ? (lo) : (((mid) < (up)) ? (mid) : (up)))
@@ -470,8 +480,11 @@ print_help(const char *program_name)
 
 	/* TRANSLATORS: help output 4
 	   `list' must not be translated
+	   `sysfs' must not be translated
 	   no-wrap */
 	fputs(_("  -b DAY:NIGHT\tScreen brightness to apply (between 0.1 and 1.0)\n"
+                "  -k PATH\tEnable the backlight control using sysfs PATH\n"
+		"  \t\t(Type `list' to see available paths)\n"
                 "  -c FILE\tLoad settings from specified configuration file\n"
 		"  -g R:G:B\tAdditional gamma correction to apply\n"
 		"  -l LAT:LON\tYour current location\n"
@@ -539,6 +552,33 @@ print_provider_list()
 		"`-l PROVIDER:OPTIONS'.\n"), stdout);
 	/* TRANSLATORS: `help' must not be translated. */
 	fputs(_("Try `-l PROVIDER:help' for help.\n"), stdout);
+}
+
+static void 
+print_backlight_path_list() {
+	DIR *sysfs_dir = opendir(BACKLIGHT_SYSFS_PATH);
+
+	if (!sysfs_dir) {
+		/* TRANSLATORS: `sysfs' must not be translated. */
+		fprintf(stderr, _("Backlight sysfs path %s not available: %s\n"), 
+				BACKLIGHT_SYSFS_PATH, strerror(errno));
+		return;
+	}
+
+	/* Print the content in backlight sysfs.
+	 * Ignore entries like '.' and '..'
+	 * */
+	/* TRANSLATORS: `sysfs' must not be translated. */
+	fputs(_("Available backlight sysfs paths:\n"), stdout);
+	struct dirent *reg = NULL;
+	for(reg = readdir(sysfs_dir); reg != NULL; reg = readdir(sysfs_dir)) {
+		if (reg->d_name[0] != '.')
+			printf("  %s/%s\n", BACKLIGHT_SYSFS_PATH, reg->d_name);
+	}
+	
+	fputs("\n", stdout);
+
+	closedir(sysfs_dir);
 }
 
 
@@ -825,6 +865,43 @@ find_location_provider(const char *name)
 	return provider;
 }
 
+static int
+set_temperature_and_brightness(const gamma_method_t *method,
+				gamma_state_t *state,
+				backlight_state_t *backlight_state,
+				color_setting_t *interp) {
+	
+	int r = -1;
+	float brightness = interp->brightness;
+	if (backlight_is_enabled(backlight_state)) {
+		interp->brightness = DEFAULT_BRIGHTNESS;
+		r = method->set_temperature(state, interp);
+		interp->brightness = brightness;
+	}
+	else {
+		r = method->set_temperature(state, interp);
+	}
+
+	if (r < 0) {
+		fputs(_("Temperature adjustment"
+					" failed.\n"), stderr);
+		return -1;
+	}
+
+	if (backlight_is_enabled(backlight_state)) {
+		r = backlight_set_brightness(backlight_state, 
+				interp->brightness);
+		if (r != 0) {
+			fprintf(stderr, _("Backlight brightness"
+						" adjustment failed: %s\n"),
+					strerror(errno));
+			return -1;
+		}
+	}
+
+	return 0;
+}
+
 /* Wait for location to become available from provider.
    Waits until timeout (milliseconds) has elapsed or forever if timeout
    is -1. Writes location to loc. Returns -1 on error,
@@ -905,6 +982,7 @@ run_continual_mode(const location_provider_t *provider,
 		   const transition_scheme_t *scheme,
 		   const gamma_method_t *method,
 		   gamma_state_t *state,
+		   backlight_state_t *backlight_state,
 		   int use_fade, int verbose)
 {
 	int r;
@@ -1087,7 +1165,8 @@ run_continual_mode(const location_provider_t *provider,
 		}
 
 		/* Adjust temperature */
-		r = method->set_temperature(state, &interp);
+		r = set_temperature_and_brightness(method, state,
+						backlight_state, &interp);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"),
 			      stderr);
@@ -1196,6 +1275,9 @@ main(int argc, char *argv[])
 	scheme.night.temperature = -1;
 	scheme.night.gamma[0] = NAN;
 	scheme.night.brightness = NAN;
+	
+	/* Backlight state */
+	backlight_state_t backlight_state = { 0 };
 
 	/* Temperature for manual mode */
 	int temp_set = -1;
@@ -1219,12 +1301,21 @@ main(int argc, char *argv[])
 
 	/* Parse command line arguments. */
 	int opt;
-	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:prt:vVx")) != -1) {
+	while ((opt = getopt(argc, argv, "b:k:c:g:hl:m:oO:prt:vVx")) != -1) {
 		switch (opt) {
 		case 'b':
 			parse_brightness_string(optarg,
 						&scheme.day.brightness,
 						&scheme.night.brightness);
+			break;
+		case 'k':
+			/* Print list of paths if argument is `list' */
+			if (strcasecmp(optarg, "list") == 0) {
+				print_backlight_path_list();
+				exit(EXIT_SUCCESS);
+			}
+
+			backlight_set_controller(&backlight_state, optarg);
 			break;
 		case 'c':
 			free(config_filepath);
@@ -1494,6 +1585,11 @@ main(int argc, char *argv[])
 						exit(EXIT_FAILURE);
 					}
 				}
+			} else if (strcasecmp(setting->name,
+					      "backlight-sysfs-path") == 0) {
+				if (!backlight_is_enabled(&backlight_state)) {
+					backlight_set_controller(&backlight_state, setting->value);
+				}
 			} else {
 				fprintf(stderr, _("Unknown configuration"
 						  " setting `%s'.\n"),
@@ -1631,6 +1727,17 @@ main(int argc, char *argv[])
 		printf(_("Brightness: %.2f:%.2f\n"),
 		       scheme.day.brightness, scheme.night.brightness);
 	}
+	
+	/* Initialize Backlight state */
+	if (backlight_init(&backlight_state) != 0) {
+		fprintf(stderr, _("Backlight initialization failed: %s\n"),
+				strerror(errno));
+	}
+	
+	if (verbose && backlight_is_enabled(&backlight_state)) {
+		printf(_("Backlight enabled via %s\n"),
+		       backlight_state.controller_path);
+	}
 
 	/* Gamma */
 	if (!gamma_is_valid(scheme.day.gamma) ||
@@ -1688,6 +1795,9 @@ main(int argc, char *argv[])
 			}
 		}
 	}
+	
+	/* XXX  Backlight brightness
+	 * add sanity checks and verbose output */
 
 	config_ini_free(&config_state);
 
@@ -1749,7 +1859,8 @@ main(int argc, char *argv[])
 
 		if (mode != PROGRAM_MODE_PRINT) {
 			/* Adjust temperature */
-			r = method->set_temperature(&state, &interp);
+			r = set_temperature_and_brightness(method, &state,
+					&backlight_state, &interp);
 			if (r < 0) {
 				fputs(_("Temperature adjustment failed.\n"),
 				      stderr);
@@ -1775,9 +1886,9 @@ main(int argc, char *argv[])
 		/* Adjust temperature */
 		color_setting_t manual = scheme.day;
 		manual.temperature = temp_set;
-		r = method->set_temperature(&state, &manual);
+		r = set_temperature_and_brightness(method, &state,
+				&backlight_state, &manual);
 		if (r < 0) {
-			fputs(_("Temperature adjustment failed.\n"), stderr);
 			method->free(&state);
 			exit(EXIT_FAILURE);
 		}
@@ -1795,9 +1906,10 @@ main(int argc, char *argv[])
 	{
 		/* Reset screen */
 		color_setting_t reset = { NEUTRAL_TEMP, { 1.0, 1.0, 1.0 }, 1.0 };
-		r = method->set_temperature(&state, &reset);
+
+		r = set_temperature_and_brightness(method, &state,
+				&backlight_state, &reset);
 		if (r < 0) {
-			fputs(_("Temperature adjustment failed.\n"), stderr);
 			method->free(&state);
 			exit(EXIT_FAILURE);
 		}
@@ -1815,6 +1927,7 @@ main(int argc, char *argv[])
 	{
 		r = run_continual_mode(provider, &location_state, &scheme,
 				       method, &state,
+				       &backlight_state,
 				       use_fade, verbose);
 		if (r < 0) exit(EXIT_FAILURE);
 	}
