@@ -45,6 +45,8 @@ int quartz_start(quartz_state_t *state);
 void quartz_free(quartz_state_t *state);
 
 void quartz_print_help(FILE *f);
+int quartz_set_mode(quartz_state_t *state,
+			const program_mode_t mode);
 int quartz_set_option(quartz_state_t *state, const char *key,
 		      const char *value);
 

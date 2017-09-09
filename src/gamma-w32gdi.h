@@ -37,6 +37,8 @@ int w32gdi_start(w32gdi_state_t *state);
 void w32gdi_free(w32gdi_state_t *state);
 
 void w32gdi_print_help(FILE *f);
+int w32gdi_set_mode(w32gdi_state_t *state,
+			const program_mode_t mode);
 int w32gdi_set_option(w32gdi_state_t *state, const char *key,
 		      const char *value);
 

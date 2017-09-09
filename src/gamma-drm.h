@@ -51,6 +51,8 @@ int drm_start(drm_state_t *state);
 void drm_free(drm_state_t *state);
 
 void drm_print_help(FILE *f);
+int drm_set_mode(drm_state_t *state,
+			const program_mode_t mode);
 int drm_set_option(drm_state_t *state, const char *key, const char *value);
 
 void drm_restore(drm_state_t *state);

@@ -139,6 +139,13 @@ vidmode_print_help(FILE *f)
 }
 
 int
+vidmode_set_mode(vidmode_state_t *state, const program_mode_t mode)
+{
+	state->preserve = PROGRAM_MODE_CONTINUAL == mode;
+	return 0;
+}
+
+int
 vidmode_set_option(vidmode_state_t *state, const char *key, const char *value)
 {
 	if (strcasecmp(key, "screen") == 0) {
