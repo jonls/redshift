@@ -37,6 +37,7 @@
 #include "colorramp.h"
 
 #define GAMMA_RAMP_SIZE  256
+#define MAX_ATTEMPTS  10
 
 
 int
@@ -136,7 +137,13 @@ w32gdi_restore(w32gdi_state_t *state)
 	}
 
 	/* Restore gamma ramps */
-	BOOL r = SetDeviceGammaRamp(hDC, state->saved_ramps);
+	BOOL r = FALSE;
+	for (int i = 0; i < MAX_ATTEMPTS && !r; i++) {
+		/* We retry a few times before giving up because some
+		   buggy drivers fail on the first invocation of
+		   SetDeviceGammaRamp just to succeed on the second. */
+		r = SetDeviceGammaRamp(hDC, state->saved_ramps);
+	}
 	if (!r) fputs(_("Unable to restore gamma ramps.\n"), stderr);
 
 	/* Release device context */
@@ -187,11 +194,14 @@ w32gdi_set_temperature(w32gdi_state_t *state,
 		       setting);
 
 	/* Set new gamma ramps */
-	r = SetDeviceGammaRamp(hDC, gamma_ramps);
+	r = FALSE;
+	for (int i = 0; i < MAX_ATTEMPTS && !r; i++) {
+		/* We retry a few times before giving up because some
+		   buggy drivers fail on the first invocation of
+		   SetDeviceGammaRamp just to succeed on the second. */
+		r = SetDeviceGammaRamp(hDC, gamma_ramps);
+	}
 	if (!r) {
-		/* TODO it happens that SetDeviceGammaRamp returns FALSE on
-		   occasions where the adjustment seems to be successful.
-		   Does this only happen with multiple monitors connected? */
 		fputs(_("Unable to set gamma ramps.\n"), stderr);
 		free(gamma_ramps);
 		ReleaseDC(NULL, hDC);
