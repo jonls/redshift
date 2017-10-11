@@ -331,6 +331,21 @@ AS_IF([test -n "$with_systemduserunitdir" -a "x$with_systemduserunitdir" != xno]
 AM_CONDITIONAL([ENABLE_SYSTEMD], [test "x$enable_systemd" != xno])
 
 
+# Check for AppArmor
+AC_MSG_CHECKING([whether to enable AppArmor profile])
+AC_ARG_ENABLE([apparmor], [AC_HELP_STRING([--enable-apparmor],
+	[enable AppArmor profile])],
+        [enable_apparmor=$enableval],[enable_apparmor=no])
+AS_IF([test "x$enable_apparmor" != xno], [
+        AC_MSG_RESULT([yes])
+	enable_apparmor=yes
+], [
+        AC_MSG_RESULT([no])
+	enable_apparmor=no
+])
+AM_CONDITIONAL([ENABLE_APPARMOR], [test "x$enable_apparmor" != xno])
+
+
 # Checks for header files.
 AC_CHECK_HEADERS([locale.h stdint.h stdlib.h string.h unistd.h signal.h])
 
@@ -373,4 +388,5 @@ echo "
     GUI:		${enable_gui}
     Ubuntu icons:	${enable_ubuntu}
     systemd units:	${enable_systemd} ${systemduserunitdir}
+    AppArmor profile:   ${enable_apparmor}
 "
