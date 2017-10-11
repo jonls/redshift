@@ -304,12 +304,22 @@ typedef enum {
 	PROGRAM_MODE_MANUAL
 } program_mode_t;
 
+/* Time range.
+   Fields are offsets from midnight in seconds. */
+typedef struct {
+	int start;
+	int end;
+} time_range_t;
+
 /* Transition scheme.
    The solar elevations at which the transition begins/ends,
    and the association color settings. */
 typedef struct {
 	double high;
 	double low;
+	int use_time; /* When enabled, ignore elevation and use time ranges. */
+	time_range_t dawn;
+	time_range_t dusk;
 	color_setting_t day;
 	color_setting_t night;
 } transition_scheme_t;
@@ -324,10 +334,25 @@ static const char *period_names[] = {
 };
 
 
-/* Determine which period we are currently in. */
+/* Determine which period we are currently in based on time offset. */
 static period_t
-get_period(const transition_scheme_t *transition,
-	   double elevation)
+get_period_from_time(const transition_scheme_t *transition, int time_offset)
+{
+	if (time_offset < transition->dawn.start ||
+	    time_offset >= transition->dusk.end) {
+		return PERIOD_NIGHT;
+	} else if (time_offset >= transition->dawn.end &&
+		   time_offset < transition->dusk.start) {
+		return PERIOD_DAYTIME;
+	} else {
+		return PERIOD_TRANSITION;
+	}
+}
+
+/* Determine which period we are currently in based on solar elevation. */
+static period_t
+get_period_from_elevation(
+	const transition_scheme_t *transition, double elevation)
 {
 	if (elevation < transition->low) {
 		return PERIOD_NIGHT;
@@ -338,10 +363,31 @@ get_period(const transition_scheme_t *transition,
 	}
 }
 
-/* Determine how far through the transition we are. */
+/* Determine how far through the transition we are based on time offset. */
 static double
-get_transition_progress(const transition_scheme_t *transition,
-			double elevation)
+get_transition_progress_from_time(
+	const transition_scheme_t *transition, int time_offset)
+{
+	if (time_offset < transition->dawn.start ||
+	    time_offset >= transition->dusk.end) {
+		return 0.0;
+	} else if (time_offset < transition->dawn.end) {
+		return (transition->dawn.start - time_offset) /
+			(double)(transition->dawn.start -
+				transition->dawn.end);
+	} else if (time_offset > transition->dusk.start) {
+		return (transition->dusk.end - time_offset) /
+			(double)(transition->dusk.end -
+				transition->dusk.start);
+	} else {
+		return 1.0;
+	}
+}
+
+/* Determine how far through the transition we are based on elevation. */
+static double
+get_transition_progress_from_elevation(
+	const transition_scheme_t *transition, double elevation)
 {
 	if (elevation < transition->low) {
 		return 0.0;
@@ -351,6 +397,16 @@ get_transition_progress(const transition_scheme_t *transition,
 	} else {
 		return 1.0;
 	}
+}
+
+/* Return number of seconds since midnight from timestamp. */
+static int
+get_seconds_since_midnight(double timestamp)
+{
+	time_t t = (time_t)timestamp;
+	struct tm tm;
+	localtime_r(&t, &tm);
+	return tm.tm_sec + tm.tm_min * 60 + tm.tm_hour * 3600;
 }
 
 /* Print verbose description of the given period. */
@@ -416,14 +472,12 @@ interpolate_color_settings(
 static void
 interpolate_transition_scheme(
 	const transition_scheme_t *transition,
-	double elevation,
+	double alpha,
 	color_setting_t *result)
 {
 	const color_setting_t *day = &transition->day;
 	const color_setting_t *night = &transition->night;
 
-	double alpha = (transition->low - elevation) /
-		(transition->low - transition->high);
 	alpha = CLAMP(0.0, alpha, 1.0);
 	interpolate_color_settings(night, day, alpha, result);
 }
@@ -465,14 +519,14 @@ print_help(const char *program_name)
 	   no-wrap */
 	fputs(_("  -h\t\tDisplay this help message\n"
 		"  -v\t\tVerbose output\n"
-                "  -V\t\tShow program version\n"), stdout);
+		"  -V\t\tShow program version\n"), stdout);
 	fputs("\n", stdout);
 
 	/* TRANSLATORS: help output 4
 	   `list' must not be translated
 	   no-wrap */
 	fputs(_("  -b DAY:NIGHT\tScreen brightness to apply (between 0.1 and 1.0)\n"
-                "  -c FILE\tLoad settings from specified configuration file\n"
+		"  -c FILE\tLoad settings from specified configuration file\n"
 		"  -g R:G:B\tAdditional gamma correction to apply\n"
 		"  -l LAT:LON\tYour current location\n"
 		"  -l PROVIDER\tSelect provider for automatic"
@@ -755,6 +809,57 @@ parse_brightness_string(const char *str, float *bright_day, float *bright_night)
 	}
 }
 
+/* Parse transition time string e.g. "04:50". Returns negative on failure,
+   otherwise the parsed time is returned as seconds since midnight. */
+static int
+parse_transition_time(const char *str, const char **end)
+{
+	const char *min = NULL;
+	errno = 0;
+	long hours = strtol(str, (char **)&min, 10);
+	if (errno != 0 || min == str || min[0] != ':' ||
+	    hours < 0 || hours >= 24) {
+		return -1;
+	}
+
+	min += 1;
+	errno = 0;
+	long minutes = strtol(min, (char **)end, 10);
+	if (errno != 0 || *end == min || minutes < 0 || minutes >= 60) {
+		return -1;
+	}
+
+	return minutes * 60 + hours * 3600;
+}
+
+/* Parse transition range string e.g. "04:50-6:20". Returns negative on
+   failure, otherwise zero. Parsed start and end times are returned as seconds
+   since midnight. */
+static int
+parse_transition_range(const char *str, time_range_t *range)
+{
+	const char *next = NULL;
+	int start_time = parse_transition_time(str, &next);
+	if (start_time < 0) return -1;
+
+	int end_time;
+	if (next[0] == '\0') {
+		end_time = start_time;
+	} else if (next[0] == '-') {
+		next += 1;
+		const char *end = NULL;
+		end_time = parse_transition_time(next, &end);
+		if (end_time < 0 || end[0] != '\0') return -1;
+	} else {
+		return -1;
+	}
+
+	range->start = start_time;
+	range->end = end_time;
+
+	return 0;
+}
+
 /* Check whether gamma is within allowed levels. */
 static int
 gamma_is_valid(const float gamma[3])
@@ -765,7 +870,6 @@ gamma_is_valid(const float gamma[3])
 		 gamma[1] > MAX_GAMMA ||
 		 gamma[2] < MIN_GAMMA ||
 		 gamma[2] > MAX_GAMMA);
-
 }
 
 /* Check whether location is valid.
@@ -930,24 +1034,28 @@ run_continual_mode(const location_provider_t *provider,
 	color_setting_t interp =
 		{ NEUTRAL_TEMP, { 1.0, 1.0, 1.0 }, 1.0 };
 
-	fputs(_("Waiting for initial location"
-		" to become available...\n"), stderr);
-
-	/* Get initial location from provider */
 	location_t loc = { NAN, NAN };
-	r = provider_get_location(provider, location_state, -1, &loc);
-	if (r < 0) {
-		fputs(_("Unable to get location"
-			" from provider.\n"), stderr);
-		return -1;
-	}
+	int need_location = !scheme->use_time;
+	if (need_location) {
+		fputs(_("Waiting for initial location"
+			" to become available...\n"), stderr);
 
-	if (!location_is_valid(&loc)) {
-		fputs(_("Invalid location returned from provider.\n"), stderr);
-		return -1;
-	}
+		/* Get initial location from provider */
+		r = provider_get_location(provider, location_state, -1, &loc);
+		if (r < 0) {
+			fputs(_("Unable to get location"
+				" from provider.\n"), stderr);
+			return -1;
+		}
 
-	print_location(&loc);
+		if (!location_is_valid(&loc)) {
+			fputs(_("Invalid location returned from provider.\n"),
+			      stderr);
+			return -1;
+		}
+
+		print_location(&loc);
+	}
 
 	if (verbose) {
 		printf(_("Color temperature: %uK\n"), interp.temperature);
@@ -994,19 +1102,30 @@ run_continual_mode(const location_provider_t *provider,
 			return -1;
 		}
 
-		/* Current angular elevation of the sun */
-		double elevation = solar_elevation(
-			now, loc.lat, loc.lon);
+		period_t period;
+		double transition_prog;
+		if (scheme->use_time) {
+			int time_offset = get_seconds_since_midnight(now);
 
-		/* Use elevation of sun to get target color
+			period = get_period_from_time(scheme, time_offset);
+			transition_prog = get_transition_progress_from_time(
+				scheme, time_offset);
+		} else {
+			/* Current angular elevation of the sun */
+			double elevation = solar_elevation(
+				now, loc.lat, loc.lon);
+
+			period = get_period_from_elevation(scheme, elevation);
+			transition_prog =
+				get_transition_progress_from_elevation(
+					scheme, elevation);
+		}
+
+		/* Use transition progress to get target color
 		   temperature. */
 		color_setting_t target_interp;
 		interpolate_transition_scheme(
-			scheme, elevation, &target_interp);
-
-		period_t period = get_period(scheme, elevation);
-		double transition_prog = get_transition_progress(
-			scheme, elevation);
+			scheme, transition_prog, &target_interp);
 
 		if (disabled) {
 			/* Reset to neutral */
@@ -1104,7 +1223,12 @@ run_continual_mode(const location_provider_t *provider,
 			delay = SLEEP_DURATION_SHORT;
 		}
 
-		int loc_fd = provider->get_fd(location_state);
+		/* Update location. */
+		int loc_fd = -1;
+		if (need_location) {
+			loc_fd = provider->get_fd(location_state);
+		}
+
 		if (loc_fd >= 0) {
 			/* Provider is dynamic. */
 			struct pollfd pollfds[1];
@@ -1121,7 +1245,8 @@ run_continual_mode(const location_provider_t *provider,
 				continue;
 			}
 
-			/* Get new location and availability information. */
+			/* Get new location and availability
+			   information. */
 			location_t new_loc;
 			int new_available;
 			provider->handle(
@@ -1135,9 +1260,10 @@ run_continual_mode(const location_provider_t *provider,
 
 			if (!new_available &&
 			    new_available != location_available) {
-				fputs(_("Location is temporarily unavailable;"
-					" Using previous location until it"
-					" becomes available...\n"), stderr);
+				fputs(_("Location is temporarily"
+				        " unavailable; Using previous"
+					" location until it becomes"
+					" available...\n"), stderr);
 			}
 
 			if (new_available &&
@@ -1166,6 +1292,7 @@ run_continual_mode(const location_provider_t *provider,
 	return 0;
 }
 
+
 int
 main(int argc, char *argv[])
 {
@@ -1188,6 +1315,12 @@ main(int argc, char *argv[])
 	   Initialized to indicate that the values are not set yet. */
 	transition_scheme_t scheme =
 		{ TRANSITION_HIGH, TRANSITION_LOW };
+
+	scheme.use_time = 0;
+	scheme.dawn.start = -1;
+	scheme.dawn.end = -1;
+	scheme.dusk.start = -1;
+	scheme.dusk.end = -1;
 
 	scheme.day.temperature = -1;
 	scheme.day.gamma[0] = NAN;
@@ -1494,6 +1627,34 @@ main(int argc, char *argv[])
 						exit(EXIT_FAILURE);
 					}
 				}
+			} else if (strcasecmp(setting->name,
+					      "dawn-time") == 0) {
+				if (scheme.dawn.start < 0) {
+					int r = parse_transition_range(
+						setting->value, &scheme.dawn);
+					if (r < 0) {
+						fprintf(stderr, _("Malformed"
+								  " dawn-time"
+								  " setting"
+								  " `%s'.\n"),
+							setting->value);
+						exit(EXIT_FAILURE);
+					}
+				}
+			} else if (strcasecmp(setting->name,
+					      "dusk-time") == 0) {
+				if (scheme.dusk.start < 0) {
+					int r = parse_transition_range(
+						setting->value, &scheme.dusk);
+					if (r < 0) {
+						fprintf(stderr, _("Malformed"
+								  " dusk-time"
+								  " setting"
+								  " `%s'.\n"),
+							setting->value);
+						exit(EXIT_FAILURE);
+					}
+				}
 			} else {
 				fprintf(stderr, _("Unknown configuration"
 						  " setting `%s'.\n"),
@@ -1532,13 +1693,36 @@ main(int argc, char *argv[])
 
 	if (use_fade < 0) use_fade = 1;
 
-	/* Initialize location provider. If provider is NULL
+	if (scheme.dawn.start >= 0 || scheme.dawn.end >= 0 ||
+	    scheme.dusk.start >= 0 || scheme.dusk.end >= 0) {
+		if (scheme.dawn.start < 0 || scheme.dawn.end < 0 ||
+		    scheme.dusk.start < 0 || scheme.dusk.end < 0) {
+			fputs(_("Partitial time-configuration not"
+				" supported!\n"), stderr);
+			exit(EXIT_FAILURE);
+		}
+
+		if (scheme.dawn.start > scheme.dawn.end ||
+		    scheme.dawn.end > scheme.dusk.start ||
+		    scheme.dusk.start > scheme.dusk.end) {
+			fputs(_("Invalid dawn/dusk time configuration!\n"),
+			      stderr);
+			exit(EXIT_FAILURE);
+		}
+
+		scheme.use_time = 1;
+	}
+
+	/* Initialize location provider if needed. If provider is NULL
 	   try all providers until one that works is found. */
 	location_state_t location_state;
 
 	/* Location is not needed for reset mode and manual mode. */
-	if (mode != PROGRAM_MODE_RESET &&
-	    mode != PROGRAM_MODE_MANUAL) {
+	int need_location =
+		mode != PROGRAM_MODE_RESET &&
+		mode != PROGRAM_MODE_MANUAL &&
+		!scheme.use_time;
+	if (need_location) {
 		if (provider != NULL) {
 			/* Use provider specified on command line. */
 			r = provider_try_start(provider, &location_state,
@@ -1581,7 +1765,7 @@ main(int argc, char *argv[])
 			       scheme.day.temperature,
 			       scheme.night.temperature);
 
-		        /* TRANSLATORS: Append degree symbols if possible. */
+			/* TRANSLATORS: Append degree symbols if possible. */
 			printf(_("Solar elevations: day above %.1f, night below %.1f\n"),
 			       scheme.high, scheme.low);
 		}
@@ -1599,10 +1783,10 @@ main(int argc, char *argv[])
 
 		/* Solar elevations */
 		if (scheme.high < scheme.low) {
-		        fprintf(stderr,
-		                _("High transition elevation cannot be lower than"
+			fprintf(stderr,
+				_("High transition elevation cannot be lower than"
 				  " the low transition elevation.\n"));
-		        exit(EXIT_FAILURE);
+			exit(EXIT_FAILURE);
 		}
 	}
 
@@ -1695,24 +1879,26 @@ main(int argc, char *argv[])
 	case PROGRAM_MODE_ONE_SHOT:
 	case PROGRAM_MODE_PRINT:
 	{
-		fputs(_("Waiting for current location"
-			" to become available...\n"), stderr);
-
-		/* Wait for location provider. */
 		location_t loc = { NAN, NAN };
-		int r = provider_get_location(
-			provider, &location_state, -1, &loc);
-		if (r < 0) {
-			fputs(_("Unable to get location"
-				" from provider.\n"), stderr);
-			exit(EXIT_FAILURE);
-		}
+		if (need_location) {
+			fputs(_("Waiting for current location"
+				" to become available...\n"), stderr);
 
-		if (!location_is_valid(&loc)) {
-			exit(EXIT_FAILURE);
-		}
+			/* Wait for location provider. */
+			int r = provider_get_location(
+				provider, &location_state, -1, &loc);
+			if (r < 0) {
+				fputs(_("Unable to get location"
+					" from provider.\n"), stderr);
+				exit(EXIT_FAILURE);
+			}
 
-		print_location(&loc);
+			if (!location_is_valid(&loc)) {
+				exit(EXIT_FAILURE);
+			}
+
+			print_location(&loc);
+		}
 
 		double now;
 		r = systemtime_get_time(&now);
@@ -1722,25 +1908,36 @@ main(int argc, char *argv[])
 			exit(EXIT_FAILURE);
 		}
 
-		/* Current angular elevation of the sun */
-		double elevation = solar_elevation(now, loc.lat, loc.lon);
+		period_t period;
+		double transition_prog;
+		if (scheme.use_time) {
+			int time_offset = get_seconds_since_midnight(now);
+			period = get_period_from_time(&scheme, time_offset);
+			transition_prog = get_transition_progress_from_time(
+				&scheme, time_offset);
+		} else {
+			/* Current angular elevation of the sun */
+			double elevation = solar_elevation(
+				now, loc.lat, loc.lon);
+			if (verbose) {
+				/* TRANSLATORS: Append degree symbol if
+				   possible. */
+				printf(_("Solar elevation: %f\n"), elevation);
+			}
 
-		if (verbose) {
-			/* TRANSLATORS: Append degree symbol if possible. */
-			printf(_("Solar elevation: %f\n"), elevation);
+			period = get_period_from_elevation(&scheme, elevation);
+			transition_prog =
+				get_transition_progress_from_elevation(
+					&scheme, elevation);
 		}
 
-		/* Use elevation of sun to set color temperature */
+		/* Use transition progress to set color temperature */
 		color_setting_t interp;
-		interpolate_transition_scheme(&scheme, elevation, &interp);
+		interpolate_transition_scheme(
+			&scheme, transition_prog, &interp);
 
 		if (verbose || mode == PROGRAM_MODE_PRINT) {
-			period_t period = get_period(&scheme,
-						     elevation);
-			double transition =
-				get_transition_progress(&scheme,
-							elevation);
-			print_period(period, transition);
+			print_period(period, transition_prog);
 			printf(_("Color temperature: %uK\n"),
 			       interp.temperature);
 			printf(_("Brightness: %.2f\n"),
@@ -1827,8 +2024,7 @@ main(int argc, char *argv[])
 	}
 
 	/* Clean up location provider state */
-	if (mode != PROGRAM_MODE_RESET &&
-	    mode != PROGRAM_MODE_MANUAL) {
+	if (need_location) {
 		provider->free(&location_state);
 	}
 
