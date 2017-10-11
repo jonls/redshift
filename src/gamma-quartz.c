@@ -164,6 +164,13 @@ quartz_print_help(FILE *f)
 }
 
 int
+quartz_set_mode(quartz_state_t *state, const program_mode_t mode)
+{
+	state->preserve = PROGRAM_MODE_CONTINUAL == mode;
+	return 0;
+}
+
+int
 quartz_set_option(quartz_state_t *state, const char *key, const char *value)
 {
 	if (strcasecmp(key, "preserve") == 0) {

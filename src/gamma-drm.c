@@ -222,6 +222,12 @@ drm_print_help(FILE *f)
 }
 
 int
+drm_set_mode(drm_state_t *state, const program_mode_t mode)
+{
+	return 0;
+}
+
+int
 drm_set_option(drm_state_t *state, const char *key, const char *value)
 {
 	if (strcasecmp(key, "card") == 0) {

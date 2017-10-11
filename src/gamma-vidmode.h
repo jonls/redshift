@@ -41,6 +41,8 @@ int vidmode_start(vidmode_state_t *state);
 void vidmode_free(vidmode_state_t *state);
 
 void vidmode_print_help(FILE *f);
+int vidmode_set_mode(vidmode_state_t *state,
+			const program_mode_t mode);
 int vidmode_set_option(vidmode_state_t *state, const char *key,
 		       const char *value);
 

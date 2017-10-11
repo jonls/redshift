@@ -61,6 +61,12 @@ gamma_dummy_print_help(FILE *f)
 }
 
 int
+gamma_dummy_set_mode(void *state, const program_mode_t mode)
+{
+	return 0;
+}
+
+int
 gamma_dummy_set_option(void *state, const char *key, const char *value)
 {
 	fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);

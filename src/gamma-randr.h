@@ -53,6 +53,8 @@ int randr_start(randr_state_t *state);
 void randr_free(randr_state_t *state);
 
 void randr_print_help(FILE *f);
+int randr_set_mode(randr_state_t *state,
+			const program_mode_t mode);
 int randr_set_option(randr_state_t *state, const char *key, const char *value);
 
 void randr_restore(randr_state_t *state);

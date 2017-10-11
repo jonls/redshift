@@ -114,6 +114,13 @@ w32gdi_print_help(FILE *f)
 }
 
 int
+w32gdi_set_mode(w32gdi_state_t *state, const program_mode_t mode)
+{
+	state->preserve = PROGRAM_MODE_CONTINUAL == mode;
+	return 0;
+}
+
+int
 w32gdi_set_option(w32gdi_state_t *state, const char *key, const char *value)
 {
 	if (strcasecmp(key, "preserve") == 0) {
