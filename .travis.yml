@@ -54,3 +54,9 @@ script:
     "$TRAVIS_BUILD_DIR"/root/bin/redshift -l 12:-34 -pv
   - |
     "$TRAVIS_BUILD_DIR"/root/bin/redshift -l 12:-34 -m dummy -vo
+  - |
+    echo -e "[redshift]\ndawn-time=6:30\ndusk-time=18:00-19:30" > time.config
+  - |
+    "$TRAVIS_BUILD_DIR"/root/bin/redshift -c time.config -pv
+  - |
+    "$TRAVIS_BUILD_DIR"/root/bin/redshift -c time.config -m dummy -vo
