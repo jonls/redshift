@@ -28,7 +28,13 @@ build_script:
 test_script:
 - |
   %APPVEYOR_BUILD_FOLDER%\root\bin\redshift.exe -l 12:-34 -pv
+- |
   %APPVEYOR_BUILD_FOLDER%\root\bin\redshift.exe -l 12:-34 -m dummy -vo
+- ps: Set-Content -Value "[redshift]`ndawn-time=6:30`ndusk-time=18:00-19:30`n" -Path time.config
+- |
+  %APPVEYOR_BUILD_FOLDER%\root\bin\redshift.exe -c time.config -pv
+- |
+  %APPVEYOR_BUILD_FOLDER%\root\bin\redshift.exe -c time.config -m dummy -vo
 
 after_build:
 - ps: |
