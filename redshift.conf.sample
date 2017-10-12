@@ -9,6 +9,21 @@ temp-night=3500
 ; 1 will gradually apply the new screen temperature over a couple of seconds.
 fade=1
 
+; Solar elevation thresholds.
+; By default, Redshift will use the current elevation of the sun to determine
+; whether it is daytime, night or in transition (dawn/dusk). When the sun is
+; above the degrees specified with elevation-high it is considered daytime and
+; below elevation-low it is considered night.
+;elevation-high=3
+;elevation-low=-6
+
+; Custom dawn/dusk intervals.
+; Instead of using the solar elevation, the time intervals of dawn and dusk
+; can be specified manually. The times must be specified as HH:MM in 24-hour
+; format.
+;dawn-time=6:00-7:45
+;dusk-time=18:35-20:15
+
 ; Set the screen brightness. Default is 1.0.
 ;brightness=0.9
 ; It is also possible to use different settings for day and night
