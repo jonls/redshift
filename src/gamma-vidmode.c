@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010-2014  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2010-2017  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #include <stdlib.h>
@@ -37,7 +37,7 @@
 #include "colorramp.h"
 
 
-int
+static int
 vidmode_init(vidmode_state_t *state)
 {
 	state->screen_num = -1;
@@ -56,7 +56,7 @@ vidmode_init(vidmode_state_t *state)
 	return 0;
 }
 
-int
+static int
 vidmode_start(vidmode_state_t *state)
 {
 	int r;
@@ -113,7 +113,7 @@ vidmode_start(vidmode_state_t *state)
 	return 0;
 }
 
-void
+static void
 vidmode_free(vidmode_state_t *state)
 {
 	/* Free saved ramps */
@@ -123,7 +123,7 @@ vidmode_free(vidmode_state_t *state)
 	XCloseDisplay(state->display);
 }
 
-void
+static void
 vidmode_print_help(FILE *f)
 {
 	fputs(_("Adjust gamma ramps with the X VidMode extension.\n"), f);
@@ -138,7 +138,7 @@ vidmode_print_help(FILE *f)
 	fputs("\n", f);
 }
 
-int
+static int
 vidmode_set_option(vidmode_state_t *state, const char *key, const char *value)
 {
 	if (strcasecmp(key, "screen") == 0) {
@@ -153,7 +153,7 @@ vidmode_set_option(vidmode_state_t *state, const char *key, const char *value)
 	return 0;
 }
 
-void
+static void
 vidmode_restore(vidmode_state_t *state)
 {
 	uint16_t *gamma_r = &state->saved_ramps[0*state->ramp_size];
@@ -170,7 +170,7 @@ vidmode_restore(vidmode_state_t *state)
 	}
 }
 
-int
+static int
 vidmode_set_temperature(vidmode_state_t *state,
 			const color_setting_t *setting)
 {
@@ -220,3 +220,15 @@ vidmode_set_temperature(vidmode_state_t *state,
 
 	return 0;
 }
+
+
+const gamma_method_t vidmode_gamma_method = {
+	"vidmode", 1,
+	(gamma_method_init_func *)vidmode_init,
+	(gamma_method_start_func *)vidmode_start,
+	(gamma_method_free_func *)vidmode_free,
+	(gamma_method_print_help_func *)vidmode_print_help,
+	(gamma_method_set_option_func *)vidmode_set_option,
+	(gamma_method_restore_func *)vidmode_restore,
+	(gamma_method_set_temperature_func *)vidmode_set_temperature
+};

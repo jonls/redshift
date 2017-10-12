@@ -285,7 +285,7 @@ on_pipe_closed(GIOChannel *channel, GIOCondition condition, gpointer user_data)
 
 
 /* Run loop for location provider thread. */
-void *
+static void *
 run_geoclue2_loop(void *state_)
 {
 	location_geoclue2_state_t *state = state_;
@@ -324,7 +324,7 @@ run_geoclue2_loop(void *state_)
 	return NULL;
 }
 
-int
+static int
 location_geoclue2_init(location_geoclue2_state_t *state)
 {
 #if !GLIB_CHECK_VERSION(2, 35, 0)
@@ -333,7 +333,7 @@ location_geoclue2_init(location_geoclue2_state_t *state)
 	return 0;
 }
 
-int
+static int
 location_geoclue2_start(location_geoclue2_state_t *state)
 {
 	state->pipe_fd_read = -1;
@@ -362,7 +362,7 @@ location_geoclue2_start(location_geoclue2_state_t *state)
 	return 0;
 }
 
-void
+static void
 location_geoclue2_free(location_geoclue2_state_t *state)
 {
 	if (state->pipe_fd_read != -1) {
@@ -376,7 +376,7 @@ location_geoclue2_free(location_geoclue2_state_t *state)
 	g_mutex_clear(&state->lock);
 }
 
-void
+static void
 location_geoclue2_print_help(FILE *f)
 {
 	fputs(_("Use the location as discovered by a GeoClue2 provider.\n"),
@@ -384,7 +384,7 @@ location_geoclue2_print_help(FILE *f)
 	fputs("\n", f);
 }
 
-int
+static int
 location_geoclue2_set_option(location_geoclue2_state_t *state,
 			     const char *key, const char *value)
 {
@@ -392,13 +392,13 @@ location_geoclue2_set_option(location_geoclue2_state_t *state,
 	return -1;
 }
 
-int
+static int
 location_geoclue2_get_fd(location_geoclue2_state_t *state)
 {
 	return state->pipe_fd_read;
 }
 
-int
+static int
 location_geoclue2_handle(
 	location_geoclue2_state_t *state,
 	location_t *location, int *available)
@@ -418,3 +418,15 @@ location_geoclue2_handle(
 
 	return 0;
 }
+
+
+const location_provider_t geoclue2_location_provider = {
+	"geoclue2",
+	(location_provider_init_func *)location_geoclue2_init,
+	(location_provider_start_func *)location_geoclue2_start,
+	(location_provider_free_func *)location_geoclue2_free,
+	(location_provider_print_help_func *)location_geoclue2_print_help,
+	(location_provider_set_option_func *)location_geoclue2_set_option,
+	(location_provider_get_fd_func *)location_geoclue2_get_fd,
+	(location_provider_handle_func *)location_geoclue2_handle
+};

@@ -46,16 +46,6 @@ typedef struct {
 } drm_state_t;
 
 
-int drm_init(drm_state_t *state);
-int drm_start(drm_state_t *state);
-void drm_free(drm_state_t *state);
-
-void drm_print_help(FILE *f);
-int drm_set_option(drm_state_t *state, const char *key, const char *value);
-
-void drm_restore(drm_state_t *state);
-int drm_set_temperature(drm_state_t *state,
-			const color_setting_t *setting);
-
+extern const gamma_method_t drm_gamma_method;
 
 #endif /* ! REDSHIFT_GAMMA_DRM_H */

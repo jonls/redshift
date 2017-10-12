@@ -48,16 +48,7 @@ typedef struct {
 } randr_state_t;
 
 
-int randr_init(randr_state_t *state);
-int randr_start(randr_state_t *state);
-void randr_free(randr_state_t *state);
-
-void randr_print_help(FILE *f);
-int randr_set_option(randr_state_t *state, const char *key, const char *value);
-
-void randr_restore(randr_state_t *state);
-int randr_set_temperature(randr_state_t *state,
-			  const color_setting_t *setting);
+extern const gamma_method_t randr_gamma_method;
 
 
 #endif /* ! REDSHIFT_GAMMA_RANDR_H */

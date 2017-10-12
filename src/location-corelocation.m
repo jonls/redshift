@@ -172,13 +172,13 @@ pipe_close_callback(
 @end
 
 
-int
+static int
 location_corelocation_init(location_corelocation_state_t *state)
 {
   return 0;
 }
 
-int
+static int
 location_corelocation_start(location_corelocation_state_t *state)
 {
   state->pipe_fd_read = -1;
@@ -215,7 +215,7 @@ location_corelocation_start(location_corelocation_state_t *state)
   return 0;
 }
 
-void
+static void
 location_corelocation_free(location_corelocation_state_t *state)
 {
   if (state->pipe_fd_read != -1) {
@@ -225,14 +225,14 @@ location_corelocation_free(location_corelocation_state_t *state)
   free(state->private);
 }
 
-void
+static void
 location_corelocation_print_help(FILE *f)
 {
   fputs(_("Use the location as discovered by the Corelocation provider.\n"), f);
   fputs("\n", f);
 }
 
-int
+static int
 location_corelocation_set_option(
     location_corelocation_state_t *state, const char *key, const char *value)
 {
@@ -240,13 +240,14 @@ location_corelocation_set_option(
   return -1;
 }
 
-int
+static int
 location_corelocation_get_fd(location_corelocation_state_t *state)
 {
   return state->pipe_fd_read;
 }
 
-int location_corelocation_handle(
+static int
+location_corelocation_handle(
     location_corelocation_state_t *state,
     location_t *location, int *available)
 {
@@ -265,3 +266,15 @@ int location_corelocation_handle(
 
   return 0;
 }
+
+
+const location_provider_t corelocation_location_provider = {
+  "corelocation",
+  (location_provider_init_func *)location_corelocation_init,
+  (location_provider_start_func *)location_corelocation_start,
+  (location_provider_free_func *)location_corelocation_free,
+  (location_provider_print_help_func *)location_corelocation_print_help,
+  (location_provider_set_option_func *)location_corelocation_set_option,
+  (location_provider_get_fd_func *)location_corelocation_get_fd,
+  (location_provider_handle_func *)location_corelocation_handle
+};

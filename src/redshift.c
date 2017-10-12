@@ -127,82 +127,6 @@ typedef union {
 } gamma_state_t;
 
 
-/* Gamma adjustment method structs */
-static const gamma_method_t gamma_methods[] = {
-#ifdef ENABLE_DRM
-	{
-		"drm", 0,
-		(gamma_method_init_func *)drm_init,
-		(gamma_method_start_func *)drm_start,
-		(gamma_method_free_func *)drm_free,
-		(gamma_method_print_help_func *)drm_print_help,
-		(gamma_method_set_option_func *)drm_set_option,
-		(gamma_method_restore_func *)drm_restore,
-		(gamma_method_set_temperature_func *)drm_set_temperature
-	},
-#endif
-#ifdef ENABLE_RANDR
-	{
-		"randr", 1,
-		(gamma_method_init_func *)randr_init,
-		(gamma_method_start_func *)randr_start,
-		(gamma_method_free_func *)randr_free,
-		(gamma_method_print_help_func *)randr_print_help,
-		(gamma_method_set_option_func *)randr_set_option,
-		(gamma_method_restore_func *)randr_restore,
-		(gamma_method_set_temperature_func *)randr_set_temperature
-	},
-#endif
-#ifdef ENABLE_VIDMODE
-	{
-		"vidmode", 1,
-		(gamma_method_init_func *)vidmode_init,
-		(gamma_method_start_func *)vidmode_start,
-		(gamma_method_free_func *)vidmode_free,
-		(gamma_method_print_help_func *)vidmode_print_help,
-		(gamma_method_set_option_func *)vidmode_set_option,
-		(gamma_method_restore_func *)vidmode_restore,
-		(gamma_method_set_temperature_func *)vidmode_set_temperature
-	},
-#endif
-#ifdef ENABLE_QUARTZ
-	{
-		"quartz", 1,
-		(gamma_method_init_func *)quartz_init,
-		(gamma_method_start_func *)quartz_start,
-		(gamma_method_free_func *)quartz_free,
-		(gamma_method_print_help_func *)quartz_print_help,
-		(gamma_method_set_option_func *)quartz_set_option,
-		(gamma_method_restore_func *)quartz_restore,
-		(gamma_method_set_temperature_func *)quartz_set_temperature
-	},
-#endif
-#ifdef ENABLE_WINGDI
-	{
-		"wingdi", 1,
-		(gamma_method_init_func *)w32gdi_init,
-		(gamma_method_start_func *)w32gdi_start,
-		(gamma_method_free_func *)w32gdi_free,
-		(gamma_method_print_help_func *)w32gdi_print_help,
-		(gamma_method_set_option_func *)w32gdi_set_option,
-		(gamma_method_restore_func *)w32gdi_restore,
-		(gamma_method_set_temperature_func *)w32gdi_set_temperature
-	},
-#endif
-	{
-		"dummy", 0,
-		(gamma_method_init_func *)gamma_dummy_init,
-		(gamma_method_start_func *)gamma_dummy_start,
-		(gamma_method_free_func *)gamma_dummy_free,
-		(gamma_method_print_help_func *)gamma_dummy_print_help,
-		(gamma_method_set_option_func *)gamma_dummy_set_option,
-		(gamma_method_restore_func *)gamma_dummy_restore,
-		(gamma_method_set_temperature_func *)gamma_dummy_set_temperature
-	},
-	{ NULL }
-};
-
-
 /* Union of state data for location providers */
 typedef union {
 	location_manual_state_t manual;
@@ -214,51 +138,6 @@ typedef union {
 #endif
 } location_state_t;
 
-
-/* Location provider method structs */
-static const location_provider_t location_providers[] = {
-#ifdef ENABLE_GEOCLUE2
-	{
-		"geoclue2",
-		(location_provider_init_func *)location_geoclue2_init,
-		(location_provider_start_func *)location_geoclue2_start,
-		(location_provider_free_func *)location_geoclue2_free,
-		(location_provider_print_help_func *)
-		location_geoclue2_print_help,
-		(location_provider_set_option_func *)
-		location_geoclue2_set_option,
-		(location_provider_get_fd_func *)location_geoclue2_get_fd,
-		(location_provider_handle_func *)location_geoclue2_handle
-	},
-#endif
-#ifdef ENABLE_CORELOCATION
-	{
-		"corelocation",
-		(location_provider_init_func *)location_corelocation_init,
-		(location_provider_start_func *)location_corelocation_start,
-		(location_provider_free_func *)location_corelocation_free,
-		(location_provider_print_help_func *)
-		location_corelocation_print_help,
-		(location_provider_set_option_func *)
-		location_corelocation_set_option,
-		(location_provider_get_fd_func *)location_corelocation_get_fd,
-		(location_provider_handle_func *)location_corelocation_handle
-	},
-#endif
-	{
-		"manual",
-		(location_provider_init_func *)location_manual_init,
-		(location_provider_start_func *)location_manual_start,
-		(location_provider_free_func *)location_manual_free,
-		(location_provider_print_help_func *)
-		location_manual_print_help,
-		(location_provider_set_option_func *)
-		location_manual_set_option,
-		(location_provider_get_fd_func *)location_manual_get_fd,
-		(location_provider_handle_func *)location_manual_handle
-	},
-	{ NULL }
-};
 
 /* Bounds for parameters. */
 #define MIN_LAT   -90.0
@@ -566,7 +445,7 @@ print_help(const char *program_name)
 }
 
 static void
-print_method_list()
+print_method_list(const gamma_method_t *gamma_methods)
 {
 	fputs(_("Available adjustment methods:\n"), stdout);
 	for (int i = 0; gamma_methods[i].name != NULL; i++) {
@@ -581,7 +460,7 @@ print_method_list()
 }
 
 static void
-print_provider_list()
+print_provider_list(const location_provider_t location_providers[])
 {
 	fputs(_("Available location providers:\n"), stdout);
 	for (int i = 0; location_providers[i].name != NULL; i++) {
@@ -900,13 +779,13 @@ location_is_valid(const location_t *location)
 }
 
 static const gamma_method_t *
-find_gamma_method(const char *name)
+find_gamma_method(const gamma_method_t gamma_methods[], const char *name)
 {
 	const gamma_method_t *method = NULL;
 	for (int i = 0; gamma_methods[i].name != NULL; i++) {
 		const gamma_method_t *m = &gamma_methods[i];
 		if (strcasecmp(name, m->name) == 0) {
-		        method = m;
+			method = m;
 			break;
 		}
 	}
@@ -915,7 +794,8 @@ find_gamma_method(const char *name)
 }
 
 static const location_provider_t *
-find_location_provider(const char *name)
+find_location_provider(
+	const location_provider_t location_providers[], const char *name)
 {
 	const location_provider_t *provider = NULL;
 	for (int i = 0; location_providers[i].name != NULL; i++) {
@@ -1333,8 +1213,41 @@ main(int argc, char *argv[])
 	/* Temperature for manual mode */
 	int temp_set = -1;
 
+	/* List of gamma methods. */
+	const gamma_method_t gamma_methods[] = {
+#ifdef ENABLE_DRM
+		drm_gamma_method,
+#endif
+#ifdef ENABLE_RANDR
+		randr_gamma_method,
+#endif
+#ifdef ENABLE_VIDMODE
+		vidmode_gamma_method,
+#endif
+#ifdef ENABLE_QUARTZ
+		quartz_gamma_method,
+#endif
+#ifdef ENABLE_WINGDI
+		w32gdi_gamma_method,
+#endif
+		dummy_gamma_method,
+		{ NULL }
+	};
+
 	const gamma_method_t *method = NULL;
 	char *method_args = NULL;
+
+	/* List of location providers. */
+	const location_provider_t location_providers[] = {
+#ifdef ENABLE_GEOCLUE2
+		geoclue2_location_provider,
+#endif
+#ifdef ENABLE_CORELOCATION
+		corelocation_location_provider,
+#endif
+		manual_location_provider,
+		{ NULL }
+	};
 
 	const location_provider_t *provider = NULL;
 	char *provider_args = NULL;
@@ -1386,7 +1299,7 @@ main(int argc, char *argv[])
 		case 'l':
 			/* Print list of providers if argument is `list' */
 			if (strcasecmp(optarg, "list") == 0) {
-				print_provider_list();
+				print_provider_list(location_providers);
 				exit(EXIT_SUCCESS);
 			}
 
@@ -1413,7 +1326,8 @@ main(int argc, char *argv[])
 			}
 
 			/* Lookup provider from name. */
-			provider = find_location_provider(provider_name);
+			provider = find_location_provider(
+				location_providers, provider_name);
 			if (provider == NULL) {
 				fprintf(stderr, _("Unknown location provider"
 						  " `%s'.\n"), provider_name);
@@ -1430,7 +1344,7 @@ main(int argc, char *argv[])
 		case 'm':
 			/* Print list of methods if argument is `list' */
 			if (strcasecmp(optarg, "list") == 0) {
-				print_method_list();
+				print_method_list(gamma_methods);
 				exit(EXIT_SUCCESS);
 			}
 
@@ -1442,7 +1356,7 @@ main(int argc, char *argv[])
 			}
 
 			/* Find adjustment method by name. */
-			method = find_gamma_method(optarg);
+			method = find_gamma_method(gamma_methods, optarg);
 			if (method == NULL) {
 				/* TRANSLATORS: This refers to the method
 				   used to adjust colors e.g VidMode */
@@ -1603,7 +1517,7 @@ main(int argc, char *argv[])
 					      "adjustment-method") == 0) {
 				if (method == NULL) {
 					method = find_gamma_method(
-						setting->value);
+						gamma_methods, setting->value);
 					if (method == NULL) {
 						fprintf(stderr, _("Unknown"
 								  " adjustment"
@@ -1617,6 +1531,7 @@ main(int argc, char *argv[])
 					      "location-provider") == 0) {
 				if (provider == NULL) {
 					provider = find_location_provider(
+						location_providers,
 						setting->value);
 					if (provider == NULL) {
 						fprintf(stderr, _("Unknown"

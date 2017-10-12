@@ -33,7 +33,7 @@
 #endif
 
 
-int
+static int
 location_manual_init(location_manual_state_t *state)
 {
 	state->loc.lat = NAN;
@@ -42,7 +42,7 @@ location_manual_init(location_manual_state_t *state)
 	return 0;
 }
 
-int
+static int
 location_manual_start(location_manual_state_t *state)
 {
 	/* Latitude and longitude must be set */
@@ -54,12 +54,12 @@ location_manual_start(location_manual_state_t *state)
 	return 0;
 }
 
-void
+static void
 location_manual_free(location_manual_state_t *state)
 {
 }
 
-void
+static void
 location_manual_print_help(FILE *f)
 {
 	fputs(_("Specify location manually.\n"), f);
@@ -75,7 +75,7 @@ location_manual_print_help(FILE *f)
 	fputs("\n", f);
 }
 
-int
+static int
 location_manual_set_option(location_manual_state_t *state, const char *key,
 			   const char *value)
 {
@@ -100,13 +100,13 @@ location_manual_set_option(location_manual_state_t *state, const char *key,
 	return 0;
 }
 
-int
+static int
 location_manual_get_fd(location_manual_state_t *state)
 {
 	return -1;
 }
 
-int
+static int
 location_manual_handle(
 	location_manual_state_t *state, location_t *location, int *available)
 {
@@ -115,3 +115,15 @@ location_manual_handle(
 
 	return 0;
 }
+
+
+const location_provider_t manual_location_provider = {
+	"manual",
+	(location_provider_init_func *)location_manual_init,
+	(location_provider_start_func *)location_manual_start,
+	(location_provider_free_func *)location_manual_free,
+	(location_provider_print_help_func *)location_manual_print_help,
+	(location_provider_set_option_func *)location_manual_set_option,
+	(location_provider_get_fd_func *)location_manual_get_fd,
+	(location_provider_handle_func *)location_manual_handle
+};

@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010-2014  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2010-2017  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #include <stdio.h>
@@ -40,7 +40,7 @@
 #define MAX_ATTEMPTS  10
 
 
-int
+static int
 w32gdi_init(w32gdi_state_t *state)
 {
 	state->saved_ramps = NULL;
@@ -49,7 +49,7 @@ w32gdi_init(w32gdi_state_t *state)
 	return 0;
 }
 
-int
+static int
 w32gdi_start(w32gdi_state_t *state)
 {
 	BOOL r;
@@ -91,7 +91,7 @@ w32gdi_start(w32gdi_state_t *state)
 	return 0;
 }
 
-void
+static void
 w32gdi_free(w32gdi_state_t *state)
 {
 	/* Free saved ramps */
@@ -99,7 +99,7 @@ w32gdi_free(w32gdi_state_t *state)
 }
 
 
-void
+static void
 w32gdi_print_help(FILE *f)
 {
 	fputs(_("Adjust gamma ramps with the Windows GDI.\n"), f);
@@ -113,7 +113,7 @@ w32gdi_print_help(FILE *f)
 	fputs("\n", f);
 }
 
-int
+static int
 w32gdi_set_option(w32gdi_state_t *state, const char *key, const char *value)
 {
 	if (strcasecmp(key, "preserve") == 0) {
@@ -126,7 +126,7 @@ w32gdi_set_option(w32gdi_state_t *state, const char *key, const char *value)
 	return 0;
 }
 
-void
+static void
 w32gdi_restore(w32gdi_state_t *state)
 {
 	/* Open device context */
@@ -150,7 +150,7 @@ w32gdi_restore(w32gdi_state_t *state)
 	ReleaseDC(NULL, hDC);
 }
 
-int
+static int
 w32gdi_set_temperature(w32gdi_state_t *state,
 		       const color_setting_t *setting)
 {
@@ -215,3 +215,15 @@ w32gdi_set_temperature(w32gdi_state_t *state,
 
 	return 0;
 }
+
+
+const gamma_method_t w32gdi_gamma_method = {
+	"wingdi", 1,
+	(gamma_method_init_func *)w32gdi_init,
+	(gamma_method_start_func *)w32gdi_start,
+	(gamma_method_free_func *)w32gdi_free,
+	(gamma_method_print_help_func *)w32gdi_print_help,
+	(gamma_method_set_option_func *)w32gdi_set_option,
+	(gamma_method_restore_func *)w32gdi_restore,
+	(gamma_method_set_temperature_func *)w32gdi_set_temperature
+};

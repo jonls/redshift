@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2014  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2014-2017  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #ifndef REDSHIFT_GAMMA_QUARTZ_H
@@ -40,17 +40,6 @@ typedef struct {
 } quartz_state_t;
 
 
-int quartz_init(quartz_state_t *state);
-int quartz_start(quartz_state_t *state);
-void quartz_free(quartz_state_t *state);
-
-void quartz_print_help(FILE *f);
-int quartz_set_option(quartz_state_t *state, const char *key,
-		      const char *value);
-
-void quartz_restore(quartz_state_t *state);
-int quartz_set_temperature(quartz_state_t *state,
-			   const color_setting_t *setting);
-
+extern const gamma_method_t quartz_gamma_method;
 
 #endif /* ! REDSHIFT_GAMMA_QUARTZ_H */

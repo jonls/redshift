@@ -41,7 +41,7 @@
 #include "colorramp.h"
 
 
-int
+static int
 drm_init(drm_state_t *state)
 {
 	/* Initialize state. */
@@ -54,7 +54,7 @@ drm_init(drm_state_t *state)
 	return 0;
 }
 
-int
+static int
 drm_start(drm_state_t *state)
 {
 	/* Acquire access to a graphics card. */
@@ -172,7 +172,7 @@ drm_start(drm_state_t *state)
 	return 0;
 }
 
-void
+static void
 drm_restore(drm_state_t *state)
 {
 	drm_crtc_state_t *crtcs = state->crtcs;
@@ -185,7 +185,7 @@ drm_restore(drm_state_t *state)
 	}
 }
 
-void
+static void
 drm_free(drm_state_t *state)
 {
 	if (state->crtcs != NULL) {
@@ -208,7 +208,7 @@ drm_free(drm_state_t *state)
 	}
 }
 
-void
+static void
 drm_print_help(FILE *f)
 {
 	fputs(_("Adjust gamma ramps with Direct Rendering Manager.\n"), f);
@@ -221,7 +221,7 @@ drm_print_help(FILE *f)
 	fputs("\n", f);
 }
 
-int
+static int
 drm_set_option(drm_state_t *state, const char *key, const char *value)
 {
 	if (strcasecmp(key, "card") == 0) {
@@ -240,7 +240,7 @@ drm_set_option(drm_state_t *state, const char *key, const char *value)
 	return 0;
 }
 
-int
+static int
 drm_set_temperature(drm_state_t *state, const color_setting_t *setting)
 {
 	drm_crtc_state_t *crtcs = state->crtcs;
@@ -288,3 +288,15 @@ drm_set_temperature(drm_state_t *state, const color_setting_t *setting)
 
 	return 0;
 }
+
+
+const gamma_method_t drm_gamma_method = {
+	"drm", 0,
+	(gamma_method_init_func *)drm_init,
+	(gamma_method_start_func *)drm_start,
+	(gamma_method_free_func *)drm_free,
+	(gamma_method_print_help_func *)drm_print_help,
+	(gamma_method_set_option_func *)drm_set_option,
+	(gamma_method_restore_func *)drm_restore,
+	(gamma_method_set_temperature_func *)drm_set_temperature
+};

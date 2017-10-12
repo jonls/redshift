@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010-2014  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2010-2017  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #include <stdio.h>
@@ -42,7 +42,7 @@
 #define RANDR_VERSION_MINOR  3
 
 
-int
+static int
 randr_init(randr_state_t *state)
 {
 	/* Initialize state. */
@@ -91,7 +91,7 @@ randr_init(randr_state_t *state)
 	return 0;
 }
 
-int
+static int
 randr_start(randr_state_t *state)
 {
 	xcb_generic_error_t *error;
@@ -228,7 +228,7 @@ randr_start(randr_state_t *state)
 	return 0;
 }
 
-void
+static void
 randr_restore(randr_state_t *state)
 {
 	xcb_generic_error_t *error;
@@ -257,7 +257,7 @@ randr_restore(randr_state_t *state)
 	}
 }
 
-void
+static void
 randr_free(randr_state_t *state)
 {
 	/* Free CRTC state */
@@ -271,7 +271,7 @@ randr_free(randr_state_t *state)
 	xcb_disconnect(state->conn);
 }
 
-void
+static void
 randr_print_help(FILE *f)
 {
 	fputs(_("Adjust gamma ramps with the X RANDR extension.\n"), f);
@@ -287,7 +287,7 @@ randr_print_help(FILE *f)
 	fputs("\n", f);
 }
 
-int
+static int
 randr_set_option(randr_state_t *state, const char *key, const char *value)
 {
 	if (strcasecmp(key, "screen") == 0) {
@@ -416,7 +416,7 @@ randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num,
 	return 0;
 }
 
-int
+static int
 randr_set_temperature(randr_state_t *state,
 		      const color_setting_t *setting)
 {
@@ -440,3 +440,15 @@ randr_set_temperature(randr_state_t *state,
 
 	return 0;
 }
+
+
+const gamma_method_t randr_gamma_method = {
+	"randr", 1,
+	(gamma_method_init_func *)randr_init,
+	(gamma_method_start_func *)randr_start,
+	(gamma_method_free_func *)randr_free,
+	(gamma_method_print_help_func *)randr_print_help,
+	(gamma_method_set_option_func *)randr_set_option,
+	(gamma_method_restore_func *)randr_restore,
+	(gamma_method_set_temperature_func *)randr_set_temperature
+};

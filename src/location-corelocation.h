@@ -37,20 +37,7 @@ typedef struct {
 } location_corelocation_state_t;
 
 
-int location_corelocation_init(location_corelocation_state_t *state);
-int location_corelocation_start(location_corelocation_state_t *state);
-void location_corelocation_free(location_corelocation_state_t *state);
-
-void location_corelocation_print_help(FILE *f);
-int location_corelocation_set_option(
-	location_corelocation_state_t *state,
-	const char *key, const char *value);
-
-int location_corelocation_get_fd(
-	location_corelocation_state_t *state);
-int location_corelocation_handle(
-	location_corelocation_state_t *state,
-	location_t *location, int *available);
+extern const location_provider_t corelocation_location_provider;
 
 
 #endif /* ! REDSHIFT_LOCATION_CORELOCATION_H */
