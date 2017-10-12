@@ -1249,7 +1249,7 @@ run_continual_mode(const location_provider_t *provider,
 			   information. */
 			location_t new_loc;
 			int new_available;
-			provider->handle(
+			r = provider->handle(
 				location_state, &new_loc,
 				&new_available);
 			if (r < 0) {
