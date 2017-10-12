@@ -105,10 +105,20 @@ Screen brightness at daytime
 Screen brightness at night
 .TP
 \fBelevation-high\fR = decimal
-The solar elevation for the transition to daytime
+The solar elevation in degrees for the transition to daytime
 .TP
 \fBelevation-low\fR = decimal
-The solar elevation for the transition to night
+The solar elevation in degrees for the transition to night
+.TP
+\fBdawn-time\fR = HH:MM[-HH:MM]
+The custom time interval for the transition from night to day in the morning.
+When specified, the solar elevation will not be used to determine the current
+daytime/night period. If this option is set, dusk-time must also be specified.
+.TP
+\fBdusk-time\fR = HH:MM[-HH:MM]
+The custom time interval for the transition from day to night in the evening.
+When specified, the solar elevation will not be used to determine the current
+daytime/night period. If this option is set, dawn-time must also be specified.
 .TP
 \fBgamma\fR = R:G:B
 Gamma adjustment to apply (day and night)
