@@ -42,7 +42,7 @@ install:
   - mkdir "$TRAVIS_BUILD_DIR/root"
   - |
     if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-      ./configure --prefix="$TRAVIS_BUILD_DIR/root" --enable-drm --enable-vidmode --enable-randr --enable-geoclue2 --enable-gui
+      ./configure --prefix="$TRAVIS_BUILD_DIR/root" --enable-drm --enable-vidmode --enable-randr --enable-geoclue2 --enable-gui --enable-apparmor
     elif [ "$TRAVIS_OS_NAME" == "osx" ]; then
       ./configure --prefix="$TRAVIS_BUILD_DIR/root" --enable-corelocation --enable-quartz --enable-gui
     fi
