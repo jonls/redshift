@@ -23,6 +23,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/* The color temperature when no adjustment is applied. */
+#define NEUTRAL_TEMP  6500
+
 
 /* Location */
 typedef struct {
@@ -44,6 +47,35 @@ typedef struct {
 	float gamma[3];
 	float brightness;
 } color_setting_t;
+
+/* Program modes. */
+typedef enum {
+	PROGRAM_MODE_CONTINUAL,
+	PROGRAM_MODE_ONE_SHOT,
+	PROGRAM_MODE_PRINT,
+	PROGRAM_MODE_RESET,
+	PROGRAM_MODE_MANUAL
+} program_mode_t;
+
+/* Time range.
+   Fields are offsets from midnight in seconds. */
+typedef struct {
+	int start;
+	int end;
+} time_range_t;
+
+/* Transition scheme.
+   The solar elevations at which the transition begins/ends,
+   and the association color settings. */
+typedef struct {
+	double high;
+	double low;
+	int use_time; /* When enabled, ignore elevation and use time ranges. */
+	time_range_t dawn;
+	time_range_t dusk;
+	color_setting_t day;
+	color_setting_t night;
+} transition_scheme_t;
 
 
 /* Gamma adjustment method */

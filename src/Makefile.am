@@ -14,6 +14,7 @@ redshift_SOURCES = \
 	gamma-dummy.c gamma-dummy.h \
 	hooks.c hooks.h \
 	location-manual.c location-manual.h \
+	options.c options.h \
 	pipeutils.c pipeutils.h \
 	redshift.c redshift.h \
 	signals.c signals.h \
