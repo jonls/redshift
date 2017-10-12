@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2013-2014  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2013-2017  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #ifndef REDSHIFT_REDSHIFT_H
@@ -47,14 +47,16 @@ typedef struct {
 
 
 /* Gamma adjustment method */
-typedef int gamma_method_init_func(void *state);
-typedef int gamma_method_start_func(void *state);
-typedef void gamma_method_free_func(void *state);
+typedef struct gamma_state gamma_state_t;
+
+typedef int gamma_method_init_func(gamma_state_t **state);
+typedef int gamma_method_start_func(gamma_state_t *state);
+typedef void gamma_method_free_func(gamma_state_t *state);
 typedef void gamma_method_print_help_func(FILE *f);
-typedef int gamma_method_set_option_func(void *state, const char *key,
+typedef int gamma_method_set_option_func(gamma_state_t *state, const char *key,
 					 const char *value);
-typedef void gamma_method_restore_func(void *state);
-typedef int gamma_method_set_temperature_func(void *state,
+typedef void gamma_method_restore_func(gamma_state_t *state);
+typedef int gamma_method_set_temperature_func(gamma_state_t *state,
 					      const color_setting_t *setting);
 
 typedef struct {
@@ -83,15 +85,17 @@ typedef struct {
 
 
 /* Location provider */
-typedef int location_provider_init_func(void *state);
-typedef int location_provider_start_func(void *state);
-typedef void location_provider_free_func(void *state);
+typedef struct location_state location_state_t;
+
+typedef int location_provider_init_func(location_state_t **state);
+typedef int location_provider_start_func(location_state_t *state);
+typedef void location_provider_free_func(location_state_t *state);
 typedef void location_provider_print_help_func(FILE *f);
-typedef int location_provider_set_option_func(void *state, const char *key,
-					      const char *value);
-typedef int location_provider_get_fd_func(void *state);
+typedef int location_provider_set_option_func(
+	location_state_t *state, const char *key, const char *value);
+typedef int location_provider_get_fd_func(location_state_t *state);
 typedef int location_provider_handle_func(
-	void *state, location_t *location, int *available);
+	location_state_t *state, location_t *location, int *available);
 
 typedef struct {
 	char *name;

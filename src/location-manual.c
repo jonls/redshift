@@ -34,10 +34,14 @@
 
 
 static int
-location_manual_init(location_manual_state_t *state)
+location_manual_init(location_manual_state_t **state)
 {
-	state->loc.lat = NAN;
-	state->loc.lon = NAN;
+	*state = malloc(sizeof(location_manual_state_t));
+	if (*state == NULL) return -1;
+
+	location_manual_state_t *s = *state;
+	s->loc.lat = NAN;
+	s->loc.lon = NAN;
 
 	return 0;
 }
@@ -57,6 +61,7 @@ location_manual_start(location_manual_state_t *state)
 static void
 location_manual_free(location_manual_state_t *state)
 {
+	free(state);
 }
 
 static void

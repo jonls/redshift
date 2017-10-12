@@ -173,8 +173,10 @@ pipe_close_callback(
 
 
 static int
-location_corelocation_init(location_corelocation_state_t *state)
+location_corelocation_init(location_corelocation_state_t **state)
 {
+  *state = malloc(sizeof(location_corelocation_state_t));
+  if (*state == NULL) return -1;
   return 0;
 }
 
@@ -223,6 +225,7 @@ location_corelocation_free(location_corelocation_state_t *state)
   }
 
   free(state->private);
+  free(state);
 }
 
 static void

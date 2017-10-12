@@ -31,8 +31,9 @@
 
 
 static int
-gamma_dummy_init(void *state)
+gamma_dummy_init(void **state)
 {
+	*state = NULL;
 	return 0;
 }
 

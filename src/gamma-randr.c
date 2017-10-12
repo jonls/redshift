@@ -43,29 +43,33 @@
 
 
 static int
-randr_init(randr_state_t *state)
+randr_init(randr_state_t **state)
 {
 	/* Initialize state. */
-	state->screen_num = -1;
-	state->crtc_num = NULL;
+	*state = malloc(sizeof(randr_state_t));
+	if (*state == NULL) return -1;
 
-	state->crtc_num_count = 0;
-	state->crtc_count = 0;
-	state->crtcs = NULL;
+	randr_state_t *s = *state;
+	s->screen_num = -1;
+	s->crtc_num = NULL;
 
-	state->preserve = 1;
+	s->crtc_num_count = 0;
+	s->crtc_count = 0;
+	s->crtcs = NULL;
+
+	s->preserve = 1;
 
 	xcb_generic_error_t *error;
 
 	/* Open X server connection */
-	state->conn = xcb_connect(NULL, &state->preferred_screen);
+	s->conn = xcb_connect(NULL, &s->preferred_screen);
 
 	/* Query RandR version */
 	xcb_randr_query_version_cookie_t ver_cookie =
-		xcb_randr_query_version(state->conn, RANDR_VERSION_MAJOR,
+		xcb_randr_query_version(s->conn, RANDR_VERSION_MAJOR,
 					RANDR_VERSION_MINOR);
 	xcb_randr_query_version_reply_t *ver_reply =
-		xcb_randr_query_version_reply(state->conn, ver_cookie, &error);
+		xcb_randr_query_version_reply(s->conn, ver_cookie, &error);
 
 	/* TODO What does it mean when both error and ver_reply is NULL?
 	   Apparently, we have to check both to avoid seg faults. */
@@ -73,7 +77,8 @@ randr_init(randr_state_t *state)
 		int ec = (error != 0) ? error->error_code : -1;
 		fprintf(stderr, _("`%s' returned error %d\n"),
 			"RANDR Query Version", ec);
-		xcb_disconnect(state->conn);
+		xcb_disconnect(s->conn);
+		free(s);
 		return -1;
 	}
 
@@ -82,7 +87,8 @@ randr_init(randr_state_t *state)
 		fprintf(stderr, _("Unsupported RANDR version (%u.%u)\n"),
 			ver_reply->major_version, ver_reply->minor_version);
 		free(ver_reply);
-		xcb_disconnect(state->conn);
+		xcb_disconnect(s->conn);
+		free(s);
 		return -1;
 	}
 
@@ -269,6 +275,8 @@ randr_free(randr_state_t *state)
 
 	/* Close connection */
 	xcb_disconnect(state->conn);
+
+	free(state);
 }
 
 static void

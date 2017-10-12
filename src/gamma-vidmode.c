@@ -38,18 +38,21 @@
 
 
 static int
-vidmode_init(vidmode_state_t *state)
+vidmode_init(vidmode_state_t **state)
 {
-	state->screen_num = -1;
-	state->saved_ramps = NULL;
+	*state = malloc(sizeof(vidmode_state_t));
+	if (*state == NULL) return -1;
 
-	state->preserve = 1;
+	vidmode_state_t *s = *state;
+	s->screen_num = -1;
+	s->saved_ramps = NULL;
+
+	s->preserve = 1;
 
 	/* Open display */
-	state->display = XOpenDisplay(NULL);
-	if (state->display == NULL) {
-		fprintf(stderr, _("X request failed: %s\n"),
-			"XOpenDisplay");
+	s->display = XOpenDisplay(NULL);
+	if (s->display == NULL) {
+		fprintf(stderr, _("X request failed: %s\n"), "XOpenDisplay");
 		return -1;
 	}
 
@@ -121,6 +124,8 @@ vidmode_free(vidmode_state_t *state)
 
 	/* Close display connection */
 	XCloseDisplay(state->display);
+
+	free(state);
 }
 
 static void

@@ -107,37 +107,6 @@ int poll(struct pollfd *fds, int nfds, int timeout) { abort(); return -1; }
 #undef CLAMP
 #define CLAMP(lo,mid,up)  (((lo) > (mid)) ? (lo) : (((mid) < (up)) ? (mid) : (up)))
 
-/* Union of state data for gamma adjustment methods */
-typedef union {
-#ifdef ENABLE_DRM
-	drm_state_t drm;
-#endif
-#ifdef ENABLE_RANDR
-	randr_state_t randr;
-#endif
-#ifdef ENABLE_VIDMODE
-	vidmode_state_t vidmode;
-#endif
-#ifdef ENABLE_QUARTZ
-	quartz_state_t quartz;
-#endif
-#ifdef ENABLE_WINGDI
-	w32gdi_state_t w32gdi;
-#endif
-} gamma_state_t;
-
-
-/* Union of state data for location providers */
-typedef union {
-	location_manual_state_t manual;
-#ifdef ENABLE_GEOCLUE2
-	location_geoclue2_state_t geoclue2;
-#endif
-#ifdef ENABLE_CORELOCATION
-	location_corelocation_state_t corelocation;
-#endif
-} location_state_t;
-
 
 /* Bounds for parameters. */
 #define MIN_LAT   -90.0
@@ -477,8 +446,8 @@ print_provider_list(const location_provider_t location_providers[])
 
 static int
 provider_try_start(const location_provider_t *provider,
-		   location_state_t *state,
-		   config_ini_state_t *config, char *args)
+		   location_state_t **state, config_ini_state_t *config,
+		   char *args)
 {
 	int r;
 
@@ -495,10 +464,10 @@ provider_try_start(const location_provider_t *provider,
 	if (section != NULL) {
 		config_ini_setting_t *setting = section->settings;
 		while (setting != NULL) {
-			r = provider->set_option(state, setting->name,
+			r = provider->set_option(*state, setting->name,
 						 setting->value);
 			if (r < 0) {
-				provider->free(state);
+				provider->free(*state);
 				fprintf(stderr, _("Failed to set %s"
 						  " option.\n"),
 					provider->name);
@@ -540,9 +509,9 @@ provider_try_start(const location_provider_t *provider,
 			*(value++) = '\0';
 		}
 
-		r = provider->set_option(state, key, value);
+		r = provider->set_option(*state, key, value);
 		if (r < 0) {
-			provider->free(state);
+			provider->free(*state);
 			fprintf(stderr, _("Failed to set %s option.\n"),
 				provider->name);
 			/* TRANSLATORS: `help' must not be translated. */
@@ -556,9 +525,9 @@ provider_try_start(const location_provider_t *provider,
 	}
 
 	/* Start provider. */
-	r = provider->start(state);
+	r = provider->start(*state);
 	if (r < 0) {
-		provider->free(state);
+		provider->free(*state);
 		fprintf(stderr, _("Failed to start provider %s.\n"),
 			provider->name);
 		return -1;
@@ -569,8 +538,7 @@ provider_try_start(const location_provider_t *provider,
 
 static int
 method_try_start(const gamma_method_t *method,
-		 gamma_state_t *state,
-		 config_ini_state_t *config, char *args)
+		 gamma_state_t **state, config_ini_state_t *config, char *args)
 {
 	int r;
 
@@ -587,10 +555,10 @@ method_try_start(const gamma_method_t *method,
 	if (section != NULL) {
 		config_ini_setting_t *setting = section->settings;
 		while (setting != NULL) {
-			r = method->set_option(state, setting->name,
-						 setting->value);
+			r = method->set_option(
+				*state, setting->name, setting->value);
 			if (r < 0) {
-				method->free(state);
+				method->free(*state);
 				fprintf(stderr, _("Failed to set %s"
 						  " option.\n"),
 					method->name);
@@ -620,9 +588,9 @@ method_try_start(const gamma_method_t *method,
 			*(value++) = '\0';
 		}
 
-		r = method->set_option(state, key, value);
+		r = method->set_option(*state, key, value);
 		if (r < 0) {
-			method->free(state);
+			method->free(*state);
 			fprintf(stderr, _("Failed to set %s option.\n"),
 				method->name);
 			/* TRANSLATORS: `help' must not be translated. */
@@ -635,9 +603,9 @@ method_try_start(const gamma_method_t *method,
 	}
 
 	/* Start method. */
-	r = method->start(state);
+	r = method->start(*state);
 	if (r < 0) {
-		method->free(state);
+		method->free(*state);
 		fprintf(stderr, _("Failed to start adjustment method %s.\n"),
 			method->name);
 		return -1;
@@ -888,7 +856,7 @@ run_continual_mode(const location_provider_t *provider,
 		   location_state_t *location_state,
 		   const transition_scheme_t *scheme,
 		   const gamma_method_t *method,
-		   gamma_state_t *state,
+		   gamma_state_t *method_state,
 		   int use_fade, int verbose)
 {
 	int r;
@@ -1086,7 +1054,7 @@ run_continual_mode(const location_provider_t *provider,
 		}
 
 		/* Adjust temperature */
-		r = method->set_temperature(state, &interp);
+		r = method->set_temperature(method_state, &interp);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"),
 			      stderr);
@@ -1167,7 +1135,7 @@ run_continual_mode(const location_provider_t *provider,
 	}
 
 	/* Restore saved gamma ramps */
-	method->restore(state);
+	method->restore(method_state);
 
 	return 0;
 }
@@ -1630,7 +1598,7 @@ main(int argc, char *argv[])
 
 	/* Initialize location provider if needed. If provider is NULL
 	   try all providers until one that works is found. */
-	location_state_t location_state;
+	location_state_t *location_state;
 
 	/* Location is not needed for reset mode and manual mode. */
 	int need_location =
@@ -1758,14 +1726,15 @@ main(int argc, char *argv[])
 
 	/* Initialize gamma adjustment method. If method is NULL
 	   try all methods until one that works is found. */
-	gamma_state_t state;
+	gamma_state_t *method_state;
 
 	/* Gamma adjustment not needed for print mode */
 	if (mode != PROGRAM_MODE_PRINT) {
 		if (method != NULL) {
 			/* Use method specified on command line. */
-			r = method_try_start(method, &state, &config_state,
-					     method_args);
+			r = method_try_start(
+				method, &method_state, &config_state,
+				method_args);
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
 			/* Try all methods, use the first that works. */
@@ -1773,7 +1742,8 @@ main(int argc, char *argv[])
 				const gamma_method_t *m = &gamma_methods[i];
 				if (!m->autostart) continue;
 
-				r = method_try_start(m, &state, &config_state, NULL);
+				r = method_try_start(
+					m, &method_state, &config_state, NULL);
 				if (r < 0) {
 					fputs(_("Trying next method...\n"), stderr);
 					continue;
@@ -1806,7 +1776,7 @@ main(int argc, char *argv[])
 
 			/* Wait for location provider. */
 			int r = provider_get_location(
-				provider, &location_state, -1, &loc);
+				provider, location_state, -1, &loc);
 			if (r < 0) {
 				fputs(_("Unable to get location"
 					" from provider.\n"), stderr);
@@ -1824,7 +1794,7 @@ main(int argc, char *argv[])
 		r = systemtime_get_time(&now);
 		if (r < 0) {
 			fputs(_("Unable to read system time.\n"), stderr);
-			method->free(&state);
+			method->free(method_state);
 			exit(EXIT_FAILURE);
 		}
 
@@ -1866,11 +1836,11 @@ main(int argc, char *argv[])
 
 		if (mode != PROGRAM_MODE_PRINT) {
 			/* Adjust temperature */
-			r = method->set_temperature(&state, &interp);
+			r = method->set_temperature(method_state, &interp);
 			if (r < 0) {
 				fputs(_("Temperature adjustment failed.\n"),
 				      stderr);
-				method->free(&state);
+				method->free(method_state);
 				exit(EXIT_FAILURE);
 			}
 
@@ -1892,10 +1862,10 @@ main(int argc, char *argv[])
 		/* Adjust temperature */
 		color_setting_t manual = scheme.day;
 		manual.temperature = temp_set;
-		r = method->set_temperature(&state, &manual);
+		r = method->set_temperature(method_state, &manual);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
-			method->free(&state);
+			method->free(method_state);
 			exit(EXIT_FAILURE);
 		}
 
@@ -1912,10 +1882,10 @@ main(int argc, char *argv[])
 	{
 		/* Reset screen */
 		color_setting_t reset = { NEUTRAL_TEMP, { 1.0, 1.0, 1.0 }, 1.0 };
-		r = method->set_temperature(&state, &reset);
+		r = method->set_temperature(method_state, &reset);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
-			method->free(&state);
+			method->free(method_state);
 			exit(EXIT_FAILURE);
 		}
 
@@ -1930,8 +1900,8 @@ main(int argc, char *argv[])
 	break;
 	case PROGRAM_MODE_CONTINUAL:
 	{
-		r = run_continual_mode(provider, &location_state, &scheme,
-				       method, &state,
+		r = run_continual_mode(provider, location_state, &scheme,
+				       method, method_state,
 				       use_fade, verbose);
 		if (r < 0) exit(EXIT_FAILURE);
 	}
@@ -1940,12 +1910,12 @@ main(int argc, char *argv[])
 
 	/* Clean up gamma adjustment state */
 	if (mode != PROGRAM_MODE_PRINT) {
-		method->free(&state);
+		method->free(method_state);
 	}
 
 	/* Clean up location provider state */
 	if (need_location) {
-		provider->free(&location_state);
+		provider->free(location_state);
 	}
 
 	return EXIT_SUCCESS;

@@ -38,10 +38,14 @@
 
 
 static int
-quartz_init(quartz_state_t *state)
+quartz_init(quartz_state_t **state)
 {
-	state->preserve = 1;
-	state->displays = NULL;
+	*state = malloc(sizeof(quartz_state_t));
+	if (*state == NULL) return -1;
+
+	quartz_state_t *s = *state;
+	s->preserve = 1;
+	s->displays = NULL;
 
 	return 0;
 }
@@ -49,7 +53,6 @@ quartz_init(quartz_state_t *state)
 static int
 quartz_start(quartz_state_t *state)
 {
-	int r;
 	CGError error;
 	uint32_t display_count;
 
@@ -147,6 +150,7 @@ quartz_free(quartz_state_t *state)
 		}
 	}
 	free(state->displays);
+	free(state);
 }
 
 static void

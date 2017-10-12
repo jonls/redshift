@@ -41,10 +41,14 @@
 
 
 static int
-w32gdi_init(w32gdi_state_t *state)
+w32gdi_init(w32gdi_state_t **state)
 {
-	state->saved_ramps = NULL;
-	state->preserve = 1;
+	*state = malloc(sizeof(w32gdi_state_t));
+	if (state == NULL) return -1;
+
+	w32gdi_state_t *s = *state;
+	s->saved_ramps = NULL;
+	s->preserve = 1;
 
 	return 0;
 }
@@ -96,6 +100,8 @@ w32gdi_free(w32gdi_state_t *state)
 {
 	/* Free saved ramps */
 	free(state->saved_ramps);
+
+	free(state);
 }
 
 

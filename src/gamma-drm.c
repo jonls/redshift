@@ -15,6 +15,7 @@
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
    Copyright (c) 2014  Mattias Andrée <maandree@member.fsf.org>
+   Copyright (c) 2017  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #include <stdio.h>
@@ -42,14 +43,18 @@
 
 
 static int
-drm_init(drm_state_t *state)
+drm_init(drm_state_t **state)
 {
 	/* Initialize state. */
-	state->card_num = 0;
-	state->crtc_num = -1;
-	state->fd = -1;
-	state->res = NULL;
-	state->crtcs = NULL;
+        *state = malloc(sizeof(drm_state_t));
+        if (*state == NULL) return -1;
+
+        drm_state_t *s = *state;
+        s->card_num = 0;
+	s->crtc_num = -1;
+	s->fd = -1;
+	s->res = NULL;
+	s->crtcs = NULL;
 
 	return 0;
 }
@@ -206,6 +211,8 @@ drm_free(drm_state_t *state)
 		close(state->fd);
 		state->fd = -1;
 	}
+
+        free(state);
 }
 
 static void
