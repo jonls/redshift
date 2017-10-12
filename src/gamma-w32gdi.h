@@ -20,19 +20,8 @@
 #ifndef REDSHIFT_GAMMA_W32GDI_H
 #define REDSHIFT_GAMMA_W32GDI_H
 
-#include <windows.h>
-#include <wingdi.h>
-
 #include "redshift.h"
 
-
-typedef struct {
-	WORD *saved_ramps;
-	int preserve;
-} w32gdi_state_t;
-
-
 extern const gamma_method_t w32gdi_gamma_method;
-
 
 #endif /* ! REDSHIFT_GAMMA_W32GDI_H */

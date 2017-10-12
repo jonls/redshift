@@ -15,36 +15,13 @@
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
    Copyright (c) 2014  Mattias Andrée <maandree@member.fsf.org>
+   Copyright (c) 2017  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #ifndef REDSHIFT_GAMMA_DRM_H
 #define REDSHIFT_GAMMA_DRM_H
 
-#include <stdint.h>
-
-#include <xf86drm.h>
-#include <xf86drmMode.h>
-
 #include "redshift.h"
-
-
-typedef struct {
-	int crtc_num;
-	int crtc_id;
-	int gamma_size;
-	uint16_t* r_gamma;
-	uint16_t* g_gamma;
-	uint16_t* b_gamma;
-} drm_crtc_state_t;
-
-typedef struct {
-	int card_num;
-	int crtc_num;
-	int fd;
-	drmModeRes* res;
-	drm_crtc_state_t* crtcs;
-} drm_state_t;
-
 
 extern const gamma_method_t drm_gamma_method;
 

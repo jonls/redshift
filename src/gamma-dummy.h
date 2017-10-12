@@ -22,8 +22,6 @@
 
 #include "redshift.h"
 
-
 extern const gamma_method_t dummy_gamma_method;
-
 
 #endif /* ! REDSHIFT_GAMMA_DUMMY_H */

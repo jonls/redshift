@@ -37,6 +37,19 @@
 #include "colorramp.h"
 
 
+typedef struct {
+	CGDirectDisplayID display;
+	uint32_t ramp_size;
+	float *saved_ramps;
+} quartz_display_state_t;
+
+typedef struct {
+	quartz_display_state_t *displays;
+	uint32_t display_count;
+	int preserve;
+} quartz_state_t;
+
+
 static int
 quartz_init(quartz_state_t **state)
 {

@@ -33,6 +33,11 @@
 #endif
 
 
+typedef struct {
+	location_t loc;
+} location_manual_state_t;
+
+
 static int
 location_manual_init(location_manual_state_t **state)
 {

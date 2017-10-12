@@ -20,24 +20,8 @@
 #ifndef REDSHIFT_LOCATION_CORELOCATION_H
 #define REDSHIFT_LOCATION_CORELOCATION_H
 
-#include <stdio.h>
-
 #include "redshift.h"
 
-typedef struct location_corelocation_private location_corelocation_private_t;
-
-typedef struct {
-	location_corelocation_private_t *private;
-	int pipe_fd_read;
-	int pipe_fd_write;
-	int available;
-	int error;
-	float latitude;
-	float longitude;
-} location_corelocation_state_t;
-
-
 extern const location_provider_t corelocation_location_provider;
-
 
 #endif /* ! REDSHIFT_LOCATION_CORELOCATION_H */

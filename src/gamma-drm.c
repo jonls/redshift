@@ -38,19 +38,40 @@
   #define O_CLOEXEC  02000000
 #endif
 
+#include <xf86drm.h>
+#include <xf86drmMode.h>
+
 #include "gamma-drm.h"
 #include "colorramp.h"
+
+
+typedef struct {
+	int crtc_num;
+	int crtc_id;
+	int gamma_size;
+	uint16_t* r_gamma;
+	uint16_t* g_gamma;
+	uint16_t* b_gamma;
+} drm_crtc_state_t;
+
+typedef struct {
+	int card_num;
+	int crtc_num;
+	int fd;
+	drmModeRes* res;
+	drm_crtc_state_t* crtcs;
+} drm_state_t;
 
 
 static int
 drm_init(drm_state_t **state)
 {
 	/* Initialize state. */
-        *state = malloc(sizeof(drm_state_t));
-        if (*state == NULL) return -1;
+	*state = malloc(sizeof(drm_state_t));
+	if (*state == NULL) return -1;
 
-        drm_state_t *s = *state;
-        s->card_num = 0;
+	drm_state_t *s = *state;
+	s->card_num = 0;
 	s->crtc_num = -1;
 	s->fd = -1;
 	s->res = NULL;
@@ -212,7 +233,7 @@ drm_free(drm_state_t *state)
 		state->fd = -1;
 	}
 
-        free(state);
+	free(state);
 }
 
 static void

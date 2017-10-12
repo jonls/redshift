@@ -39,10 +39,16 @@
 #endif
 
 
-struct location_corelocation_private {
+typedef struct {
   NSThread *thread;
   NSLock *lock;
-};
+  int pipe_fd_read;
+  int pipe_fd_write;
+  int available;
+  int error;
+  float latitude;
+  float longitude;
+} location_corelocation_state_t;
 
 
 @interface LocationDelegate : NSObject <CLLocationManagerDelegate>
@@ -74,11 +80,11 @@ struct location_corelocation_private {
 
 - (void)markError
 {
-  [self.state->private->lock lock];
+  [self.state->lock lock];
 
   self.state->error = 1;
 
-  [self.state->private->lock unlock];
+  [self.state->lock unlock];
 
   pipeutils_signal(self.state->pipe_fd_write);
 }
@@ -88,13 +94,13 @@ struct location_corelocation_private {
 {
   CLLocation *newLocation = [locations firstObject];
 
-  [self.state->private->lock lock];
+  [self.state->lock lock];
 
   self.state->latitude = newLocation.coordinate.latitude;
   self.state->longitude = newLocation.coordinate.longitude;
   self.state->available = 1;
 
-  [self.state->private->lock unlock];
+  [self.state->lock unlock];
 
   pipeutils_signal(self.state->pipe_fd_write);
 }
@@ -191,14 +197,10 @@ location_corelocation_start(location_corelocation_state_t *state)
   state->latitude = 0;
   state->longitude = 0;
 
-  state->private = malloc(sizeof(location_corelocation_private_t));
-  if (state->private == NULL) return -1;
-
   int pipefds[2];
   int r = pipeutils_create_nonblocking(pipefds);
   if (r < 0) {
     fputs(_("Failed to start CoreLocation provider!\n"), stderr);
-    free(state->private);
     return -1;
   }
 
@@ -207,12 +209,12 @@ location_corelocation_start(location_corelocation_state_t *state)
 
   pipeutils_signal(state->pipe_fd_write);
 
-  state->private->lock = [[NSLock alloc] init];
+  state->lock = [[NSLock alloc] init];
 
   LocationThread *thread = [[LocationThread alloc] init];
   thread.state = state;
   [thread start];
-  state->private->thread = thread;
+  state->thread = thread;
 
   return 0;
 }
@@ -224,7 +226,6 @@ location_corelocation_free(location_corelocation_state_t *state)
     close(state->pipe_fd_read);
   }
 
-  free(state->private);
   free(state);
 }
 
@@ -256,14 +257,14 @@ location_corelocation_handle(
 {
   pipeutils_handle_signal(state->pipe_fd_read);
 
-  [state->private->lock lock];
+  [state->lock lock];
 
   int error = state->error;
   location->lat = state->latitude;
   location->lon = state->longitude;
   *available = state->available;
 
-  [state->private->lock unlock];
+  [state->lock unlock];
 
   if (error) return -1;
 

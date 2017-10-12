@@ -38,6 +38,19 @@
 #define DBUS_ACCESS_ERROR  "org.freedesktop.DBus.Error.AccessDenied"
 
 
+typedef struct {
+	GMainLoop *loop;
+	GThread *thread;
+	GMutex lock;
+	int pipe_fd_read;
+	int pipe_fd_write;
+	int available;
+	int error;
+	float latitude;
+	float longitude;
+} location_geoclue2_state_t;
+
+
 /* Print the message explaining denial from GeoClue. */
 static void
 print_denial_message()

@@ -20,17 +20,8 @@
 #ifndef REDSHIFT_LOCATION_MANUAL_H
 #define REDSHIFT_LOCATION_MANUAL_H
 
-#include <stdio.h>
-
 #include "redshift.h"
 
-
-typedef struct {
-	location_t loc;
-} location_manual_state_t;
-
-
 extern const location_provider_t manual_location_provider;
-
 
 #endif /* ! REDSHIFT_LOCATION_MANUAL_H */

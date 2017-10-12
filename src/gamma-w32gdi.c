@@ -40,6 +40,12 @@
 #define MAX_ATTEMPTS  10
 
 
+typedef struct {
+	WORD *saved_ramps;
+	int preserve;
+} w32gdi_state_t;
+
+
 static int
 w32gdi_init(w32gdi_state_t **state)
 {

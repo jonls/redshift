@@ -22,21 +22,6 @@
 
 #include "redshift.h"
 
-#include <stdio.h>
-#include <stdint.h>
-
-#include <X11/Xlib.h>
-
-typedef struct {
-	Display *display;
-	int preserve;
-	int screen_num;
-	int ramp_size;
-	uint16_t *saved_ramps;
-} vidmode_state_t;
-
-
 extern const gamma_method_t vidmode_gamma_method;
-
 
 #endif /* ! REDSHIFT_GAMMA_VIDMODE_H */

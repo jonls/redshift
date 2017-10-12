@@ -20,26 +20,8 @@
 #ifndef REDSHIFT_LOCATION_GEOCLUE2_H
 #define REDSHIFT_LOCATION_GEOCLUE2_H
 
-#include <stdio.h>
-
-#include <glib.h>
-
 #include "redshift.h"
 
-typedef struct {
-	GMainLoop *loop;
-	GThread *thread;
-	GMutex lock;
-	int pipe_fd_read;
-	int pipe_fd_write;
-	int available;
-	int error;
-	float latitude;
-	float longitude;
-} location_geoclue2_state_t;
-
-
 extern const location_provider_t geoclue2_location_provider;
-
 
 #endif /* ! REDSHIFT_LOCATION_GEOCLUE2_H */

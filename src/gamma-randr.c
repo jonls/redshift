@@ -42,6 +42,25 @@
 #define RANDR_VERSION_MINOR  3
 
 
+typedef struct {
+	xcb_randr_crtc_t crtc;
+	unsigned int ramp_size;
+	uint16_t *saved_ramps;
+} randr_crtc_state_t;
+
+typedef struct {
+	xcb_connection_t *conn;
+	xcb_screen_t *screen;
+	int preferred_screen;
+	int preserve;
+	int screen_num;
+	int crtc_num_count;
+	int* crtc_num;
+	unsigned int crtc_count;
+	randr_crtc_state_t *crtcs;
+} randr_state_t;
+
+
 static int
 randr_init(randr_state_t **state)
 {
