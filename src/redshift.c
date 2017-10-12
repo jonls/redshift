@@ -1760,14 +1760,27 @@ main(int argc, char *argv[])
 			}
 		}
 
+		/* Solar elevations */
+		if (scheme.high < scheme.low) {
+			fprintf(stderr,
+				_("High transition elevation cannot be lower than"
+				  " the low transition elevation.\n"));
+			exit(EXIT_FAILURE);
+		}
+
+		if (verbose) {
+			/* TRANSLATORS: Append degree symbols if possible. */
+			printf(_("Solar elevations: day above %.1f, night below %.1f\n"),
+			       scheme.high, scheme.low);
+		}
+	}
+
+	if (mode != PROGRAM_MODE_RESET &&
+	    mode != PROGRAM_MODE_MANUAL) {
 		if (verbose) {
 			printf(_("Temperatures: %dK at day, %dK at night\n"),
 			       scheme.day.temperature,
 			       scheme.night.temperature);
-
-			/* TRANSLATORS: Append degree symbols if possible. */
-			printf(_("Solar elevations: day above %.1f, night below %.1f\n"),
-			       scheme.high, scheme.low);
 		}
 
 		/* Color temperature */
@@ -1778,14 +1791,6 @@ main(int argc, char *argv[])
 			fprintf(stderr,
 				_("Temperature must be between %uK and %uK.\n"),
 				MIN_TEMP, MAX_TEMP);
-			exit(EXIT_FAILURE);
-		}
-
-		/* Solar elevations */
-		if (scheme.high < scheme.low) {
-			fprintf(stderr,
-				_("High transition elevation cannot be lower than"
-				  " the low transition elevation.\n"));
 			exit(EXIT_FAILURE);
 		}
 	}
