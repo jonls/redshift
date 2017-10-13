@@ -23,5 +23,8 @@ import sys
 sys.path.append('@pythondir@')
 
 if __name__ == '__main__':
+    if '-h' in sys.argv:
+        print('Please use the `redshift` program for help output.')
+
     from redshift_gtk.statusicon import run
     run()
