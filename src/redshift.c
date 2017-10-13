@@ -301,6 +301,17 @@ color_setting_diff_is_major(
 		fabsf(first->gamma[2] - second->gamma[2]) > 0.1);
 }
 
+/* Reset color setting to default values. */
+static void
+color_setting_reset(color_setting_t *color)
+{
+	color->temperature = NEUTRAL_TEMP;
+	color->gamma[0] = 1.0;
+	color->gamma[1] = 1.0;
+	color->gamma[2] = 1.0;
+	color->brightness = 1.0;
+}
+
 
 static int
 provider_try_start(const location_provider_t *provider,
@@ -612,10 +623,11 @@ run_continual_mode(const location_provider_t *provider,
 
 	/* Previous target color setting and current actual color setting.
 	   Actual color setting takes into account the current color fade. */
-	color_setting_t prev_target_interp =
-		{ NEUTRAL_TEMP, { 1.0, 1.0, 1.0 }, 1.0 };
-	color_setting_t interp =
-		{ NEUTRAL_TEMP, { 1.0, 1.0, 1.0 }, 1.0 };
+	color_setting_t prev_target_interp;
+	color_setting_reset(&prev_target_interp);
+
+	color_setting_t interp;
+	color_setting_reset(&interp);
 
 	location_t loc = { NAN, NAN };
 	int need_location = !scheme->use_time;
@@ -711,12 +723,7 @@ run_continual_mode(const location_provider_t *provider,
 			scheme, transition_prog, &target_interp);
 
 		if (disabled) {
-			/* Reset to neutral */
-			target_interp.temperature = NEUTRAL_TEMP;
-			target_interp.brightness = 1.0;
-			target_interp.gamma[0] = 1.0;
-			target_interp.gamma[1] = 1.0;
-			target_interp.gamma[2] = 1.0;
+			color_setting_reset(&target_interp);
 		}
 
 		if (done) {
@@ -1268,7 +1275,9 @@ main(int argc, char *argv[])
 	case PROGRAM_MODE_RESET:
 	{
 		/* Reset screen */
-		color_setting_t reset = { NEUTRAL_TEMP, { 1.0, 1.0, 1.0 }, 1.0 };
+		color_setting_t reset;
+		color_setting_reset(&reset);
+
 		r = options.method->set_temperature(method_state, &reset);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
