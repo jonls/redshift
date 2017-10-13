@@ -177,10 +177,11 @@ quartz_set_option(quartz_state_t *state, const char *key, const char *value)
 }
 
 static void
-quartz_set_temperature_for_display(quartz_state_t *state, int display,
+quartz_set_temperature_for_display(quartz_state_t *state, int display_index,
 				   const color_setting_t *setting)
 {
-	uint32_t ramp_size = state->displays[display].ramp_size;
+	CGDirectDisplayID display = state->displays[display_index].display;
+	uint32_t ramp_size = state->displays[display_index].ramp_size;
 
 	/* Create new gamma ramps */
 	float *gamma_ramps = malloc(3*ramp_size*sizeof(float));
@@ -195,7 +196,7 @@ quartz_set_temperature_for_display(quartz_state_t *state, int display,
 
 	if (state->preserve) {
 		/* Initialize gamma ramps from saved state */
-		memcpy(gamma_ramps, state->displays[display].saved_ramps,
+		memcpy(gamma_ramps, state->displays[display_index].saved_ramps,
 		       3*ramp_size*sizeof(float));
 	} else {
 		/* Initialize gamma ramps to pure state */
