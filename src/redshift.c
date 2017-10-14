@@ -603,7 +603,7 @@ run_continual_mode(const location_provider_t *provider,
 		   const transition_scheme_t *scheme,
 		   const gamma_method_t *method,
 		   gamma_state_t *method_state,
-		   int use_fade, int verbose)
+		   int use_fade, int preserve_gamma, int verbose)
 {
 	int r;
 
@@ -796,7 +796,8 @@ run_continual_mode(const location_provider_t *provider,
 		}
 
 		/* Adjust temperature */
-		r = method->set_temperature(method_state, &interp);
+		r = method->set_temperature(
+			method_state, &interp, preserve_gamma);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"),
 			      stderr);
@@ -1227,7 +1228,7 @@ main(int argc, char *argv[])
 		if (options.mode != PROGRAM_MODE_PRINT) {
 			/* Adjust temperature */
 			r = options.method->set_temperature(
-				method_state, &interp);
+				method_state, &interp, options.preserve_gamma);
 			if (r < 0) {
 				fputs(_("Temperature adjustment failed.\n"),
 				      stderr);
@@ -1256,7 +1257,8 @@ main(int argc, char *argv[])
 		/* Adjust temperature */
 		color_setting_t manual = scheme->day;
 		manual.temperature = options.temp_set;
-		r = options.method->set_temperature(method_state, &manual);
+		r = options.method->set_temperature(
+			method_state, &manual, options.preserve_gamma);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
 			options.method->free(method_state);
@@ -1278,7 +1280,7 @@ main(int argc, char *argv[])
 		color_setting_t reset;
 		color_setting_reset(&reset);
 
-		r = options.method->set_temperature(method_state, &reset);
+		r = options.method->set_temperature(method_state, &reset, 0);
 		if (r < 0) {
 			fputs(_("Temperature adjustment failed.\n"), stderr);
 			options.method->free(method_state);
@@ -1299,7 +1301,8 @@ main(int argc, char *argv[])
 		r = run_continual_mode(
 			options.provider, location_state, scheme,
 			options.method, method_state,
-			options.use_fade, options.verbose);
+			options.use_fade, options.preserve_gamma,
+			options.verbose);
 		if (r < 0) exit(EXIT_FAILURE);
 	}
 	break;

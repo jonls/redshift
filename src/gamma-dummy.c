@@ -69,7 +69,8 @@ gamma_dummy_set_option(void *state, const char *key, const char *value)
 }
 
 static int
-gamma_dummy_set_temperature(void *state, const color_setting_t *setting)
+gamma_dummy_set_temperature(
+	void *state, const color_setting_t *setting, int preserve)
 {
 	printf(_("Temperature: %i\n"), setting->temperature);
 	return 0;

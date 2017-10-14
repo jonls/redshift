@@ -39,7 +39,6 @@
 
 typedef struct {
 	Display *display;
-	int preserve;
 	int screen_num;
 	int ramp_size;
 	uint16_t *saved_ramps;
@@ -55,8 +54,6 @@ vidmode_init(vidmode_state_t **state)
 	vidmode_state_t *s = *state;
 	s->screen_num = -1;
 	s->saved_ramps = NULL;
-
-	s->preserve = 1;
 
 	/* Open display */
 	s->display = XOpenDisplay(NULL);
@@ -145,9 +142,7 @@ vidmode_print_help(FILE *f)
 
 	/* TRANSLATORS: VidMode help output
 	   left column must not be translated */
-	fputs(_("  screen=N\t\tX screen to apply adjustments to\n"
-		"  preserve={0,1}\tWhether existing gamma should be"
-		" preserved\n"),
+	fputs(_("  screen=N\t\tX screen to apply adjustments to\n"),
 	      f);
 	fputs("\n", f);
 }
@@ -158,7 +153,10 @@ vidmode_set_option(vidmode_state_t *state, const char *key, const char *value)
 	if (strcasecmp(key, "screen") == 0) {
 		state->screen_num = atoi(value);
 	} else if (strcasecmp(key, "preserve") == 0) {
-		state->preserve = atoi(value);
+		fprintf(stderr, _("Parameter `%s` is now always on; "
+				  " Use the `%s` command-line option"
+				  " to disable.\n"),
+			key, "-P");
 	} else {
 		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
 		return -1;
@@ -185,8 +183,8 @@ vidmode_restore(vidmode_state_t *state)
 }
 
 static int
-vidmode_set_temperature(vidmode_state_t *state,
-			const color_setting_t *setting)
+vidmode_set_temperature(
+	vidmode_state_t *state, const color_setting_t *setting, int preserve)
 {
 	int r;
 
@@ -201,7 +199,7 @@ vidmode_set_temperature(vidmode_state_t *state,
 	uint16_t *gamma_g = &gamma_ramps[1*state->ramp_size];
 	uint16_t *gamma_b = &gamma_ramps[2*state->ramp_size];
 
-	if (state->preserve) {
+	if (preserve) {
 		/* Initialize gamma ramps from saved state */
 		memcpy(gamma_ramps, state->saved_ramps,
 		       3*state->ramp_size*sizeof(uint16_t));

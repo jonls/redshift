@@ -88,8 +88,8 @@ typedef void gamma_method_print_help_func(FILE *f);
 typedef int gamma_method_set_option_func(gamma_state_t *state, const char *key,
 					 const char *value);
 typedef void gamma_method_restore_func(gamma_state_t *state);
-typedef int gamma_method_set_temperature_func(gamma_state_t *state,
-					      const color_setting_t *setting);
+typedef int gamma_method_set_temperature_func(
+	gamma_state_t *state, const color_setting_t *setting, int preserve);
 
 typedef struct {
 	char *name;
