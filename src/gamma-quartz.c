@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2014  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2014-2017  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #ifdef HAVE_CONFIG_H
@@ -37,19 +37,35 @@
 #include "colorramp.h"
 
 
-int
-quartz_init(quartz_state_t *state)
+typedef struct {
+	CGDirectDisplayID display;
+	uint32_t ramp_size;
+	float *saved_ramps;
+} quartz_display_state_t;
+
+typedef struct {
+	quartz_display_state_t *displays;
+	uint32_t display_count;
+	int preserve;
+} quartz_state_t;
+
+
+static int
+quartz_init(quartz_state_t **state)
 {
-	state->preserve = 1;
-	state->displays = NULL;
+	*state = malloc(sizeof(quartz_state_t));
+	if (*state == NULL) return -1;
+
+	quartz_state_t *s = *state;
+	s->preserve = 1;
+	s->displays = NULL;
 
 	return 0;
 }
 
-int
+static int
 quartz_start(quartz_state_t *state)
 {
-	int r;
 	CGError error;
 	uint32_t display_count;
 
@@ -132,13 +148,13 @@ quartz_start(quartz_state_t *state)
 	return 0;
 }
 
-void
+static void
 quartz_restore(quartz_state_t *state)
 {
 	CGDisplayRestoreColorSyncSettings();
 }
 
-void
+static void
 quartz_free(quartz_state_t *state)
 {
 	if (state->displays != NULL) {
@@ -147,9 +163,10 @@ quartz_free(quartz_state_t *state)
 		}
 	}
 	free(state->displays);
+	free(state);
 }
 
-void
+static void
 quartz_print_help(FILE *f)
 {
 	fputs(_("Adjust gamma ramps on OSX using Quartz.\n"), f);
@@ -163,7 +180,7 @@ quartz_print_help(FILE *f)
 	fputs("\n", f);
 }
 
-int
+static int
 quartz_set_option(quartz_state_t *state, const char *key, const char *value)
 {
 	if (strcasecmp(key, "preserve") == 0) {
@@ -222,7 +239,7 @@ quartz_set_temperature_for_display(quartz_state_t *state, int display_index,
 	free(gamma_ramps);
 }
 
-int
+static int
 quartz_set_temperature(quartz_state_t *state,
 		       const color_setting_t *setting)
 {
@@ -232,3 +249,15 @@ quartz_set_temperature(quartz_state_t *state,
 
 	return 0;
 }
+
+
+const gamma_method_t quartz_gamma_method = {
+	"quartz", 1,
+	(gamma_method_init_func *)quartz_init,
+	(gamma_method_start_func *)quartz_start,
+	(gamma_method_free_func *)quartz_free,
+	(gamma_method_print_help_func *)quartz_print_help,
+	(gamma_method_set_option_func *)quartz_set_option,
+	(gamma_method_restore_func *)quartz_restore,
+	(gamma_method_set_temperature_func *)quartz_set_temperature
+};

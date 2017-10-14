@@ -39,10 +39,16 @@
 #endif
 
 
-struct location_corelocation_private {
+typedef struct {
   NSThread *thread;
   NSLock *lock;
-};
+  int pipe_fd_read;
+  int pipe_fd_write;
+  int available;
+  int error;
+  float latitude;
+  float longitude;
+} location_corelocation_state_t;
 
 
 @interface LocationDelegate : NSObject <CLLocationManagerDelegate>
@@ -74,11 +80,11 @@ struct location_corelocation_private {
 
 - (void)markError
 {
-  [self.state->private->lock lock];
+  [self.state->lock lock];
 
   self.state->error = 1;
 
-  [self.state->private->lock unlock];
+  [self.state->lock unlock];
 
   pipeutils_signal(self.state->pipe_fd_write);
 }
@@ -88,13 +94,13 @@ struct location_corelocation_private {
 {
   CLLocation *newLocation = [locations firstObject];
 
-  [self.state->private->lock lock];
+  [self.state->lock lock];
 
   self.state->latitude = newLocation.coordinate.latitude;
   self.state->longitude = newLocation.coordinate.longitude;
   self.state->available = 1;
 
-  [self.state->private->lock unlock];
+  [self.state->lock unlock];
 
   pipeutils_signal(self.state->pipe_fd_write);
 }
@@ -172,13 +178,15 @@ pipe_close_callback(
 @end
 
 
-int
-location_corelocation_init(location_corelocation_state_t *state)
+static int
+location_corelocation_init(location_corelocation_state_t **state)
 {
+  *state = malloc(sizeof(location_corelocation_state_t));
+  if (*state == NULL) return -1;
   return 0;
 }
 
-int
+static int
 location_corelocation_start(location_corelocation_state_t *state)
 {
   state->pipe_fd_read = -1;
@@ -189,14 +197,10 @@ location_corelocation_start(location_corelocation_state_t *state)
   state->latitude = 0;
   state->longitude = 0;
 
-  state->private = malloc(sizeof(location_corelocation_private_t));
-  if (state->private == NULL) return -1;
-
   int pipefds[2];
   int r = pipeutils_create_nonblocking(pipefds);
   if (r < 0) {
     fputs(_("Failed to start CoreLocation provider!\n"), stderr);
-    free(state->private);
     return -1;
   }
 
@@ -205,34 +209,34 @@ location_corelocation_start(location_corelocation_state_t *state)
 
   pipeutils_signal(state->pipe_fd_write);
 
-  state->private->lock = [[NSLock alloc] init];
+  state->lock = [[NSLock alloc] init];
 
   LocationThread *thread = [[LocationThread alloc] init];
   thread.state = state;
   [thread start];
-  state->private->thread = thread;
+  state->thread = thread;
 
   return 0;
 }
 
-void
+static void
 location_corelocation_free(location_corelocation_state_t *state)
 {
   if (state->pipe_fd_read != -1) {
     close(state->pipe_fd_read);
   }
 
-  free(state->private);
+  free(state);
 }
 
-void
+static void
 location_corelocation_print_help(FILE *f)
 {
   fputs(_("Use the location as discovered by the Corelocation provider.\n"), f);
   fputs("\n", f);
 }
 
-int
+static int
 location_corelocation_set_option(
     location_corelocation_state_t *state, const char *key, const char *value)
 {
@@ -240,28 +244,41 @@ location_corelocation_set_option(
   return -1;
 }
 
-int
+static int
 location_corelocation_get_fd(location_corelocation_state_t *state)
 {
   return state->pipe_fd_read;
 }
 
-int location_corelocation_handle(
+static int
+location_corelocation_handle(
     location_corelocation_state_t *state,
     location_t *location, int *available)
 {
   pipeutils_handle_signal(state->pipe_fd_read);
 
-  [state->private->lock lock];
+  [state->lock lock];
 
   int error = state->error;
   location->lat = state->latitude;
   location->lon = state->longitude;
   *available = state->available;
 
-  [state->private->lock unlock];
+  [state->lock unlock];
 
   if (error) return -1;
 
   return 0;
 }
+
+
+const location_provider_t corelocation_location_provider = {
+  "corelocation",
+  (location_provider_init_func *)location_corelocation_init,
+  (location_provider_start_func *)location_corelocation_start,
+  (location_provider_free_func *)location_corelocation_free,
+  (location_provider_print_help_func *)location_corelocation_print_help,
+  (location_provider_set_option_func *)location_corelocation_set_option,
+  (location_provider_get_fd_func *)location_corelocation_get_fd,
+  (location_provider_handle_func *)location_corelocation_handle
+};
