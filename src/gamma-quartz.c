@@ -46,7 +46,6 @@ typedef struct {
 typedef struct {
 	quartz_display_state_t *displays;
 	uint32_t display_count;
-	int preserve;
 } quartz_state_t;
 
 
@@ -57,7 +56,6 @@ quartz_init(quartz_state_t **state)
 	if (*state == NULL) return -1;
 
 	quartz_state_t *s = *state;
-	s->preserve = 1;
 	s->displays = NULL;
 
 	return 0;
@@ -169,14 +167,7 @@ quartz_free(quartz_state_t *state)
 static void
 quartz_print_help(FILE *f)
 {
-	fputs(_("Adjust gamma ramps on OSX using Quartz.\n"), f);
-	fputs("\n", f);
-
-	/* TRANSLATORS: Quartz help output
-	   left column must not be translated */
-	fputs(_("  preserve={0,1}\tWhether existing gamma should be"
-		" preserved\n"),
-	      f);
+	fputs(_("Adjust gamma ramps on macOS using Quartz.\n"), f);
 	fputs("\n", f);
 }
 
@@ -184,7 +175,10 @@ static int
 quartz_set_option(quartz_state_t *state, const char *key, const char *value)
 {
 	if (strcasecmp(key, "preserve") == 0) {
-		state->preserve = atoi(value);
+		fprintf(stderr, _("Parameter `%s` is now always on; "
+				  " Use the `%s` command-line option"
+				  " to disable.\n"),
+			key, "-P");
 	} else {
 		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
 		return -1;
@@ -194,8 +188,9 @@ quartz_set_option(quartz_state_t *state, const char *key, const char *value)
 }
 
 static void
-quartz_set_temperature_for_display(quartz_state_t *state, int display_index,
-				   const color_setting_t *setting)
+quartz_set_temperature_for_display(
+	quartz_state_t *state, int display_index,
+	const color_setting_t *setting, int preserve)
 {
 	CGDirectDisplayID display = state->displays[display_index].display;
 	uint32_t ramp_size = state->displays[display_index].ramp_size;
@@ -211,7 +206,7 @@ quartz_set_temperature_for_display(quartz_state_t *state, int display_index,
 	float *gamma_g = &gamma_ramps[1*ramp_size];
 	float *gamma_b = &gamma_ramps[2*ramp_size];
 
-	if (state->preserve) {
+	if (preserve) {
 		/* Initialize gamma ramps from saved state */
 		memcpy(gamma_ramps, state->displays[display_index].saved_ramps,
 		       3*ramp_size*sizeof(float));
@@ -240,11 +235,12 @@ quartz_set_temperature_for_display(quartz_state_t *state, int display_index,
 }
 
 static int
-quartz_set_temperature(quartz_state_t *state,
-		       const color_setting_t *setting)
+quartz_set_temperature(
+	quartz_state_t *state, const color_setting_t *setting, int preserve)
 {
 	for (int i = 0; i < state->display_count; i++) {
-		quartz_set_temperature_for_display(state, i, setting);
+		quartz_set_temperature_for_display(
+			state, i, setting, preserve);
 	}
 
 	return 0;

@@ -189,6 +189,8 @@ print_help(const char *program_name)
 		" color temperature)\n"
 		"  -O TEMP\tOne shot manual mode (set color temperature)\n"
 		"  -p\t\tPrint mode (only print parameters and exit)\n"
+		"  -P\t\tReset existing gamma ramps before applying new"
+		" color effect\n"
 		"  -x\t\tReset mode (remove adjustment from screen)\n"
 		"  -r\t\tDisable fading between color temperatures\n"
 		"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"),
@@ -318,6 +320,7 @@ options_init(options_t *options)
 	options->provider_args = NULL;
 
 	options->use_fade = -1;
+	options->preserve_gamma = 1;
 	options->mode = PROGRAM_MODE_CONTINUAL;
 	options->verbose = 0;
 }
@@ -334,7 +337,7 @@ options_parse_args(
 
 	/* Parse command line arguments. */
 	int opt;
-	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:prt:vVx")) != -1) {
+	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:pPrt:vVx")) != -1) {
 		switch (opt) {
 		case 'b':
 			parse_brightness_string(
@@ -454,6 +457,9 @@ options_parse_args(
 			break;
 		case 'p':
 			options->mode = PROGRAM_MODE_PRINT;
+			break;
+		case 'P':
+			options->preserve_gamma = 0;
 			break;
 		case 'r':
 			options->use_fade = 0;

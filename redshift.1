@@ -55,13 +55,19 @@ Method to use to set color temperature
 (Use `-m list' to see available methods)
 .TP
 \fB\-o\fR
-One shot mode (do not continuously adjust color temperature)
+One-shot mode (do not continuously adjust color temperature). Use this with the
+`-P` option to clear the existing gamma ramps before applying the new color
+temperature.
 .TP
 \fB\-O\fR TEMP
-One shot manual mode (set color temperature)
+One-shot manual mode (set color temperature).  Use this with the `-P` option
+to clear the existing gamma ramps before applying the new color temperature.
 .TP
 \fB\-p\fR
 Print mode (only print parameters and exit)
+.TP
+\fB\-P\fR
+Reset existing gamma ramps before applying new color effect.
 .TP
 \fB\-x\fR
 Reset mode (remove adjustment from screen)

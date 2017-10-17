@@ -42,7 +42,6 @@
 
 typedef struct {
 	WORD *saved_ramps;
-	int preserve;
 } w32gdi_state_t;
 
 
@@ -54,7 +53,6 @@ w32gdi_init(w32gdi_state_t **state)
 
 	w32gdi_state_t *s = *state;
 	s->saved_ramps = NULL;
-	s->preserve = 1;
 
 	return 0;
 }
@@ -116,20 +114,16 @@ w32gdi_print_help(FILE *f)
 {
 	fputs(_("Adjust gamma ramps with the Windows GDI.\n"), f);
 	fputs("\n", f);
-
-	/* TRANSLATORS: Windows GDI help output
-	   left column must not be translated */
-	fputs(_("  preserve={0,1}\tWhether existing gamma should be"
-		" preserved\n"),
-	      f);
-	fputs("\n", f);
 }
 
 static int
 w32gdi_set_option(w32gdi_state_t *state, const char *key, const char *value)
 {
 	if (strcasecmp(key, "preserve") == 0) {
-		state->preserve = atoi(value);
+		fprintf(stderr, _("Parameter `%s` is now always on; "
+				  " Use the `%s` command-line option"
+				  " to disable.\n"),
+			key, "-P");
 	} else {
 		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
 		return -1;
@@ -163,8 +157,8 @@ w32gdi_restore(w32gdi_state_t *state)
 }
 
 static int
-w32gdi_set_temperature(w32gdi_state_t *state,
-		       const color_setting_t *setting)
+w32gdi_set_temperature(
+	w32gdi_state_t *state, const color_setting_t *setting, int preserve)
 {
 	BOOL r;
 
@@ -187,7 +181,7 @@ w32gdi_set_temperature(w32gdi_state_t *state,
 	WORD *gamma_g = &gamma_ramps[1*GAMMA_RAMP_SIZE];
 	WORD *gamma_b = &gamma_ramps[2*GAMMA_RAMP_SIZE];
 
-	if (state->preserve) {
+	if (preserve) {
 		/* Initialize gamma ramps from saved state */
 		memcpy(gamma_ramps, state->saved_ramps,
 		       3*GAMMA_RAMP_SIZE*sizeof(WORD));

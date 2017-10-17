@@ -52,7 +52,6 @@ typedef struct {
 	xcb_connection_t *conn;
 	xcb_screen_t *screen;
 	int preferred_screen;
-	int preserve;
 	int screen_num;
 	int crtc_num_count;
 	int* crtc_num;
@@ -75,8 +74,6 @@ randr_init(randr_state_t **state)
 	s->crtc_num_count = 0;
 	s->crtc_count = 0;
 	s->crtcs = NULL;
-
-	s->preserve = 1;
 
 	xcb_generic_error_t *error;
 
@@ -307,9 +304,8 @@ randr_print_help(FILE *f)
 	/* TRANSLATORS: RANDR help output
 	   left column must not be translated */
 	fputs(_("  screen=N\t\tX screen to apply adjustments to\n"
-		"  crtc=N\tList of comma separated CRTCs to apply adjustments to\n"
-		"  preserve={0,1}\tWhether existing gamma should be"
-		" preserved\n"),
+		"  crtc=N\tList of comma separated CRTCs to apply"
+		" adjustments to\n"),
 	      f);
 	fputs("\n", f);
 }
@@ -365,7 +361,10 @@ randr_set_option(randr_state_t *state, const char *key, const char *value)
 			}
 		}
 	} else if (strcasecmp(key, "preserve") == 0) {
-		state->preserve = atoi(value);
+		fprintf(stderr, _("Parameter `%s` is now always on; "
+				  " Use the `%s` command-line option"
+				  " to disable.\n"),
+			key, "-P");
 	} else {
 		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
 		return -1;
@@ -375,8 +374,9 @@ randr_set_option(randr_state_t *state, const char *key, const char *value)
 }
 
 static int
-randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num,
-			       const color_setting_t *setting)
+randr_set_temperature_for_crtc(
+	randr_state_t *state, int crtc_num, const color_setting_t *setting,
+	int preserve)
 {
 	xcb_generic_error_t *error;
 
@@ -407,7 +407,7 @@ randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num,
 	uint16_t *gamma_g = &gamma_ramps[1*ramp_size];
 	uint16_t *gamma_b = &gamma_ramps[2*ramp_size];
 
-	if (state->preserve) {
+	if (preserve) {
 		/* Initialize gamma ramps from saved state */
 		memcpy(gamma_ramps, state->crtcs[crtc_num].saved_ramps,
 		       3*ramp_size*sizeof(uint16_t));
@@ -444,8 +444,8 @@ randr_set_temperature_for_crtc(randr_state_t *state, int crtc_num,
 }
 
 static int
-randr_set_temperature(randr_state_t *state,
-		      const color_setting_t *setting)
+randr_set_temperature(
+	randr_state_t *state, const color_setting_t *setting, int preserve)
 {
 	int r;
 
@@ -453,14 +453,14 @@ randr_set_temperature(randr_state_t *state,
 	   set temperature on all CRTCs. */
 	if (state->crtc_num_count == 0) {
 		for (int i = 0; i < state->crtc_count; i++) {
-			r = randr_set_temperature_for_crtc(state, i,
-							   setting);
+			r = randr_set_temperature_for_crtc(
+				state, i, setting, preserve);
 			if (r < 0) return -1;
 		}
 	} else {
 		for (int i = 0; i < state->crtc_num_count; ++i) {
 			r = randr_set_temperature_for_crtc(
-				state, state->crtc_num[i], setting);
+				state, state->crtc_num[i], setting, preserve);
 			if (r < 0) return -1;
 		}
 	}
