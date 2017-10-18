@@ -1,16 +1,16 @@
-.TH REDSHIFT 1 2011-10-01 redshift
+.TH REDSHIFT 1
 .SH NAME
 redshift \- set color temperature of display according to time of day
 .SH SYNOPSIS
 .B redshift
-\fI[\-l LAT:LON | \-l PROVIDER:OPTIONS] [\-t DAY:NIGHT] \fR[\fIOPTIONS\fR...]
+\fR[\fB\-l\fR \fILAT\fB:\fILON\fR | \fB\-l\fR \fIPROVIDER\fB:\fIOPTIONS\fR] [\fB\-t\fR \fIDAY\fB:\fINIGHT\fR] [\fIOPTIONS\fR...]
 .SH DESCRIPTION
 .B redshift
 adjusts the color temperature of your screen according to your
 surroundings. This may help your eyes hurt less or reduce the risk for
 delayed sleep phase syndrome if you are working in front of the screen
 at night.
-
+.PP
 The color temperature is set according to the position of the sun. A
 different color temperature is set during night and daytime. During
 twilight and early morning, the color temperature transitions smoothly
@@ -24,122 +24,122 @@ temperature on an overcast day.
 .SH OPTIONS
 .TP
 \fB\-h\fR
-Display this help message
+Display help message.
 .TP
 \fB\-v\fR
-Verbose output
+Enable verbose output.
 .TP
 \fB\-V\fR
-Show program version
+Show program version.
 .TP
-\fB\-b\fR DAY:NIGHT
-Screen brightness to apply (between 0.1 and 1.0)
+\fB\-b\fR \fIDAY\fB:\fINIGHT\fR
+Screen brightness to apply (between 0.1 and 1.0).
 .TP
-\fB\-c\fR FILE
-Load settings from specified configuration file
+\fB\-c\fR \fIFILE\fR
+Load settings from specified configuration file.
 .TP
-\fB\-g\fR R:G:B
-Additional gamma correction to apply
+\fB\-g\fR \fIR\fB:\fIG\fB:\fIB\fR
+Additional gamma correction to apply.
 .TP
-\fB\-l\fR LAT:LON
+\fB\-l\fR \fILAT\fB:\fILON\fR
 Your current location, in degrees, given as floating point numbers,
 towards north and east, with negative numbers representing south and
 west, respectively.
 .TP
-\fB\-l\fR PROVIDER[:OPTIONS]
+\fB\-l\fR \fIPROVIDER\fR[\fB:\fIOPTIONS\fR]
 Select provider for automatic location updates
-(Use `-l list' to see available providers)
+(Use \fB"\-l list"\fR to see available providers).
 .TP
-\fB\-m\fR METHOD[:OPTIONS]
+\fB\-m\fR \fIMETHOD\fR[\fB:\fIOPTIONS\fR]
 Method to use to set color temperature
-(Use `-m list' to see available methods)
+(Use \fB"\-m list"\fR to see available methods).
 .TP
 \fB\-o\fR
 One-shot mode (do not continuously adjust color temperature). Use this with the
-`-P` option to clear the existing gamma ramps before applying the new color
+\fB\-P\fR option to clear the existing gamma ramps before applying the new color
 temperature.
 .TP
-\fB\-O\fR TEMP
-One-shot manual mode (set color temperature).  Use this with the `-P` option
+\fB\-O\fR \fITEMP\fR
+One-shot manual mode (set color temperature).  Use this with the \fB\-P\fR option
 to clear the existing gamma ramps before applying the new color temperature.
 .TP
 \fB\-p\fR
-Print mode (only print parameters and exit)
+Print mode (only print parameters and exit).
 .TP
 \fB\-P\fR
 Reset existing gamma ramps before applying new color effect.
 .TP
 \fB\-x\fR
-Reset mode (remove adjustment from screen)
+Reset mode (remove adjustment from screen).
 .TP
 \fB\-r\fR
-Disable fading between color temperatures
+Disable fading between color temperatures.
 .TP
-\fB\-t\fR DAY:NIGHT
-Color temperature to set at daytime/night
+\fB\-t\fR \fIDAY\fB:\fINIGHT\fR
+Color temperature to set at daytime/night.
 .PP
 The neutral temperature is 6500K. Using this value will not
 change the color temperature of the display. Setting the
 color temperature to a value higher than this results in
 more blue light, and setting a lower value will result in
 more red light.
-
+.PP
 Default temperature values:
 .IP
 Daytime: 6500K, night: 4500K
 .SH CONFIGURATION FILE
-A configuration file with the name `redshift.conf' can optionally be
-placed in `~/.config/'. The file has standard INI format. General
-program options are placed under the `redshift' header, while options
+A configuration file with the name \fIredshift.conf\fR can optionally be
+placed in \fI~/.config/\fR. The file has standard INI format. General
+program options are placed under the \fBredshift\fR header, while options
 for location providers and adjustment methods are placed under a
 header with the name of that provider or method. General options are:
 .TP
-\fBtemp\-day\fR = integer
+\fBtemp\-day\fR = \fIinteger\fR
 Daytime temperature
 .TP
-\fBtemp\-night\fR = integer
+\fBtemp\-night\fR = \fIinteger\fR
 Night temperature
 .TP
-\fBfade\fR = 0 or 1
+\fBfade\fR = \fI0 or 1\fR
 Disable or enable fading between color temperatures when Redshift starts or
 stops
 .TP
-\fBbrightness\-day\fR = 0.1\-1.0
+\fBbrightness\-day\fR = \fI0.1\-1.0\fR
 Screen brightness at daytime
 .TP
-\fBbrightness\-night\fR = 0.1\-1.0
+\fBbrightness\-night\fR = \fI0.1\-1.0\fR
 Screen brightness at night
 .TP
-\fBelevation-high\fR = decimal
+\fBelevation-high\fR = \fIdecimal\fR
 The solar elevation in degrees for the transition to daytime
 .TP
-\fBelevation-low\fR = decimal
+\fBelevation-low\fR = \fIdecimal\fR
 The solar elevation in degrees for the transition to night
 .TP
-\fBdawn-time\fR = HH:MM[-HH:MM]
+\fBdawn-time\fR = \fIHH\fB:\fIMM\fR[\fB\-\fIHH\fB:\fIMM\fR]
 The custom time interval for the transition from night to day in the morning.
 When specified, the solar elevation will not be used to determine the current
 daytime/night period. If this option is set, dusk-time must also be specified.
 .TP
-\fBdusk-time\fR = HH:MM[-HH:MM]
+\fBdusk-time\fR = \fIHH\fB:\fIMM\fR[\fB\-\fIHH\fB:\fIMM\fR]
 The custom time interval for the transition from day to night in the evening.
 When specified, the solar elevation will not be used to determine the current
 daytime/night period. If this option is set, dawn-time must also be specified.
 .TP
-\fBgamma\fR = R:G:B
+\fBgamma\fR = \fIR\fB:\fIG\fB:\fIB\fR
 Gamma adjustment to apply (day and night)
 .TP
-\fBgamma-day\fR = R:G:B
+\fBgamma-day\fR = \fIR\fB:\fIG\fB:\fIB\fR
 Gamma adjustment to apply at daytime
 .TP
-\fBgamma-night\fR = R:G:B
+\fBgamma-night\fR = \fIR\fB:\fIG\fB:\fIB\fR
 Gamma adjustment to apply at night
 .TP
-\fBadjustment\-method\fR = name
+\fBadjustment\-method\fR = \fIname\fR
 Select adjustment method. Options for the adjustment method can be
 given under the configuration file heading of the same name.
 .TP
-\fBlocation\-provider\fR = name
+\fBlocation\-provider\fR = \fIname\fR
 Select location provider. Options for the location provider can be
 given under the configuration file heading of the same name.
 .PP
@@ -166,15 +166,15 @@ lat=55.7
 lon=12.6
 .fi
 .SH HOOKS
-Executables (e.g. scripts) placed in folder `~/.config/redshift/hooks'
+Executables (e.g. scripts) placed in folder \fI~/.config/redshift/hooks\fR
 will be run when a certain event happens. The first parameter to the
 script indicates the event and further parameters may indicate
-more details about the event. The event `period-changed' is indicated
-when the period changes (`night', `daytime', `transition'). The second
+more details about the event. The event \fBperiod-changed\fR is indicated
+when the period changes (\fBnight\fR, \fBdaytime\fR, \fBtransition\fR). The second
 parameter is the old period and the third is the new period. The event
 is also signaled when Redshift starts up with the old period set to
-`none'. Any dotfiles in the folder are skipped.
-
+\fBnone\fR. Any dotfiles in the folder are skipped.
+.PP
 A simple script to handle these events can be written like this:
 .IP
 .nf
@@ -195,6 +195,7 @@ License, version 3.
 .SH BUGS
 Please report bugs to <https://github.com/jonls/redshift/issues>
 .SH KNOWN ISSUES
-Redshift won't affect the color of your cursor when your graphics driver
+.B redshift
+will not affect the color of your cursor when your graphics driver
 is configured to use hardware cursors. Some graphics drivers have an
-option to disable hardware cursors in xorg.conf.
+option to disable hardware cursors.
