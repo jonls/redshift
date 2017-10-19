@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2013-2014  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2013-2017  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #ifndef REDSHIFT_REDSHIFT_H
@@ -22,6 +22,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
+/* The color temperature when no adjustment is applied. */
+#define NEUTRAL_TEMP  6500
 
 
 /* Location */
@@ -45,17 +48,48 @@ typedef struct {
 	float brightness;
 } color_setting_t;
 
+/* Program modes. */
+typedef enum {
+	PROGRAM_MODE_CONTINUAL,
+	PROGRAM_MODE_ONE_SHOT,
+	PROGRAM_MODE_PRINT,
+	PROGRAM_MODE_RESET,
+	PROGRAM_MODE_MANUAL
+} program_mode_t;
+
+/* Time range.
+   Fields are offsets from midnight in seconds. */
+typedef struct {
+	int start;
+	int end;
+} time_range_t;
+
+/* Transition scheme.
+   The solar elevations at which the transition begins/ends,
+   and the association color settings. */
+typedef struct {
+	double high;
+	double low;
+	int use_time; /* When enabled, ignore elevation and use time ranges. */
+	time_range_t dawn;
+	time_range_t dusk;
+	color_setting_t day;
+	color_setting_t night;
+} transition_scheme_t;
+
 
 /* Gamma adjustment method */
-typedef int gamma_method_init_func(void *state);
-typedef int gamma_method_start_func(void *state);
-typedef void gamma_method_free_func(void *state);
+typedef struct gamma_state gamma_state_t;
+
+typedef int gamma_method_init_func(gamma_state_t **state);
+typedef int gamma_method_start_func(gamma_state_t *state);
+typedef void gamma_method_free_func(gamma_state_t *state);
 typedef void gamma_method_print_help_func(FILE *f);
-typedef int gamma_method_set_option_func(void *state, const char *key,
+typedef int gamma_method_set_option_func(gamma_state_t *state, const char *key,
 					 const char *value);
-typedef void gamma_method_restore_func(void *state);
-typedef int gamma_method_set_temperature_func(void *state,
-					      const color_setting_t *setting);
+typedef void gamma_method_restore_func(gamma_state_t *state);
+typedef int gamma_method_set_temperature_func(
+	gamma_state_t *state, const color_setting_t *setting, int preserve);
 
 typedef struct {
 	char *name;
@@ -83,13 +117,17 @@ typedef struct {
 
 
 /* Location provider */
-typedef int location_provider_init_func(void *state);
-typedef int location_provider_start_func(void *state);
-typedef void location_provider_free_func(void *state);
+typedef struct location_state location_state_t;
+
+typedef int location_provider_init_func(location_state_t **state);
+typedef int location_provider_start_func(location_state_t *state);
+typedef void location_provider_free_func(location_state_t *state);
 typedef void location_provider_print_help_func(FILE *f);
-typedef int location_provider_set_option_func(void *state, const char *key,
-					      const char *value);
-typedef int location_provider_get_location_func(void *state, location_t *loc);
+typedef int location_provider_set_option_func(
+	location_state_t *state, const char *key, const char *value);
+typedef int location_provider_get_fd_func(location_state_t *state);
+typedef int location_provider_handle_func(
+	location_state_t *state, location_t *location, int *available);
 
 typedef struct {
 	char *name;
@@ -106,8 +144,9 @@ typedef struct {
 	/* Set an option key, value-pair. */
 	location_provider_set_option_func *set_option;
 
-	/* Get current location. */
-	location_provider_get_location_func *get_location;
+	/* Listen and handle location updates. */
+	location_provider_get_fd_func *get_fd;
+	location_provider_handle_func *handle;
 } location_provider_t;
 
 

@@ -7,16 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://github.com/jonls/redshift/issues\n"
-"POT-Creation-Date: 2015-02-22 11:23-0500\n"
+"POT-Creation-Date: 2017-10-18 11:46-0700\n"
 "PO-Revision-Date: 2015-12-29 01:36+0000\n"
 "Last-Translator: xatr0z <xatr0z@users.sourceforge.net>\n"
 "Language-Team: Dutch <nl@li.org>\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2016-01-02 22:24+0000\n"
 "X-Generator: Launchpad (build 17865)\n"
-"Language: nl\n"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
 msgid ""
@@ -54,93 +54,309 @@ msgid ""
 msgstr ""
 "Het Redshift-informatievenster getoond met een voorbeeld van het rode effect."
 
+#: ../data/applications/redshift.desktop.in.h:1
 #: ../data/applications/redshift-gtk.desktop.in.h:1
 msgid "Redshift"
 msgstr ""
 
+#: ../data/applications/redshift.desktop.in.h:2
 #: ../data/applications/redshift-gtk.desktop.in.h:2
 msgid "Color temperature adjustment"
 msgstr "Kleurtemperatuur aanpassing"
 
+#: ../data/applications/redshift.desktop.in.h:3
 #: ../data/applications/redshift-gtk.desktop.in.h:3
 msgid "Color temperature adjustment tool"
 msgstr "Kleurtemperatuur aanpassingsprogramma"
 
 #. TRANSLATORS: Name printed when period of day is unknown
-#: ../src/redshift.c:319
+#: ../src/redshift.c:135
 msgid "None"
 msgstr "Geen"
 
-#: ../src/redshift.c:320 ../src/redshift.c:1546
+#: ../src/redshift.c:136 ../src/redshift.c:1107
 msgid "Daytime"
 msgstr "Overdag"
 
-#: ../src/redshift.c:321 ../src/redshift.c:1549
+#: ../src/redshift.c:137 ../src/redshift.c:1111
 msgid "Night"
 msgstr "Nacht"
 
-#: ../src/redshift.c:322
+#: ../src/redshift.c:138
 msgid "Transition"
 msgstr "Transitie"
 
-#: ../src/redshift.c:389
+#: ../src/redshift.c:225
 #, c-format
 msgid "Period: %s\n"
 msgstr "Periode: %s\n"
 
-#: ../src/redshift.c:392
+#: ../src/redshift.c:228
 #, c-format
 msgid "Period: %s (%.2f%% day)\n"
 msgstr "Periode: %s (%.2f%% dag)\n"
 
 #. TRANSLATORS: Abbreviation for `north'
-#: ../src/redshift.c:404
+#: ../src/redshift.c:240
 msgid "N"
 msgstr ""
 
 #. TRANSLATORS: Abbreviation for `south'
-#: ../src/redshift.c:406
+#: ../src/redshift.c:242
 msgid "S"
 msgstr ""
 
 #. TRANSLATORS: Abbreviation for `east'
-#: ../src/redshift.c:408
+#: ../src/redshift.c:244
 msgid "E"
 msgstr ""
 
 #. TRANSLATORS: Abbreviation for `west'
-#: ../src/redshift.c:410
+#: ../src/redshift.c:246
 msgid "W"
 msgstr ""
 
 #. TRANSLATORS: Append degree symbols after %f if possible.
 #. The string following each number is an abreviation for
 #. north, source, east or west (N, S, E, W).
-#: ../src/redshift.c:415
+#: ../src/redshift.c:251
 #, c-format
 msgid "Location: %.2f %s, %.2f %s\n"
 msgstr "Locatie: %.2f %s, %.2f %s\n"
+
+#: ../src/redshift.c:325 ../src/redshift.c:416
+#, c-format
+msgid "Initialization of %s failed.\n"
+msgstr "Initialisatie van %s mislukt.\n"
+
+#: ../src/redshift.c:340 ../src/redshift.c:384 ../src/redshift.c:431
+#: ../src/redshift.c:463
+#, c-format
+msgid "Failed to set %s option.\n"
+msgstr "Kan %s niet als optie instellen.\n"
+
+#. TRANSLATORS: `help' must not be
+#. translated.
+#. TRANSLATORS: `help' must not be translated.
+#: ../src/redshift.c:345 ../src/redshift.c:387
+#, c-format
+msgid "Try `-l %s:help' for more information.\n"
+msgstr "Probeer '-l%s:help' voor meer informatie.\n"
+
+#: ../src/redshift.c:373 ../src/redshift.c:453
+#, c-format
+msgid "Failed to parse option `%s'.\n"
+msgstr "Niet gelukt om optie '%s' in te lezen.\n"
+
+#: ../src/redshift.c:400
+#, c-format
+msgid "Failed to start provider %s.\n"
+msgstr "Niet gelukt om aanbieder %s te starten.\n"
+
+#. TRANSLATORS: `help' must not be
+#. translated.
+#: ../src/redshift.c:436
+#, c-format
+msgid "Try `-m %s:help' for more information.\n"
+msgstr "Probeer '-m%s:help' voor meer informatie.\n"
+
+#. TRANSLATORS: `help' must not be translated.
+#: ../src/redshift.c:466
+#, c-format
+msgid "Try -m %s:help' for more information.\n"
+msgstr "Probeer '-m%s:help' voor meer informatie.\n"
+
+#: ../src/redshift.c:478
+#, c-format
+msgid "Failed to start adjustment method %s.\n"
+msgstr "Starten van aanpassingsmethode %s is mislukt.\n"
+
+#: ../src/redshift.c:509
+#, c-format
+msgid "Latitude must be between %.1f and %.1f.\n"
+msgstr "Breedtegraad moet tussen %.1f en %.1f zijn.\n"
+
+#: ../src/redshift.c:518
+#, c-format
+msgid "Longitude must be between %.1f and %.1f.\n"
+msgstr "Lengtegraad moet tussen %.1f en %.1f zijn.\n"
+
+#: ../src/redshift.c:545 ../src/redshift.c:564 ../src/redshift.c:696
+#: ../src/redshift.c:1187
+msgid "Unable to read system time.\n"
+msgstr "Kan systeemtijd niet lezen.\n"
+
+#: ../src/redshift.c:635
+#, fuzzy
+msgid "Waiting for initial location to become available...\n"
+msgstr "Wachten voor autorisatie om locatie op te halen...\n"
+
+#: ../src/redshift.c:641 ../src/redshift.c:832 ../src/redshift.c:847
+#: ../src/redshift.c:1172
+msgid "Unable to get location from provider.\n"
+msgstr "Mislukt om de locatie te bemachtigen van de aanbieder.\n"
+
+#: ../src/redshift.c:647 ../src/redshift.c:871
+#, fuzzy
+msgid "Invalid location returned from provider.\n"
+msgstr "Mislukt om de locatie te bemachtigen van de aanbieder.\n"
+
+#: ../src/redshift.c:656 ../src/redshift.c:788 ../src/redshift.c:1222
+#: ../src/redshift.c:1253
+#, c-format
+msgid "Color temperature: %uK\n"
+msgstr "Kleurtemperatuur: %uK\n"
+
+#: ../src/redshift.c:657 ../src/redshift.c:793 ../src/redshift.c:1224
+#, c-format
+msgid "Brightness: %.2f\n"
+msgstr "Helderheid: %.2f\n"
+
+#: ../src/redshift.c:686
+#, c-format
+msgid "Status: %s\n"
+msgstr "Status: %s\n"
+
+#: ../src/redshift.c:687 ../src/redshift-gtk/statusicon.py:301
+msgid "Disabled"
+msgstr "Uitgeschakeld"
+
+#: ../src/redshift.c:687 ../src/redshift-gtk/statusicon.py:73
+#: ../src/redshift-gtk/statusicon.py:301
+msgid "Enabled"
+msgstr "Ingeschakeld"
+
+#: ../src/redshift.c:802 ../src/redshift.c:1233 ../src/redshift.c:1263
+#: ../src/redshift.c:1285
+msgid "Temperature adjustment failed.\n"
+msgstr "Kleuraanpassing mislukt.\n"
+
+#: ../src/redshift.c:854
+msgid ""
+"Location is temporarily unavailable; Using previous location until it "
+"becomes available...\n"
+msgstr ""
+
+#: ../src/redshift.c:967
+msgid "Partitial time-configuration not supported!\n"
+msgstr ""
+
+#: ../src/redshift.c:975
+msgid "Invalid dawn/dusk time configuration!\n"
+msgstr ""
+
+#: ../src/redshift.c:1006
+#, c-format
+msgid "Trying location provider `%s'...\n"
+msgstr "Probeert locatieaanbieder `%s'...\n"
+
+#: ../src/redshift.c:1011
+msgid "Trying next provider...\n"
+msgstr "Probeert volgende aanbieder...\n"
+
+#: ../src/redshift.c:1017
+#, c-format
+msgid "Using provider `%s'.\n"
+msgstr "Gebruikt aanbieder '%s'.\n"
+
+#: ../src/redshift.c:1025
+msgid "No more location providers to try.\n"
+msgstr "Geen locatieaanbieders meer om uit te testen.\n"
+
+#: ../src/redshift.c:1034
+#, c-format
+msgid ""
+"High transition elevation cannot be lower than the low transition "
+"elevation.\n"
+msgstr ""
+
+#. TRANSLATORS: Append degree symbols if possible.
+#: ../src/redshift.c:1041
+#, c-format
+msgid "Solar elevations: day above %.1f, night below %.1f\n"
+msgstr ""
+
+#: ../src/redshift.c:1049
+#, c-format
+msgid "Temperatures: %dK at day, %dK at night\n"
+msgstr "Temperaturen: %dK overdag, %dK 's nachts\n"
+
+#: ../src/redshift.c:1060 ../src/redshift.c:1071
+#, c-format
+msgid "Temperature must be between %uK and %uK.\n"
+msgstr "Temperatuur moet tussen %uK en %uK zijn.\n"
+
+#: ../src/redshift.c:1083
+#, c-format
+msgid "Brightness values must be between %.1f and %.1f.\n"
+msgstr "Helderheidwaarde moeten tussen %.1f en %.1f zijn.\n"
+
+#: ../src/redshift.c:1089
+#, c-format
+msgid "Brightness: %.2f:%.2f\n"
+msgstr "Helderheid: %.2f:%.2f\n"
+
+#: ../src/redshift.c:1098
+#, c-format
+msgid "Gamma value must be between %.1f and %.1f.\n"
+msgstr "Gammawaarde moet tussen %.1f en %.1f liggen.\n"
+
+#. TRANSLATORS: The string in parenthesis is either
+#. Daytime or Night (translated).
+#: ../src/redshift.c:1106 ../src/redshift.c:1110
+#, c-format
+msgid "Gamma (%s): %.3f, %.3f, %.3f\n"
+msgstr ""
+
+#: ../src/redshift.c:1139
+msgid "Trying next method...\n"
+msgstr "Probeer volgende methode...\n"
+
+#: ../src/redshift.c:1144
+#, c-format
+msgid "Using method `%s'.\n"
+msgstr "Gebruik methode `%s'.\n"
+
+#: ../src/redshift.c:1151
+msgid "No more methods to try.\n"
+msgstr "Geen methodes meer om te proberen.\n"
+
+#: ../src/redshift.c:1165
+#, fuzzy
+msgid "Waiting for current location to become available...\n"
+msgstr "Wachten voor autorisatie om locatie op te halen...\n"
+
+#. TRANSLATORS: Append degree symbol if
+#. possible.
+#: ../src/redshift.c:1206
+#, c-format
+msgid "Solar elevation: %f\n"
+msgstr "Zonshoogte: %f\n"
+
+#: ../src/redshift.c:1244 ../src/redshift.c:1272 ../src/redshift.c:1294
+msgid "Press ctrl-c to stop...\n"
+msgstr "Druk ctrl-c om te annuleren...\n"
 
 #. TRANSLATORS: help output 1
 #. LAT is latitude, LON is longitude,
 #. DAY is temperature at daytime,
 #. NIGHT is temperature at night
 #. no-wrap
-#: ../src/redshift.c:452
+#: ../src/options.c:159
 #, c-format
 msgid "Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
 msgstr "Gebruik: %s -l LAT:LON -t DAG:NACHT [OPTIES...]\n"
 
 #. TRANSLATORS: help output 2
 #. no-wrap
-#: ../src/redshift.c:458
+#: ../src/options.c:165
 msgid "Set color temperature of display according to time of day.\n"
 msgstr ""
 "Stel de temperatuur van het scherm in afhankelijk van de tijd van de dag.\n"
 
 #. TRANSLATORS: help output 3
 #. no-wrap
-#: ../src/redshift.c:464
+#: ../src/options.c:171
 msgid ""
 "  -h\t\tDisplay this help message\n"
 "  -v\t\tVerbose output\n"
@@ -153,7 +369,8 @@ msgstr ""
 #. TRANSLATORS: help output 4
 #. `list' must not be translated
 #. no-wrap
-#: ../src/redshift.c:472
+#: ../src/options.c:179
+#, fuzzy
 msgid ""
 "  -b DAY:NIGHT\tScreen brightness to apply (between 0.1 and 1.0)\n"
 "  -c FILE\tLoad settings from specified configuration file\n"
@@ -166,8 +383,9 @@ msgid ""
 "  -o\t\tOne shot mode (do not continuously adjust color temperature)\n"
 "  -O TEMP\tOne shot manual mode (set color temperature)\n"
 "  -p\t\tPrint mode (only print parameters and exit)\n"
+"  -P\t\tReset existing gamma ramps before applying new color effect\n"
 "  -x\t\tReset mode (remove adjustment from screen)\n"
-"  -r\t\tDisable temperature transitions\n"
+"  -r\t\tDisable fading between color temperatures\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
 "  -b DAG:NACHT\tHelderheid van het scherm (tussen 0,1 en 1,0)\n"
@@ -186,13 +404,13 @@ msgstr ""
 "  -t DAG:NACHT\tColor temperature to set at daytime/night\n"
 
 #. TRANSLATORS: help output 5
-#: ../src/redshift.c:492
-#, c-format
+#: ../src/options.c:201
+#, fuzzy, c-format
 msgid ""
-"The neutral temperature is %uK. Using this value will not\n"
-"change the color temperature of the display. Setting the\n"
-"color temperature to a value higher than this results in\n"
-"more blue light, and setting a lower value will result in\n"
+"The neutral temperature is %uK. Using this value will not change the color\n"
+"temperature of the display. Setting the color temperature to a value higher\n"
+"than this results in more blue light, and setting a lower value will result "
+"in\n"
 "more red light.\n"
 msgstr ""
 "De neutrale temperatuur is %uK. Deze waarde zal de \n"
@@ -202,7 +420,7 @@ msgstr ""
 "in een rode tint.\n"
 
 #. TRANSLATORS: help output 6
-#: ../src/redshift.c:502
+#: ../src/options.c:210
 #, c-format
 msgid ""
 "Default values:\n"
@@ -216,251 +434,81 @@ msgstr ""
 "  Temperatuur 's nachts: %uK\n"
 
 #. TRANSLATORS: help output 7
-#: ../src/redshift.c:510
+#: ../src/options.c:218
 #, c-format
 msgid "Please report bugs to <%s>\n"
 msgstr "Meld programmeerfouten aan <%s>\n"
 
-#: ../src/redshift.c:516
+#: ../src/options.c:225
 msgid "Available adjustment methods:\n"
 msgstr "Beschikbare aanpassingsmethoden:\n"
 
-#: ../src/redshift.c:522
+#: ../src/options.c:231
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
 msgstr ""
 "Specificeer met dubbele punten gescheiden opties met `-m METHODE:OPTIES'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
-#: ../src/redshift.c:525
+#: ../src/options.c:234
 msgid "Try `-m METHOD:help' for help.\n"
 msgstr "Probeer `-m METHODE:help' voor hulp\n"
 
-#: ../src/redshift.c:531
+#: ../src/options.c:241
 msgid "Available location providers:\n"
 msgstr "Beschikbare locatieaanbieders:\n"
 
-#: ../src/redshift.c:537
+#: ../src/options.c:247
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
 msgstr ""
 "Specificeer met dubbele punten gescheiden opties met `-l AANBIEDER:OPTIES'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
-#: ../src/redshift.c:540
+#: ../src/options.c:250
 msgid "Try `-l PROVIDER:help' for help.\n"
 msgstr "Probeer '-l AANBIEDER:help' voor hulp.\n"
 
-#: ../src/redshift.c:553 ../src/redshift.c:645
-#, c-format
-msgid "Initialization of %s failed.\n"
-msgstr "Initialisatie van %s mislukt.\n"
-
-#: ../src/redshift.c:568 ../src/redshift.c:612 ../src/redshift.c:660
-#: ../src/redshift.c:692
-#, c-format
-msgid "Failed to set %s option.\n"
-msgstr "Kan %s niet als optie instellen.\n"
-
-#. TRANSLATORS: `help' must not be
-#. translated.
-#. TRANSLATORS: `help' must not be translated.
-#: ../src/redshift.c:573 ../src/redshift.c:615
-#, c-format
-msgid "Try `-l %s:help' for more information.\n"
-msgstr "Probeer '-l%s:help' voor meer informatie.\n"
-
-#: ../src/redshift.c:601 ../src/redshift.c:682
-#, c-format
-msgid "Failed to parse option `%s'.\n"
-msgstr "Niet gelukt om optie '%s' in te lezen.\n"
-
-#: ../src/redshift.c:628
-#, c-format
-msgid "Failed to start provider %s.\n"
-msgstr "Niet gelukt om aanbieder %s te starten.\n"
-
-#. TRANSLATORS: `help' must not be
-#. translated.
-#: ../src/redshift.c:665
-#, c-format
-msgid "Try `-m %s:help' for more information.\n"
-msgstr "Probeer '-m%s:help' voor meer informatie.\n"
-
-#. TRANSLATORS: `help' must not be translated.
-#: ../src/redshift.c:695
-#, c-format
-msgid "Try -m %s:help' for more information.\n"
-msgstr "Probeer '-m%s:help' voor meer informatie.\n"
-
-#: ../src/redshift.c:707
-#, c-format
-msgid "Failed to start adjustment method %s.\n"
-msgstr "Starten van aanpassingsmethode %s is mislukt.\n"
-
-#: ../src/redshift.c:870 ../src/redshift.c:898
-#, c-format
-msgid "Status: %s\n"
-msgstr "Status: %s\n"
-
-#: ../src/redshift.c:870 ../src/redshift.c:899
-#: ../src/redshift-gtk/statusicon.py:260 ../src/redshift-gtk/statusicon.py:466
-msgid "Enabled"
-msgstr "Ingeschakeld"
-
-#: ../src/redshift.c:899 ../src/redshift-gtk/statusicon.py:466
-msgid "Disabled"
-msgstr "Uitgeschakeld"
-
-#: ../src/redshift.c:927 ../src/redshift.c:1600
-msgid "Unable to read system time.\n"
-msgstr "Kan systeemtijd niet lezen.\n"
-
-#: ../src/redshift.c:999 ../src/redshift.c:1623 ../src/redshift.c:1652
-#, c-format
-msgid "Color temperature: %uK\n"
-msgstr "Kleurtemperatuur: %uK\n"
-
-#: ../src/redshift.c:1004 ../src/redshift.c:1625
-#, c-format
-msgid "Brightness: %.2f\n"
-msgstr "Helderheid: %.2f\n"
-
-#: ../src/redshift.c:1013 ../src/redshift.c:1636 ../src/redshift.c:1660
-#: ../src/redshift.c:1680
-msgid "Temperature adjustment failed.\n"
-msgstr "Kleuraanpassing mislukt.\n"
-
-#: ../src/redshift.c:1105
+#: ../src/options.c:356
 msgid "Malformed gamma argument.\n"
 msgstr "Misvormd gamma argument.\n"
 
-#: ../src/redshift.c:1107 ../src/redshift.c:1215 ../src/redshift.c:1234
+#: ../src/options.c:358 ../src/options.c:472 ../src/options.c:491
 msgid "Try `-h' for more information.\n"
 msgstr "Probeer '-h' voor meer informatie.\n"
 
-#: ../src/redshift.c:1154 ../src/redshift.c:1355
+#: ../src/options.c:407 ../src/options.c:610
 #, c-format
 msgid "Unknown location provider `%s'.\n"
 msgstr "Onbekende locatieaanbieder `%s'.\n"
 
 #. TRANSLATORS: This refers to the method
 #. used to adjust colors e.g VidMode
-#: ../src/redshift.c:1185 ../src/redshift.c:1341
+#: ../src/options.c:439 ../src/options.c:597
 #, c-format
 msgid "Unknown adjustment method `%s'.\n"
 msgstr "Onbekende aanpassingsmethode `%s'.\n"
 
-#: ../src/redshift.c:1213
+#: ../src/options.c:470
 msgid "Malformed temperature argument.\n"
 msgstr "Misvormd temperatuurargument.\n"
 
-#: ../src/redshift.c:1305 ../src/redshift.c:1318 ../src/redshift.c:1329
+#: ../src/options.c:561 ../src/options.c:575 ../src/options.c:586
 msgid "Malformed gamma setting.\n"
 msgstr "Misvormde gamma instelling.\n"
 
-#: ../src/redshift.c:1364
+#: ../src/options.c:621
+#, fuzzy, c-format
+msgid "Malformed dawn-time setting `%s'.\n"
+msgstr "Misvormde gamma instelling.\n"
+
+#: ../src/options.c:632
+#, fuzzy, c-format
+msgid "Malformed dusk-time setting `%s'.\n"
+msgstr "Misvormde gamma instelling.\n"
+
+#: ../src/options.c:639
 #, c-format
 msgid "Unknown configuration setting `%s'.\n"
 msgstr "Onbekende configuratie instelling `%s'.\n"
-
-#: ../src/redshift.c:1422
-#, c-format
-msgid "Trying location provider `%s'...\n"
-msgstr "Probeert locatieaanbieder `%s'...\n"
-
-#: ../src/redshift.c:1427
-msgid "Trying next provider...\n"
-msgstr "Probeert volgende aanbieder...\n"
-
-#: ../src/redshift.c:1433
-#, c-format
-msgid "Using provider `%s'.\n"
-msgstr "Gebruikt aanbieder '%s'.\n"
-
-#: ../src/redshift.c:1441
-msgid "No more location providers to try.\n"
-msgstr "Geen locatieaanbieders meer om uit te testen.\n"
-
-#: ../src/redshift.c:1450
-msgid "Unable to get location from provider.\n"
-msgstr "Mislukt om de locatie te bemachtigen van de aanbieder.\n"
-
-#: ../src/redshift.c:1460
-#, c-format
-msgid "Temperatures: %dK at day, %dK at night\n"
-msgstr "Temperaturen: %dK overdag, %dK 's nachts\n"
-
-#. TRANSLATORS: Append degree symbols if possible.
-#: ../src/redshift.c:1465
-#, c-format
-msgid "Solar elevations: day above %.1f, night below %.1f\n"
-msgstr ""
-
-#: ../src/redshift.c:1473
-#, c-format
-msgid "Latitude must be between %.1f and %.1f.\n"
-msgstr "Breedtegraad moet tussen %.1f en %.1f zijn.\n"
-
-#: ../src/redshift.c:1482
-#, c-format
-msgid "Longitude must be between %.1f and %.1f.\n"
-msgstr "Lengtegraad moet tussen %.1f en %.1f zijn.\n"
-
-#: ../src/redshift.c:1493 ../src/redshift.c:1511
-#, c-format
-msgid "Temperature must be between %uK and %uK.\n"
-msgstr "Temperatuur moet tussen %uK en %uK zijn.\n"
-
-#: ../src/redshift.c:1501
-#, c-format
-msgid ""
-"High transition elevation cannot be lower than the low transition "
-"elevation.\n"
-msgstr ""
-
-#: ../src/redshift.c:1523
-#, c-format
-msgid "Brightness values must be between %.1f and %.1f.\n"
-msgstr "Helderheidwaarde moeten tussen %.1f en %.1f zijn.\n"
-
-#: ../src/redshift.c:1529
-#, c-format
-msgid "Brightness: %.2f:%.2f\n"
-msgstr "Helderheid: %.2f:%.2f\n"
-
-#: ../src/redshift.c:1537
-#, c-format
-msgid "Gamma value must be between %.1f and %.1f.\n"
-msgstr "Gammawaarde moet tussen %.1f en %.1f liggen.\n"
-
-#. TRANSLATORS: The string in parenthesis is either
-#. Daytime or Night (translated).
-#: ../src/redshift.c:1545 ../src/redshift.c:1548
-#, c-format
-msgid "Gamma (%s): %.3f, %.3f, %.3f\n"
-msgstr ""
-
-#: ../src/redshift.c:1572
-msgid "Trying next method...\n"
-msgstr "Probeer volgende methode...\n"
-
-#: ../src/redshift.c:1577
-#, c-format
-msgid "Using method `%s'.\n"
-msgstr "Gebruik methode `%s'.\n"
-
-#: ../src/redshift.c:1584
-msgid "No more methods to try.\n"
-msgstr "Geen methodes meer om te proberen.\n"
-
-#. TRANSLATORS: Append degree symbol if possible.
-#: ../src/redshift.c:1609
-#, c-format
-msgid "Solar elevation: %f\n"
-msgstr "Zonshoogte: %f\n"
-
-#: ../src/redshift.c:1645 ../src/redshift.c:1669 ../src/redshift.c:1689
-msgid "Press ctrl-c to stop...\n"
-msgstr "Druk ctrl-c om te annuleren...\n"
 
 #: ../src/config-ini.c:167
 msgid "Malformed section header in config file.\n"
@@ -474,327 +522,276 @@ msgstr "Misvormde toewijzing in configuratiebestand.\n"
 msgid "Assignment outside section in config file.\n"
 msgstr "Toewijzing buiten sectie in configuratiebestand.\n"
 
-#: ../src/gamma-drm.c:78
+#: ../src/gamma-drm.c:97
+#, fuzzy, c-format
+msgid "Failed to open DRM device: %s\n"
+msgstr "Kon device context niet openen.\n"
+
+#: ../src/gamma-drm.c:105
 #, c-format
 msgid "Failed to get DRM mode resources\n"
 msgstr ""
 
-#: ../src/gamma-drm.c:88 ../src/gamma-randr.c:311
+#: ../src/gamma-drm.c:115 ../src/gamma-randr.c:384
 #, c-format
 msgid "CRTC %d does not exist. "
 msgstr "CRTC %d bestaat niet. "
 
-#: ../src/gamma-drm.c:91 ../src/gamma-randr.c:314
+#: ../src/gamma-drm.c:118 ../src/gamma-randr.c:387
 #, c-format
 msgid "Valid CRTCs are [0-%d].\n"
 msgstr "Juiste CRTCs zijn [0-%d].\n"
 
-#: ../src/gamma-drm.c:94 ../src/gamma-randr.c:317
+#: ../src/gamma-drm.c:121 ../src/gamma-randr.c:390
 #, c-format
 msgid "Only CRTC 0 exists.\n"
 msgstr "Alleen CRTC 0 bestaat.\n"
 
-#: ../src/gamma-drm.c:132
+#: ../src/gamma-drm.c:159
 #, c-format
 msgid "CRTC %i lost, skipping\n"
 msgstr "CRTC %i verloren, overslaan\n"
 
-#: ../src/gamma-drm.c:138
+#: ../src/gamma-drm.c:165
 #, c-format
 msgid ""
 "Could not get gamma ramp size for CRTC %i\n"
 "on graphics card %i, ignoring device.\n"
 msgstr ""
 
-#: ../src/gamma-drm.c:151
+#: ../src/gamma-drm.c:178
 #, c-format
 msgid ""
 "DRM could not read gamma ramps on CRTC %i on\n"
 "graphics card %i, ignoring device.\n"
 msgstr ""
 
-#: ../src/gamma-drm.c:214
+#: ../src/gamma-drm.c:242
 msgid "Adjust gamma ramps with Direct Rendering Manager.\n"
 msgstr ""
 
 #. TRANSLATORS: DRM help output
 #. left column must not be translated
-#: ../src/gamma-drm.c:219
+#: ../src/gamma-drm.c:247
 msgid ""
 "  card=N\tGraphics card to apply adjustments to\n"
 "  crtc=N\tCRTC to apply adjustments to\n"
 msgstr ""
 
-#: ../src/gamma-drm.c:232
+#: ../src/gamma-drm.c:260
 #, c-format
 msgid "CRTC must be a non-negative integer\n"
 msgstr "CRTC moet een niet-negatief geheel getal zijn\n"
 
-#: ../src/gamma-drm.c:236 ../src/gamma-randr.c:297 ../src/gamma-vidmode.c:149
-#: ../src/gamma-quartz.c:172 ../src/gamma-w32gdi.c:121 ../src/gamma-dummy.c:66
-#: ../src/location-geoclue.c:180 ../src/location-geoclue2.c:82
-#: ../src/location-corelocation.m:141 ../src/location-manual.c:96
+#: ../src/gamma-drm.c:264 ../src/gamma-randr.c:369 ../src/gamma-vidmode.c:161
+#: ../src/gamma-quartz.c:183 ../src/gamma-w32gdi.c:128 ../src/gamma-dummy.c:67
+#: ../src/location-geoclue2.c:408 ../src/location-corelocation.m:243
+#: ../src/location-manual.c:106
 #, c-format
 msgid "Unknown method parameter: `%s'.\n"
 msgstr "Onbekende methodeparameter: `%s'.\n"
 
-#: ../src/gamma-randr.c:72 ../src/gamma-randr.c:129 ../src/gamma-randr.c:168
-#: ../src/gamma-randr.c:194 ../src/gamma-randr.c:251 ../src/gamma-randr.c:362
+#: ../src/gamma-randr.c:94 ../src/gamma-randr.c:153 ../src/gamma-randr.c:192
+#: ../src/gamma-randr.c:218 ../src/gamma-randr.c:275 ../src/gamma-randr.c:435
 #, c-format
 msgid "`%s' returned error %d\n"
 msgstr "'%s' gaf foutcode %d\n"
 
-#: ../src/gamma-randr.c:80
+#: ../src/gamma-randr.c:103
 #, c-format
 msgid "Unsupported RANDR version (%u.%u)\n"
 msgstr "RANDR versie wordt niet ondersteund (%u.%u)\n"
 
-#: ../src/gamma-randr.c:114
+#: ../src/gamma-randr.c:138
 #, c-format
 msgid "Screen %i could not be found.\n"
 msgstr "Scherm %i kan niet worden gevonden.\n"
 
-#: ../src/gamma-randr.c:180 ../src/gamma-vidmode.c:87
-#: ../src/gamma-quartz.c:100
+#: ../src/gamma-randr.c:204 ../src/gamma-vidmode.c:96 ../src/gamma-quartz.c:114
 #, c-format
 msgid "Gamma ramp size too small: %i\n"
 msgstr "Gamma ramp grootte te klein: %i\n"
 
-#: ../src/gamma-randr.c:253
+#: ../src/gamma-randr.c:277
 #, c-format
 msgid "Unable to restore CRTC %i\n"
 msgstr "Kan CRTC %i niet herstellen\n"
 
-#: ../src/gamma-randr.c:274
+#: ../src/gamma-randr.c:301
 msgid "Adjust gamma ramps with the X RANDR extension.\n"
 msgstr "Pas gamma ramps aan met de X RANDR extensie.\n"
 
 #. TRANSLATORS: RANDR help output
 #. left column must not be translated
-#: ../src/gamma-randr.c:279
+#: ../src/gamma-randr.c:306
 msgid ""
 "  screen=N\t\tX screen to apply adjustments to\n"
-"  crtc=N\t\tCRTC to apply adjustments to\n"
-"  preserve={0,1}\tWhether existing gamma should be preserved\n"
+"  crtc=N\tList of comma separated CRTCs to apply adjustments to\n"
 msgstr ""
 
-#: ../src/gamma-vidmode.c:51 ../src/gamma-vidmode.c:72
-#: ../src/gamma-vidmode.c:81 ../src/gamma-vidmode.c:108
-#: ../src/gamma-vidmode.c:168 ../src/gamma-vidmode.c:213
+#: ../src/gamma-randr.c:328
+#, fuzzy, c-format
+msgid "Unable to read screen number: `%s'.\n"
+msgstr "Kan systeemtijd niet lezen.\n"
+
+#: ../src/gamma-randr.c:364 ../src/gamma-vidmode.c:156
+#: ../src/gamma-quartz.c:178 ../src/gamma-w32gdi.c:123
+#, c-format
+msgid ""
+"Parameter `%s` is now always on;  Use the `%s` command-line option to "
+"disable.\n"
+msgstr ""
+
+#: ../src/gamma-vidmode.c:61 ../src/gamma-vidmode.c:81
+#: ../src/gamma-vidmode.c:90 ../src/gamma-vidmode.c:117
+#: ../src/gamma-vidmode.c:180 ../src/gamma-vidmode.c:225
 #, c-format
 msgid "X request failed: %s\n"
 msgstr "X verzoek mislukt: %s\n"
 
-#: ../src/gamma-vidmode.c:129
+#: ../src/gamma-vidmode.c:140
 msgid "Adjust gamma ramps with the X VidMode extension.\n"
 msgstr "Pas gamma ramps aan met de X VidMode extensie.\n"
 
 #. TRANSLATORS: VidMode help output
 #. left column must not be translated
-#: ../src/gamma-vidmode.c:134
-msgid ""
-"  screen=N\t\tX screen to apply adjustments to\n"
-"  preserve={0,1}\tWhether existing gamma should be preserved\n"
+#: ../src/gamma-vidmode.c:145
+msgid "  screen=N\t\tX screen to apply adjustments to\n"
 msgstr ""
 
-#: ../src/gamma-quartz.c:126 ../src/gamma-w32gdi.c:82
+#: ../src/gamma-quartz.c:140 ../src/gamma-w32gdi.c:91
 msgid "Unable to save current gamma ramp.\n"
 msgstr "Kan de huidige gamma ramps niet opslaan.\n"
 
-#: ../src/gamma-quartz.c:155
-msgid "Adjust gamma ramps on OSX using Quartz.\n"
-msgstr ""
+#: ../src/gamma-quartz.c:170
+#, fuzzy
+msgid "Adjust gamma ramps on macOS using Quartz.\n"
+msgstr "Stel gamma ramps in met de Windows GDI.\n"
 
-#. TRANSLATORS: Quartz help output
-#. left column must not be translated
-#. TRANSLATORS: Windows GDI help output
-#. left column must not be translated
-#: ../src/gamma-quartz.c:160 ../src/gamma-w32gdi.c:109
-msgid "  preserve={0,1}\tWhether existing gamma should be preserved\n"
-msgstr ""
-
-#: ../src/gamma-w32gdi.c:59 ../src/gamma-w32gdi.c:134
-#: ../src/gamma-w32gdi.c:155
+#: ../src/gamma-w32gdi.c:68 ../src/gamma-w32gdi.c:141 ../src/gamma-w32gdi.c:168
 msgid "Unable to open device context.\n"
 msgstr "Kon device context niet openen.\n"
 
-#: ../src/gamma-w32gdi.c:66
+#: ../src/gamma-w32gdi.c:75
 msgid "Display device does not support gamma ramps.\n"
 msgstr "Weergave-apparaat ondersteund geen gamma ramps.\n"
 
-#: ../src/gamma-w32gdi.c:104
+#: ../src/gamma-w32gdi.c:115
 msgid "Adjust gamma ramps with the Windows GDI.\n"
 msgstr "Stel gamma ramps in met de Windows GDI.\n"
 
-#: ../src/gamma-w32gdi.c:140
+#: ../src/gamma-w32gdi.c:153
 msgid "Unable to restore gamma ramps.\n"
 msgstr "Kan gamma ramps niet herstellen.\n"
 
-#: ../src/gamma-w32gdi.c:195
+#: ../src/gamma-w32gdi.c:211
 msgid "Unable to set gamma ramps.\n"
 msgstr "Kan gamma ramps niet instellen.\n"
 
-#: ../src/gamma-dummy.c:42
+#: ../src/gamma-dummy.c:43
 msgid ""
 "WARNING: Using dummy gamma method! Display will not be affected by this "
 "gamma method.\n"
 msgstr ""
 
-#: ../src/gamma-dummy.c:59
+#: ../src/gamma-dummy.c:60
 msgid ""
 "Does not affect the display but prints the color temperature to the "
 "terminal.\n"
 msgstr ""
 "Verandert niks aan de weergave maar toont kleurtemperatuur op de terminal.\n"
 
-#: ../src/gamma-dummy.c:73
+#: ../src/gamma-dummy.c:75
 #, c-format
 msgid "Temperature: %i\n"
 msgstr "Temperatuur: %i\n"
 
-#: ../src/location-geoclue.c:76
-#, c-format
-msgid "Unable to obtain master client: %s\n"
-msgstr ""
-
-#: ../src/location-geoclue.c:80
-#, c-format
-msgid "Unable to obtain master client\n"
-msgstr ""
-
-#: ../src/location-geoclue.c:91
-#, c-format
-msgid "Can't set requirements for master: %s\n"
-msgstr ""
-
-#: ../src/location-geoclue.c:95
-#, c-format
-msgid "Can't set requirements for master\n"
-msgstr ""
-
-#: ../src/location-geoclue.c:111
-#, c-format
-msgid "Started Geoclue provider `%s'.\n"
-msgstr "Geoclue-aanbieder `%s' gestart.\n"
-
-#: ../src/location-geoclue.c:114
-msgid "Could not find a usable Geoclue provider.\n"
-msgstr "Kon geen bruikbare Geoclue-aanbieder vinden.\n"
-
-#: ../src/location-geoclue.c:115
-msgid "Try setting name and path to specify which to use.\n"
-msgstr "Probeer de naam en het pad aan te geven welke te gebruiken.\n"
-
-#: ../src/location-geoclue.c:133
-msgid "Use the location as discovered by a Geoclue provider.\n"
-msgstr "Gebruik de locatie zoals ontdekt door de Geoclue-aanbieder\n"
-
-#. TRANSLATORS: Geoclue help output
-#. left column must not be translated
-#: ../src/location-geoclue.c:138
-msgid ""
-"  name=N\tName of Geoclue provider (or `default')\n"
-"  path=N\tPath of Geoclue provider (or `default')\n"
-msgstr ""
-"  name=N\tName of Geoclue provider (or `default')\n"
-"  path=N\tPath of Geoclue provider (or `default')\n"
-
-#: ../src/location-geoclue.c:141 ../src/location-geoclue2.c:72
-#: ../src/location-corelocation.m:131
+#: ../src/location-geoclue2.c:59
 #, c-format
 msgid ""
-"NOTE: currently Redshift doesn't recheck %s once started,\n"
-"which means it has to be restarted to take notice after travel.\n"
+"Access to the current location was denied by GeoClue!\n"
+"Make sure that location services are enabled and that Redshift is permitted\n"
+"to use location services. See https://github.com/jonls/redshift#faq for "
+"more\n"
+"information.\n"
 msgstr ""
-"LET OP: Redshift hercontroleert %s wanneer het is opgestart,\n"
-"dat betekent dat het herstart moet worden om de effecten op te merken na een "
-"reis.\n"
 
-#: ../src/location-geoclue.c:199
-#, c-format
-msgid "Could not get location: %s.\n"
-msgstr "Kon de locatie niet krijgen: %s.\n"
-
-#: ../src/location-geoclue.c:206
-#, c-format
-msgid "According to the geoclue provider we're at: %.2f, %.2f\n"
-msgstr "Volgens de geoclue-aanbieder zijn we op: %.2f, %.2f\n"
-
-#: ../src/location-geoclue.c:210
-msgid "Provider does not have a valid location available."
-msgstr "Aanbieder heeft geen geldige locatie beschikbaar."
-
-#: ../src/location-geoclue2.c:69
-msgid "Use the location as discovered by a GeoClue2 provider.\n"
-msgstr "Gebruik de locatie die ontdekt is door de GeoClue2 aanbieder.\n"
-
-#: ../src/location-geoclue2.c:114
+#: ../src/location-geoclue2.c:107
 #, c-format
 msgid "Unable to obtain location: %s.\n"
 msgstr "Kon deze locatie niet krijgen: %s.\n"
 
-#: ../src/location-geoclue2.c:153
+#: ../src/location-geoclue2.c:150
 #, c-format
 msgid "Unable to obtain GeoClue Manager: %s.\n"
 msgstr "Kon GeoClue-beheerder niet ophalen: %s.\n"
 
-#: ../src/location-geoclue2.c:168
+#: ../src/location-geoclue2.c:166
 #, c-format
 msgid "Unable to obtain GeoClue client path: %s.\n"
 msgstr ""
 
-#: ../src/location-geoclue2.c:189
+#: ../src/location-geoclue2.c:188
 #, c-format
 msgid "Unable to obtain GeoClue Client: %s.\n"
 msgstr ""
 
-#: ../src/location-geoclue2.c:228
+#: ../src/location-geoclue2.c:229
 #, c-format
 msgid "Unable to set distance threshold: %s.\n"
 msgstr ""
 
-#: ../src/location-geoclue2.c:251
+#: ../src/location-geoclue2.c:253
 #, c-format
 msgid "Unable to start GeoClue client: %s.\n"
 msgstr ""
 
-#: ../src/location-geoclue2.c:269
-#, c-format
-msgid "Unable to connect to GeoClue.\n"
-msgstr "Kan niet verbinden met GeoClue.\n"
+#: ../src/location-geoclue2.c:365
+#, fuzzy
+msgid "Failed to start GeoClue2 provider!\n"
+msgstr "Niet gelukt om aanbieder %s te starten.\n"
 
-#: ../src/location-corelocation.m:59
+#: ../src/location-geoclue2.c:399
+msgid "Use the location as discovered by a GeoClue2 provider.\n"
+msgstr "Gebruik de locatie die ontdekt is door de GeoClue2 aanbieder.\n"
+
+#: ../src/location-corelocation.m:73
 msgid "Not authorized to obtain location from CoreLocation.\n"
 msgstr "Niet geautoriseerd om de locatie te verkrijgen van CoreLocation.\n"
 
-#: ../src/location-corelocation.m:87
+#: ../src/location-corelocation.m:111
 #, c-format
 msgid "Error obtaining location from CoreLocation: %s\n"
 msgstr "Fout bij het ophalen van de locatie van CoreLocation: %s\n"
 
-#: ../src/location-corelocation.m:96
+#: ../src/location-corelocation.m:120
 msgid "Waiting for authorization to obtain location...\n"
 msgstr "Wachten voor autorisatie om locatie op te halen...\n"
 
-#: ../src/location-corelocation.m:99
+#: ../src/location-corelocation.m:122
 msgid "Request for location was not authorized!\n"
 msgstr "Aanvraag voor locatie was niet geautoriseerd!\n"
 
-#: ../src/location-corelocation.m:128
+#: ../src/location-corelocation.m:203
+#, fuzzy
+msgid "Failed to start CoreLocation provider!\n"
+msgstr "Niet gelukt om aanbieder %s te starten.\n"
+
+#: ../src/location-corelocation.m:235
 msgid "Use the location as discovered by the Corelocation provider.\n"
 msgstr "Gebruik de locatie die is ontdekt door de Corelocation-aanbieder.\n"
 
-#: ../src/location-manual.c:50
+#: ../src/location-manual.c:59
 msgid "Latitude and longitude must be set.\n"
 msgstr "Hoogte- en breedtegraad moeten nog ingesteld worden.\n"
 
-#: ../src/location-manual.c:65
+#: ../src/location-manual.c:75
 msgid "Specify location manually.\n"
 msgstr "Geef locatie handmatig op.\n"
 
 #. TRANSLATORS: Manual location help output
 #. left column must not be translated
-#: ../src/location-manual.c:70
+#: ../src/location-manual.c:80
 msgid ""
 "  lat=N\t\tLatitude\n"
 "  lon=N\t\tLongitude\n"
@@ -802,60 +799,103 @@ msgstr ""
 "  lat=N\t\tBreedtegraad\n"
 "  lon=N\t\tLengtegraad\n"
 
-#: ../src/location-manual.c:73
+#: ../src/location-manual.c:83
 msgid ""
 "Both values are expected to be floating point numbers,\n"
 "negative values representing west / south, respectively.\n"
 msgstr ""
 
-#: ../src/location-manual.c:87
+#: ../src/location-manual.c:97
 msgid "Malformed argument.\n"
 msgstr "Misvormd argument.\n"
 
-#: ../src/redshift-gtk/statusicon.py:265
+#: ../src/redshift-gtk/statusicon.py:78
 msgid "Suspend for"
 msgstr "Onderbreken voor"
 
-#: ../src/redshift-gtk/statusicon.py:267
+#: ../src/redshift-gtk/statusicon.py:80
 msgid "30 minutes"
 msgstr "30 minuten"
 
-#: ../src/redshift-gtk/statusicon.py:268
+#: ../src/redshift-gtk/statusicon.py:81
 msgid "1 hour"
 msgstr "1 uur"
 
-#: ../src/redshift-gtk/statusicon.py:269
+#: ../src/redshift-gtk/statusicon.py:82
 msgid "2 hours"
 msgstr "2 uren"
 
-#: ../src/redshift-gtk/statusicon.py:277
+#: ../src/redshift-gtk/statusicon.py:91
 msgid "Autostart"
 msgstr "Start automatisch"
 
-#: ../src/redshift-gtk/statusicon.py:289 ../src/redshift-gtk/statusicon.py:300
+#: ../src/redshift-gtk/statusicon.py:103 ../src/redshift-gtk/statusicon.py:113
 msgid "Info"
 msgstr ""
 
-#: ../src/redshift-gtk/statusicon.py:294
+#: ../src/redshift-gtk/statusicon.py:108
 msgid "Quit"
 msgstr "Afsluiten"
 
-#: ../src/redshift-gtk/statusicon.py:301
+#: ../src/redshift-gtk/statusicon.py:146
 msgid "Close"
 msgstr "Sluiten"
 
-#: ../src/redshift-gtk/statusicon.py:466
+#: ../src/redshift-gtk/statusicon.py:300
 msgid "<b>Status:</b> {}"
 msgstr ""
 
-#: ../src/redshift-gtk/statusicon.py:470
+#: ../src/redshift-gtk/statusicon.py:306 ../src/redshift-gtk/statusicon.py:324
 msgid "Color temperature"
 msgstr "Kleurtemperatuur"
 
-#: ../src/redshift-gtk/statusicon.py:474
+#: ../src/redshift-gtk/statusicon.py:312 ../src/redshift-gtk/statusicon.py:325
 msgid "Period"
 msgstr "Periode"
 
-#: ../src/redshift-gtk/statusicon.py:478
+#: ../src/redshift-gtk/statusicon.py:318
 msgid "Location"
 msgstr "Locatie"
+
+#: ../src/redshift-gtk/statusicon.py:349
+msgid "Please run `redshift -h` for help output."
+msgstr ""
+
+#~ msgid "Started Geoclue provider `%s'.\n"
+#~ msgstr "Geoclue-aanbieder `%s' gestart.\n"
+
+#~ msgid "Could not find a usable Geoclue provider.\n"
+#~ msgstr "Kon geen bruikbare Geoclue-aanbieder vinden.\n"
+
+#~ msgid "Try setting name and path to specify which to use.\n"
+#~ msgstr "Probeer de naam en het pad aan te geven welke te gebruiken.\n"
+
+#~ msgid "Use the location as discovered by a Geoclue provider.\n"
+#~ msgstr "Gebruik de locatie zoals ontdekt door de Geoclue-aanbieder\n"
+
+#~ msgid ""
+#~ "  name=N\tName of Geoclue provider (or `default')\n"
+#~ "  path=N\tPath of Geoclue provider (or `default')\n"
+#~ msgstr ""
+#~ "  name=N\tName of Geoclue provider (or `default')\n"
+#~ "  path=N\tPath of Geoclue provider (or `default')\n"
+
+#~ msgid ""
+#~ "NOTE: currently Redshift doesn't recheck %s once started,\n"
+#~ "which means it has to be restarted to take notice after travel.\n"
+#~ msgstr ""
+#~ "LET OP: Redshift hercontroleert %s wanneer het is opgestart,\n"
+#~ "dat betekent dat het herstart moet worden om de effecten op te merken na "
+#~ "een reis.\n"
+
+#~ msgid "Could not get location: %s.\n"
+#~ msgstr "Kon de locatie niet krijgen: %s.\n"
+
+#~ msgid "According to the geoclue provider we're at: %.2f, %.2f\n"
+#~ msgstr "Volgens de geoclue-aanbieder zijn we op: %.2f, %.2f\n"
+
+#~ msgid "Provider does not have a valid location available."
+#~ msgstr "Aanbieder heeft geen geldige locatie beschikbaar."
+
+#~ msgid "Unable to connect to GeoClue.\n"
+#~ msgstr "Kan niet verbinden met GeoClue.\n"

@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2014  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2014-2017  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #ifdef HAVE_CONFIG_H
@@ -37,19 +37,33 @@
 #include "colorramp.h"
 
 
-int
-quartz_init(quartz_state_t *state)
+typedef struct {
+	CGDirectDisplayID display;
+	uint32_t ramp_size;
+	float *saved_ramps;
+} quartz_display_state_t;
+
+typedef struct {
+	quartz_display_state_t *displays;
+	uint32_t display_count;
+} quartz_state_t;
+
+
+static int
+quartz_init(quartz_state_t **state)
 {
-	state->preserve = 0;
-	state->displays = NULL;
+	*state = malloc(sizeof(quartz_state_t));
+	if (*state == NULL) return -1;
+
+	quartz_state_t *s = *state;
+	s->displays = NULL;
 
 	return 0;
 }
 
-int
+static int
 quartz_start(quartz_state_t *state)
 {
-	int r;
 	CGError error;
 	uint32_t display_count;
 
@@ -132,13 +146,13 @@ quartz_start(quartz_state_t *state)
 	return 0;
 }
 
-void
+static void
 quartz_restore(quartz_state_t *state)
 {
 	CGDisplayRestoreColorSyncSettings();
 }
 
-void
+static void
 quartz_free(quartz_state_t *state)
 {
 	if (state->displays != NULL) {
@@ -147,27 +161,24 @@ quartz_free(quartz_state_t *state)
 		}
 	}
 	free(state->displays);
+	free(state);
 }
 
-void
+static void
 quartz_print_help(FILE *f)
 {
-	fputs(_("Adjust gamma ramps on OSX using Quartz.\n"), f);
-	fputs("\n", f);
-
-	/* TRANSLATORS: Quartz help output
-	   left column must not be translated */
-	fputs(_("  preserve={0,1}\tWhether existing gamma should be"
-		" preserved\n"),
-	      f);
+	fputs(_("Adjust gamma ramps on macOS using Quartz.\n"), f);
 	fputs("\n", f);
 }
 
-int
+static int
 quartz_set_option(quartz_state_t *state, const char *key, const char *value)
 {
 	if (strcasecmp(key, "preserve") == 0) {
-		state->preserve = atoi(value);
+		fprintf(stderr, _("Parameter `%s` is now always on; "
+				  " Use the `%s` command-line option"
+				  " to disable.\n"),
+			key, "-P");
 	} else {
 		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
 		return -1;
@@ -177,10 +188,12 @@ quartz_set_option(quartz_state_t *state, const char *key, const char *value)
 }
 
 static void
-quartz_set_temperature_for_display(quartz_state_t *state, int display,
-				   const color_setting_t *setting)
+quartz_set_temperature_for_display(
+	quartz_state_t *state, int display_index,
+	const color_setting_t *setting, int preserve)
 {
-	uint32_t ramp_size = state->displays[display].ramp_size;
+	CGDirectDisplayID display = state->displays[display_index].display;
+	uint32_t ramp_size = state->displays[display_index].ramp_size;
 
 	/* Create new gamma ramps */
 	float *gamma_ramps = malloc(3*ramp_size*sizeof(float));
@@ -193,9 +206,9 @@ quartz_set_temperature_for_display(quartz_state_t *state, int display,
 	float *gamma_g = &gamma_ramps[1*ramp_size];
 	float *gamma_b = &gamma_ramps[2*ramp_size];
 
-	if (state->preserve) {
+	if (preserve) {
 		/* Initialize gamma ramps from saved state */
-		memcpy(gamma_ramps, state->displays[display].saved_ramps,
+		memcpy(gamma_ramps, state->displays[display_index].saved_ramps,
 		       3*ramp_size*sizeof(float));
 	} else {
 		/* Initialize gamma ramps to pure state */
@@ -221,13 +234,26 @@ quartz_set_temperature_for_display(quartz_state_t *state, int display,
 	free(gamma_ramps);
 }
 
-int
-quartz_set_temperature(quartz_state_t *state,
-		       const color_setting_t *setting)
+static int
+quartz_set_temperature(
+	quartz_state_t *state, const color_setting_t *setting, int preserve)
 {
 	for (int i = 0; i < state->display_count; i++) {
-		quartz_set_temperature_for_display(state, i, setting);
+		quartz_set_temperature_for_display(
+			state, i, setting, preserve);
 	}
 
 	return 0;
 }
+
+
+const gamma_method_t quartz_gamma_method = {
+	"quartz", 1,
+	(gamma_method_init_func *)quartz_init,
+	(gamma_method_start_func *)quartz_start,
+	(gamma_method_free_func *)quartz_free,
+	(gamma_method_print_help_func *)quartz_print_help,
+	(gamma_method_set_option_func *)quartz_set_option,
+	(gamma_method_restore_func *)quartz_restore,
+	(gamma_method_set_temperature_func *)quartz_set_temperature
+};

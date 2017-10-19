@@ -5,7 +5,7 @@ data/applications/redshift.desktop.in
 data/applications/redshift-gtk.desktop.in
 
 src/redshift.c
-
+src/options.c
 src/config-ini.c
 
 src/gamma-drm.c
@@ -15,7 +15,6 @@ src/gamma-quartz.c
 src/gamma-w32gdi.c
 src/gamma-dummy.c
 
-src/location-geoclue.c
 src/location-geoclue2.c
 src/location-corelocation.m
 src/location-manual.c

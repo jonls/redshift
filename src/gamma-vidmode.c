@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010-2014  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2010-2017  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #include <stdlib.h>
@@ -37,26 +37,35 @@
 #include "colorramp.h"
 
 
-int
-vidmode_init(vidmode_state_t *state)
-{
-	state->screen_num = -1;
-	state->saved_ramps = NULL;
+typedef struct {
+	Display *display;
+	int screen_num;
+	int ramp_size;
+	uint16_t *saved_ramps;
+} vidmode_state_t;
 
-	state->preserve = 0;
+
+static int
+vidmode_init(vidmode_state_t **state)
+{
+	*state = malloc(sizeof(vidmode_state_t));
+	if (*state == NULL) return -1;
+
+	vidmode_state_t *s = *state;
+	s->screen_num = -1;
+	s->saved_ramps = NULL;
 
 	/* Open display */
-	state->display = XOpenDisplay(NULL);
-	if (state->display == NULL) {
-		fprintf(stderr, _("X request failed: %s\n"),
-			"XOpenDisplay");
+	s->display = XOpenDisplay(NULL);
+	if (s->display == NULL) {
+		fprintf(stderr, _("X request failed: %s\n"), "XOpenDisplay");
 		return -1;
 	}
 
 	return 0;
 }
 
-int
+static int
 vidmode_start(vidmode_state_t *state)
 {
 	int r;
@@ -113,7 +122,7 @@ vidmode_start(vidmode_state_t *state)
 	return 0;
 }
 
-void
+static void
 vidmode_free(vidmode_state_t *state)
 {
 	/* Free saved ramps */
@@ -121,9 +130,11 @@ vidmode_free(vidmode_state_t *state)
 
 	/* Close display connection */
 	XCloseDisplay(state->display);
+
+	free(state);
 }
 
-void
+static void
 vidmode_print_help(FILE *f)
 {
 	fputs(_("Adjust gamma ramps with the X VidMode extension.\n"), f);
@@ -131,20 +142,21 @@ vidmode_print_help(FILE *f)
 
 	/* TRANSLATORS: VidMode help output
 	   left column must not be translated */
-	fputs(_("  screen=N\t\tX screen to apply adjustments to\n"
-		"  preserve={0,1}\tWhether existing gamma should be"
-		" preserved\n"),
+	fputs(_("  screen=N\t\tX screen to apply adjustments to\n"),
 	      f);
 	fputs("\n", f);
 }
 
-int
+static int
 vidmode_set_option(vidmode_state_t *state, const char *key, const char *value)
 {
 	if (strcasecmp(key, "screen") == 0) {
 		state->screen_num = atoi(value);
 	} else if (strcasecmp(key, "preserve") == 0) {
-		state->preserve = atoi(value);
+		fprintf(stderr, _("Parameter `%s` is now always on; "
+				  " Use the `%s` command-line option"
+				  " to disable.\n"),
+			key, "-P");
 	} else {
 		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
 		return -1;
@@ -153,7 +165,7 @@ vidmode_set_option(vidmode_state_t *state, const char *key, const char *value)
 	return 0;
 }
 
-void
+static void
 vidmode_restore(vidmode_state_t *state)
 {
 	uint16_t *gamma_r = &state->saved_ramps[0*state->ramp_size];
@@ -170,9 +182,9 @@ vidmode_restore(vidmode_state_t *state)
 	}
 }
 
-int
-vidmode_set_temperature(vidmode_state_t *state,
-			const color_setting_t *setting)
+static int
+vidmode_set_temperature(
+	vidmode_state_t *state, const color_setting_t *setting, int preserve)
 {
 	int r;
 
@@ -187,7 +199,7 @@ vidmode_set_temperature(vidmode_state_t *state,
 	uint16_t *gamma_g = &gamma_ramps[1*state->ramp_size];
 	uint16_t *gamma_b = &gamma_ramps[2*state->ramp_size];
 
-	if (state->preserve) {
+	if (preserve) {
 		/* Initialize gamma ramps from saved state */
 		memcpy(gamma_ramps, state->saved_ramps,
 		       3*state->ramp_size*sizeof(uint16_t));
@@ -220,3 +232,15 @@ vidmode_set_temperature(vidmode_state_t *state,
 
 	return 0;
 }
+
+
+const gamma_method_t vidmode_gamma_method = {
+	"vidmode", 1,
+	(gamma_method_init_func *)vidmode_init,
+	(gamma_method_start_func *)vidmode_start,
+	(gamma_method_free_func *)vidmode_free,
+	(gamma_method_print_help_func *)vidmode_print_help,
+	(gamma_method_set_option_func *)vidmode_set_option,
+	(gamma_method_restore_func *)vidmode_restore,
+	(gamma_method_set_temperature_func *)vidmode_set_temperature
+};

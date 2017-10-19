@@ -9,7 +9,7 @@ DISTCHECK_CONFIGURE_FLAGS = \
 UPDATE_ICON_CACHE = gtk-update-icon-cache -f -t $(datadir)/icons/hicolor || :
 
 EXTRA_ROOTDOC_FILES = \
-	HACKING \
+	CONTRIBUTING.md \
 	DESIGN \
 	README \
 	README-colorramp \
@@ -38,6 +38,9 @@ SYSTEMD_USER_UNIT_IN_FILES = \
 
 APPDATA_IN_FILES = \
 	data/appdata/redshift-gtk.appdata.xml.in
+
+APPARMOR_IN_FILES = \
+	data/apparmor/usr.bin.redshift.in
 
 
 # Icons
@@ -103,6 +106,17 @@ appdata_DATA = $(APPDATA_IN_FILES:.xml.in=.xml)
 endif
 
 
+# AppArmor profile
+if ENABLE_APPARMOR
+apparmordir = @sysconfdir@/apparmor.d
+apparmor_DATA = $(APPARMOR_IN_FILES:.in=)
+
+$(apparmor_DATA): $(APPARMOR_IN_FILES) Makefile
+	$(AM_V_GEN)$(MKDIR_P) $(@D) && \
+		sed -e "s|\@bindir\@|$(bindir)|g" "$(srcdir)/$(@:=.in)" > $@
+endif
+
+
 
 EXTRA_DIST = \
 	$(EXTRA_ROOTDOC_FILES) \
@@ -111,12 +125,14 @@ EXTRA_DIST = \
 	$(_UBUNTU_MONO_LIGHT_FILES) \
 	$(DESKTOP_IN_FILES) \
 	$(SYSTEMD_USER_UNIT_IN_FILES) \
-	$(APPDATA_IN_FILES)
+	$(APPDATA_IN_FILES) \
+	$(APPARMOR_IN_FILES)
 
 CLEANFILES = \
 	$(desktop_DATA) \
 	$(systemduserunit_DATA) \
-	$(appdata_DATA)
+	$(appdata_DATA) \
+	$(apparmor_DATA)
 
 
 # Update PO translations

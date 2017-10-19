@@ -64,8 +64,8 @@ of gamma ramps, which is what Redshift uses to change the screen color
 temperature. There's also "wingdi" which is for the Windows version,
 and "drm" which allows manipulation of gamma ramps in a TTY in Linux.
 
-Then there are location providers: "manual", "gnome-clock" and
-"geoclue". Some time ago there was only one way to specify the
+Then there are location providers: "manual", "geoclue2" and "corelocation".
+Some time ago there was only one way to specify the
 location which had to be done manually with the argument "-l LAT:LON".
 Then later, automatic "location providers" were added and the syntax
 had to be changed to "-l PROVIDER:OPTIONS" where OPTIONS are arguments

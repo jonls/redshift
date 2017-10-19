@@ -1,4 +1,4 @@
-/* gamma-randr.h -- X RANDR gamma adjustment header
+/* pipeutils.h -- Utilities for using pipes as signals
    This file is part of Redshift.
 
    Redshift is free software: you can redistribute it and/or modify
@@ -14,14 +14,15 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010-2017  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2017  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
-#ifndef REDSHIFT_GAMMA_RANDR_H
-#define REDSHIFT_GAMMA_RANDR_H
+#ifndef REDSHIFT_PIPEUTILS_H
+#define REDSHIFT_PIPEUTILS_H
 
-#include "redshift.h"
+int pipeutils_create_nonblocking(int pipefds[2]);
 
-extern const gamma_method_t randr_gamma_method;
+void pipeutils_signal(int write_fd);
+void pipeutils_handle_signal(int read_fd);
 
-#endif /* ! REDSHIFT_GAMMA_RANDR_H */
+#endif /* ! REDSHIFT_PIPEUTILS_H */

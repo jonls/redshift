@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010-2014  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2010-2017  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #include <stdio.h>
@@ -37,18 +37,27 @@
 #include "colorramp.h"
 
 #define GAMMA_RAMP_SIZE  256
+#define MAX_ATTEMPTS  10
 
 
-int
-w32gdi_init(w32gdi_state_t *state)
+typedef struct {
+	WORD *saved_ramps;
+} w32gdi_state_t;
+
+
+static int
+w32gdi_init(w32gdi_state_t **state)
 {
-	state->saved_ramps = NULL;
-	state->preserve = 0;
+	*state = malloc(sizeof(w32gdi_state_t));
+	if (state == NULL) return -1;
+
+	w32gdi_state_t *s = *state;
+	s->saved_ramps = NULL;
 
 	return 0;
 }
 
-int
+static int
 w32gdi_start(w32gdi_state_t *state)
 {
 	BOOL r;
@@ -90,33 +99,31 @@ w32gdi_start(w32gdi_state_t *state)
 	return 0;
 }
 
-void
+static void
 w32gdi_free(w32gdi_state_t *state)
 {
 	/* Free saved ramps */
 	free(state->saved_ramps);
+
+	free(state);
 }
 
 
-void
+static void
 w32gdi_print_help(FILE *f)
 {
 	fputs(_("Adjust gamma ramps with the Windows GDI.\n"), f);
 	fputs("\n", f);
-
-	/* TRANSLATORS: Windows GDI help output
-	   left column must not be translated */
-	fputs(_("  preserve={0,1}\tWhether existing gamma should be"
-		" preserved\n"),
-	      f);
-	fputs("\n", f);
 }
 
-int
+static int
 w32gdi_set_option(w32gdi_state_t *state, const char *key, const char *value)
 {
 	if (strcasecmp(key, "preserve") == 0) {
-		state->preserve = atoi(value);
+		fprintf(stderr, _("Parameter `%s` is now always on; "
+				  " Use the `%s` command-line option"
+				  " to disable.\n"),
+			key, "-P");
 	} else {
 		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
 		return -1;
@@ -125,7 +132,7 @@ w32gdi_set_option(w32gdi_state_t *state, const char *key, const char *value)
 	return 0;
 }
 
-void
+static void
 w32gdi_restore(w32gdi_state_t *state)
 {
 	/* Open device context */
@@ -136,16 +143,22 @@ w32gdi_restore(w32gdi_state_t *state)
 	}
 
 	/* Restore gamma ramps */
-	BOOL r = SetDeviceGammaRamp(hDC, state->saved_ramps);
+	BOOL r = FALSE;
+	for (int i = 0; i < MAX_ATTEMPTS && !r; i++) {
+		/* We retry a few times before giving up because some
+		   buggy drivers fail on the first invocation of
+		   SetDeviceGammaRamp just to succeed on the second. */
+		r = SetDeviceGammaRamp(hDC, state->saved_ramps);
+	}
 	if (!r) fputs(_("Unable to restore gamma ramps.\n"), stderr);
 
 	/* Release device context */
 	ReleaseDC(NULL, hDC);
 }
 
-int
-w32gdi_set_temperature(w32gdi_state_t *state,
-		       const color_setting_t *setting)
+static int
+w32gdi_set_temperature(
+	w32gdi_state_t *state, const color_setting_t *setting, int preserve)
 {
 	BOOL r;
 
@@ -168,7 +181,7 @@ w32gdi_set_temperature(w32gdi_state_t *state,
 	WORD *gamma_g = &gamma_ramps[1*GAMMA_RAMP_SIZE];
 	WORD *gamma_b = &gamma_ramps[2*GAMMA_RAMP_SIZE];
 
-	if (state->preserve) {
+	if (preserve) {
 		/* Initialize gamma ramps from saved state */
 		memcpy(gamma_ramps, state->saved_ramps,
 		       3*GAMMA_RAMP_SIZE*sizeof(WORD));
@@ -187,11 +200,14 @@ w32gdi_set_temperature(w32gdi_state_t *state,
 		       setting);
 
 	/* Set new gamma ramps */
-	r = SetDeviceGammaRamp(hDC, gamma_ramps);
+	r = FALSE;
+	for (int i = 0; i < MAX_ATTEMPTS && !r; i++) {
+		/* We retry a few times before giving up because some
+		   buggy drivers fail on the first invocation of
+		   SetDeviceGammaRamp just to succeed on the second. */
+		r = SetDeviceGammaRamp(hDC, gamma_ramps);
+	}
 	if (!r) {
-		/* TODO it happens that SetDeviceGammaRamp returns FALSE on
-		   occasions where the adjustment seems to be successful.
-		   Does this only happen with multiple monitors connected? */
 		fputs(_("Unable to set gamma ramps.\n"), stderr);
 		free(gamma_ramps);
 		ReleaseDC(NULL, hDC);
@@ -205,3 +221,15 @@ w32gdi_set_temperature(w32gdi_state_t *state,
 
 	return 0;
 }
+
+
+const gamma_method_t w32gdi_gamma_method = {
+	"wingdi", 1,
+	(gamma_method_init_func *)w32gdi_init,
+	(gamma_method_start_func *)w32gdi_start,
+	(gamma_method_free_func *)w32gdi_free,
+	(gamma_method_print_help_func *)w32gdi_print_help,
+	(gamma_method_set_option_func *)w32gdi_set_option,
+	(gamma_method_restore_func *)w32gdi_restore,
+	(gamma_method_set_temperature_func *)w32gdi_set_temperature
+};
