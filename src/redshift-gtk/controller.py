@@ -20,6 +20,7 @@ import os
 import re
 import fcntl
 import signal
+import gettext
 
 import gi
 gi.require_version('GLib', '2.0')
@@ -27,26 +28,33 @@ gi.require_version('GLib', '2.0')
 from gi.repository import GLib, GObject
 
 from . import defs
+try:
+    from . import watch_events
+except (ImportError, ValueError):
+    watch_events = None
+
+_ = gettext.gettext
 
 
 class RedshiftController(GObject.GObject):
-    """GObject wrapper around the Redshift child process."""
+    '''A GObject wrapper around the child process'''
 
     __gsignals__ = {
         'inhibit-changed': (GObject.SIGNAL_RUN_FIRST, None, (bool,)),
         'temperature-changed': (GObject.SIGNAL_RUN_FIRST, None, (int,)),
         'period-changed': (GObject.SIGNAL_RUN_FIRST, None, (str,)),
         'location-changed': (GObject.SIGNAL_RUN_FIRST, None, (float, float)),
+        'fullscreen-changed': (GObject.SIGNAL_RUN_FIRST, None, (bool,)),
         'error-occured': (GObject.SIGNAL_RUN_FIRST, None, (str,)),
         'stopped': (GObject.SIGNAL_RUN_FIRST, None, ()),
-    }
+        }
 
     def __init__(self, args):
-        """Initialize controller and start child process.
+        '''Initialize controller and start child process
 
         The parameter args is a list of command line arguments to pass on to
-        the child process. The "-v" argument is automatically added.
-        """
+        the child process. The "-v" argument is automatically added.'''
+
         GObject.GObject.__init__(self)
 
         # Initialize state variables
@@ -54,6 +62,17 @@ class RedshiftController(GObject.GObject):
         self._temperature = 0
         self._period = 'Unknown'
         self._location = (0.0, 0.0)
+        self._fullscreen = False
+        self._manually_inhibited = False
+        self.detect_fullscreen = False
+        self._thread = None
+
+        # Toggle fullscreen detection
+        if watch_events is not None:
+            self.detect_fullscreen = True
+            if '-f' in args:
+                args.remove('-f')
+                self._fullscreen = True
 
         # Start redshift with arguments
         args.insert(0, os.path.join(defs.BINDIR, 'redshift'))
@@ -62,13 +81,14 @@ class RedshiftController(GObject.GObject):
 
         # Start child process with C locale so we can parse the output
         env = os.environ.copy()
-        for key in ('LANG', 'LANGUAGE', 'LC_ALL', 'LC_MESSAGES'):
-            env[key] = 'C'
-        self._process = GLib.spawn_async(
-            args, envp=['{}={}'.format(k, v) for k, v in env.items()],
-            flags=GLib.SPAWN_DO_NOT_REAP_CHILD,
-            standard_output=True, standard_error=True)
+        env['LANG'] = env['LANGUAGE'] = env['LC_ALL'] = env['LC_MESSAGES'] = 'C'
+        self._process = GLib.spawn_async(args, envp=['{}={}'.format(k,v) for k, v in env.items()],
+                                         flags=GLib.SPAWN_DO_NOT_REAP_CHILD,
+                                         standard_output=True, standard_error=True)
 
+        # Start thread to detect fullscreen
+        self.set_run_threads(self._fullscreen)
+        
         # Wrap remaining contructor in try..except to avoid that the child
         # process is not closed properly.
         try:
@@ -83,19 +103,15 @@ class RedshiftController(GObject.GObject):
             self._errors = ''
 
             # Set non blocking
-            fcntl.fcntl(
-                self._process[2], fcntl.F_SETFL,
-                fcntl.fcntl(self._process[2], fcntl.F_GETFL) | os.O_NONBLOCK)
+            fcntl.fcntl(self._process[2], fcntl.F_SETFL,
+                        fcntl.fcntl(self._process[2], fcntl.F_GETFL) | os.O_NONBLOCK)
 
             # Add watch on child process
-            GLib.child_watch_add(
-                GLib.PRIORITY_DEFAULT, self._process[0], self._child_cb)
-            GLib.io_add_watch(
-                self._process[2], GLib.PRIORITY_DEFAULT, GLib.IO_IN,
-                self._child_data_cb, (True, self._input_buffer))
-            GLib.io_add_watch(
-                self._process[3], GLib.PRIORITY_DEFAULT, GLib.IO_IN,
-                self._child_data_cb, (False, self._error_buffer))
+            GLib.child_watch_add(GLib.PRIORITY_DEFAULT, self._process[0], self._child_cb)
+            GLib.io_add_watch(self._process[2], GLib.PRIORITY_DEFAULT, GLib.IO_IN,
+                              self._child_data_cb, (True, self._input_buffer))
+            GLib.io_add_watch(self._process[3], GLib.PRIORITY_DEFAULT, GLib.IO_IN,
+                              self._child_data_cb, (False, self._error_buffer))
 
             # Signal handler to relay USR1 signal to redshift process
             def relay_signal_handler(signal):
@@ -110,26 +126,44 @@ class RedshiftController(GObject.GObject):
 
     @property
     def inhibited(self):
-        """Current inhibition state."""
+        '''Current inhibition state'''
         return self._inhibited
 
     @property
     def temperature(self):
-        """Current screen temperature."""
+        '''Current screen temperature'''
         return self._temperature
 
     @property
     def period(self):
-        """Current period of day."""
+        '''Current period of day'''
         return self._period
 
     @property
     def location(self):
-        """Current location."""
+        '''Current location'''
         return self._location
 
+    @property
+    def fullscreen(self):
+        '''Current state of fullscreen detection'''
+        return self._fullscreen
+
+    @fullscreen.setter
+    def fullscreen(self, state):
+        '''Set the fullscreen detection state'''
+        if self._fullscreen != state:
+            self._fullscreen == self.set_run_threads(state)
+
+    def set_manually_inhibit(self, inhibit):
+        '''Set manual inhibition state'''
+        self._manually_inhibited = inhibit
+        if self.fullscreen:
+            self.set_run_threads(not inhibit)
+        self.set_inhibit(inhibit)
+
     def set_inhibit(self, inhibit):
-        """Set inhibition state."""
+        '''Set inhibition state'''
         if inhibit != self._inhibited:
             self._child_toggle_inhibit()
 
@@ -138,11 +172,11 @@ class RedshiftController(GObject.GObject):
         os.kill(self._process[0], sg)
 
     def _child_toggle_inhibit(self):
-        """Sends a request to the child process to toggle state."""
+        '''Sends a request to the child process to toggle state'''
         self._child_signal(signal.SIGUSR1)
 
     def _child_cb(self, pid, status, data=None):
-        """Called when the child process exists."""
+        '''Called when the child process exists'''
 
         # Empty stdout and stderr
         for f in (self._process[2], self._process[3]):
@@ -150,10 +184,11 @@ class RedshiftController(GObject.GObject):
                 buf = os.read(f, 256).decode('utf-8')
                 if buf == '':
                     break
-                if f == self._process[3]:  # stderr
+                if f == self._process[3]: # stderr
                     self._errors += buf
 
         # Check exit status of child
+        report_errors = False
         try:
             GLib.spawn_check_exit_status(status)
         except GLib.GError:
@@ -163,10 +198,10 @@ class RedshiftController(GObject.GObject):
         self.emit('stopped')
 
     def _child_key_change_cb(self, key, value):
-        """Called when the child process reports a change of internal state."""
+        '''Called when the child process reports a change of internal state'''
 
         def parse_coord(s):
-            """Parse coordinate like `42.0 N` or `91.5 W`."""
+            '''Parse coordinate like `42.0 N` or `91.5 W`'''
             v, d = s.split(' ')
             return float(v) * (1 if d in 'NE' else -1)
 
@@ -192,7 +227,7 @@ class RedshiftController(GObject.GObject):
                 self.emit('location-changed', *new_location)
 
     def _child_stdout_line_cb(self, line):
-        """Called when the child process outputs a line to stdout."""
+        '''Called when the child process outputs a line to stdout'''
         if line:
             m = re.match(r'([\w ]+): (.+)', line)
             if m:
@@ -201,7 +236,8 @@ class RedshiftController(GObject.GObject):
                 self._child_key_change_cb(key, value)
 
     def _child_data_cb(self, f, cond, data):
-        """Called when the child process has new data on stdout/stderr."""
+        '''Called when the child process has new data on stdout/stderr'''
+
         stdout, ib = data
         ib.buf += os.read(f, 256).decode('utf-8')
 
@@ -218,10 +254,62 @@ class RedshiftController(GObject.GObject):
 
         return True
 
+    def set_run_threads(self, state):
+        '''Set the threads running if state=True or stop them.'''
+        if state and self._thread is None:
+            self.start_threads()
+        elif not state and self._thread is not None:
+            self.stop_threads()
+        return state
+    
+    def start_threads(self):
+        '''Start the threads
+        
+        Watch asynchronously for the active window getting fullscreen
+        '''
+        if watch_events is None:
+            self._thread = None
+            return
+        
+        # Initialize the thread
+        self._thread = watch_events.WatchThread()
+
+        # Connect the thread signals
+        self._thread.connect("completed", self._register_thread_cancelled)
+        self._thread.connect("inhibit-triggered", self.set_auto_inhibit)
+
+        # Start thread
+        self._thread.start()
+
+    def stop_threads(self, block=False):
+        """Stops all threads. If block is True then actually wait for 
+        the thread to finish (may block the UI) 
+        """
+        if self._thread:
+            self._thread.cancel()
+            if block:
+                if self._thread.isAlive():
+                    self._thread.join()
+        self._thread = None
+
+    def _register_thread_cancelled(self, thread, state):
+        '''Relaunch the thread if failed'''
+        pass
+
+    def set_auto_inhibit(self, thread, state):
+        '''Set inhibit if the active window change fullscreen state'''
+        if state != self.inhibited:
+            if not self._manually_inhibited:
+                print(_("[{}] Change of fullscreen mode detected, redshift {}.").format(self.__class__.__name__, _('disabled') if state else _('enabled')))
+                self.set_inhibit(state)
+ 
     def terminate_child(self):
         """Send SIGINT to child process."""
+        self.stop_threads()
         self._child_signal(signal.SIGINT)
 
     def kill_child(self):
         """Send SIGKILL to child process."""
+        self.stop_threads()
         self._child_signal(signal.SIGKILL)
+
