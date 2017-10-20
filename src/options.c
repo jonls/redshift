@@ -325,6 +325,167 @@ options_init(options_t *options)
 	options->verbose = 0;
 }
 
+/* Parse a single option from the command-line. */
+static int
+parse_command_line_option(
+	const char option, char *value, options_t *options,
+	const char *program_name, const gamma_method_t *gamma_methods,
+	const location_provider_t *location_providers)
+{
+	int r;
+	char *s;
+
+	switch (option) {
+	case 'b':
+		parse_brightness_string(
+			value, &options->scheme.day.brightness,
+			&options->scheme.night.brightness);
+		break;
+	case 'c':
+		free(options->config_filepath);
+		options->config_filepath = strdup(value);
+		break;
+	case 'g':
+		r = parse_gamma_string(value, options->scheme.day.gamma);
+		if (r < 0) {
+			fputs(_("Malformed gamma argument.\n"), stderr);
+			fputs(_("Try `-h' for more information.\n"), stderr);
+			return -1;
+		}
+
+		/* Set night gamma to the same value as day gamma.
+		   To set these to distinct values use the config
+		   file. */
+		memcpy(options->scheme.night.gamma,
+		       options->scheme.day.gamma,
+		       sizeof(options->scheme.night.gamma));
+		break;
+	case 'h':
+		print_help(program_name);
+		exit(EXIT_SUCCESS);
+		break;
+	case 'l':
+		/* Print list of providers if argument is `list' */
+		if (strcasecmp(value, "list") == 0) {
+			print_provider_list(location_providers);
+			exit(EXIT_SUCCESS);
+		}
+
+		char *provider_name = NULL;
+
+		/* Don't save the result of strtof(); we simply want
+		   to know if value can be parsed as a float. */
+		errno = 0;
+		char *end;
+		strtof(value, &end);
+		if (errno == 0 && *end == ':') {
+			/* Use instead as arguments to `manual'. */
+			provider_name = "manual";
+			options->provider_args = value;
+		} else {
+			/* Split off provider arguments. */
+			s = strchr(value, ':');
+			if (s != NULL) {
+				*(s++) = '\0';
+				options->provider_args = s;
+			}
+
+			provider_name = value;
+		}
+
+		/* Lookup provider from name. */
+		options->provider = find_location_provider(
+			location_providers, provider_name);
+		if (options->provider == NULL) {
+			fprintf(stderr, _("Unknown location provider `%s'.\n"),
+				provider_name);
+			return -1;
+		}
+
+		/* Print provider help if arg is `help'. */
+		if (options->provider_args != NULL &&
+		    strcasecmp(options->provider_args, "help") == 0) {
+			options->provider->print_help(stdout);
+			exit(EXIT_SUCCESS);
+		}
+		break;
+	case 'm':
+		/* Print list of methods if argument is `list' */
+		if (strcasecmp(value, "list") == 0) {
+			print_method_list(gamma_methods);
+			exit(EXIT_SUCCESS);
+		}
+
+		/* Split off method arguments. */
+		s = strchr(value, ':');
+		if (s != NULL) {
+			*(s++) = '\0';
+			options->method_args = s;
+		}
+
+		/* Find adjustment method by name. */
+		options->method = find_gamma_method(gamma_methods, value);
+		if (options->method == NULL) {
+			/* TRANSLATORS: This refers to the method
+			   used to adjust colors e.g VidMode */
+			fprintf(stderr, _("Unknown adjustment method `%s'.\n"),
+				value);
+			return -1;
+		}
+
+		/* Print method help if arg is `help'. */
+		if (options->method_args != NULL &&
+		    strcasecmp(options->method_args, "help") == 0) {
+			options->method->print_help(stdout);
+			exit(EXIT_SUCCESS);
+		}
+		break;
+	case 'o':
+		options->mode = PROGRAM_MODE_ONE_SHOT;
+		break;
+	case 'O':
+		options->mode = PROGRAM_MODE_MANUAL;
+		options->temp_set = atoi(value);
+		break;
+	case 'p':
+		options->mode = PROGRAM_MODE_PRINT;
+		break;
+	case 'P':
+		options->preserve_gamma = 0;
+		break;
+	case 'r':
+		options->use_fade = 0;
+		break;
+	case 't':
+		s = strchr(value, ':');
+		if (s == NULL) {
+			fputs(_("Malformed temperature argument.\n"), stderr);
+			fputs(_("Try `-h' for more information.\n"), stderr);
+			return -1;
+		}
+		*(s++) = '\0';
+		options->scheme.day.temperature = atoi(value);
+		options->scheme.night.temperature = atoi(s);
+		break;
+	case 'v':
+		options->verbose = 1;
+		break;
+	case 'V':
+		printf("%s\n", PACKAGE_STRING);
+		exit(EXIT_SUCCESS);
+		break;
+	case 'x':
+		options->mode = PROGRAM_MODE_RESET;
+		break;
+	case '?':
+		fputs(_("Try `-h' for more information.\n"), stderr);
+		return -1;
+		break;
+	}
+
+	return 0;
+}
+
 /* Parse command line arguments. */
 void
 options_parse_args(
@@ -332,167 +493,134 @@ options_parse_args(
 	const gamma_method_t *gamma_methods,
 	const location_provider_t *location_providers)
 {
-	int r;
-	char *s;
-
-	/* Parse command line arguments. */
+	const char* program_name = argv[0];
 	int opt;
 	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:pPrt:vVx")) != -1) {
-		switch (opt) {
-		case 'b':
-			parse_brightness_string(
-				optarg,
-				&options->scheme.day.brightness,
-				&options->scheme.night.brightness);
-			break;
-		case 'c':
-			free(options->config_filepath);
-			options->config_filepath = strdup(optarg);
-			break;
-		case 'g':
-			r = parse_gamma_string(
-				optarg, options->scheme.day.gamma);
-			if (r < 0) {
-				fputs(_("Malformed gamma argument.\n"),
-				      stderr);
-				fputs(_("Try `-h' for more"
-					" information.\n"), stderr);
-				exit(EXIT_FAILURE);
-			}
+		char option = opt;
+		int r = parse_command_line_option(
+			option, optarg, options, program_name, gamma_methods,
+			location_providers);
+		if (r < 0) exit(EXIT_FAILURE);
+	}
+}
 
-			/* Set night gamma to the same value as day gamma.
-			   To set these to distinct values use the config
-			   file. */
+/* Parse a single key-value pair from the configuration file. */
+static int
+parse_config_file_option(
+	const char *key, const char *value, options_t *options,
+	const gamma_method_t *gamma_methods,
+	const location_provider_t *location_providers)
+{
+	if (strcasecmp(key, "temp-day") == 0) {
+		if (options->scheme.day.temperature < 0) {
+			options->scheme.day.temperature = atoi(value);
+		}
+	} else if (strcasecmp(key, "temp-night") == 0) {
+		if (options->scheme.night.temperature < 0) {
+			options->scheme.night.temperature = atoi(value);
+		}
+	} else if (strcasecmp(key, "transition") == 0 ||
+		   strcasecmp(key, "fade") == 0) {
+		/* "fade" is preferred, "transition" is
+		   deprecated as the setting key. */
+		if (options->use_fade < 0) {
+			options->use_fade = !!atoi(value);
+		}
+	} else if (strcasecmp(key, "brightness") == 0) {
+		if (isnan(options->scheme.day.brightness)) {
+			options->scheme.day.brightness = atof(value);
+		}
+		if (isnan(options->scheme.night.brightness)) {
+			options->scheme.night.brightness = atof(value);
+		}
+	} else if (strcasecmp(key, "brightness-day") == 0) {
+		if (isnan(options->scheme.day.brightness)) {
+			options->scheme.day.brightness = atof(value);
+		}
+	} else if (strcasecmp(key, "brightness-night") == 0) {
+		if (isnan(options->scheme.night.brightness)) {
+			options->scheme.night.brightness = atof(value);
+		}
+	} else if (strcasecmp(key, "elevation-high") == 0) {
+		options->scheme.high = atof(value);
+	} else if (strcasecmp(key, "elevation-low") == 0) {
+		options->scheme.low = atof(value);
+	} else if (strcasecmp(key, "gamma") == 0) {
+		if (isnan(options->scheme.day.gamma[0])) {
+			int r = parse_gamma_string(
+				value, options->scheme.day.gamma);
+			if (r < 0) {
+				fputs(_("Malformed gamma setting.\n"), stderr);
+				return -1;
+			}
 			memcpy(options->scheme.night.gamma,
 			       options->scheme.day.gamma,
 			       sizeof(options->scheme.night.gamma));
-			break;
-		case 'h':
-			print_help(argv[0]);
-			exit(EXIT_SUCCESS);
-			break;
-		case 'l':
-			/* Print list of providers if argument is `list' */
-			if (strcasecmp(optarg, "list") == 0) {
-				print_provider_list(location_providers);
-				exit(EXIT_SUCCESS);
-			}
-
-			char *provider_name = NULL;
-
-			/* Don't save the result of strtof(); we simply want
-			   to know if optarg can be parsed as a float. */
-			errno = 0;
-			char *end;
-			strtof(optarg, &end);
-			if (errno == 0 && *end == ':') {
-				/* Use instead as arguments to `manual'. */
-				provider_name = "manual";
-				options->provider_args = optarg;
-			} else {
-				/* Split off provider arguments. */
-				s = strchr(optarg, ':');
-				if (s != NULL) {
-					*(s++) = '\0';
-					options->provider_args = s;
-				}
-
-				provider_name = optarg;
-			}
-
-			/* Lookup provider from name. */
-			options->provider = find_location_provider(
-				location_providers, provider_name);
-			if (options->provider == NULL) {
-				fprintf(stderr, _("Unknown location provider"
-						  " `%s'.\n"), provider_name);
-				exit(EXIT_FAILURE);
-			}
-
-			/* Print provider help if arg is `help'. */
-			if (options->provider_args != NULL &&
-			    strcasecmp(options->provider_args, "help") == 0) {
-				options->provider->print_help(stdout);
-				exit(EXIT_SUCCESS);
-			}
-			break;
-		case 'm':
-			/* Print list of methods if argument is `list' */
-			if (strcasecmp(optarg, "list") == 0) {
-				print_method_list(gamma_methods);
-				exit(EXIT_SUCCESS);
-			}
-
-			/* Split off method arguments. */
-			s = strchr(optarg, ':');
-			if (s != NULL) {
-				*(s++) = '\0';
-				options->method_args = s;
-			}
-
-			/* Find adjustment method by name. */
-			options->method = find_gamma_method(
-				gamma_methods, optarg);
-			if (options->method == NULL) {
-				/* TRANSLATORS: This refers to the method
-				   used to adjust colors e.g VidMode */
-				fprintf(stderr, _("Unknown adjustment method"
-						  " `%s'.\n"), optarg);
-				exit(EXIT_FAILURE);
-			}
-
-			/* Print method help if arg is `help'. */
-			if (options->method_args != NULL &&
-			    strcasecmp(options->method_args, "help") == 0) {
-				options->method->print_help(stdout);
-				exit(EXIT_SUCCESS);
-			}
-			break;
-		case 'o':
-			options->mode = PROGRAM_MODE_ONE_SHOT;
-			break;
-		case 'O':
-			options->mode = PROGRAM_MODE_MANUAL;
-			options->temp_set = atoi(optarg);
-			break;
-		case 'p':
-			options->mode = PROGRAM_MODE_PRINT;
-			break;
-		case 'P':
-			options->preserve_gamma = 0;
-			break;
-		case 'r':
-			options->use_fade = 0;
-			break;
-		case 't':
-			s = strchr(optarg, ':');
-			if (s == NULL) {
-				fputs(_("Malformed temperature argument.\n"),
-				      stderr);
-				fputs(_("Try `-h' for more information.\n"),
-				      stderr);
-				exit(EXIT_FAILURE);
-			}
-			*(s++) = '\0';
-			options->scheme.day.temperature = atoi(optarg);
-			options->scheme.night.temperature = atoi(s);
-			break;
-		case 'v':
-			options->verbose = 1;
-			break;
-		case 'V':
-			printf("%s\n", PACKAGE_STRING);
-			exit(EXIT_SUCCESS);
-			break;
-		case 'x':
-			options->mode = PROGRAM_MODE_RESET;
-			break;
-		case '?':
-			fputs(_("Try `-h' for more information.\n"), stderr);
-			exit(EXIT_FAILURE);
-			break;
 		}
+	} else if (strcasecmp(key, "gamma-day") == 0) {
+		if (isnan(options->scheme.day.gamma[0])) {
+			int r = parse_gamma_string(
+				value, options->scheme.day.gamma);
+			if (r < 0) {
+				fputs(_("Malformed gamma setting.\n"), stderr);
+				return -1;
+			}
+		}
+	} else if (strcasecmp(key, "gamma-night") == 0) {
+		if (isnan(options->scheme.night.gamma[0])) {
+			int r = parse_gamma_string(
+				value, options->scheme.night.gamma);
+			if (r < 0) {
+				fputs(_("Malformed gamma setting.\n"), stderr);
+				return -1;
+			}
+		}
+	} else if (strcasecmp(key, "adjustment-method") == 0) {
+		if (options->method == NULL) {
+			options->method = find_gamma_method(
+				gamma_methods, value);
+			if (options->method == NULL) {
+				fprintf(stderr, _("Unknown adjustment"
+						  " method `%s'.\n"), value);
+				return -1;
+			}
+		}
+	} else if (strcasecmp(key, "location-provider") == 0) {
+		if (options->provider == NULL) {
+			options->provider = find_location_provider(
+				location_providers, value);
+			if (options->provider == NULL) {
+				fprintf(stderr, _("Unknown location"
+						  " provider `%s'.\n"), value);
+				return -1;
+			}
+		}
+	} else if (strcasecmp(key, "dawn-time") == 0) {
+		if (options->scheme.dawn.start < 0) {
+			int r = parse_transition_range(
+				value, &options->scheme.dawn);
+			if (r < 0) {
+				fprintf(stderr, _("Malformed dawn-time"
+						  " setting `%s'.\n"), value);
+				return -1;
+			}
+		}
+	} else if (strcasecmp(key, "dusk-time") == 0) {
+		if (options->scheme.dusk.start < 0) {
+			int r = parse_transition_range(
+				value, &options->scheme.dusk);
+			if (r < 0) {
+				fprintf(stderr, _("Malformed dusk-time"
+						  " setting `%s'.\n"), value);
+				return -1;
+			}
+		}
+	} else {
+		fprintf(stderr, _("Unknown configuration setting `%s'.\n"),
+			key);
 	}
+
+	return 0;
 }
 
 /* Parse options defined in the config file. */
@@ -502,8 +630,6 @@ options_parse_config_file(
 	const gamma_method_t *gamma_methods,
 	const location_provider_t *location_providers)
 {
-	int r;
-
 	/* Read global config settings. */
 	config_ini_section_t *section = config_ini_get_section(
 		config_state, "redshift");
@@ -511,135 +637,10 @@ options_parse_config_file(
 
 	config_ini_setting_t *setting = section->settings;
 	while (setting != NULL) {
-		if (strcasecmp(setting->name, "temp-day") == 0) {
-			if (options->scheme.day.temperature < 0) {
-				options->scheme.day.temperature =
-					atoi(setting->value);
-			}
-		} else if (strcasecmp(setting->name, "temp-night") == 0) {
-			if (options->scheme.night.temperature < 0) {
-				options->scheme.night.temperature =
-					atoi(setting->value);
-			}
-		} else if (strcasecmp(setting->name, "transition") == 0 ||
-			   strcasecmp(setting->name, "fade") == 0) {
-			/* "fade" is preferred, "transition" is
-			   deprecated as the setting key. */
-			if (options->use_fade < 0) {
-				options->use_fade = !!atoi(setting->value);
-			}
-		} else if (strcasecmp(setting->name, "brightness") == 0) {
-			if (isnan(options->scheme.day.brightness)) {
-				options->scheme.day.brightness =
-					atof(setting->value);
-			}
-			if (isnan(options->scheme.night.brightness)) {
-				options->scheme.night.brightness =
-					atof(setting->value);
-			}
-		} else if (strcasecmp(setting->name, "brightness-day") == 0) {
-			if (isnan(options->scheme.day.brightness)) {
-				options->scheme.day.brightness =
-					atof(setting->value);
-			}
-		} else if (strcasecmp(setting->name,
-			              "brightness-night") == 0) {
-			if (isnan(options->scheme.night.brightness)) {
-				options->scheme.night.brightness =
-					atof(setting->value);
-			}
-		} else if (strcasecmp(setting->name, "elevation-high") == 0) {
-			options->scheme.high = atof(setting->value);
-		} else if (strcasecmp(setting->name, "elevation-low") == 0) {
-			options->scheme.low = atof(setting->value);
-		} else if (strcasecmp(setting->name, "gamma") == 0) {
-			if (isnan(options->scheme.day.gamma[0])) {
-				r = parse_gamma_string(
-					setting->value,
-					options->scheme.day.gamma);
-				if (r < 0) {
-					fputs(_("Malformed gamma setting.\n"),
-					      stderr);
-					exit(EXIT_FAILURE);
-				}
-				memcpy(options->scheme.night.gamma,
-				       options->scheme.day.gamma,
-				       sizeof(options->scheme.night.gamma));
-			}
-		} else if (strcasecmp(setting->name, "gamma-day") == 0) {
-			if (isnan(options->scheme.day.gamma[0])) {
-				r = parse_gamma_string(
-					setting->value,
-					options->scheme.day.gamma);
-				if (r < 0) {
-					fputs(_("Malformed gamma setting.\n"),
-					      stderr);
-					exit(EXIT_FAILURE);
-				}
-			}
-		} else if (strcasecmp(setting->name, "gamma-night") == 0) {
-			if (isnan(options->scheme.night.gamma[0])) {
-				r = parse_gamma_string(
-					setting->value,
-					options->scheme.night.gamma);
-				if (r < 0) {
-					fputs(_("Malformed gamma setting.\n"),
-					      stderr);
-					exit(EXIT_FAILURE);
-				}
-			}
-		} else if (strcasecmp(setting->name,
-				      "adjustment-method") == 0) {
-			if (options->method == NULL) {
-				options->method = find_gamma_method(
-					gamma_methods, setting->value);
-				if (options->method == NULL) {
-					fprintf(stderr, _("Unknown adjustment"
-							  " method `%s'.\n"),
-						setting->value);
-					exit(EXIT_FAILURE);
-				}
-			}
-		} else if (strcasecmp(setting->name,
-				      "location-provider") == 0) {
-			if (options->provider == NULL) {
-				options->provider = find_location_provider(
-					location_providers,
-					setting->value);
-				if (options->provider == NULL) {
-					fprintf(stderr, _("Unknown location"
-							  " provider `%s'.\n"),
-						setting->value);
-					exit(EXIT_FAILURE);
-				}
-			}
-		} else if (strcasecmp(setting->name, "dawn-time") == 0) {
-			if (options->scheme.dawn.start < 0) {
-				int r = parse_transition_range(
-					setting->value, &options->scheme.dawn);
-				if (r < 0) {
-					fprintf(stderr, _("Malformed dawn-time"
-							  " setting `%s'.\n"),
-						setting->value);
-					exit(EXIT_FAILURE);
-				}
-			}
-		} else if (strcasecmp(setting->name, "dusk-time") == 0) {
-			if (options->scheme.dusk.start < 0) {
-				int r = parse_transition_range(
-					setting->value, &options->scheme.dusk);
-				if (r < 0) {
-					fprintf(stderr, _("Malformed dusk-time"
-							  " setting `%s'.\n"),
-						setting->value);
-					exit(EXIT_FAILURE);
-				}
-			}
-		} else {
-			fprintf(stderr, _("Unknown configuration"
-					  " setting `%s'.\n"),
-				setting->name);
-		}
+		int r = parse_config_file_option(
+			setting->name, setting->value, options,
+			gamma_methods, location_providers);
+		if (r < 0) exit(EXIT_FAILURE);
 
 		setting = setting->next;
 	}
