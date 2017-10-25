@@ -7,7 +7,7 @@ temp-night=3500
 ; Disable the smooth fade between temperatures when Redshift starts and stops.
 ; 0 will cause an immediate change between screen temperatures.
 ; 1 will gradually apply the new screen temperature over a couple of seconds.
-fade=1
+transition=1
 
 ; Solar elevation thresholds.
 ; By default, Redshift will use the current elevation of the sun to determine
