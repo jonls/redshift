@@ -723,6 +723,7 @@ run_continual_mode(const location_provider_t *provider,
 			scheme, transition_prog, &target_interp);
 
 		if (disabled) {
+			period = PERIOD_NONE;
 			color_setting_reset(&target_interp);
 		}
 
