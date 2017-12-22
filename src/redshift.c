@@ -94,6 +94,10 @@ int poll(struct pollfd *fds, int nfds, int timeout) { abort(); return -1; }
 # include "gamma-w32gdi.h"
 #endif
 
+#ifdef ENABLE_WAYLAND
+# include "gamma-wl.h"
+#endif
+
 
 #include "location-manual.h"
 
@@ -916,6 +920,9 @@ main(int argc, char *argv[])
 #endif
 #ifdef ENABLE_WINGDI
 		w32gdi_gamma_method,
+#endif
+#ifdef ENABLE_WAYLAND
+		wl_gamma_method,
 #endif
 		dummy_gamma_method,
 		{ NULL }
