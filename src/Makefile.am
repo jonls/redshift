@@ -23,6 +23,11 @@ redshift_SOURCES = \
 
 EXTRA_redshift_SOURCES = \
 	gamma-drm.c gamma-drm.h \
+	gamma-wl.c gamma-wl.h \
+	gamma-control-protocol.c \
+	gamma-control-client-protocol.h \
+	orbital-authorizer-protocol.c \
+	orbital-authorizer-client-protocol.h \
 	gamma-randr.c gamma-randr.h \
 	gamma-vidmode.c gamma-vidmode.h \
 	gamma-quartz.c gamma-quartz.h \
@@ -31,6 +36,12 @@ EXTRA_redshift_SOURCES = \
 	location-corelocation.m location-corelocation.h \
 	windows/appicon.rc \
 	windows/versioninfo.rc
+
+BUILT_SOURCES = \
+	gamma-control-protocol.c \
+	gamma-control-client-protocol.h \
+	orbital-authorizer-protocol.c \
+	orbital-authorizer-client-protocol.h
 
 AM_CFLAGS =
 redshift_LDADD = @LIBINTL@
@@ -41,6 +52,17 @@ redshift_SOURCES += gamma-drm.c gamma-drm.h
 AM_CFLAGS += $(DRM_CFLAGS)
 redshift_LDADD += \
 	$(DRM_LIBS) $(DRM_CFLAGS)
+endif
+
+if ENABLE_WAYLAND
+redshift_SOURCES += gamma-wl.c gamma-wl.h \
+	gamma-control-client-protocol.h \
+	gamma-control-protocol.c \
+	orbital-authorizer-protocol.c \
+	orbital-authorizer-client-protocol.h
+AM_CFLAGS += $(WAYLAND_CFLAGS)
+redshift_LDADD += \
+	$(WAYLAND_LIBS) $(WAYLAND_CFLAGS)
 endif
 
 if ENABLE_RANDR
@@ -103,3 +125,8 @@ endif
 
 .rc.o:
 	$(AM_V_GEN)$(WINDRES) -I$(top_builddir) -i $< -o $@
+%-protocol.c : $(srcdir)/%.xml
+	$(AM_V_GEN)$(MKDIR_P) $(dir $@) && $(wayland_scanner) code < $< > $@
+
+%-client-protocol.h : $(srcdir)/%.xml
+	$(AM_V_GEN)$(MKDIR_P) $(dir $@) && $(wayland_scanner) client-header < $< > $@
