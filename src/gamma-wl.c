@@ -97,12 +97,8 @@ registry_global(void *data, struct wl_registry *registry, uint32_t id, const cha
 		state->gamma_control_manager_id = id;
 		state->gamma_control_manager = wl_registry_bind(registry, id, &gamma_control_manager_interface, 1);
 	} else if (strcmp(interface, "wl_output") == 0) {
-		if (state->num_outputs++ == 0) {
-			state->outputs = malloc(sizeof(struct output));
-		} else {
-			state->outputs = realloc(state->outputs, state->num_outputs * sizeof(struct output));
-		}
-		if (!state->outputs) {
+		state->num_outputs++;
+		if (!(state->outputs = realloc(state->outputs, state->num_outputs * sizeof(struct output)))) {
 			fprintf(stderr, _("Failed to allcate memory\n"));
 			return;
 		}
