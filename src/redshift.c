@@ -78,10 +78,6 @@ int poll(struct pollfd *fds, int nfds, int timeout) { abort(); return -1; }
 # include "gamma-drm.h"
 #endif
 
-#ifdef ENABLE_WAYLAND
-# include "gamma-wl.h"
-#endif
-
 #ifdef ENABLE_RANDR
 # include "gamma-randr.h"
 #endif
@@ -98,6 +94,10 @@ int poll(struct pollfd *fds, int nfds, int timeout) { abort(); return -1; }
 # include "gamma-w32gdi.h"
 #endif
 
+#ifdef ENABLE_WAYLAND
+# include "gamma-wl.h"
+#endif
+
 
 #include "location-manual.h"
 
@@ -112,184 +112,6 @@ int poll(struct pollfd *fds, int nfds, int timeout) { abort(); return -1; }
 #undef CLAMP
 #define CLAMP(lo,mid,up)  (((lo) > (mid)) ? (lo) : (((mid) < (up)) ? (mid) : (up)))
 
-/* Union of state data for gamma adjustment methods */
-typedef union {
-#ifdef ENABLE_DRM
-	drm_state_t drm;
-#endif
-#ifdef ENABLE_WAYLAND
-	wayland_state_t wayland;
-#endif
-#ifdef ENABLE_RANDR
-	randr_state_t randr;
-#endif
-#ifdef ENABLE_VIDMODE
-	vidmode_state_t vidmode;
-#endif
-#ifdef ENABLE_QUARTZ
-	quartz_state_t quartz;
-#endif
-#ifdef ENABLE_WINGDI
-	w32gdi_state_t w32gdi;
-#endif
-} gamma_state_t;
-
-
-/* Gamma adjustment method structs */
-static const gamma_method_t gamma_methods[] = {
-#ifdef ENABLE_DRM
-	{
-		"drm", 0,
-		(gamma_method_init_func *)drm_init,
-		(gamma_method_start_func *)drm_start,
-		(gamma_method_free_func *)drm_free,
-		(gamma_method_print_help_func *)drm_print_help,
-		(gamma_method_set_option_func *)drm_set_option,
-		(gamma_method_restore_func *)drm_restore,
-		(gamma_method_set_temperature_func *)drm_set_temperature
-	},
-#endif
-#ifdef ENABLE_WAYLAND
-	{
-		"wayland", 0,
-		(gamma_method_init_func *)wayland_init,
-		(gamma_method_start_func *)wayland_start,
-		(gamma_method_free_func *)wayland_free,
-		(gamma_method_print_help_func *)wayland_print_help,
-		(gamma_method_set_option_func *)wayland_set_option,
-		(gamma_method_restore_func *)wayland_restore,
-		(gamma_method_set_temperature_func *)wayland_set_temperature
-	},
-#endif
-#ifdef ENABLE_RANDR
-	{
-		"randr", 1,
-		(gamma_method_init_func *)randr_init,
-		(gamma_method_start_func *)randr_start,
-		(gamma_method_free_func *)randr_free,
-		(gamma_method_print_help_func *)randr_print_help,
-		(gamma_method_set_option_func *)randr_set_option,
-		(gamma_method_restore_func *)randr_restore,
-		(gamma_method_set_temperature_func *)randr_set_temperature
-	},
-#endif
-#ifdef ENABLE_VIDMODE
-	{
-		"vidmode", 1,
-		(gamma_method_init_func *)vidmode_init,
-		(gamma_method_start_func *)vidmode_start,
-		(gamma_method_free_func *)vidmode_free,
-		(gamma_method_print_help_func *)vidmode_print_help,
-		(gamma_method_set_option_func *)vidmode_set_option,
-		(gamma_method_restore_func *)vidmode_restore,
-		(gamma_method_set_temperature_func *)vidmode_set_temperature
-	},
-#endif
-#ifdef ENABLE_QUARTZ
-	{
-		"quartz", 1,
-		(gamma_method_init_func *)quartz_init,
-		(gamma_method_start_func *)quartz_start,
-		(gamma_method_free_func *)quartz_free,
-		(gamma_method_print_help_func *)quartz_print_help,
-		(gamma_method_set_option_func *)quartz_set_option,
-		(gamma_method_restore_func *)quartz_restore,
-		(gamma_method_set_temperature_func *)quartz_set_temperature
-	},
-#endif
-#ifdef ENABLE_WINGDI
-	{
-		"wingdi", 1,
-		(gamma_method_init_func *)w32gdi_init,
-		(gamma_method_start_func *)w32gdi_start,
-		(gamma_method_free_func *)w32gdi_free,
-		(gamma_method_print_help_func *)w32gdi_print_help,
-		(gamma_method_set_option_func *)w32gdi_set_option,
-		(gamma_method_restore_func *)w32gdi_restore,
-		(gamma_method_set_temperature_func *)w32gdi_set_temperature
-	},
-#endif
-	{
-		"dummy", 0,
-		(gamma_method_init_func *)gamma_dummy_init,
-		(gamma_method_start_func *)gamma_dummy_start,
-		(gamma_method_free_func *)gamma_dummy_free,
-		(gamma_method_print_help_func *)gamma_dummy_print_help,
-		(gamma_method_set_option_func *)gamma_dummy_set_option,
-		(gamma_method_restore_func *)gamma_dummy_restore,
-		(gamma_method_set_temperature_func *)gamma_dummy_set_temperature
-	},
-	{ NULL }
-};
-
-
-/* Union of state data for location providers */
-typedef union {
-	location_manual_state_t manual;
-#ifdef ENABLE_GEOCLUE
-	location_geoclue_state_t geoclue;
-#endif
-} location_state_t;
-
-
-/* Location provider method structs */
-static const location_provider_t location_providers[] = {
-#ifdef ENABLE_GEOCLUE
-	{
-		"geoclue",
-		(location_provider_init_func *)location_geoclue_init,
-		(location_provider_start_func *)location_geoclue_start,
-		(location_provider_free_func *)location_geoclue_free,
-		(location_provider_print_help_func *)
-		location_geoclue_print_help,
-		(location_provider_set_option_func *)
-		location_geoclue_set_option,
-		(location_provider_get_location_func *)
-		location_geoclue_get_location
-	},
-#endif
-#ifdef ENABLE_GEOCLUE2
-	{
-		"geoclue2",
-		(location_provider_init_func *)location_geoclue2_init,
-		(location_provider_start_func *)location_geoclue2_start,
-		(location_provider_free_func *)location_geoclue2_free,
-		(location_provider_print_help_func *)
-		location_geoclue2_print_help,
-		(location_provider_set_option_func *)
-		location_geoclue2_set_option,
-		(location_provider_get_location_func *)
-		location_geoclue2_get_location
-	},
-#endif
-#ifdef ENABLE_CORELOCATION
-	{
-		"corelocation",
-		(location_provider_init_func *)location_corelocation_init,
-		(location_provider_start_func *)location_corelocation_start,
-		(location_provider_free_func *)location_corelocation_free,
-		(location_provider_print_help_func *)
-		location_corelocation_print_help,
-		(location_provider_set_option_func *)
-		location_corelocation_set_option,
-		(location_provider_get_location_func *)
-		location_corelocation_get_location
-	},
-#endif
-	{
-		"manual",
-		(location_provider_init_func *)location_manual_init,
-		(location_provider_start_func *)location_manual_start,
-		(location_provider_free_func *)location_manual_free,
-		(location_provider_print_help_func *)
-		location_manual_print_help,
-		(location_provider_set_option_func *)
-		location_manual_set_option,
-		(location_provider_get_location_func *)
-		location_manual_get_location
-	},
-	{ NULL }
-};
 
 /* Bounds for parameters. */
 #define MIN_LAT   -90.0
@@ -905,6 +727,7 @@ run_continual_mode(const location_provider_t *provider,
 			scheme, transition_prog, &target_interp);
 
 		if (disabled) {
+			period = PERIOD_NONE;
 			color_setting_reset(&target_interp);
 		}
 
@@ -1097,6 +920,9 @@ main(int argc, char *argv[])
 #endif
 #ifdef ENABLE_WINGDI
 		w32gdi_gamma_method,
+#endif
+#ifdef ENABLE_WAYLAND
+		wl_gamma_method,
 #endif
 		dummy_gamma_method,
 		{ NULL }

@@ -125,6 +125,9 @@ endif
 
 .rc.o:
 	$(AM_V_GEN)$(WINDRES) -I$(top_builddir) -i $< -o $@
+
+CLEANFILES = *-protocol.c *-client-protocol.h
+
 %-protocol.c : $(srcdir)/%.xml
 	$(AM_V_GEN)$(MKDIR_P) $(dir $@) && $(wayland_scanner) code < $< > $@
 

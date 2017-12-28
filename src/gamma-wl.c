@@ -40,6 +40,17 @@
 #include "gamma-control-client-protocol.h"
 #include "orbital-authorizer-client-protocol.h"
 
+typedef struct {
+	struct wl_display *display;
+	struct wl_registry *registry;
+	struct wl_callback *callback;
+	uint32_t gamma_control_manager_id;
+	struct gamma_control_manager *gamma_control_manager;
+	int num_outputs;
+	struct output *outputs;
+	int authorized;
+} wayland_state_t;
+
 struct output {
 	uint32_t global_id;
 	struct wl_output *output;
@@ -48,10 +59,13 @@ struct output {
 };
 
 int
-wayland_init(wayland_state_t *state)
+wayland_init(wayland_state_t **state)
 {
 	/* Initialize state. */
-	memset(state, 0, sizeof *state);
+	*state = malloc(sizeof(**state));
+	if (*state == NULL) return -1;
+
+	memset(*state, 0, sizeof **state);
 	return 0;
 }
 
@@ -83,12 +97,8 @@ registry_global(void *data, struct wl_registry *registry, uint32_t id, const cha
 		state->gamma_control_manager_id = id;
 		state->gamma_control_manager = wl_registry_bind(registry, id, &gamma_control_manager_interface, 1);
 	} else if (strcmp(interface, "wl_output") == 0) {
-		if (state->num_outputs++ == 0) {
-			state->outputs = malloc(sizeof(struct output));
-		} else {
-			state->outputs = realloc(state->outputs, state->num_outputs * sizeof(struct output));
-		}
-		if (!state->outputs) {
+		state->num_outputs++;
+		if (!(state->outputs = realloc(state->outputs, state->num_outputs * sizeof(struct output)))) {
 			fprintf(stderr, _("Failed to allcate memory\n"));
 			return;
 		}
@@ -193,6 +203,11 @@ wayland_restore(wayland_state_t *state)
 void
 wayland_free(wayland_state_t *state)
 {
+
+	if (state->callback) {
+		wl_callback_destroy(state->callback);
+	}
+
 	for (int i = 0; i < state->num_outputs; ++i) {
 		struct output *output = &state->outputs[i];
 		gamma_control_destroy(output->gamma_control);
@@ -202,9 +217,8 @@ wayland_free(wayland_state_t *state)
 	gamma_control_manager_destroy(state->gamma_control_manager);
 	wl_registry_destroy(state->registry);
 	wl_display_disconnect(state->display);
-	if (state->callback) {
-		wl_callback_destroy(state->callback);
-	}
+
+	free(state);
 }
 
 void
@@ -317,3 +331,15 @@ wayland_set_temperature(wayland_state_t *state, const color_setting_t *setting)
 
 	return 0;
 }
+
+const gamma_method_t wl_gamma_method = {
+	"wayland",
+	1,
+	(gamma_method_init_func *) wayland_init,
+	(gamma_method_start_func *) wayland_start,
+	(gamma_method_free_func *) wayland_free,
+	(gamma_method_print_help_func *) wayland_print_help,
+	(gamma_method_set_option_func *) wayland_set_option,
+	(gamma_method_restore_func *) wayland_restore,
+	(gamma_method_set_temperature_func *) wayland_set_temperature,
+};

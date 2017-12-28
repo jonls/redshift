@@ -26,28 +26,7 @@
 
 #include "redshift.h"
 
-typedef struct {
-	struct wl_display *display;
-	struct wl_registry *registry;
-	struct wl_callback *callback;
-	uint32_t gamma_control_manager_id;
-	struct gamma_control_manager *gamma_control_manager;
-	int num_outputs;
-	struct output *outputs;
-	int authorized;
-} wayland_state_t;
-
-
-int wayland_init(wayland_state_t *state);
-int wayland_start(wayland_state_t *state);
-void wayland_free(wayland_state_t *state);
-
-void wayland_print_help(FILE *f);
-int wayland_set_option(wayland_state_t *state, const char *key, const char *value);
-
-void wayland_restore(wayland_state_t *state);
-int wayland_set_temperature(wayland_state_t *state,
-			const color_setting_t *setting);
+extern const gamma_method_t wl_gamma_method;
 
 
 #endif /* ! REDSHIFT_GAMMA_DRM_H */
