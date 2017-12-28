@@ -23,6 +23,8 @@ addons:
       # VidMode
       - libx11-dev
       - libxxf86vm-dev
+      # Wayland
+      - libwayland-dev
       # GeoClue2
       - libglib2.0-dev
       # GUI
