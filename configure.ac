@@ -68,11 +68,7 @@ PKG_CHECK_MODULES([XCB], [xcb], [have_xcb=yes], [have_xcb=no])
 PKG_CHECK_MODULES([XCB_RANDR], [xcb-randr],
 	[have_xcb_randr=yes], [have_xcb_randr=no])
 PKG_CHECK_MODULES([WAYLAND], [wayland-client wayland-scanner], [have_wayland=yes], [have_wayland=no])
-AC_PATH_PROG([wayland_scanner], [wayland-scanner])
-if test x$wayland_scanner = x; then
-	PKG_CHECK_MODULES(WAYLAND_SCANNER, [wayland-scanner])
-	wayland_scanner=`$PKG_CONFIG --variable=wayland_scanner wayland-scanner`
-fi
+PKG_CHECK_VAR(WAYLAND_SCANNER, wayland-scanner, wayland_scanner)
 
 PKG_CHECK_MODULES([GLIB], [glib-2.0 gobject-2.0], [have_glib=yes], [have_glib=no])
 PKG_CHECK_MODULES([GEOCLUE2], [glib-2.0 gio-2.0 >= 2.26], [have_geoclue2=yes], [have_geoclue2=no])
