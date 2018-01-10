@@ -175,6 +175,10 @@ int
 wayland_start(wayland_state_t *state)
 {
 	state->display = wl_display_connect(NULL);
+	if (!state->display) {
+		fputs(_("Could not connect to wayland display, exiting.\n"), stderr);
+		return -1;
+	}
 	state->registry = wl_display_get_registry(state->display);
 
 	wl_registry_add_listener(state->registry, &registry_listener, state);
@@ -214,9 +218,15 @@ wayland_free(wayland_state_t *state)
 		wl_output_destroy(output->output);
 	}
 
-	gamma_control_manager_destroy(state->gamma_control_manager);
-	wl_registry_destroy(state->registry);
-	wl_display_disconnect(state->display);
+	if (state->gamma_control_manager) {
+		gamma_control_manager_destroy(state->gamma_control_manager);
+	}
+	if (state->registry) {
+		wl_registry_destroy(state->registry);
+	}
+	if (state->display) {
+		wl_display_disconnect(state->display);
+	}
 
 	free(state);
 }
