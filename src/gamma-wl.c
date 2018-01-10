@@ -58,7 +58,7 @@ struct output {
 	uint32_t gamma_size;
 };
 
-int
+static int
 wayland_init(wayland_state_t **state)
 {
 	/* Initialize state. */
@@ -171,7 +171,7 @@ static const struct gamma_control_listener gamma_control_listener = {
 	gamma_control_gamma_size
 };
 
-int
+static int
 wayland_start(wayland_state_t *state)
 {
 	state->display = wl_display_connect(NULL);
@@ -194,7 +194,7 @@ wayland_start(wayland_state_t *state)
 	return 0;
 }
 
-void
+static void
 wayland_restore(wayland_state_t *state)
 {
 	for (int i = 0; i < state->num_outputs; ++i) {
@@ -204,7 +204,7 @@ wayland_restore(wayland_state_t *state)
 	wl_display_flush(state->display);
 }
 
-void
+static void
 wayland_free(wayland_state_t *state)
 {
 
@@ -231,14 +231,14 @@ wayland_free(wayland_state_t *state)
 	free(state);
 }
 
-void
+static void
 wayland_print_help(FILE *f)
 {
 	fputs(_("Adjust gamma ramps with a Wayland compositor.\n"), f);
 	fputs("\n", f);
 }
 
-int
+static int
 wayland_set_option(wayland_state_t *state, const char *key, const char *value)
 {
 	return 0;
@@ -256,7 +256,7 @@ static const struct wl_callback_listener callback_listener = {
 	callback_done
 };
 
-int
+static int
 wayland_set_temperature(wayland_state_t *state, const color_setting_t *setting)
 {
 	int ret = 0, roundtrip = 0;
