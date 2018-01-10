@@ -214,7 +214,9 @@ wayland_free(wayland_state_t *state)
 
 	for (int i = 0; i < state->num_outputs; ++i) {
 		struct output *output = &state->outputs[i];
-		gamma_control_destroy(output->gamma_control);
+                if (output!=NULL && output->gamma_control!=NULL) {   
+		  gamma_control_destroy(output->gamma_control);
+                }
 		wl_output_destroy(output->output);
 	}
 
