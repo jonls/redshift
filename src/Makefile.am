@@ -24,8 +24,6 @@ redshift_SOURCES = \
 EXTRA_redshift_SOURCES = \
 	gamma-drm.c gamma-drm.h \
 	gamma-wl.c gamma-wl.h \
-	orbital-authorizer-protocol.c \
-	orbital-authorizer-client-protocol.h \
 	gamma-randr.c gamma-randr.h \
 	gamma-vidmode.c gamma-vidmode.h \
 	gamma-quartz.c gamma-quartz.h \
@@ -47,16 +45,18 @@ redshift_LDADD += \
 endif
 
 if ENABLE_WAYLAND
-redshift_SOURCES += gamma-wl.c gamma-wl.h \
-	gamma-control-client-protocol.h \
-	gamma-control-protocol.c \
-	orbital-authorizer-protocol.c \
-	orbital-authorizer-client-protocol.h
+redshift_SOURCES += gamma-wl.c gamma-wl.h
 
 AM_CFLAGS += $(WAYLAND_CFLAGS)
 
 redshift_LDADD += \
 	$(WAYLAND_LIBS) $(WAYLAND_CFLAGS)
+
+nodist_redshift_SOURCES = \
+	gamma-control-client-protocol.h \
+	gamma-control-protocol.c \
+	orbital-authorizer-protocol.c \
+	orbital-authorizer-client-protocol.h
 
 BUILT_SOURCES = \
 	gamma-control-protocol.c \
