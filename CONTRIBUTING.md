@@ -59,6 +59,13 @@ Dependencies
 
 Ubuntu users will find all these dependencies in the packages listed in ``.travis.yml``. 
 
+Notes: 
+
+An external file `m4/pkg.m4` has been added because older versions of pkg-config do not support the 
+`PKG_CHECK_VAR` [macro](https://github.com/jonls/redshift/pull/568#discussion_r160624641). 
+This file can be removed once users (Travis CI, Ubuntu 14.04) have enough recent version. 
+
+
 Coding style
 ------------
 
