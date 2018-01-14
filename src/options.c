@@ -193,7 +193,9 @@ print_help(const char *program_name)
 		" color effect\n"
 		"  -x\t\tReset mode (remove adjustment from screen)\n"
 		"  -r\t\tDisable fading between color temperatures\n"
-		"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"),
+		"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
+		"  -B FILE\tcreate FILE as a fifo which can be used to\n"
+		"  \t\tcontrol brightness by writing values to it\n"),
 	      stdout);
 	fputs("\n", stdout);
 
@@ -323,6 +325,8 @@ options_init(options_t *options)
 	options->preserve_gamma = 1;
 	options->mode = PROGRAM_MODE_CONTINUAL;
 	options->verbose = 0;
+	
+	options->brightness_fn = NULL;
 }
 
 /* Parse a single option from the command-line. */
@@ -477,6 +481,10 @@ parse_command_line_option(
 	case 'x':
 		options->mode = PROGRAM_MODE_RESET;
 		break;
+	case 'B':
+		if(options->brightness_fn) free(options->brightness_fn);
+		options->brightness_fn = strdup(value);
+		break;
 	case '?':
 		fputs(_("Try `-h' for more information.\n"), stderr);
 		return -1;
@@ -495,7 +503,7 @@ options_parse_args(
 {
 	const char* program_name = argv[0];
 	int opt;
-	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:pPrt:vVx")) != -1) {
+	while ((opt = getopt(argc, argv, "b:B:c:g:hl:m:oO:pPrt:vVx")) != -1) {
 		char option = opt;
 		int r = parse_command_line_option(
 			option, optarg, options, program_name, gamma_methods,
@@ -541,6 +549,9 @@ parse_config_file_option(
 		if (isnan(options->scheme.night.brightness)) {
 			options->scheme.night.brightness = atof(value);
 		}
+	} else if (strcasecmp(key, "brightness-fn") == 0) {
+		if(options->brightness_fn) free(options->brightness_fn);
+		options->brightness_fn = strdup(value);
 	} else if (strcasecmp(key, "elevation-high") == 0) {
 		options->scheme.high = atof(value);
 	} else if (strcasecmp(key, "elevation-low") == 0) {
