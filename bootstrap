@@ -1,7 +1,3 @@
 #!/bin/sh
 
-# change to root directory
-cd $(dirname "$0")
-
-autopoint --force && \
-	AUTOPOINT="intltoolize --automake --copy" autoreconf --force --install --verbose
+autoreconf --force --install && intltoolize
