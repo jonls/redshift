@@ -17,6 +17,7 @@ AC_PROG_OBJC # For macOS support modules
 AC_LANG([C])
 
 AC_PROG_INTLTOOL([0.50])
+AC_SUBST(LIBINTL)
 
 AC_CANONICAL_HOST
 
@@ -50,10 +51,6 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([])], [
 	have_objc_compiler=no
 ])
 AC_LANG_POP([Objective C])
-
-# Checks for libraries.
-AM_GNU_GETTEXT_VERSION([0.17])
-AM_GNU_GETTEXT([external])
 
 GETTEXT_PACKAGE=redshift
 AC_SUBST(GETTEXT_PACKAGE)
