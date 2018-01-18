@@ -29,18 +29,21 @@
 #include <locale.h>
 #include <errno.h>
 
-/* for creating FIFOs 
-  (will probably not work on Windows)
-  */
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 
 /* poll.h is not available on Windows but there is no Windows location provider
    using polling. On Windows, we just define some stubs to make things compile.
    */
 #ifndef _WIN32
 # include <poll.h>
+
+/* for creating FIFOs to listen for dynamic brightness control
+  (these will not work on Windows as well, but since it relies on poll(), there
+   is no point in trying to make it work; there could be a separate
+   implementation of this for Windows)
+  */
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #else
 #define POLLIN 0
 struct pollfd {
@@ -1382,10 +1385,16 @@ main(int argc, char *argv[])
 			   note: this will fail if the file already exists
 			   
 			   note: there is a possible race condition if the file is deleted
-				between the mkfifo() and the open() calls and re-created in
-				differently -- maybe there should be an extra check after
-				the open() call if we really have a fifo()
+				 between the mkfifo() and the open() calls and re-created in
+				 differently -- maybe there should be an extra check after
+				 the open() call if we really have a fifo()
+			   
+			   note: so far it is not supported on Windows -- probably
+			     would need to use a different API both for creating FIFOs
+			     and for poll()-ing (Windows has a native API for named pipes
+			     but that's probably significantly different)
 			*/
+#ifndef _WIN32
 			if(mkfifo(options.brightness_fn,S_IRUSR | S_IWUSR) == 0) {
 				/* note: O_RDWR is needed so we do not receive POLLHUP if a
 				    writer closes the fifo (it is not an error, it can be
@@ -1394,6 +1403,7 @@ main(int argc, char *argv[])
 				brightness_fd = open(options.brightness_fn,O_RDWR |
 					O_CLOEXEC | O_NONBLOCK);
 			}
+#endif
 			if(brightness_fd == -1) {
 				fputs("Error creating brightness control file!\n",stderr);
 				exit(EXIT_FAILURE);
