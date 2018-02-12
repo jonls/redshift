@@ -207,8 +207,14 @@ wayland_restore(wayland_state_t *state)
 static void
 wayland_free(wayland_state_t *state)
 {
-
+	int ret = 0;
+	/* Wait for the sync callback to destroy everything, otherwise
+	 * we could destroy the gamma control before gamma has been set */
+	while (state->callback && ret >= 0) {
+		ret = wl_display_dispatch(state->display);
+	}
 	if (state->callback) {
+		fprintf(stderr, _("Ignoring error on wayland connection while waiting to disconnect: %d\n"), ret);
 		wl_callback_destroy(state->callback);
 	}
 
