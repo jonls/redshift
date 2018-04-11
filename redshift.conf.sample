@@ -68,3 +68,17 @@ lon=11.6
 ; If this option is not specified, Redshift will try to adjust _all_ screens.
 [randr]
 screen=0
+
+; If available, use AppIndicator3 to display the tray icon in redshift-gtk. On
+; some desktop environments, a drawback of AppIndicator3 is that it cannot
+; display tooltips when hovering over with the cursor. This, for example, is
+; the case in Cinnamon 3.6.7 shipped with Linux Mint 18.3. The drawback results
+; in users having to activate the icon's 'Info' menu to get information which 
+; is usually displayed in the tooltip, i.e., color temperature and period. If 
+; not explicitly configured, the default value of the option is 1 (do use 
+; AppIndicator3 for tray icon).
+; Valid values:
+;   - Use AppIndicator3, if available: 1, yes, true, on
+;   - Don't use AppIndicator3: 0, no, false, off
+[redshift-gtk]
+use-appindicator-icon=1
