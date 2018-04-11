@@ -69,6 +69,16 @@ class RedshiftStatusIcon(object):
         # Create popup menu
         self.status_menu = Gtk.Menu()
 
+        # Add color temperature and period if AppIndicator3 is used to display
+        # the status icon, as AppIndicator3 does not support tooltips
+        if appindicator:
+            self.color_temperature_item = \
+                Gtk.MenuItem.new_with_label(_('Color temperature'))
+            self.period_item = Gtk.MenuItem.new_with_label(_('Period'))
+            self.status_menu.append(self.color_temperature_item)            
+            self.status_menu.append(self.period_item)
+            self.status_menu.append(Gtk.SeparatorMenuItem.new())
+
         # Add toggle action
         self.toggle_item = Gtk.CheckMenuItem.new_with_label(_('Enabled'))
         self.toggle_item.connect('activate', self.toggle_item_cb)
@@ -319,7 +329,12 @@ class RedshiftStatusIcon(object):
 
     def update_tooltip_text(self):
         """Update text of tooltip status icon."""
-        if not appindicator:
+        if appindicator:
+            self.color_temperature_item.set_label('{}: {}K'.format(
+                _('Color temperature'), self._controller.temperature))
+            self.period_item.set_label('{}: {}'.format(
+                _('Period'), self._controller.period))
+        else:
             self.status_icon.set_tooltip_text('{}: {}K, {}: {}'.format(
                 _('Color temperature'), self._controller.temperature,
                 _('Period'), self._controller.period))
