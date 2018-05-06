@@ -29,11 +29,21 @@
 #include <locale.h>
 #include <errno.h>
 
+
 /* poll.h is not available on Windows but there is no Windows location provider
    using polling. On Windows, we just define some stubs to make things compile.
    */
 #ifndef _WIN32
 # include <poll.h>
+
+/* for creating FIFOs to listen for dynamic brightness control
+  (these will not work on Windows as well, but since it relies on poll(), there
+   is no point in trying to make it work; there could be a separate
+   implementation of this for Windows)
+  */
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #else
 #define POLLIN 0
 struct pollfd {
@@ -484,6 +494,7 @@ method_try_start(const gamma_method_t *method,
 }
 
 
+
 /* Check whether gamma is within allowed levels. */
 static int
 gamma_is_valid(const float gamma[3])
@@ -603,10 +614,15 @@ run_continual_mode(const location_provider_t *provider,
 		   const transition_scheme_t *scheme,
 		   const gamma_method_t *method,
 		   gamma_state_t *method_state,
-		   int use_fade, int preserve_gamma, int verbose)
+		   int use_fade, int preserve_gamma, int verbose,
+		   int brightness_fd)
 {
 	int r;
-
+	double brightness_override = -1.0;
+	const size_t read_buf_size = 512;
+	/* buffer for reading extra data from brightness_fd */
+	char read_buf[read_buf_size];
+	
 	/* Short fade parameters */
 	int fade_length = 0;
 	int fade_time = 0;
@@ -721,6 +737,11 @@ run_continual_mode(const location_provider_t *provider,
 		color_setting_t target_interp;
 		interpolate_transition_scheme(
 			scheme, transition_prog, &target_interp);
+			
+		/* use manually supplied brightness value */
+		if(brightness_override >= 0.0 && brightness_override <= 1.0) {
+			target_interp.brightness = brightness_override;
+		}
 
 		if (disabled) {
 			period = PERIOD_NONE;
@@ -821,57 +842,112 @@ run_continual_mode(const location_provider_t *provider,
 			loc_fd = provider->get_fd(location_state);
 		}
 
-		if (loc_fd >= 0) {
+		/* use poll() for waiting if updates are possible
+		   for either the location or brightness setting */
+		if (loc_fd >= 0 || brightness_fd >= 0) {
 			/* Provider is dynamic. */
-			struct pollfd pollfds[1];
-			pollfds[0].fd = loc_fd;
-			pollfds[0].events = POLLIN;
-			int r = poll(pollfds, 1, delay);
+			/* we have either one or two fds to listen for */
+			struct pollfd pollfds[2];
+			int nfds = 0;
+			if(loc_fd >= 0) {
+				pollfds[nfds].fd = loc_fd;
+				pollfds[nfds].events = POLLIN;
+				pollfds[nfds].revents = 0;
+				nfds++;
+			}
+			if(brightness_fd >= 0) {
+				/* note: should be a pipe, regular file will always
+				   be available for reading */
+				pollfds[nfds].fd = brightness_fd;
+				pollfds[nfds].events = POLLIN;
+				pollfds[nfds].revents = 0;
+				nfds++;
+			}
+			int r = poll(pollfds, nfds, delay);
 			if (r < 0) {
 				if (errno == EINTR) continue;
 				perror("poll");
-				fputs(_("Unable to get location"
-					" from provider.\n"), stderr);
+				fputs(_("Unable to get location or brightness updates\n"), stderr);
 				return -1;
 			} else if (r == 0) {
 				continue;
 			}
-
-			/* Get new location and availability
-			   information. */
-			location_t new_loc;
-			int new_available;
-			r = provider->handle(
-				location_state, &new_loc,
-				&new_available);
-			if (r < 0) {
-				fputs(_("Unable to get location"
-					" from provider.\n"), stderr);
-				return -1;
+			
+			/* check both possible fds if there is new data */
+			
+			/* loc_fd is always at index 0 */
+			if(loc_fd >= 0 && pollfds[0].revents & POLLIN) {
+				/* Get new location and availability
+				   information. */
+				location_t new_loc;
+				int new_available;
+				r = provider->handle(
+					location_state, &new_loc,
+					&new_available);
+				if (r < 0) {
+					fputs(_("Unable to get location"
+						" from provider.\n"), stderr);
+					return -1;
+				}
+	
+				if (!new_available &&
+				    new_available != location_available) {
+					fputs(_("Location is temporarily"
+					        " unavailable; Using previous"
+						" location until it becomes"
+						" available...\n"), stderr);
+				}
+	
+				if (new_available &&
+				    (new_loc.lat != loc.lat ||
+				     new_loc.lon != loc.lon ||
+				     new_available != location_available)) {
+					loc = new_loc;
+					print_location(&loc);
+				}
+	
+				location_available = new_available;
+	
+				if (!location_is_valid(&loc)) {
+					fputs(_("Invalid location returned"
+						" from provider.\n"), stderr);
+					return -1;
+				}
 			}
-
-			if (!new_available &&
-			    new_available != location_available) {
-				fputs(_("Location is temporarily"
-				        " unavailable; Using previous"
-					" location until it becomes"
-					" available...\n"), stderr);
-			}
-
-			if (new_available &&
-			    (new_loc.lat != loc.lat ||
-			     new_loc.lon != loc.lon ||
-			     new_available != location_available)) {
-				loc = new_loc;
-				print_location(&loc);
-			}
-
-			location_available = new_available;
-
-			if (!location_is_valid(&loc)) {
-				fputs(_("Invalid location returned"
-					" from provider.\n"), stderr);
-				return -1;
+			/* check brightness setting */
+			if(brightness_fd >= 0) {
+				/* either in position 0 or 1 */
+				int i = 0;
+				if(loc_fd >= 0) i = 1;
+				if(pollfds[i].revents & POLLIN) {
+					/* try to read new brightness value */
+					double brightness_tmp;
+					ssize_t r1 = read(brightness_fd,read_buf,read_buf_size-1);
+					if(r1 > 0) {
+						read_buf[r1] = 0;
+						/* try to parse the first part newly written */
+						if(sscanf(read_buf,"%lf",&brightness_tmp) == 1) {
+							brightness_override = brightness_tmp;
+						}
+						else fputs("Invalid brightness value read\n",stderr);
+						/* note: the above warning message will crash redshift-gtk */
+					}
+					
+					/* read and discard all remaining available data (one write
+					   should only set one value + skip any invalid data) */
+					while(1) {
+						/* r1 is the return value of the previous read() */
+						if(r1 == -1) {
+							/* EAGAIN or EWOULDBLOCK is not an error, 
+							   there is no more data */
+							if(errno == EAGAIN || errno == EWOULDBLOCK) break;
+							fputs("Error reading from brightness fifo!\n",stderr);
+							return -1;
+						}
+						if((size_t)r1 < read_buf_size-1) break; /* end of data too */
+						ssize_t r1 = read(brightness_fd,read_buf,read_buf_size-1);
+					}
+				}
 			}
 		} else {
 			systemtime_msleep(delay);
@@ -1299,11 +1375,53 @@ main(int argc, char *argv[])
 	break;
 	case PROGRAM_MODE_CONTINUAL:
 	{
+		int brightness_fd = -1;
+		if(options.brightness_fn) {
+			/* try to create a fifo and open it
+			   
+			   poll() does not work well with regular files, so this tries to
+			   ensure that the FIFO is being created here
+			  
+			   note: this will fail if the file already exists
+			   
+			   note: there is a possible race condition if the file is deleted
+				 between the mkfifo() and the open() calls and re-created in
+				 differently -- maybe there should be an extra check after
+				 the open() call if we really have a fifo()
+			   
+			   note: so far it is not supported on Windows -- probably
+			     would need to use a different API both for creating FIFOs
+			     and for poll()-ing (Windows has a native API for named pipes
+			     but that's probably significantly different)
+			*/
+#ifndef _WIN32
+			if(mkfifo(options.brightness_fn,S_IRUSR | S_IWUSR) == 0) {
+				/* note: O_RDWR is needed so we do not receive POLLHUP if a
+				    writer closes the fifo (it is not an error, it can be
+				    reopened by another writer later: e.g. typical usage
+				    would be 'echo 0.5 > brightness_fifo') */
+				brightness_fd = open(options.brightness_fn,O_RDWR |
+					O_CLOEXEC | O_NONBLOCK);
+			}
+#endif
+			if(brightness_fd == -1) {
+				fputs("Error creating brightness control file!\n",stderr);
+				exit(EXIT_FAILURE);
+			}
+		}
+		
 		r = run_continual_mode(
 			options.provider, location_state, scheme,
 			options.method, method_state,
 			options.use_fade, options.preserve_gamma,
-			options.verbose);
+			options.verbose, brightness_fd);
+			
+		/* close and delete the fifo for brightness control if it
+		   was created previously */
+		if(brightness_fd >= 0) {
+			close(brightness_fd);
+			unlink(options.brightness_fn);
+		}
 		if (r < 0) exit(EXIT_FAILURE);
 	}
 	break;

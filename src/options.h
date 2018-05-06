@@ -46,6 +46,9 @@ typedef struct {
 	const location_provider_t *provider;
 	/* Arguments for location provider. */
 	char *provider_args;
+	
+	/* dynamic brightness control via a fifo -- filename to use */
+	char* brightness_fn;
 } options_t;
 
 
