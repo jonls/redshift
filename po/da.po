@@ -1,22 +1,20 @@
 # Danish translation for redshift
 # Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
 # This file is distributed under the same license as the redshift package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
-#
+# scootergrisen, 2018.
 msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://github.com/jonls/redshift/issues\n"
 "POT-Creation-Date: 2017-10-18 11:46-0700\n"
-"PO-Revision-Date: 2015-02-23 06:54+0000\n"
-"Last-Translator: Jon Lund Steffensen <Unknown>\n"
-"Language-Team: Danish <da@li.org>\n"
+"PO-Revision-Date: 2018-01-21 14:28+0200\n"
+"Last-Translator: scootergrisen\n"
+"Language-Team: Danish\n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-01-02 22:24+0000\n"
-"X-Generator: Launchpad (build 17865)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
 msgid ""
@@ -58,7 +56,7 @@ msgstr ""
 #: ../data/applications/redshift.desktop.in.h:1
 #: ../data/applications/redshift-gtk.desktop.in.h:1
 msgid "Redshift"
-msgstr ""
+msgstr "Redshift"
 
 #: ../data/applications/redshift.desktop.in.h:2
 #: ../data/applications/redshift-gtk.desktop.in.h:2
@@ -152,7 +150,7 @@ msgstr "Kunne ikke læse indstilling `%s'.\n"
 #: ../src/redshift.c:400
 #, c-format
 msgid "Failed to start provider %s.\n"
-msgstr "Kunne ikke starte placeringsmetode %s.\n"
+msgstr "Kunne ikke starte placeringsudbyder %s.\n"
 
 #. TRANSLATORS: `help' must not be
 #. translated.
@@ -189,7 +187,7 @@ msgstr "Kan ikke læse systemtid.\n"
 
 #: ../src/redshift.c:635
 msgid "Waiting for initial location to become available...\n"
-msgstr ""
+msgstr "Venter på at indledende placering bliver tilgængelig...\n"
 
 #: ../src/redshift.c:641 ../src/redshift.c:832 ../src/redshift.c:847
 #: ../src/redshift.c:1172
@@ -197,9 +195,8 @@ msgid "Unable to get location from provider.\n"
 msgstr "Kan ikke modtage placeringsopdatering.\n"
 
 #: ../src/redshift.c:647 ../src/redshift.c:871
-#, fuzzy
 msgid "Invalid location returned from provider.\n"
-msgstr "Kan ikke modtage placeringsopdatering.\n"
+msgstr "Ugyldig placering returneret fra udbyder.\n"
 
 #: ../src/redshift.c:656 ../src/redshift.c:788 ../src/redshift.c:1222
 #: ../src/redshift.c:1253
@@ -215,7 +212,7 @@ msgstr "Lysstyrke: %.2f\n"
 #: ../src/redshift.c:686
 #, c-format
 msgid "Status: %s\n"
-msgstr ""
+msgstr "Status: %s\n"
 
 #: ../src/redshift.c:687 ../src/redshift-gtk/statusicon.py:301
 msgid "Disabled"
@@ -235,33 +232,34 @@ msgstr "Fejl ved justering af temperatur.\n"
 msgid ""
 "Location is temporarily unavailable; Using previous location until it "
 "becomes available...\n"
-msgstr ""
+msgstr "Placering er midlertidig utilgængelig. Bruger forrige placering indtil den "
+"bliver tilgængelig...\n"
 
 #: ../src/redshift.c:967
 msgid "Partitial time-configuration not supported!\n"
-msgstr ""
+msgstr "Delvis tidskonfiguration understøttet ikke!\n"
 
 #: ../src/redshift.c:975
 msgid "Invalid dawn/dusk time configuration!\n"
-msgstr ""
+msgstr "Ugyldig tidskonfiguration for solopgang/solnedgang!\n"
 
 #: ../src/redshift.c:1006
 #, c-format
 msgid "Trying location provider `%s'...\n"
-msgstr "Prøver placeringsmetoden `%s'...\n"
+msgstr "Prøver placeringsudbyder `%s'...\n"
 
 #: ../src/redshift.c:1011
 msgid "Trying next provider...\n"
-msgstr "Prøver næste placeringsmetode...\n"
+msgstr "Prøver næste udbyder...\n"
 
 #: ../src/redshift.c:1017
 #, c-format
 msgid "Using provider `%s'.\n"
-msgstr "Bruger placeringsmetoden `%s'.\n"
+msgstr "Bruger udbyderen `%s'.\n"
 
 #: ../src/redshift.c:1025
 msgid "No more location providers to try.\n"
-msgstr "Ikke flere metoder til placeringsopdateringer kan prøves.\n"
+msgstr "Ikke flere placeringsudbydere som kan prøves.\n"
 
 #: ../src/redshift.c:1034
 #, c-format
@@ -312,20 +310,20 @@ msgstr "Gamma (%s): %.3f, %.3f, %.3f\n"
 
 #: ../src/redshift.c:1139
 msgid "Trying next method...\n"
-msgstr "Prøver næste farvejusteringsmetode...\n"
+msgstr "Prøver næste metode...\n"
 
 #: ../src/redshift.c:1144
 #, c-format
 msgid "Using method `%s'.\n"
-msgstr "Bruger farvejusteringsmetoden `%s'.\n"
+msgstr "Bruger metoden `%s'.\n"
 
 #: ../src/redshift.c:1151
 msgid "No more methods to try.\n"
-msgstr "Der er ikke flere justeringsmetoder som kan prøves.\n"
+msgstr "Der er ikke flere metoder som kan prøves.\n"
 
 #: ../src/redshift.c:1165
 msgid "Waiting for current location to become available...\n"
-msgstr ""
+msgstr "Venter på at nuværende placering bliver tilgængelig...\n"
 
 #. TRANSLATORS: Append degree symbol if
 #. possible.
@@ -336,7 +334,7 @@ msgstr "Solhøjde: %f°\n"
 
 #: ../src/redshift.c:1244 ../src/redshift.c:1272 ../src/redshift.c:1294
 msgid "Press ctrl-c to stop...\n"
-msgstr ""
+msgstr "Tryk på ctrl-c for at stoppe...\n"
 
 #. TRANSLATORS: help output 1
 #. LAT is latitude, LON is longitude,
@@ -346,7 +344,7 @@ msgstr ""
 #: ../src/options.c:159
 #, c-format
 msgid "Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
-msgstr "Brug: %s -l BRED:LÆNG -t DAG:NAT [TILVALG...]\n"
+msgstr "Anvendelse: %s -l BRE:LÆN -t DAG:NAT [TILVALG...]\n"
 
 #. TRANSLATORS: help output 2
 #. no-wrap
@@ -362,6 +360,9 @@ msgid ""
 "  -v\t\tVerbose output\n"
 "  -V\t\tShow program version\n"
 msgstr ""
+"  -h\t\tViser denne hjælpemeddelelse\n"
+"  -v\t\tUddybende output\n"
+"  -V\t\tVis programversion\n"
 
 #. TRANSLATORS: help output 4
 #. `list' must not be translated
@@ -384,10 +385,25 @@ msgid ""
 "  -r\t\tDisable fading between color temperatures\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
+"  -b DAG:NAT\tSkærmlysstyrke som skal anvendes (mellem 0.1 og 1.0)\n"
+"  -c FIL\tIndlæs indstillinger fra angivne konfigurationsfil\n"
+"  -g R:G:B\tYderligere gammakorrektion som skal anvendes\n"
+"  -l BRE:LÆN\tDin nuværende placering\n"
+"  -l UDBYDER\tVælg udbyder til automatisk opdateringer af placering\n"
+"  \t\t(skriv `list' for at se tilgængelige udbydere)\n"
+"  -m METODE\tMetode som skal bruges til at sætte farvetemperatur\n"
+"  \t\t(skriv `list' for at se tilgængelige metoder)\n"
+"  -o\t\tÉt skud-tilstand (juster ikke farvetemperaturen løbende)\n"
+"  -O TEMP\tManuel ét skud-tilstand (sæt farvetemperatur)\n"
+"  -p\t\tUdskriv tilstand (vis kun parametre og afslut)\n"
+"  -P\t\tNulstil eksisterende gammatabeller inden nye farveeffekter anvendes\n"
+"  -x\t\tNulstil tilstand (fjern justering fra skærm)\n"
+"  -r\t\tDeaktivér fading mellem farvetemperaturer\n"
+"  -t DAG:NAT\tFarvetemperatur som skal sættes ved dag/nat\n"
 
 #. TRANSLATORS: help output 5
 #: ../src/options.c:201
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "The neutral temperature is %uK. Using this value will not change the color\n"
 "temperature of the display. Setting the color temperature to a value higher\n"
@@ -395,8 +411,8 @@ msgid ""
 "in\n"
 "more red light.\n"
 msgstr ""
-"Den neutrale temperatur er %uK. Når denne værde benyttes vil\n"
-"der ikke ske nogen farveændringer. En højere værdi vil\n"
+"Den neutrale temperatur er %uK. Når denne værdi benyttes vil der\n"
+"ikke ske nogen ændringer af farvetemperaturen. En højere værdi vil\n"
 "resultere i mere blåt lås, mens en lavere værdi vil resultere\n"
 "i mere rødt lys.\n"
 
@@ -435,16 +451,16 @@ msgstr "Prøv `-m METODE:help' for at få hjælp.\n"
 
 #: ../src/options.c:241
 msgid "Available location providers:\n"
-msgstr "Tilgængelige metoder til placeringsopdatering:\n"
+msgstr "Tilgængelige placeringsudbydere:\n"
 
 #: ../src/options.c:247
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
-msgstr "Specificer indstillinger separeret med kolon: `-l METODE:VALG'.\n"
+msgstr "Specificer indstillinger separeret med kolon: `-l UDBYDER:VALG'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: ../src/options.c:250
 msgid "Try `-l PROVIDER:help' for help.\n"
-msgstr "Prøv `-l METODE:help' for at få hjælp.\n"
+msgstr "Prøv `-l UDBYDER:help' for at få hjælp.\n"
 
 #: ../src/options.c:356
 msgid "Malformed gamma argument.\n"
@@ -457,7 +473,7 @@ msgstr "Prøv `-h' for mere information.\n"
 #: ../src/options.c:407 ../src/options.c:610
 #, c-format
 msgid "Unknown location provider `%s'.\n"
-msgstr "Ukendt metode til placeringsopdatering `%s'.\n"
+msgstr "Ukendt placeringsudbyder `%s'.\n"
 
 #. TRANSLATORS: This refers to the method
 #. used to adjust colors e.g VidMode
@@ -475,14 +491,14 @@ msgid "Malformed gamma setting.\n"
 msgstr "Fejl i gamma indstilling.\n"
 
 #: ../src/options.c:621
-#, fuzzy, c-format
+#, c-format
 msgid "Malformed dawn-time setting `%s'.\n"
-msgstr "Fejl i gamma indstilling.\n"
+msgstr "Forkert udformet indstilling for solnedgang `%s'.\n"
 
 #: ../src/options.c:632
-#, fuzzy, c-format
+#, c-format
 msgid "Malformed dusk-time setting `%s'.\n"
-msgstr "Fejl i gamma indstilling.\n"
+msgstr "Forkert udformet indstilling for solopgang `%s'.\n"
 
 #: ../src/options.c:639
 #, c-format
@@ -502,14 +518,14 @@ msgid "Assignment outside section in config file.\n"
 msgstr "Variabeltildeling udenfor sektion i konfigurationsfil.\n"
 
 #: ../src/gamma-drm.c:97
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open DRM device: %s\n"
-msgstr "Kunne ikke få fat i DRM tilstandsresourcer\n"
+msgstr "Kunne ikke åbne DRM-enhed: %s\n"
 
 #: ../src/gamma-drm.c:105
 #, c-format
 msgid "Failed to get DRM mode resources\n"
-msgstr "Kunne ikke få fat i DRM tilstandsresourcer\n"
+msgstr "Kunne ikke få fat i DRM tilstandsressourcer\n"
 
 #: ../src/gamma-drm.c:115 ../src/gamma-randr.c:384
 #, c-format
@@ -537,7 +553,7 @@ msgid ""
 "Could not get gamma ramp size for CRTC %i\n"
 "on graphics card %i, ignoring device.\n"
 msgstr ""
-"Kunne ikke få fat i størrelsen på gammatabelen for CRTC %i\n"
+"Kunne ikke få fat i størrelsen på gammatabellen for CRTC %i\n"
 "på grafikkort %i, ignorerer enheden.\n"
 
 #: ../src/gamma-drm.c:178
@@ -546,12 +562,12 @@ msgid ""
 "DRM could not read gamma ramps on CRTC %i on\n"
 "graphics card %i, ignoring device.\n"
 msgstr ""
-"DRM kunne ikke læse gammatabelen for CRTC %i på\n"
+"DRM kunne ikke læse gammatabellen for CRTC %i på\n"
 "grafikkort %i, ignorerer enheden.\n"
 
 #: ../src/gamma-drm.c:242
 msgid "Adjust gamma ramps with Direct Rendering Manager.\n"
-msgstr "Juster gammatabelerne med Direct Rendering Manager\n"
+msgstr "Juster gammatabellerne med Direct Rendering Manager.\n"
 
 #. TRANSLATORS: DRM help output
 #. left column must not be translated
@@ -574,7 +590,7 @@ msgstr "CRTC skal være et ikke-negativt heltal\n"
 #: ../src/location-manual.c:106
 #, c-format
 msgid "Unknown method parameter: `%s'.\n"
-msgstr "Ukendt parameter til justeringsmetode: `%s'.\n"
+msgstr "Ukendt metodeparameter: `%s'.\n"
 
 #: ../src/gamma-randr.c:94 ../src/gamma-randr.c:153 ../src/gamma-randr.c:192
 #: ../src/gamma-randr.c:218 ../src/gamma-randr.c:275 ../src/gamma-randr.c:435
@@ -609,18 +625,17 @@ msgstr "Juster gammatabellerne med X RANDR udvidelsen.\n"
 #. TRANSLATORS: RANDR help output
 #. left column must not be translated
 #: ../src/gamma-randr.c:306
-#, fuzzy
 msgid ""
 "  screen=N\t\tX screen to apply adjustments to\n"
 "  crtc=N\tList of comma separated CRTCs to apply adjustments to\n"
 msgstr ""
-"  card=N\tGrafikkort som skal justeres\n"
-"  crtc=N\tCRTC som skal justeres\n"
+"  screen=N\t\tX-skærm som skal justeres\n"
+"  crtc=N\tListe over kommasepareret CRTC'er som skal justeres\n"
 
 #: ../src/gamma-randr.c:328
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read screen number: `%s'.\n"
-msgstr "Kan ikke læse systemtid.\n"
+msgstr "Kan ikke læse skærmnummer: `%s'.\n"
 
 #: ../src/gamma-randr.c:364 ../src/gamma-vidmode.c:156
 #: ../src/gamma-quartz.c:178 ../src/gamma-w32gdi.c:123
@@ -628,14 +643,15 @@ msgstr "Kan ikke læse systemtid.\n"
 msgid ""
 "Parameter `%s` is now always on;  Use the `%s` command-line option to "
 "disable.\n"
-msgstr ""
+msgstr "Parameteren `%s` er nu altid til. Brug kommandolinjetilvalget `%s` for at "
+"deaktivere.\n"
 
 #: ../src/gamma-vidmode.c:61 ../src/gamma-vidmode.c:81
 #: ../src/gamma-vidmode.c:90 ../src/gamma-vidmode.c:117
 #: ../src/gamma-vidmode.c:180 ../src/gamma-vidmode.c:225
 #, c-format
 msgid "X request failed: %s\n"
-msgstr "Fejl ved X forespørgsel: %s\n"
+msgstr "X-anmodning mislykkede: %s\n"
 
 #: ../src/gamma-vidmode.c:140
 msgid "Adjust gamma ramps with the X VidMode extension.\n"
@@ -645,16 +661,15 @@ msgstr "Juster gammatabellerne med X VidMode udvidelsen.\n"
 #. left column must not be translated
 #: ../src/gamma-vidmode.c:145
 msgid "  screen=N\t\tX screen to apply adjustments to\n"
-msgstr ""
+msgstr "  screen=N\t\tX-skærm som skal justeres\n"
 
 #: ../src/gamma-quartz.c:140 ../src/gamma-w32gdi.c:91
 msgid "Unable to save current gamma ramp.\n"
 msgstr "Kan ikke gemme nuværende gammatabeller.\n"
 
 #: ../src/gamma-quartz.c:170
-#, fuzzy
 msgid "Adjust gamma ramps on macOS using Quartz.\n"
-msgstr "Juster gammatabellerne i OSX med Quartz\n"
+msgstr "Juster gammatabellerne i macOS med Quartz.\n"
 
 #: ../src/gamma-w32gdi.c:68 ../src/gamma-w32gdi.c:141 ../src/gamma-w32gdi.c:168
 msgid "Unable to open device context.\n"
@@ -680,14 +695,15 @@ msgstr "Kan ikke sætte gammatabeller.\n"
 msgid ""
 "WARNING: Using dummy gamma method! Display will not be affected by this "
 "gamma method.\n"
-msgstr ""
+msgstr "ADVARSEL: Bruger dummy-gammametode! Skærmen påvirkes ikke af denne "
+"gammametode.\n"
 
 #: ../src/gamma-dummy.c:60
 msgid ""
 "Does not affect the display but prints the color temperature to the "
 "terminal.\n"
 msgstr ""
-"Har ingen effect på skærmen men udskriver farvetemperaturen til terminalen.\n"
+"Påvirker ikke skærmen men udskriver farvetemperaturen til terminalen.\n"
 
 #: ../src/gamma-dummy.c:75
 #, c-format
@@ -703,71 +719,74 @@ msgid ""
 "more\n"
 "information.\n"
 msgstr ""
+"Adgang til den nuværende placering blev nægtet af GeoClue!\n"
+"Sørg for at placeringstjenesten er aktiveret og at Redshift har tilladelse\n"
+"til at bruge placeringstjenesterne. Se https://github.com/jonls/redshift#faq "
+"for mere\n"
+"information.\n"
 
 #: ../src/location-geoclue2.c:107
 #, c-format
 msgid "Unable to obtain location: %s.\n"
-msgstr "Kunne ikke få fat i placeringen: %s.\n"
+msgstr "Kan ikke indhente placeringen: %s.\n"
 
 #: ../src/location-geoclue2.c:150
 #, c-format
 msgid "Unable to obtain GeoClue Manager: %s.\n"
-msgstr ""
+msgstr "Kan ikke indhente GeoClue-håndtering: %s.\n"
 
 #: ../src/location-geoclue2.c:166
 #, c-format
 msgid "Unable to obtain GeoClue client path: %s.\n"
-msgstr ""
+msgstr "Kan ikke indhente GeoClue-klientsti: %s.\n"
 
 #: ../src/location-geoclue2.c:188
 #, c-format
 msgid "Unable to obtain GeoClue Client: %s.\n"
-msgstr ""
+msgstr "Kan ikke indhente GeoClue-klient: %s.\n"
 
 #: ../src/location-geoclue2.c:229
 #, c-format
 msgid "Unable to set distance threshold: %s.\n"
-msgstr ""
+msgstr "Kan ikke sætte distancetærskel: %s.\n"
 
 #: ../src/location-geoclue2.c:253
 #, c-format
 msgid "Unable to start GeoClue client: %s.\n"
-msgstr ""
+msgstr "Kan ikke starte GeoClue-klient: %s.\n"
 
 #: ../src/location-geoclue2.c:365
-#, fuzzy
 msgid "Failed to start GeoClue2 provider!\n"
-msgstr "Kunne ikke starte placeringsmetode %s.\n"
+msgstr "Kunne ikke starte GeoClue2-udbyder!\n"
 
 #: ../src/location-geoclue2.c:399
 msgid "Use the location as discovered by a GeoClue2 provider.\n"
-msgstr "Brug placeringen som GeoClue2 pleceringmetoden bidrager.\n"
+msgstr "Brug placeringen som opdaget af en GeoClue2-udbyder.\n"
 
 #: ../src/location-corelocation.m:73
 msgid "Not authorized to obtain location from CoreLocation.\n"
-msgstr ""
+msgstr "Ikke autentificeret til at indhente placering fra CoreLocation.\n"
 
 #: ../src/location-corelocation.m:111
 #, c-format
 msgid "Error obtaining location from CoreLocation: %s\n"
-msgstr ""
+msgstr "Fejl ved indhentning af placering fra CoreLocation: %s\n"
 
 #: ../src/location-corelocation.m:120
 msgid "Waiting for authorization to obtain location...\n"
-msgstr ""
+msgstr "Venter på autentificering til indhentelse af placering...\n"
 
 #: ../src/location-corelocation.m:122
 msgid "Request for location was not authorized!\n"
-msgstr ""
+msgstr "Anmodning for placering blev ikke autentificeret!\n"
 
 #: ../src/location-corelocation.m:203
-#, fuzzy
 msgid "Failed to start CoreLocation provider!\n"
-msgstr "Kunne ikke starte placeringsmetode %s.\n"
+msgstr "Kunne ikke starte CoreLocation-udbyder!\n"
 
 #: ../src/location-corelocation.m:235
 msgid "Use the location as discovered by the Corelocation provider.\n"
-msgstr ""
+msgstr "Brug placeringen som opdaget af Corelocation-udbyderen.\n"
 
 #: ../src/location-manual.c:59
 msgid "Latitude and longitude must be set.\n"
@@ -793,7 +812,7 @@ msgid ""
 "negative values representing west / south, respectively.\n"
 msgstr ""
 "Begge værdier skal angives som decimaltal,\n"
-"negative værdier representerer respektivt vest og syd.\n"
+"negative værdier repræsenterer henholdsvis vest og syd.\n"
 
 #: ../src/location-manual.c:97
 msgid "Malformed argument.\n"
@@ -849,17 +868,4 @@ msgstr "Placering"
 
 #: ../src/redshift-gtk/statusicon.py:349
 msgid "Please run `redshift -h` for help output."
-msgstr ""
-
-#~ msgid "Use the location as discovered by a Geoclue provider.\n"
-#~ msgstr "Brug placeringen som Geoclue placeringsmetoden bidrager.\n"
-
-#~ msgid ""
-#~ "NOTE: currently Redshift doesn't recheck %s once started,\n"
-#~ "which means it has to be restarted to take notice after travel.\n"
-#~ msgstr ""
-#~ "BEMÆRK: På nuværende tidspunkt bliver %s kun checket ved opstart \n"
-#~ "hvilket betyder at Redshift skal genstartes for at opdatere placeringen.\n"
-
-#~ msgid "Could not get location: %s.\n"
-#~ msgstr "Kunne ikke hente placeringen: %s.\n"
+msgstr "Kør venligst `redshift -h` for at få hjælp."
