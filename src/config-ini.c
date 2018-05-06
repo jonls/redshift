@@ -63,8 +63,15 @@ open_config_file(const char *filepath)
 
 		if (f == NULL && (env = getenv("XDG_CONFIG_HOME")) != NULL &&
 		    env[0] != '\0') {
-			snprintf(cp, sizeof(cp), "%s/redshift.conf", env);
+			snprintf(cp, sizeof(cp),
+					 "%s/redshift/redshift.conf", env);
 			f = fopen(cp, "r");
+			if (f == NULL) {
+				/* Fall back to formerly used path. */
+				snprintf(cp, sizeof(cp),
+						 "%s/redshift.conf", env);
+				f = fopen(cp, "r");
+			}
 		}
 
 #ifdef _WIN32
@@ -78,8 +85,14 @@ open_config_file(const char *filepath)
 		if (f == NULL && (env = getenv("HOME")) != NULL &&
 		    env[0] != '\0') {
 			snprintf(cp, sizeof(cp),
-				 "%s/.config/redshift.conf", env);
+				 "%s/.config/redshift/redshift.conf", env);
 			f = fopen(cp, "r");
+			if (f == NULL) {
+				/* Fall back to formerly used path. */
+				snprintf(cp, sizeof(cp),
+					 "%s/.config/redshift.conf", env);
+				f = fopen(cp, "r");
+			}
 		}
 #ifndef _WIN32
 
@@ -87,8 +100,14 @@ open_config_file(const char *filepath)
 			struct passwd *pwd = getpwuid(getuid());
 			char *home = pwd->pw_dir;
 			snprintf(cp, sizeof(cp),
-				 "%s/.config/redshift.conf", home);
+				 "%s/.config/redshift/redshift.conf", home);
 			f = fopen(cp, "r");
+			if (f == NULL) {
+				/* Fall back to formerly used path. */
+				snprintf(cp, sizeof(cp),
+					 "%s/.config/redshift.conf", home);
+				f = fopen(cp, "r");
+			}
 		}
 
 		if (f == NULL && (env = getenv("XDG_CONFIG_DIRS")) != NULL &&
@@ -101,9 +120,14 @@ open_config_file(const char *filepath)
 				int len = end - begin;
 				if (len > 0) {
 					snprintf(cp, sizeof(cp),
-						 "%.*s/redshift.conf", len, begin);
-
+						 "%.*s/redshift/redshift.conf", len, begin);
 					f = fopen(cp, "r");
+					if (f != NULL) {
+						/* Fall back to formerly used path. */
+						snprintf(cp, sizeof(cp),
+							 "%.*s/redshift.conf", len, begin);
+						f = fopen(cp, "r");
+					}
 					if (f != NULL) break;
 				}
 
