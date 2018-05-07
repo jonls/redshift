@@ -39,7 +39,7 @@ automatic location provider. An example configuration can be found in
 The configuration file should be saved in the following location depending on
 the platform:
 
-- Linux/macOS: `~/.config/redshift.conf`.
+- Linux/macOS: `~/.config/redshift/redshift.conf` (if the environment variable `XDG_CONFIG_HOME` is undefined) or `${XDG_CONFIG_HOME}/redshift/redshift.conf` (if `XDG_CONFIG_HOME` is defined).
 - Windows: Put `redshift.conf` in `%USERPROFILE%\AppData\Local\`
     (aka `%localappdata%`).
 

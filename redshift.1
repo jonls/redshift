@@ -93,7 +93,9 @@ Default temperature values:
 Daytime: 6500K, night: 4500K
 .SH CONFIGURATION FILE
 A configuration file with the name \fIredshift.conf\fR can optionally be
-placed in \fI~/.config/\fR. The file has standard INI format. General
+placed in \fI~/.config/redshift/\fR (if the environment variable
+XDG_CONFIG_HOME is undefined) or \fI${XDG_CONFIG_HOME}/redshift/\fR
+(if XDG_CONFIG_HOME is defined). The file has standard INI format. General
 program options are placed under the \fBredshift\fR header, while options
 for location providers and adjustment methods are placed under a
 header with the name of that provider or method. General options are:
