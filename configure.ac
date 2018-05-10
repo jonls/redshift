@@ -69,6 +69,7 @@ PKG_CHECK_MODULES([XCB_RANDR], [xcb-randr],
 	[have_xcb_randr=yes], [have_xcb_randr=no])
 
 PKG_CHECK_MODULES([GLIB], [glib-2.0 gobject-2.0], [have_glib=yes], [have_glib=no])
+PKG_CHECK_MODULES([GTK3], [gtk+-3.0], [have_gtk3=yes], [have_gtk3=no])
 PKG_CHECK_MODULES([GEOCLUE2], [glib-2.0 gio-2.0 >= 2.26], [have_geoclue2=yes], [have_geoclue2=no])
 
 # macOS headers
@@ -99,6 +100,30 @@ AC_CHECK_HEADER([windows.h], [have_windows_h=yes], [have_windows_h=no])
 
 # Check for Python
 AM_PATH_PYTHON([3.2], [have_python=yes], [have_python=no])
+
+# Check GTK+ GUI config tool
+AC_MSG_CHECKING([whether to enable GTK+ GUI config tool])
+AC_ARG_ENABLE([config-gui], [AC_HELP_STRING([--enable-config-gui],
+	[enable GTK+ GUI config tool])],
+	[enable_config_gui=$enableval],[enable_config_gui=maybe])
+AS_IF([test "x$enable_config_gui" != xno], [
+	AS_IF([test "x$have_gtk3" = xyes], [
+		AC_DEFINE([ENABLE_CONFIG_GUI], 1,
+			[Define to 1 to enable GTK+ GUI config tool])
+		AC_MSG_RESULT([yes])
+		enable_config_gui=yes
+	], [
+		AC_MSG_RESULT([missing dependencies])
+		AS_IF([test "x$enable_config_gui" = xyes], [
+			AC_MSG_ERROR([missing dependencies for GTK+])
+		])
+		enable_config_gui=no
+	])
+], [
+	AC_MSG_RESULT([no])
+	enable_config_gui=no
+])
+AM_CONDITIONAL([ENABLE_CONFIG_GUI], [test "x$enable_config_gui" = xyes])
 
 # Check DRM method
 AC_MSG_CHECKING([whether to enable DRM method])
@@ -362,6 +387,7 @@ AC_CONFIG_FILES([
 	po/Makefile.in
 	src/Makefile
 	src/redshift-gtk/Makefile
+	src/redshift-config-gtk/Makefile
 ])
 AC_OUTPUT
 
@@ -386,6 +412,7 @@ echo "
     CoreLocation (macOS):	${enable_corelocation}
 
     GUI:		${enable_gui}
+    GUI config tool:	${enable_config_gui}
     Ubuntu icons:	${enable_ubuntu}
     systemd units:	${enable_systemd} ${systemduserunitdir}
     AppArmor profile:   ${enable_apparmor}
