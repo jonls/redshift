@@ -38,6 +38,7 @@ try:
 except (ImportError, ValueError):
     appindicator = None
 
+from .configuration import RedshiftConfiguration
 from .controller import RedshiftController
 from . import defs
 from . import utils
@@ -52,6 +53,10 @@ class RedshiftStatusIcon(object):
         """Creates a new instance of the status icon."""
 
         self._controller = controller
+        use_appindicator_icon = self._config_use_appindicator_icon()
+        if not use_appindicator_icon:
+            global appindicator 
+            appindicator = None
 
         if appindicator:
             # Create indicator
@@ -176,6 +181,26 @@ class RedshiftStatusIcon(object):
 
         # Initialize suspend timer
         self.suspend_timer = None
+
+    def _config_use_appindicator_icon(self):
+        """Determine if appindicator is configured to be used as status 
+        icon.
+        """
+        try:
+            configuration = RedshiftConfiguration()
+            config_file_path = \
+                configuration.determine_configuration_file_path(sys.argv)
+            if config_file_path:
+                configuration.parse_configuration(config_file_path)
+            return configuration.use_appindicator_icon()
+        except Exception as ex:
+            error_dialog = Gtk.MessageDialog(
+                None, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR,
+                Gtk.ButtonsType.CLOSE, '')
+            error_dialog.set_markup(
+                '<b>Failed to parse configuration</b>\n<i>' + str(ex) + '</i>')
+            error_dialog.run()        
+            return True
 
     def remove_suspend_timer(self):
         """Disable any previously set suspend timer."""
