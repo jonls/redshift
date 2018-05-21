@@ -89,6 +89,17 @@ typedef struct {
   pipeutils_signal(self.state->pipe_fd_write);
 }
 
+- (void)markUnavailable
+{
+  [self.state->lock lock];
+
+  self.state->available = 0;
+
+  [self.state->lock unlock];
+
+  pipeutils_signal(self.state->pipe_fd_write);
+}
+
 - (void)locationManager:(CLLocationManager *)manager
     didUpdateLocations:(NSArray *)locations
 {
@@ -110,7 +121,11 @@ typedef struct {
 {
   fprintf(stderr, _("Error obtaining location from CoreLocation: %s\n"),
          [[error localizedDescription] UTF8String]);
-  [self markError];
+  if ([error code] == kCLErrorDenied) {
+    [self markError];
+  } else {
+    [self markUnavailable];
+  }
 }
 
 - (void)locationManager:(CLLocationManager *)manager
