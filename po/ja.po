@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://github.com/jonls/redshift/issues\n"
 "POT-Creation-Date: 2017-10-18 11:46-0700\n"
-"PO-Revision-Date: 2014-12-31 23:56+0000\n"
-"Last-Translator: Nobuto Murata <nobuto@nobuto-murata.org>\n"
+"PO-Revision-Date: 2018-03-15 15:36+0000\n"
+"Last-Translator: kakurasan <Unknown>\n"
 "Language-Team: Japanese <ja@li.org>\n"
-"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-01-02 22:24+0000\n"
-"X-Generator: Launchpad (build 17865)\n"
+"X-Launchpad-Export-Date: 2018-05-21 01:04+0000\n"
+"X-Generator: Launchpad (build 18658)\n"
+"Language: ja\n"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
 msgid ""
@@ -24,6 +24,8 @@ msgid ""
 "surroundings. This may help your eyes hurt less if you are working in front "
 "of the screen at night."
 msgstr ""
+"Redshift "
+"は環境に応じてお使いの画面の色温度を調整します。これは夜間に画面の前で作業している場合に目への悪影響を軽減させる助けになるかもしれません。"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:2
 msgid ""
@@ -32,79 +34,81 @@ msgid ""
 "and early morning, the color temperature transitions smoothly from night to "
 "daytime temperature to allow your eyes to slowly adapt."
 msgstr ""
+"色温度は太陽の位置に応じて設定されます。昼と夜とでは異なる色温度が設定されます。夕暮れ時や早朝の間は、 "
+"色温度は滑らかに変化してゆっくり目を慣れさせることができます。"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:3
 msgid ""
 "This program provides a status icon that allows the user to control Redshift."
-msgstr ""
+msgstr "このプログラムはユーザが Redshift を制御できるようにするためのステータス アイコンを提供します。"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:4
 msgid ""
 "The Redshift information window overlaid with an example of the redness "
 "effect"
-msgstr ""
+msgstr "赤み効果の例で覆われた Redshift 情報ウィンドウ"
 
 #: ../data/applications/redshift.desktop.in.h:1
 #: ../data/applications/redshift-gtk.desktop.in.h:1
 msgid "Redshift"
-msgstr ""
+msgstr "Redshift"
 
 #: ../data/applications/redshift.desktop.in.h:2
 #: ../data/applications/redshift-gtk.desktop.in.h:2
 msgid "Color temperature adjustment"
-msgstr ""
+msgstr "色温度の調整"
 
 #: ../data/applications/redshift.desktop.in.h:3
 #: ../data/applications/redshift-gtk.desktop.in.h:3
 msgid "Color temperature adjustment tool"
-msgstr ""
+msgstr "色温度の調整ツール"
 
 #. TRANSLATORS: Name printed when period of day is unknown
 #: ../src/redshift.c:135
 msgid "None"
-msgstr ""
+msgstr "不明"
 
 #: ../src/redshift.c:136 ../src/redshift.c:1107
 msgid "Daytime"
-msgstr ""
+msgstr "昼間"
 
 #: ../src/redshift.c:137 ../src/redshift.c:1111
 msgid "Night"
-msgstr ""
+msgstr "夜間"
 
 #: ../src/redshift.c:138
 msgid "Transition"
-msgstr ""
+msgstr "昼夜の変わり目"
 
 #: ../src/redshift.c:225
 #, c-format
 msgid "Period: %s\n"
-msgstr ""
+msgstr "時間帯: %s\n"
 
 #: ../src/redshift.c:228
 #, c-format
 msgid "Period: %s (%.2f%% day)\n"
-msgstr ""
+msgstr "時間帯: %s (昼間の割合 %.2f%%)\n"
 
 #. TRANSLATORS: Abbreviation for `north'
 #: ../src/redshift.c:240
 msgid "N"
-msgstr ""
+msgstr "北緯"
 
 #. TRANSLATORS: Abbreviation for `south'
 #: ../src/redshift.c:242
 msgid "S"
-msgstr ""
+msgstr "南緯"
 
 #. TRANSLATORS: Abbreviation for `east'
 #: ../src/redshift.c:244
 msgid "E"
-msgstr ""
+msgstr "東経"
 
 #. TRANSLATORS: Abbreviation for `west'
 #: ../src/redshift.c:246
 msgid "W"
-msgstr ""
+msgstr "西経"
 
 #. TRANSLATORS: Append degree symbols after %f if possible.
 #. The string following each number is an abreviation for
@@ -112,18 +116,18 @@ msgstr ""
 #: ../src/redshift.c:251
 #, c-format
 msgid "Location: %.2f %s, %.2f %s\n"
-msgstr ""
+msgstr "位置: %2$s %1$.2f°, %4$s %3$.2f°\n"
 
 #: ../src/redshift.c:325 ../src/redshift.c:416
 #, c-format
 msgid "Initialization of %s failed.\n"
-msgstr ""
+msgstr "%s の初期化に失敗しました。\n"
 
 #: ../src/redshift.c:340 ../src/redshift.c:384 ../src/redshift.c:431
 #: ../src/redshift.c:463
 #, c-format
 msgid "Failed to set %s option.\n"
-msgstr ""
+msgstr "%s のオプションの設定に失敗しました。\n"
 
 #. TRANSLATORS: `help' must not be
 #. translated.
@@ -131,198 +135,198 @@ msgstr ""
 #: ../src/redshift.c:345 ../src/redshift.c:387
 #, c-format
 msgid "Try `-l %s:help' for more information.\n"
-msgstr ""
+msgstr "`-l %s:help' で詳細情報が参照できます。\n"
 
 #: ../src/redshift.c:373 ../src/redshift.c:453
 #, c-format
 msgid "Failed to parse option `%s'.\n"
-msgstr ""
+msgstr "オプション `%s' の解析に失敗しました。\n"
 
 #: ../src/redshift.c:400
 #, c-format
 msgid "Failed to start provider %s.\n"
-msgstr ""
+msgstr "プロバイダ %s の開始に失敗しました。\n"
 
 #. TRANSLATORS: `help' must not be
 #. translated.
 #: ../src/redshift.c:436
 #, c-format
 msgid "Try `-m %s:help' for more information.\n"
-msgstr ""
+msgstr "`-m %s:help' で詳細情報が参照できます。\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: ../src/redshift.c:466
 #, c-format
 msgid "Try -m %s:help' for more information.\n"
-msgstr ""
+msgstr "`-m %s:help' で詳細情報が参照できます。\n"
 
 #: ../src/redshift.c:478
 #, c-format
 msgid "Failed to start adjustment method %s.\n"
-msgstr ""
+msgstr "調整方式 %s の開始に失敗しました。\n"
 
 #: ../src/redshift.c:509
 #, c-format
 msgid "Latitude must be between %.1f and %.1f.\n"
-msgstr ""
+msgstr "緯度は %.1f と %.1f の間でなければなりません。\n"
 
 #: ../src/redshift.c:518
 #, c-format
 msgid "Longitude must be between %.1f and %.1f.\n"
-msgstr ""
+msgstr "経度は %.1f と %.1f の間でなければなりません。\n"
 
 #: ../src/redshift.c:545 ../src/redshift.c:564 ../src/redshift.c:696
 #: ../src/redshift.c:1187
 msgid "Unable to read system time.\n"
-msgstr ""
+msgstr "システムの時刻を読み込めません。\n"
 
 #: ../src/redshift.c:635
 msgid "Waiting for initial location to become available...\n"
-msgstr ""
+msgstr "初期位置が取得可能になるのを待機しています...\n"
 
 #: ../src/redshift.c:641 ../src/redshift.c:832 ../src/redshift.c:847
 #: ../src/redshift.c:1172
 msgid "Unable to get location from provider.\n"
-msgstr ""
+msgstr "プロバイダから位置を取得できません。\n"
 
 #: ../src/redshift.c:647 ../src/redshift.c:871
 msgid "Invalid location returned from provider.\n"
-msgstr ""
+msgstr "プロバイダから無効な位置が返されました。\n"
 
 #: ../src/redshift.c:656 ../src/redshift.c:788 ../src/redshift.c:1222
 #: ../src/redshift.c:1253
 #, c-format
 msgid "Color temperature: %uK\n"
-msgstr ""
+msgstr "色温度: %uK\n"
 
 #: ../src/redshift.c:657 ../src/redshift.c:793 ../src/redshift.c:1224
 #, c-format
 msgid "Brightness: %.2f\n"
-msgstr ""
+msgstr "明るさ: %.2f\n"
 
 #: ../src/redshift.c:686
 #, c-format
 msgid "Status: %s\n"
-msgstr ""
+msgstr "状態: %s\n"
 
 #: ../src/redshift.c:687 ../src/redshift-gtk/statusicon.py:301
 msgid "Disabled"
-msgstr ""
+msgstr "無効"
 
 #: ../src/redshift.c:687 ../src/redshift-gtk/statusicon.py:73
 #: ../src/redshift-gtk/statusicon.py:301
 msgid "Enabled"
-msgstr ""
+msgstr "有効"
 
 #: ../src/redshift.c:802 ../src/redshift.c:1233 ../src/redshift.c:1263
 #: ../src/redshift.c:1285
 msgid "Temperature adjustment failed.\n"
-msgstr ""
+msgstr "温度の調整に失敗しました。\n"
 
 #: ../src/redshift.c:854
 msgid ""
 "Location is temporarily unavailable; Using previous location until it "
 "becomes available...\n"
-msgstr ""
+msgstr "位置情報は一時的に利用不能です; 利用可能になるまでは前回の位置を使用します...\n"
 
 #: ../src/redshift.c:967
 msgid "Partitial time-configuration not supported!\n"
-msgstr ""
+msgstr "部分的な時刻設定はサポートされていません!\n"
 
 #: ../src/redshift.c:975
 msgid "Invalid dawn/dusk time configuration!\n"
-msgstr ""
+msgstr "無効な日の出/日の入り時刻の設定です!\n"
 
 #: ../src/redshift.c:1006
 #, c-format
 msgid "Trying location provider `%s'...\n"
-msgstr ""
+msgstr "位置プロバイダ `%s' を試行しています...\n"
 
 #: ../src/redshift.c:1011
 msgid "Trying next provider...\n"
-msgstr ""
+msgstr "次のプロバイダを試行しています...\n"
 
 #: ../src/redshift.c:1017
 #, c-format
 msgid "Using provider `%s'.\n"
-msgstr ""
+msgstr "プロバイダ `%s' を使用します。\n"
 
 #: ../src/redshift.c:1025
 msgid "No more location providers to try.\n"
-msgstr ""
+msgstr "試行する位置プロバイダがもうありません。\n"
 
 #: ../src/redshift.c:1034
 #, c-format
 msgid ""
 "High transition elevation cannot be lower than the low transition "
 "elevation.\n"
-msgstr ""
+msgstr "elevation-high の値は elevation-low の値より小さくできません。\n"
 
 #. TRANSLATORS: Append degree symbols if possible.
 #: ../src/redshift.c:1041
 #, c-format
 msgid "Solar elevations: day above %.1f, night below %.1f\n"
-msgstr ""
+msgstr "太陽の高度範囲: 昼間は %.1f° より上, 夜間は %.1f° より下\n"
 
 #: ../src/redshift.c:1049
 #, c-format
 msgid "Temperatures: %dK at day, %dK at night\n"
-msgstr ""
+msgstr "温度: 昼間 %dK, 夜間 %dK\n"
 
 #: ../src/redshift.c:1060 ../src/redshift.c:1071
 #, c-format
 msgid "Temperature must be between %uK and %uK.\n"
-msgstr ""
+msgstr "温度は %uK と %uK の間でなければなりません。\n"
 
 #: ../src/redshift.c:1083
 #, c-format
 msgid "Brightness values must be between %.1f and %.1f.\n"
-msgstr ""
+msgstr "明るさの値は %.1f と %.1f の間でなければなりません。\n"
 
 #: ../src/redshift.c:1089
 #, c-format
 msgid "Brightness: %.2f:%.2f\n"
-msgstr ""
+msgstr "明るさ: %.2f:%.2f\n"
 
 #: ../src/redshift.c:1098
 #, c-format
 msgid "Gamma value must be between %.1f and %.1f.\n"
-msgstr ""
+msgstr "ガンマの値は %.1f と %.1f の間でなければなりません。\n"
 
 #. TRANSLATORS: The string in parenthesis is either
 #. Daytime or Night (translated).
 #: ../src/redshift.c:1106 ../src/redshift.c:1110
 #, c-format
 msgid "Gamma (%s): %.3f, %.3f, %.3f\n"
-msgstr ""
+msgstr "ガンマ (%s): %.3f, %.3f, %.3f\n"
 
 #: ../src/redshift.c:1139
 msgid "Trying next method...\n"
-msgstr ""
+msgstr "次の方式を試行しています...\n"
 
 #: ../src/redshift.c:1144
 #, c-format
 msgid "Using method `%s'.\n"
-msgstr ""
+msgstr "方式 `%s' を使用します。\n"
 
 #: ../src/redshift.c:1151
 msgid "No more methods to try.\n"
-msgstr ""
+msgstr "試行する方式がもうありません。\n"
 
 #: ../src/redshift.c:1165
 msgid "Waiting for current location to become available...\n"
-msgstr ""
+msgstr "現在位置が取得可能になるのを待機しています...\n"
 
 #. TRANSLATORS: Append degree symbol if
 #. possible.
 #: ../src/redshift.c:1206
 #, c-format
 msgid "Solar elevation: %f\n"
-msgstr ""
+msgstr "太陽の高度: %f°\n"
 
 #: ../src/redshift.c:1244 ../src/redshift.c:1272 ../src/redshift.c:1294
 msgid "Press ctrl-c to stop...\n"
-msgstr ""
+msgstr "ctrl-c を押すと停止します...\n"
 
 #. TRANSLATORS: help output 1
 #. LAT is latitude, LON is longitude,
@@ -332,13 +336,13 @@ msgstr ""
 #: ../src/options.c:159
 #, c-format
 msgid "Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
-msgstr ""
+msgstr "使い方: %s -l 緯度:経度 -t 昼の色温度:夜の色温度 [オプション...]\n"
 
 #. TRANSLATORS: help output 2
 #. no-wrap
 #: ../src/options.c:165
 msgid "Set color temperature of display according to time of day.\n"
-msgstr ""
+msgstr "時刻に従ってディスプレイの色温度を設定します。\n"
 
 #. TRANSLATORS: help output 3
 #. no-wrap
@@ -348,6 +352,9 @@ msgid ""
 "  -v\t\tVerbose output\n"
 "  -V\t\tShow program version\n"
 msgstr ""
+"  -h\t\tこのヘルプ メッセージを表示\n"
+"  -v\t\t詳細な出力\n"
+"  -V\t\tプログラムのバージョンを表示\n"
 
 #. TRANSLATORS: help output 4
 #. `list' must not be translated
@@ -370,6 +377,21 @@ msgid ""
 "  -r\t\tDisable fading between color temperatures\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
+"  -b DAY:NIGHT\t画面に適用する明るさ (0.1 から 1.0 の間)\n"
+"  -c FILE\t指定した設定ファイルから設定を読み込む\n"
+"  -g R:G:B\t追加で適用するガンマ補正\n"
+"  -l LAT:LON\tあなたの現在位置\n"
+"  -l PROVIDER\t自動で位置情報を更新するプロバイダを選択\n"
+"  \t\t(`list' を指定すると利用可能なプロバイダの一覧が見られます)\n"
+"  -m METHOD\t色温度の設定方式\n"
+"  \t\t(`list' を指定すると利用可能な方式の一覧が見られます)\n"
+"  -o\t\tワン ショット モード (色温度の変更は継続して行いません)\n"
+"  -O TEMP\tワン ショット 手動モード (色温度を設定します)\n"
+"  -p\t\t表示モード (パラメータの出力のみを行って終了します)\n"
+"  -P\t\t新しい色効果の適用前に既存のガンマ ランプをリセット\n"
+"  -x\t\tリセット モード (画面の調整を解除します)\n"
+"  -r\t\t色温度の緩やかな変更を無効にする\n"
+"  -t DAY:NIGHT\t昼間/夜間に設定する色温度\n"
 
 #. TRANSLATORS: help output 5
 #: ../src/options.c:201
@@ -381,6 +403,9 @@ msgid ""
 "in\n"
 "more red light.\n"
 msgstr ""
+"ニュートラルな温度は %uK です。この値を用いると\n"
+"ディスプレイの色温度は変更されません。これよりも高い値を設定すると\n"
+"青い光が増え、低い値を設定すると赤い光が増えます。\n"
 
 #. TRANSLATORS: help output 6
 #: ../src/options.c:210
@@ -391,123 +416,127 @@ msgid ""
 "  Daytime temperature: %uK\n"
 "  Night temperature: %uK\n"
 msgstr ""
+"既定値:\n"
+"\n"
+"  昼間の温度: %uK\n"
+"  夜間の温度: %uK\n"
 
 #. TRANSLATORS: help output 7
 #: ../src/options.c:218
 #, c-format
 msgid "Please report bugs to <%s>\n"
-msgstr ""
+msgstr "バグは <%s> に報告してください\n"
 
 #: ../src/options.c:225
 msgid "Available adjustment methods:\n"
-msgstr ""
+msgstr "利用可能な調整方式:\n"
 
 #: ../src/options.c:231
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
-msgstr ""
+msgstr "`-m 方式名:オプション' でコロン区切りのオプションを指定します。\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: ../src/options.c:234
 msgid "Try `-m METHOD:help' for help.\n"
-msgstr ""
+msgstr "`-m 方式名:help' でヘルプが参照できます。\n"
 
 #: ../src/options.c:241
 msgid "Available location providers:\n"
-msgstr ""
+msgstr "利用可能な位置プロバイダ:\n"
 
 #: ../src/options.c:247
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
-msgstr ""
+msgstr "`-l プロバイダ名:オプション' でコロン区切りのオプションを指定します。\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: ../src/options.c:250
 msgid "Try `-l PROVIDER:help' for help.\n"
-msgstr ""
+msgstr "`-l プロバイダ名:help' でヘルプが参照できます。\n"
 
 #: ../src/options.c:356
 msgid "Malformed gamma argument.\n"
-msgstr ""
+msgstr "不正なガンマ引数です。\n"
 
 #: ../src/options.c:358 ../src/options.c:472 ../src/options.c:491
 msgid "Try `-h' for more information.\n"
-msgstr ""
+msgstr "`-h' で詳細情報が参照できます。\n"
 
 #: ../src/options.c:407 ../src/options.c:610
 #, c-format
 msgid "Unknown location provider `%s'.\n"
-msgstr ""
+msgstr "不明な位置プロバイダ `%s' です。\n"
 
 #. TRANSLATORS: This refers to the method
 #. used to adjust colors e.g VidMode
 #: ../src/options.c:439 ../src/options.c:597
 #, c-format
 msgid "Unknown adjustment method `%s'.\n"
-msgstr ""
+msgstr "不明な調整方式 `%s' です。\n"
 
 #: ../src/options.c:470
 msgid "Malformed temperature argument.\n"
-msgstr ""
+msgstr "不正な温度の引数です。\n"
 
 #: ../src/options.c:561 ../src/options.c:575 ../src/options.c:586
 msgid "Malformed gamma setting.\n"
-msgstr ""
+msgstr "不正なガンマ設定です。\n"
 
 #: ../src/options.c:621
 #, c-format
 msgid "Malformed dawn-time setting `%s'.\n"
-msgstr ""
+msgstr "不正な日の出時刻の設定 `%s' です。\n"
 
 #: ../src/options.c:632
 #, c-format
 msgid "Malformed dusk-time setting `%s'.\n"
-msgstr ""
+msgstr "不正な日の入り時刻の設定 `%s' です。\n"
 
 #: ../src/options.c:639
 #, c-format
 msgid "Unknown configuration setting `%s'.\n"
-msgstr ""
+msgstr "不明な設定項目 `%s' です。\n"
 
 #: ../src/config-ini.c:167
 msgid "Malformed section header in config file.\n"
-msgstr ""
+msgstr "設定ファイルに不正なセクション ヘッダがあります。\n"
 
 #: ../src/config-ini.c:203
 msgid "Malformed assignment in config file.\n"
-msgstr ""
+msgstr "設定ファイルに不正な代入があります。\n"
 
 #: ../src/config-ini.c:214
 msgid "Assignment outside section in config file.\n"
-msgstr ""
+msgstr "設定ファイルにセクション外の代入があります。\n"
 
 #: ../src/gamma-drm.c:97
 #, c-format
 msgid "Failed to open DRM device: %s\n"
-msgstr ""
+msgstr "DRM デバイスを開くのに失敗しました: %s\n"
 
 #: ../src/gamma-drm.c:105
 #, c-format
 msgid "Failed to get DRM mode resources\n"
-msgstr ""
+msgstr "DRM モード リソースの取得に失敗しました\n"
 
 #: ../src/gamma-drm.c:115 ../src/gamma-randr.c:384
 #, c-format
 msgid "CRTC %d does not exist. "
-msgstr ""
+msgstr "CRTC %d は存在しません。 "
 
 #: ../src/gamma-drm.c:118 ../src/gamma-randr.c:387
 #, c-format
 msgid "Valid CRTCs are [0-%d].\n"
-msgstr ""
+msgstr "有効な CRTC は [0-%d] です。\n"
 
 #: ../src/gamma-drm.c:121 ../src/gamma-randr.c:390
 #, c-format
 msgid "Only CRTC 0 exists.\n"
-msgstr ""
+msgstr "CRTC 0 しか存在しません。\n"
 
 #: ../src/gamma-drm.c:159
 #, c-format
 msgid "CRTC %i lost, skipping\n"
-msgstr ""
+msgstr "CRTC %i を見失いました、スキップします\n"
 
 #: ../src/gamma-drm.c:165
 #, c-format
@@ -515,6 +544,8 @@ msgid ""
 "Could not get gamma ramp size for CRTC %i\n"
 "on graphics card %i, ignoring device.\n"
 msgstr ""
+"グラフィックス カード %i 上の CRTC %i のガンマ ランプの\n"
+"サイズが取得できませんでした、デバイスを無視します。\n"
 
 #: ../src/gamma-drm.c:178
 #, c-format
@@ -522,10 +553,12 @@ msgid ""
 "DRM could not read gamma ramps on CRTC %i on\n"
 "graphics card %i, ignoring device.\n"
 msgstr ""
+"DRM は グラフィックス カード %i 上の CRTC %i のガンマ ランプを\n"
+"読み込めませんでした、デバイスを無視します。\n"
 
 #: ../src/gamma-drm.c:242
 msgid "Adjust gamma ramps with Direct Rendering Manager.\n"
-msgstr ""
+msgstr "Direct Rendering Manager を用いてガンマ ランプを調整します。\n"
 
 #. TRANSLATORS: DRM help output
 #. left column must not be translated
@@ -534,11 +567,13 @@ msgid ""
 "  card=N\tGraphics card to apply adjustments to\n"
 "  crtc=N\tCRTC to apply adjustments to\n"
 msgstr ""
+"  card=N\t調整を適用するグラフィックス カード\n"
+"  crtc=N\t調整を適用する CRTC\n"
 
 #: ../src/gamma-drm.c:260
 #, c-format
 msgid "CRTC must be a non-negative integer\n"
-msgstr ""
+msgstr "CRTC は負でない整数でなければなりません\n"
 
 #: ../src/gamma-drm.c:264 ../src/gamma-randr.c:369 ../src/gamma-vidmode.c:161
 #: ../src/gamma-quartz.c:183 ../src/gamma-w32gdi.c:128 ../src/gamma-dummy.c:67
@@ -546,37 +581,37 @@ msgstr ""
 #: ../src/location-manual.c:106
 #, c-format
 msgid "Unknown method parameter: `%s'.\n"
-msgstr ""
+msgstr "方式のパラメータが不明です: `%s'\n"
 
 #: ../src/gamma-randr.c:94 ../src/gamma-randr.c:153 ../src/gamma-randr.c:192
 #: ../src/gamma-randr.c:218 ../src/gamma-randr.c:275 ../src/gamma-randr.c:435
 #, c-format
 msgid "`%s' returned error %d\n"
-msgstr ""
+msgstr "`%s' はエラー %d を返しました\n"
 
 #: ../src/gamma-randr.c:103
 #, c-format
 msgid "Unsupported RANDR version (%u.%u)\n"
-msgstr ""
+msgstr "サポートされていない RANDR のバージョンです (%u.%u)\n"
 
 #: ../src/gamma-randr.c:138
 #, c-format
 msgid "Screen %i could not be found.\n"
-msgstr ""
+msgstr "スクリーン %i を見つけられませんでした。\n"
 
 #: ../src/gamma-randr.c:204 ../src/gamma-vidmode.c:96 ../src/gamma-quartz.c:114
 #, c-format
 msgid "Gamma ramp size too small: %i\n"
-msgstr ""
+msgstr "ガンマ ランプのサイズが小さすぎます: %i\n"
 
 #: ../src/gamma-randr.c:277
 #, c-format
 msgid "Unable to restore CRTC %i\n"
-msgstr ""
+msgstr "CRTC %i を復元できません\n"
 
 #: ../src/gamma-randr.c:301
 msgid "Adjust gamma ramps with the X RANDR extension.\n"
-msgstr ""
+msgstr "X RANDR 拡張を用いてガンマ ランプを調整します。\n"
 
 #. TRANSLATORS: RANDR help output
 #. left column must not be translated
@@ -585,11 +620,13 @@ msgid ""
 "  screen=N\t\tX screen to apply adjustments to\n"
 "  crtc=N\tList of comma separated CRTCs to apply adjustments to\n"
 msgstr ""
+"  screen=N\t\t調整を適用する X のスクリーン\n"
+"  crtc=N\t\t調整を適用する CRTC のコンマ区切りの一覧\n"
 
 #: ../src/gamma-randr.c:328
 #, c-format
 msgid "Unable to read screen number: `%s'.\n"
-msgstr ""
+msgstr "スクリーンの番号を読み込めません: `%s'\n"
 
 #: ../src/gamma-randr.c:364 ../src/gamma-vidmode.c:156
 #: ../src/gamma-quartz.c:178 ../src/gamma-w32gdi.c:123
@@ -597,69 +634,69 @@ msgstr ""
 msgid ""
 "Parameter `%s` is now always on;  Use the `%s` command-line option to "
 "disable.\n"
-msgstr ""
+msgstr "現在のバージョンではパラメータ `%s` は常に有効です;  コマンド ライン オプション `%s` を用いると無効になります。\n"
 
 #: ../src/gamma-vidmode.c:61 ../src/gamma-vidmode.c:81
 #: ../src/gamma-vidmode.c:90 ../src/gamma-vidmode.c:117
 #: ../src/gamma-vidmode.c:180 ../src/gamma-vidmode.c:225
 #, c-format
 msgid "X request failed: %s\n"
-msgstr ""
+msgstr "X のリクエストに失敗しました: %s\n"
 
 #: ../src/gamma-vidmode.c:140
 msgid "Adjust gamma ramps with the X VidMode extension.\n"
-msgstr ""
+msgstr "X VidMode 拡張を用いてガンマ ランプを調整します。\n"
 
 #. TRANSLATORS: VidMode help output
 #. left column must not be translated
 #: ../src/gamma-vidmode.c:145
 msgid "  screen=N\t\tX screen to apply adjustments to\n"
-msgstr ""
+msgstr "  screen=N\t\t調整を適用する X のスクリーン\n"
 
 #: ../src/gamma-quartz.c:140 ../src/gamma-w32gdi.c:91
 msgid "Unable to save current gamma ramp.\n"
-msgstr ""
+msgstr "現在のガンマ ランプを保存できません。\n"
 
 #: ../src/gamma-quartz.c:170
 msgid "Adjust gamma ramps on macOS using Quartz.\n"
-msgstr ""
+msgstr "Quartz を用いて macOS 上でガンマ ランプを調整します。\n"
 
 #: ../src/gamma-w32gdi.c:68 ../src/gamma-w32gdi.c:141 ../src/gamma-w32gdi.c:168
 msgid "Unable to open device context.\n"
-msgstr ""
+msgstr "デバイス コンテキストを開けません。\n"
 
 #: ../src/gamma-w32gdi.c:75
 msgid "Display device does not support gamma ramps.\n"
-msgstr ""
+msgstr "ディスプレイ デバイスはガンマ ランプをサポートしていません。\n"
 
 #: ../src/gamma-w32gdi.c:115
 msgid "Adjust gamma ramps with the Windows GDI.\n"
-msgstr ""
+msgstr "Windows GDI を用いてガンマ ランプを調整します。\n"
 
 #: ../src/gamma-w32gdi.c:153
 msgid "Unable to restore gamma ramps.\n"
-msgstr ""
+msgstr "ガンマ ランプを復元できません。\n"
 
 #: ../src/gamma-w32gdi.c:211
 msgid "Unable to set gamma ramps.\n"
-msgstr ""
+msgstr "ガンマ ランプを設定できません。\n"
 
 #: ../src/gamma-dummy.c:43
 msgid ""
 "WARNING: Using dummy gamma method! Display will not be affected by this "
 "gamma method.\n"
-msgstr ""
+msgstr "警告: ダミーのガンマ方式を使用しています! このガンマ方式ではディスプレイは影響を受けません。\n"
 
 #: ../src/gamma-dummy.c:60
 msgid ""
 "Does not affect the display but prints the color temperature to the "
 "terminal.\n"
-msgstr ""
+msgstr "ディスプレイには影響を与えませんが、端末に色温度を表示します。\n"
 
 #: ../src/gamma-dummy.c:75
 #, c-format
 msgid "Temperature: %i\n"
-msgstr ""
+msgstr "温度: %i\n"
 
 #: ../src/location-geoclue2.c:59
 #, c-format
@@ -670,77 +707,81 @@ msgid ""
 "more\n"
 "information.\n"
 msgstr ""
+"現在位置へのアクセスが GeoClue によって拒否されました!\n"
+"位置情報サービスが有効であることおよび Redshift が位置情報サービスに\n"
+"許可されていることを確認してください。詳しい情報は\n"
+"https://github.com/jonls/redshift#faq を参照してください。\n"
 
 #: ../src/location-geoclue2.c:107
 #, c-format
 msgid "Unable to obtain location: %s.\n"
-msgstr ""
+msgstr "位置を取得できません: %s\n"
 
 #: ../src/location-geoclue2.c:150
 #, c-format
 msgid "Unable to obtain GeoClue Manager: %s.\n"
-msgstr ""
+msgstr "GeoClue マネージャを取得できません: %s\n"
 
 #: ../src/location-geoclue2.c:166
 #, c-format
 msgid "Unable to obtain GeoClue client path: %s.\n"
-msgstr ""
+msgstr "GeoClue クライアント パスを取得できません: %s\n"
 
 #: ../src/location-geoclue2.c:188
 #, c-format
 msgid "Unable to obtain GeoClue Client: %s.\n"
-msgstr ""
+msgstr "GeoClue クライアントを取得できません: %s\n"
 
 #: ../src/location-geoclue2.c:229
 #, c-format
 msgid "Unable to set distance threshold: %s.\n"
-msgstr ""
+msgstr "距離のしきい値を設定できません: %s\n"
 
 #: ../src/location-geoclue2.c:253
 #, c-format
 msgid "Unable to start GeoClue client: %s.\n"
-msgstr ""
+msgstr "GeoClue クライアントを開始できません: %s\n"
 
 #: ../src/location-geoclue2.c:365
 msgid "Failed to start GeoClue2 provider!\n"
-msgstr ""
+msgstr "GeoClue2 プロバイダ の開始に失敗しました!\n"
 
 #: ../src/location-geoclue2.c:399
 msgid "Use the location as discovered by a GeoClue2 provider.\n"
-msgstr ""
+msgstr "GeoClue2 プロバイダによって見つかった位置を使用します。\n"
 
 #: ../src/location-corelocation.m:73
 msgid "Not authorized to obtain location from CoreLocation.\n"
-msgstr ""
+msgstr "CoreLocation からの位置の取得は許可されていません。\n"
 
 #: ../src/location-corelocation.m:111
 #, c-format
 msgid "Error obtaining location from CoreLocation: %s\n"
-msgstr ""
+msgstr "CoreLocation から位置を取得する際にエラーが発生しました: %s\n"
 
 #: ../src/location-corelocation.m:120
 msgid "Waiting for authorization to obtain location...\n"
-msgstr ""
+msgstr "位置を取得するための認証を待機しています...\n"
 
 #: ../src/location-corelocation.m:122
 msgid "Request for location was not authorized!\n"
-msgstr ""
+msgstr "位置の要求は許可されていませんでした!\n"
 
 #: ../src/location-corelocation.m:203
 msgid "Failed to start CoreLocation provider!\n"
-msgstr ""
+msgstr "CoreLocation プロバイダ の開始に失敗しました!\n"
 
 #: ../src/location-corelocation.m:235
 msgid "Use the location as discovered by the Corelocation provider.\n"
-msgstr ""
+msgstr "Corelocation プロバイダによって見つかった位置を使用します。\n"
 
 #: ../src/location-manual.c:59
 msgid "Latitude and longitude must be set.\n"
-msgstr ""
+msgstr "緯度と経度が設定されていなければなりません。\n"
 
 #: ../src/location-manual.c:75
 msgid "Specify location manually.\n"
-msgstr ""
+msgstr "位置を手動で指定します。\n"
 
 #. TRANSLATORS: Manual location help output
 #. left column must not be translated
@@ -749,65 +790,69 @@ msgid ""
 "  lat=N\t\tLatitude\n"
 "  lon=N\t\tLongitude\n"
 msgstr ""
+"  lat=N\t\t緯度\n"
+"  lon=N\t\t経度\n"
 
 #: ../src/location-manual.c:83
 msgid ""
 "Both values are expected to be floating point numbers,\n"
 "negative values representing west / south, respectively.\n"
 msgstr ""
+"いずれの値も浮動小数点数であることが期待され、\n"
+"負の値は西 / 南をそれぞれ表します。\n"
 
 #: ../src/location-manual.c:97
 msgid "Malformed argument.\n"
-msgstr ""
+msgstr "不正な引数です。\n"
 
 #: ../src/redshift-gtk/statusicon.py:78
 msgid "Suspend for"
-msgstr ""
+msgstr "一時休止"
 
 #: ../src/redshift-gtk/statusicon.py:80
 msgid "30 minutes"
-msgstr ""
+msgstr "30 分"
 
 #: ../src/redshift-gtk/statusicon.py:81
 msgid "1 hour"
-msgstr ""
+msgstr "1 時間"
 
 #: ../src/redshift-gtk/statusicon.py:82
 msgid "2 hours"
-msgstr ""
+msgstr "2 時間"
 
 #: ../src/redshift-gtk/statusicon.py:91
 msgid "Autostart"
-msgstr ""
+msgstr "自動起動"
 
 #: ../src/redshift-gtk/statusicon.py:103 ../src/redshift-gtk/statusicon.py:113
 msgid "Info"
-msgstr ""
+msgstr "情報"
 
 #: ../src/redshift-gtk/statusicon.py:108
 msgid "Quit"
-msgstr ""
+msgstr "終了"
 
 #: ../src/redshift-gtk/statusicon.py:146
 msgid "Close"
-msgstr ""
+msgstr "閉じる"
 
 #: ../src/redshift-gtk/statusicon.py:300
 msgid "<b>Status:</b> {}"
-msgstr ""
+msgstr "<b>状態:</b> {}"
 
 #: ../src/redshift-gtk/statusicon.py:306 ../src/redshift-gtk/statusicon.py:324
 msgid "Color temperature"
-msgstr ""
+msgstr "色温度"
 
 #: ../src/redshift-gtk/statusicon.py:312 ../src/redshift-gtk/statusicon.py:325
 msgid "Period"
-msgstr ""
+msgstr "時間帯"
 
 #: ../src/redshift-gtk/statusicon.py:318
 msgid "Location"
-msgstr ""
+msgstr "位置"
 
 #: ../src/redshift-gtk/statusicon.py:349
 msgid "Please run `redshift -h` for help output."
-msgstr ""
+msgstr "ヘルプを出力するには `redshift -h` を実行してください。"

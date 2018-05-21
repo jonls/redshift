@@ -1,5 +1,5 @@
 # Swedish translation for redshift
-# Copyright (c) 2017 
+# Copyright (c) 2017
 # This file is distributed under the same license as the redshift package.
 # Jonathan Nyberg <EMAIL@ADDRESS>, 2017.
 # Josef Andersson josef.andersson@fripost.org, 2017.
@@ -9,16 +9,15 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://github.com/jonls/redshift/issues\n"
 "POT-Creation-Date: 2017-10-18 11:46-0700\n"
-"PO-Revision-Date: 2017-02-02 17:05+0000\n"
-"Last-Translator: Josef Andersson <josef.andersson@fripost.org>\n"
+"PO-Revision-Date: 2017-02-06 09:54+0000\n"
+"Last-Translator: Josef Andersson <Unknown>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
-"Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Launchpad-Export-Date: 2017-02-03 01:01+0000\n"
-"X-Generator: Launchpad (build 18315)\n"
+"X-Launchpad-Export-Date: 2018-05-21 01:04+0000\n"
+"X-Generator: Launchpad (build 18658)\n"
+"Language: sv\n"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
 msgid ""
@@ -189,9 +188,8 @@ msgid "Unable to read system time.\n"
 msgstr "Det går inte att läsa systemets tid.\n"
 
 #: ../src/redshift.c:635
-#, fuzzy
 msgid "Waiting for initial location to become available...\n"
-msgstr "Väntar på tillstånd att erhålla plats…\n"
+msgstr ""
 
 #: ../src/redshift.c:641 ../src/redshift.c:832 ../src/redshift.c:847
 #: ../src/redshift.c:1172
@@ -199,9 +197,8 @@ msgid "Unable to get location from provider.\n"
 msgstr "Det går inte att få plats från leverantör.\n"
 
 #: ../src/redshift.c:647 ../src/redshift.c:871
-#, fuzzy
 msgid "Invalid location returned from provider.\n"
-msgstr "Det går inte att få plats från leverantör.\n"
+msgstr ""
 
 #: ../src/redshift.c:656 ../src/redshift.c:788 ../src/redshift.c:1222
 #: ../src/redshift.c:1253
@@ -326,9 +323,8 @@ msgid "No more methods to try.\n"
 msgstr "Inga fler metoder att pröva.\n"
 
 #: ../src/redshift.c:1165
-#, fuzzy
 msgid "Waiting for current location to become available...\n"
-msgstr "Väntar på tillstånd att erhålla plats…\n"
+msgstr ""
 
 #. TRANSLATORS: Append degree symbol if
 #. possible.
@@ -373,7 +369,6 @@ msgstr ""
 #. `list' must not be translated
 #. no-wrap
 #: ../src/options.c:179
-#, fuzzy
 msgid ""
 "  -b DAY:NIGHT\tScreen brightness to apply (between 0.1 and 1.0)\n"
 "  -c FILE\tLoad settings from specified configuration file\n"
@@ -391,25 +386,10 @@ msgid ""
 "  -r\t\tDisable fading between color temperatures\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
-"  -b DAG:NATT\tSkärmens ljusstyrka att tillämpa (mellan 0.1 and 1.0)\n"
-"  -c FIL\tLäs in inställningar från specificerad konfigurationsfil\n"
-"  -g R:G:B\tYtterligare gammakorrigering att tillämpa\n"
-"  -l LAT:LON\tDin nuvarande plats\n"
-"  -l LEVERANTÖR\tVälj leverantör för automatiska platsuppdateringar\n"
-"  \t\t(Skriv ”list” för att se tillgängliga leverantörer)\n"
-"  -m METOD\tMetod som ska användas för att ställa in färgtemperaturen\n"
-"  \t\t(Skriv ”list” för att se tillgängliga metoder)\n"
-"  -o\t\tEn-fotograferingsläge (justerar inte kontinuerligt färgtemperatur)\n"
-"  -O TEMPERATUR\tEn-fotograferingsläge manuellt läge (ställ in "
-"färgtemperatur)\n"
-"  -p\t\tUtskriftsläge (skriv endast parametrar och avsluta)\n"
-"  -x\t\tÅterställningsläge (ta bort justering från skärmen)\n"
-"  -r\t\tInaktivera temperaturövergångar\n"
-"  -t DAG:NATT\tFärgtemperatur att ställa in på dagtid/natt\n"
 
 #. TRANSLATORS: help output 5
 #: ../src/options.c:201
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "The neutral temperature is %uK. Using this value will not change the color\n"
 "temperature of the display. Setting the color temperature to a value higher\n"
@@ -417,11 +397,6 @@ msgid ""
 "in\n"
 "more red light.\n"
 msgstr ""
-"Den neutrala temperaturen är %uK. Användning av detta värde kommer \n"
-"inte ändra färgtemperaturen på skärmen. Att ställa in färgtemperaturen \n"
-"på ett värde som är högre än detta resulterar i blåare ljus, och\n"
-"att ställa in ett lägre värde kommer att resultera i\n"
-"rödare ljus.\n"
 
 #. TRANSLATORS: help output 6
 #: ../src/options.c:210
@@ -498,14 +473,14 @@ msgid "Malformed gamma setting.\n"
 msgstr "Felaktigt gamma-inställning.\n"
 
 #: ../src/options.c:621
-#, fuzzy, c-format
+#, c-format
 msgid "Malformed dawn-time setting `%s'.\n"
-msgstr "Felaktigt gamma-inställning.\n"
+msgstr ""
 
 #: ../src/options.c:632
-#, fuzzy, c-format
+#, c-format
 msgid "Malformed dusk-time setting `%s'.\n"
-msgstr "Felaktigt gamma-inställning.\n"
+msgstr ""
 
 #: ../src/options.c:639
 #, c-format
@@ -525,9 +500,9 @@ msgid "Assignment outside section in config file.\n"
 msgstr "Tilldelning utanför avsnitt i konfigurationsfil.\n"
 
 #: ../src/gamma-drm.c:97
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open DRM device: %s\n"
-msgstr "Det gick inte att få DRM-läges resurser\n"
+msgstr ""
 
 #: ../src/gamma-drm.c:105
 #, c-format
@@ -632,18 +607,15 @@ msgstr "Justera gammaförfiningar med X RANDR utökningen.\n"
 #. TRANSLATORS: RANDR help output
 #. left column must not be translated
 #: ../src/gamma-randr.c:306
-#, fuzzy
 msgid ""
 "  screen=N\t\tX screen to apply adjustments to\n"
 "  crtc=N\tList of comma separated CRTCs to apply adjustments to\n"
 msgstr ""
-"  card=N\tGrafikkort att tillämpa justeringar på\n"
-"  crtc=N\tCRTC att tillämpa justeringar på\n"
 
 #: ../src/gamma-randr.c:328
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read screen number: `%s'.\n"
-msgstr "Det går inte att läsa systemets tid.\n"
+msgstr ""
 
 #: ../src/gamma-randr.c:364 ../src/gamma-vidmode.c:156
 #: ../src/gamma-quartz.c:178 ../src/gamma-w32gdi.c:123
@@ -667,20 +639,16 @@ msgstr "Justera gammaförfiningar med X VidMode utökning.\n"
 #. TRANSLATORS: VidMode help output
 #. left column must not be translated
 #: ../src/gamma-vidmode.c:145
-#, fuzzy
 msgid "  screen=N\t\tX screen to apply adjustments to\n"
 msgstr ""
-"  screen=N\t\tX skärm att tillämpa justeringar på\n"
-"  preserve={0,1}\tHuruvida existerande gamma bör bevaras\n"
 
 #: ../src/gamma-quartz.c:140 ../src/gamma-w32gdi.c:91
 msgid "Unable to save current gamma ramp.\n"
 msgstr "Det går inte att spara nuvarande gammaförfining.\n"
 
 #: ../src/gamma-quartz.c:170
-#, fuzzy
 msgid "Adjust gamma ramps on macOS using Quartz.\n"
-msgstr "Justera gammaförfiningar på OSX med Quartz.\n"
+msgstr ""
 
 #: ../src/gamma-w32gdi.c:68 ../src/gamma-w32gdi.c:141 ../src/gamma-w32gdi.c:168
 msgid "Unable to open device context.\n"
@@ -763,9 +731,8 @@ msgid "Unable to start GeoClue client: %s.\n"
 msgstr "Det går inte att starta GeoClue-klient: %s.\n"
 
 #: ../src/location-geoclue2.c:365
-#, fuzzy
 msgid "Failed to start GeoClue2 provider!\n"
-msgstr "Det gick inte att starta leverantör %s.\n"
+msgstr ""
 
 #: ../src/location-geoclue2.c:399
 msgid "Use the location as discovered by a GeoClue2 provider.\n"
@@ -789,9 +756,8 @@ msgid "Request for location was not authorized!\n"
 msgstr "Begäran om platsen var inte godkänt!\n"
 
 #: ../src/location-corelocation.m:203
-#, fuzzy
 msgid "Failed to start CoreLocation provider!\n"
-msgstr "Det gick inte att starta leverantör %s.\n"
+msgstr ""
 
 #: ../src/location-corelocation.m:235
 msgid "Use the location as discovered by the Corelocation provider.\n"
@@ -878,68 +844,3 @@ msgstr "Plats"
 #: ../src/redshift-gtk/statusicon.py:349
 msgid "Please run `redshift -h` for help output."
 msgstr ""
-
-#~ msgid ""
-#~ "  screen=N\t\tX screen to apply adjustments to\n"
-#~ "  crtc=N\t\tCRTC to apply adjustments to\n"
-#~ "  preserve={0,1}\tWhether existing gamma should be preserved\n"
-#~ msgstr ""
-#~ "  screen=N\t\tX skärm att tillämpa justeringar\n"
-#~ "  crtc=N\t\tCRTC att tillämpa justeringar till\n"
-#~ "  preserve={0,1}\tHuruvida existerande gamma bör bevaras\n"
-
-#~ msgid "  preserve={0,1}\tWhether existing gamma should be preserved\n"
-#~ msgstr "  preserve={0,1}\tHuruvida existerande gamma bör bevaras\n"
-
-#~ msgid "Unable to obtain master client: %s\n"
-#~ msgstr "Det går inte att erhålla huvudklient: %s\n"
-
-#~ msgid "Unable to obtain master client\n"
-#~ msgstr "Det går inte att erhålla huvudklient\n"
-
-#~ msgid "Can't set requirements for master: %s\n"
-#~ msgstr "Det går inte att ställa krav på master: %s\n"
-
-#~ msgid "Can't set requirements for master\n"
-#~ msgstr "Det går inte att ställa krav på master\n"
-
-#~ msgid "Started Geoclue provider `%s'.\n"
-#~ msgstr "Startade Geoclue-leverantör ”%s”.\n"
-
-#~ msgid "Could not find a usable Geoclue provider.\n"
-#~ msgstr "Det gick inte att hitta en användbar Geoclue-leverantör.\n"
-
-#~ msgid "Try setting name and path to specify which to use.\n"
-#~ msgstr ""
-#~ "Försök att ställa in namn och sökväg för att ange vilken som ska "
-#~ "användas.\n"
-
-#~ msgid "Use the location as discovered by a Geoclue provider.\n"
-#~ msgstr "Använd platsen som upptäcktes av en Geoclue-leverantör.\n"
-
-#~ msgid ""
-#~ "  name=N\tName of Geoclue provider (or `default')\n"
-#~ "  path=N\tPath of Geoclue provider (or `default')\n"
-#~ msgstr ""
-#~ "  name=N\tNamn på Geoclue-leverantör (eller `default')\n"
-#~ "  path=N\tSökväg till Geoclue-leverantör (eller ”default”)\n"
-
-#~ msgid ""
-#~ "NOTE: currently Redshift doesn't recheck %s once started,\n"
-#~ "which means it has to be restarted to take notice after travel.\n"
-#~ msgstr ""
-#~ "OBSERVERA: för närvarande uppdaterar inte Redshift inte %s när den väl "
-#~ "startats,\n"
-#~ "vilket innebär att den måste startas om för att märka av resor.\n"
-
-#~ msgid "Could not get location: %s.\n"
-#~ msgstr "Det gick inte att hämta plats: %s.\n"
-
-#~ msgid "According to the geoclue provider we're at: %.2f, %.2f\n"
-#~ msgstr "Enligt geoclue-leverantören är vi på: %.2f, %.2f\n"
-
-#~ msgid "Provider does not have a valid location available."
-#~ msgstr "Leverantör har inte en giltig plats tillgänglig."
-
-#~ msgid "Unable to connect to GeoClue.\n"
-#~ msgstr "Det går inte att ansluta till GeoClue.\n"

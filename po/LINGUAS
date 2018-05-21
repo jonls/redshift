@@ -1,11 +1,13 @@
 # List of available languages
 ar
+be
 bg
 ca
 cs
 da
 de
 el
+en_GB
 es
 et
 eu
@@ -23,10 +25,13 @@ lt
 nb
 nl
 pl
-pt_BR
 pt
+pt_BR
+ro
 ru
 sr
 sv
 tr
+uk
 zh_CN
+zh_TW

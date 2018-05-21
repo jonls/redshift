@@ -9,15 +9,15 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://github.com/jonls/redshift/issues\n"
 "POT-Creation-Date: 2017-10-18 11:46-0700\n"
-"PO-Revision-Date: 2015-06-25 00:03+0000\n"
-"Last-Translator: Yanpas <yanpaso@gmail.com>\n"
+"PO-Revision-Date: 2017-12-10 19:55+0000\n"
+"Last-Translator: Andrey S. Kunitsyn <contact@libnaru.so>\n"
 "Language-Team: Russian <ru@li.org>\n"
-"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-01-02 22:24+0000\n"
-"X-Generator: Launchpad (build 17865)\n"
+"X-Launchpad-Export-Date: 2018-05-21 01:04+0000\n"
+"X-Generator: Launchpad (build 18658)\n"
+"Language: ru\n"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
 msgid ""
@@ -51,6 +51,7 @@ msgid ""
 "The Redshift information window overlaid with an example of the redness "
 "effect"
 msgstr ""
+"Информационное окно Redshift перекрыто примером эффекта тёплого света"
 
 #: ../data/applications/redshift.desktop.in.h:1
 #: ../data/applications/redshift-gtk.desktop.in.h:1
@@ -194,9 +195,8 @@ msgid "Unable to get location from provider.\n"
 msgstr "Не удается получить координаты от указанного источника.\n"
 
 #: ../src/redshift.c:647 ../src/redshift.c:871
-#, fuzzy
 msgid "Invalid location returned from provider.\n"
-msgstr "Не удается получить координаты от указанного источника.\n"
+msgstr ""
 
 #: ../src/redshift.c:656 ../src/redshift.c:788 ../src/redshift.c:1222
 #: ../src/redshift.c:1253
@@ -385,7 +385,7 @@ msgstr ""
 
 #. TRANSLATORS: help output 5
 #: ../src/options.c:201
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "The neutral temperature is %uK. Using this value will not change the color\n"
 "temperature of the display. Setting the color temperature to a value higher\n"
@@ -393,10 +393,6 @@ msgid ""
 "in\n"
 "more red light.\n"
 msgstr ""
-"Нейтральная температура цвета - %uK. Использование этой величины\n"
-"не изменит температуру цвета дисплея. Установка температуры цвета\n"
-"больше этого значения приведет к более синему цвету экрана,\n"
-"установка меньшего значения - к более красному оттенку.\n"
 
 #. TRANSLATORS: help output 6
 #: ../src/options.c:210
@@ -472,14 +468,14 @@ msgid "Malformed gamma setting.\n"
 msgstr "Неправильные настройки гаммы.\n"
 
 #: ../src/options.c:621
-#, fuzzy, c-format
+#, c-format
 msgid "Malformed dawn-time setting `%s'.\n"
-msgstr "Неправильные настройки гаммы.\n"
+msgstr ""
 
 #: ../src/options.c:632
-#, fuzzy, c-format
+#, c-format
 msgid "Malformed dusk-time setting `%s'.\n"
-msgstr "Неправильные настройки гаммы.\n"
+msgstr ""
 
 #: ../src/options.c:639
 #, c-format
@@ -496,12 +492,13 @@ msgstr "Некорректный параметр в конфигурацион�
 
 #: ../src/config-ini.c:214
 msgid "Assignment outside section in config file.\n"
-msgstr "Некорректное значение за пределами секции в конфигурационном файле.\n"
+msgstr ""
+"Некорректное значение за пределами секции в конфигурационном файле.\n"
 
 #: ../src/gamma-drm.c:97
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open DRM device: %s\n"
-msgstr "Не удалось получить ресурсы DRM режима\n"
+msgstr ""
 
 #: ../src/gamma-drm.c:105
 #, c-format
@@ -606,9 +603,9 @@ msgid ""
 msgstr ""
 
 #: ../src/gamma-randr.c:328
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read screen number: `%s'.\n"
-msgstr "Невозможно прочесть системное время.\n"
+msgstr ""
 
 #: ../src/gamma-randr.c:364 ../src/gamma-vidmode.c:156
 #: ../src/gamma-quartz.c:178 ../src/gamma-w32gdi.c:123
@@ -640,9 +637,8 @@ msgid "Unable to save current gamma ramp.\n"
 msgstr "Не удается сохранить текущие значения корректировки цвета.\n"
 
 #: ../src/gamma-quartz.c:170
-#, fuzzy
 msgid "Adjust gamma ramps on macOS using Quartz.\n"
-msgstr "Коррекция цвета с помощью Windows GDI.\n"
+msgstr ""
 
 #: ../src/gamma-w32gdi.c:68 ../src/gamma-w32gdi.c:141 ../src/gamma-w32gdi.c:168
 msgid "Unable to open device context.\n"
@@ -722,9 +718,8 @@ msgid "Unable to start GeoClue client: %s.\n"
 msgstr "Не удалось запустить клиент GeoClue: %s.\n"
 
 #: ../src/location-geoclue2.c:365
-#, fuzzy
 msgid "Failed to start GeoClue2 provider!\n"
-msgstr "Ошибка обращения к источнику местоположения%s.\n"
+msgstr ""
 
 #: ../src/location-geoclue2.c:399
 msgid "Use the location as discovered by a GeoClue2 provider.\n"
@@ -748,9 +743,8 @@ msgid "Request for location was not authorized!\n"
 msgstr ""
 
 #: ../src/location-corelocation.m:203
-#, fuzzy
 msgid "Failed to start CoreLocation provider!\n"
-msgstr "Ошибка обращения к источнику местоположения%s.\n"
+msgstr ""
 
 #: ../src/location-corelocation.m:235
 msgid "Use the location as discovered by the Corelocation provider.\n"
@@ -835,12 +829,3 @@ msgstr "Местоположение"
 #: ../src/redshift-gtk/statusicon.py:349
 msgid "Please run `redshift -h` for help output."
 msgstr ""
-
-#~ msgid "Could not get location: %s.\n"
-#~ msgstr "Не удалось определить местоположение: %s.\n"
-
-#~ msgid "According to the geoclue provider we're at: %.2f, %.2f\n"
-#~ msgstr "Согласно провайдеру geoclue вы в точке: %.2f, %.2f\n"
-
-#~ msgid "Unable to connect to GeoClue.\n"
-#~ msgstr "Не удалось соединиться с GeoClue.\n"

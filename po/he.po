@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: redshift\n"
 "Report-Msgid-Bugs-To: https://github.com/jonls/redshift/issues\n"
 "POT-Creation-Date: 2017-10-18 11:46-0700\n"
-"PO-Revision-Date: 2010-08-18 21:19+0000\n"
-"Last-Translator: Jon Lund Steffensen <Unknown>\n"
+"PO-Revision-Date: 2016-10-26 08:41+0000\n"
+"Last-Translator: Niv Baehr <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
-"Language: he\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-01-02 22:24+0000\n"
-"X-Generator: Launchpad (build 17865)\n"
+"X-Launchpad-Export-Date: 2018-05-21 01:04+0000\n"
+"X-Generator: Launchpad (build 18658)\n"
+"Language: he\n"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
 msgid ""
@@ -24,6 +24,8 @@ msgid ""
 "surroundings. This may help your eyes hurt less if you are working in front "
 "of the screen at night."
 msgstr ""
+"Redshift מתאימה את טמפרטורת הצבע של המסך בהתאם לסביבה. דבר שיכול לעזור "
+"להפחית כאב בעיניים בעבודה מול המסך בלילה."
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:2
 msgid ""
@@ -47,64 +49,64 @@ msgstr ""
 #: ../data/applications/redshift.desktop.in.h:1
 #: ../data/applications/redshift-gtk.desktop.in.h:1
 msgid "Redshift"
-msgstr ""
+msgstr "Redshift"
 
 #: ../data/applications/redshift.desktop.in.h:2
 #: ../data/applications/redshift-gtk.desktop.in.h:2
 msgid "Color temperature adjustment"
-msgstr ""
+msgstr "התאמת טמפרטורת צבע"
 
 #: ../data/applications/redshift.desktop.in.h:3
 #: ../data/applications/redshift-gtk.desktop.in.h:3
 msgid "Color temperature adjustment tool"
-msgstr ""
+msgstr "כלי להתאמת טמפרטורת צבע"
 
 #. TRANSLATORS: Name printed when period of day is unknown
 #: ../src/redshift.c:135
 msgid "None"
-msgstr ""
+msgstr "ללא"
 
 #: ../src/redshift.c:136 ../src/redshift.c:1107
 msgid "Daytime"
-msgstr ""
+msgstr "Daytime"
 
 #: ../src/redshift.c:137 ../src/redshift.c:1111
 msgid "Night"
-msgstr ""
+msgstr "Night"
 
 #: ../src/redshift.c:138
 msgid "Transition"
-msgstr ""
+msgstr "Transition"
 
 #: ../src/redshift.c:225
 #, c-format
 msgid "Period: %s\n"
-msgstr ""
+msgstr "Period: %s\n"
 
 #: ../src/redshift.c:228
 #, c-format
 msgid "Period: %s (%.2f%% day)\n"
-msgstr ""
+msgstr "Period: %s (%.2f%% day)\n"
 
 #. TRANSLATORS: Abbreviation for `north'
 #: ../src/redshift.c:240
 msgid "N"
-msgstr ""
+msgstr "N"
 
 #. TRANSLATORS: Abbreviation for `south'
 #: ../src/redshift.c:242
 msgid "S"
-msgstr ""
+msgstr "S"
 
 #. TRANSLATORS: Abbreviation for `east'
 #: ../src/redshift.c:244
 msgid "E"
-msgstr ""
+msgstr "E"
 
 #. TRANSLATORS: Abbreviation for `west'
 #: ../src/redshift.c:246
 msgid "W"
-msgstr ""
+msgstr "W"
 
 #. TRANSLATORS: Append degree symbols after %f if possible.
 #. The string following each number is an abreviation for
@@ -112,18 +114,18 @@ msgstr ""
 #: ../src/redshift.c:251
 #, c-format
 msgid "Location: %.2f %s, %.2f %s\n"
-msgstr ""
+msgstr "Location: %.2f %s, %.2f %s\n"
 
 #: ../src/redshift.c:325 ../src/redshift.c:416
 #, c-format
 msgid "Initialization of %s failed.\n"
-msgstr ""
+msgstr "Initialization of %s failed.\n"
 
 #: ../src/redshift.c:340 ../src/redshift.c:384 ../src/redshift.c:431
 #: ../src/redshift.c:463
 #, c-format
 msgid "Failed to set %s option.\n"
-msgstr ""
+msgstr "Failed to set %s option.\n"
 
 #. TRANSLATORS: `help' must not be
 #. translated.
@@ -131,24 +133,24 @@ msgstr ""
 #: ../src/redshift.c:345 ../src/redshift.c:387
 #, c-format
 msgid "Try `-l %s:help' for more information.\n"
-msgstr ""
+msgstr "Try `-l %s:help' for more information.\n"
 
 #: ../src/redshift.c:373 ../src/redshift.c:453
 #, c-format
 msgid "Failed to parse option `%s'.\n"
-msgstr ""
+msgstr "Failed to parse option `%s'.\n"
 
 #: ../src/redshift.c:400
 #, c-format
 msgid "Failed to start provider %s.\n"
-msgstr ""
+msgstr "Failed to start provider %s.\n"
 
 #. TRANSLATORS: `help' must not be
 #. translated.
 #: ../src/redshift.c:436
 #, c-format
 msgid "Try `-m %s:help' for more information.\n"
-msgstr ""
+msgstr "Try `-m %s:help' for more information.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: ../src/redshift.c:466
@@ -159,7 +161,7 @@ msgstr ""
 #: ../src/redshift.c:478
 #, c-format
 msgid "Failed to start adjustment method %s.\n"
-msgstr "כשל בתחילת שיטת הזזה %s.‏\n"
+msgstr "Failed to start adjustment method %s.\n"
 
 #: ../src/redshift.c:509
 #, c-format
@@ -174,7 +176,7 @@ msgstr ""
 #: ../src/redshift.c:545 ../src/redshift.c:564 ../src/redshift.c:696
 #: ../src/redshift.c:1187
 msgid "Unable to read system time.\n"
-msgstr ""
+msgstr "Unable to read system time.\n"
 
 #: ../src/redshift.c:635
 msgid "Waiting for initial location to become available...\n"
@@ -183,42 +185,41 @@ msgstr ""
 #: ../src/redshift.c:641 ../src/redshift.c:832 ../src/redshift.c:847
 #: ../src/redshift.c:1172
 msgid "Unable to get location from provider.\n"
-msgstr "לא ניתן לקבל מיקום מהספק.\n"
+msgstr "Unable to get location from provider.\n"
 
 #: ../src/redshift.c:647 ../src/redshift.c:871
-#, fuzzy
 msgid "Invalid location returned from provider.\n"
-msgstr "לא ניתן לקבל מיקום מהספק.\n"
+msgstr ""
 
 #: ../src/redshift.c:656 ../src/redshift.c:788 ../src/redshift.c:1222
 #: ../src/redshift.c:1253
 #, c-format
 msgid "Color temperature: %uK\n"
-msgstr ""
+msgstr "Color temperature: %uK\n"
 
 #: ../src/redshift.c:657 ../src/redshift.c:793 ../src/redshift.c:1224
 #, c-format
 msgid "Brightness: %.2f\n"
-msgstr ""
+msgstr "Brightness: %.2f\n"
 
 #: ../src/redshift.c:686
 #, c-format
 msgid "Status: %s\n"
-msgstr ""
+msgstr "Status: %s\n"
 
 #: ../src/redshift.c:687 ../src/redshift-gtk/statusicon.py:301
 msgid "Disabled"
-msgstr ""
+msgstr "מושבת"
 
 #: ../src/redshift.c:687 ../src/redshift-gtk/statusicon.py:73
 #: ../src/redshift-gtk/statusicon.py:301
 msgid "Enabled"
-msgstr ""
+msgstr "פעיל"
 
 #: ../src/redshift.c:802 ../src/redshift.c:1233 ../src/redshift.c:1263
 #: ../src/redshift.c:1285
 msgid "Temperature adjustment failed.\n"
-msgstr ""
+msgstr "Temperature adjustment failed.\n"
 
 #: ../src/redshift.c:854
 msgid ""
@@ -241,16 +242,16 @@ msgstr ""
 
 #: ../src/redshift.c:1011
 msgid "Trying next provider...\n"
-msgstr "מנסה ספק הבא...\n"
+msgstr "Trying next provider...\n"
 
 #: ../src/redshift.c:1017
 #, c-format
 msgid "Using provider `%s'.\n"
-msgstr "משתמש בספק \"%s\".‏\n"
+msgstr "Using provider `%s'.\n"
 
 #: ../src/redshift.c:1025
 msgid "No more location providers to try.\n"
-msgstr "אין ספקי מיקום נוספים לנסות.\n"
+msgstr "No more location providers to try.\n"
 
 #: ../src/redshift.c:1034
 #, c-format
@@ -333,13 +334,13 @@ msgstr ""
 #: ../src/options.c:159
 #, c-format
 msgid "Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
-msgstr "שימוש: %s -l רוחב:אורך -t יום:לילה [אפהשרויות...]‏\n"
+msgstr "Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
 
 #. TRANSLATORS: help output 2
 #. no-wrap
 #: ../src/options.c:165
 msgid "Set color temperature of display according to time of day.\n"
-msgstr "הגדר את טמפרטורת צבעי המסך לפי שעת היום.\n"
+msgstr "Set color temperature of display according to time of day.\n"
 
 #. TRANSLATORS: help output 3
 #. no-wrap
@@ -349,6 +350,9 @@ msgid ""
 "  -v\t\tVerbose output\n"
 "  -V\t\tShow program version\n"
 msgstr ""
+"  -h\t\tDisplay this help message\n"
+"  -v\t\tVerbose output\n"
+"  -V\t\tShow program version\n"
 
 #. TRANSLATORS: help output 4
 #. `list' must not be translated
@@ -392,58 +396,62 @@ msgid ""
 "  Daytime temperature: %uK\n"
 "  Night temperature: %uK\n"
 msgstr ""
+"Default values:\n"
+"\n"
+"  Daytime temperature: %uK\n"
+"  Night temperature: %uK\n"
 
 #. TRANSLATORS: help output 7
 #: ../src/options.c:218
 #, c-format
 msgid "Please report bugs to <%s>\n"
-msgstr ""
+msgstr "Please report bugs to <%s>\n"
 
 #: ../src/options.c:225
 msgid "Available adjustment methods:\n"
-msgstr ""
+msgstr "Available adjustment methods:\n"
 
 #: ../src/options.c:231
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
-msgstr ""
+msgstr "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: ../src/options.c:234
 msgid "Try `-m METHOD:help' for help.\n"
-msgstr ""
+msgstr "Try `-m METHOD:help' for help.\n"
 
 #: ../src/options.c:241
 msgid "Available location providers:\n"
-msgstr "ספקים מקומיים זמינים:\n"
+msgstr "Available location providers:\n"
 
 #: ../src/options.c:247
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
-msgstr ""
+msgstr "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: ../src/options.c:250
 msgid "Try `-l PROVIDER:help' for help.\n"
-msgstr ""
+msgstr "Try `-l PROVIDER:help' for help.\n"
 
 #: ../src/options.c:356
 msgid "Malformed gamma argument.\n"
-msgstr ""
+msgstr "Malformed gamma argument.\n"
 
 #: ../src/options.c:358 ../src/options.c:472 ../src/options.c:491
 msgid "Try `-h' for more information.\n"
-msgstr "תנסה \"-h\" לקבלת מידע נוסף.\n"
+msgstr "Try `-h' for more information.\n"
 
 #: ../src/options.c:407 ../src/options.c:610
 #, c-format
 msgid "Unknown location provider `%s'.\n"
-msgstr "ספק מיקום \"%s\" לא מוכר.\n"
+msgstr "Unknown location provider `%s'.\n"
 
 #. TRANSLATORS: This refers to the method
 #. used to adjust colors e.g VidMode
 #: ../src/options.c:439 ../src/options.c:597
 #, c-format
 msgid "Unknown adjustment method `%s'.\n"
-msgstr ""
+msgstr "Unknown adjustment method `%s'.\n"
 
 #: ../src/options.c:470
 msgid "Malformed temperature argument.\n"
@@ -660,7 +668,7 @@ msgstr ""
 #: ../src/gamma-dummy.c:75
 #, c-format
 msgid "Temperature: %i\n"
-msgstr ""
+msgstr "Temperature: %i\n"
 
 #: ../src/location-geoclue2.c:59
 #, c-format
@@ -703,9 +711,8 @@ msgid "Unable to start GeoClue client: %s.\n"
 msgstr ""
 
 #: ../src/location-geoclue2.c:365
-#, fuzzy
 msgid "Failed to start GeoClue2 provider!\n"
-msgstr "כשל בתחילת שיטת הזזה %s.‏\n"
+msgstr ""
 
 #: ../src/location-geoclue2.c:399
 msgid "Use the location as discovered by a GeoClue2 provider.\n"
@@ -729,9 +736,8 @@ msgid "Request for location was not authorized!\n"
 msgstr ""
 
 #: ../src/location-corelocation.m:203
-#, fuzzy
 msgid "Failed to start CoreLocation provider!\n"
-msgstr "לא ניתן לקבל מיקום מהספק.\n"
+msgstr ""
 
 #: ../src/location-corelocation.m:235
 msgid "Use the location as discovered by the Corelocation provider.\n"
@@ -765,51 +771,51 @@ msgstr ""
 
 #: ../src/redshift-gtk/statusicon.py:78
 msgid "Suspend for"
-msgstr ""
+msgstr "השהיה"
 
 #: ../src/redshift-gtk/statusicon.py:80
 msgid "30 minutes"
-msgstr ""
+msgstr "30 דקות"
 
 #: ../src/redshift-gtk/statusicon.py:81
 msgid "1 hour"
-msgstr ""
+msgstr "שעה"
 
 #: ../src/redshift-gtk/statusicon.py:82
 msgid "2 hours"
-msgstr ""
+msgstr "שעתיים"
 
 #: ../src/redshift-gtk/statusicon.py:91
 msgid "Autostart"
-msgstr ""
+msgstr "הפעלה אוטומטית"
 
 #: ../src/redshift-gtk/statusicon.py:103 ../src/redshift-gtk/statusicon.py:113
 msgid "Info"
-msgstr ""
+msgstr "מידע"
 
 #: ../src/redshift-gtk/statusicon.py:108
 msgid "Quit"
-msgstr ""
+msgstr "יציאה"
 
 #: ../src/redshift-gtk/statusicon.py:146
 msgid "Close"
-msgstr ""
+msgstr "סגירה"
 
 #: ../src/redshift-gtk/statusicon.py:300
 msgid "<b>Status:</b> {}"
-msgstr ""
+msgstr "<b>מצב:</b> {}"
 
 #: ../src/redshift-gtk/statusicon.py:306 ../src/redshift-gtk/statusicon.py:324
 msgid "Color temperature"
-msgstr ""
+msgstr "טמפרטורת צבע"
 
 #: ../src/redshift-gtk/statusicon.py:312 ../src/redshift-gtk/statusicon.py:325
 msgid "Period"
-msgstr ""
+msgstr "פרק זמן"
 
 #: ../src/redshift-gtk/statusicon.py:318
 msgid "Location"
-msgstr ""
+msgstr "מיקום"
 
 #: ../src/redshift-gtk/statusicon.py:349
 msgid "Please run `redshift -h` for help output."

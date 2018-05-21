@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([redshift], [1.11], [https://github.com/jonls/redshift/issues])
+AC_INIT([redshift], [1.12], [https://github.com/jonls/redshift/issues])
 AC_CONFIG_SRCDIR([src/redshift.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
