@@ -11,12 +11,12 @@ msgstr ""
 "PO-Revision-Date: 2014-12-31 23:56+0000\n"
 "Last-Translator: Jon Lund Steffensen <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
-"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-01-02 22:24+0000\n"
-"X-Generator: Launchpad (build 17865)\n"
+"X-Launchpad-Export-Date: 2018-05-21 01:04+0000\n"
+"X-Generator: Launchpad (build 18658)\n"
+"Language: gl\n"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
 msgid ""
@@ -186,9 +186,8 @@ msgid "Unable to get location from provider.\n"
 msgstr ""
 
 #: ../src/redshift.c:647 ../src/redshift.c:871
-#, fuzzy
 msgid "Invalid location returned from provider.\n"
-msgstr "Fornecedores de localización dispoñíbeis:\n"
+msgstr ""
 
 #: ../src/redshift.c:656 ../src/redshift.c:788 ../src/redshift.c:1222
 #: ../src/redshift.c:1253
@@ -374,7 +373,7 @@ msgstr ""
 
 #. TRANSLATORS: help output 5
 #: ../src/options.c:201
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "The neutral temperature is %uK. Using this value will not change the color\n"
 "temperature of the display. Setting the color temperature to a value higher\n"
@@ -382,11 +381,6 @@ msgid ""
 "in\n"
 "more red light.\n"
 msgstr ""
-"A temperatura neutral é %uK. Usando este valor non\n"
-"cambiará a cor do monitor. Cambiando o valor da temperatura \n"
-"da cor a un valor máis alto, dará como resultado un ton\n"
-"más azulado, cambiándoo a un valor máis baixo, el tono \n"
-"será máis vermello.\n"
 
 #. TRANSLATORS: help output 6
 #: ../src/options.c:210
@@ -464,14 +458,14 @@ msgid "Malformed gamma setting.\n"
 msgstr "Axuste de gamma incorrecto.\n"
 
 #: ../src/options.c:621
-#, fuzzy, c-format
+#, c-format
 msgid "Malformed dawn-time setting `%s'.\n"
-msgstr "Axuste de gamma incorrecto.\n"
+msgstr ""
 
 #: ../src/options.c:632
-#, fuzzy, c-format
+#, c-format
 msgid "Malformed dusk-time setting `%s'.\n"
-msgstr "Axuste de gamma incorrecto.\n"
+msgstr ""
 
 #: ../src/options.c:639
 #, c-format
@@ -598,9 +592,9 @@ msgid ""
 msgstr ""
 
 #: ../src/gamma-randr.c:328
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read screen number: `%s'.\n"
-msgstr "Imposíbele ler a hora do sistema.\n"
+msgstr ""
 
 #: ../src/gamma-randr.c:364 ../src/gamma-vidmode.c:156
 #: ../src/gamma-quartz.c:178 ../src/gamma-w32gdi.c:123
@@ -738,9 +732,8 @@ msgid "Request for location was not authorized!\n"
 msgstr ""
 
 #: ../src/location-corelocation.m:203
-#, fuzzy
 msgid "Failed to start CoreLocation provider!\n"
-msgstr "Fornecedores de localización dispoñíbeis:\n"
+msgstr ""
 
 #: ../src/location-corelocation.m:235
 msgid "Use the location as discovered by the Corelocation provider.\n"

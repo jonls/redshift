@@ -11,12 +11,12 @@ msgstr ""
 "PO-Revision-Date: 2015-02-23 06:54+0000\n"
 "Last-Translator: Mario Dautović <mario.dautovic@yahoo.com>\n"
 "Language-Team: Croatian <hr@li.org>\n"
-"Language: hr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-01-02 22:24+0000\n"
-"X-Generator: Launchpad (build 17865)\n"
+"X-Launchpad-Export-Date: 2018-05-21 01:04+0000\n"
+"X-Generator: Launchpad (build 18658)\n"
+"Language: hr\n"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
 msgid ""
@@ -186,9 +186,8 @@ msgid "Unable to get location from provider.\n"
 msgstr "Ne mogu dobiti lokaciju od pružatelja usluge.\n"
 
 #: ../src/redshift.c:647 ../src/redshift.c:871
-#, fuzzy
 msgid "Invalid location returned from provider.\n"
-msgstr "Ne mogu dobiti lokaciju od pružatelja usluge.\n"
+msgstr ""
 
 #: ../src/redshift.c:656 ../src/redshift.c:788 ../src/redshift.c:1222
 #: ../src/redshift.c:1253
@@ -377,7 +376,7 @@ msgstr ""
 
 #. TRANSLATORS: help output 5
 #: ../src/options.c:201
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "The neutral temperature is %uK. Using this value will not change the color\n"
 "temperature of the display. Setting the color temperature to a value higher\n"
@@ -385,11 +384,6 @@ msgid ""
 "in\n"
 "more red light.\n"
 msgstr ""
-"Neutralna temperatura je %uK. Korištenje ove vrijednosti neće\n"
-"promijeniti temperaturu boje zaslona. Postavljanje temperature\n"
-"boje na višu vrijednost će rezultirati većom količinom\n"
-"plavog svijetla, a manja vrijednost većom količinom\n"
-"crvenog svijetla.\n"
 
 #. TRANSLATORS: help output 6
 #: ../src/options.c:210
@@ -432,8 +426,8 @@ msgstr "Dostupni pružatelji lokacije\n"
 #: ../src/options.c:247
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
 msgstr ""
-"Zadajte opcije s vrijednostima odvojenim dvotočkom `-l PRUŽATELJ_USLUGE:"
-"OPCIJA'.\n"
+"Zadajte opcije s vrijednostima odvojenim dvotočkom `-l "
+"PRUŽATELJ_USLUGE:OPCIJA'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: ../src/options.c:250
@@ -469,14 +463,14 @@ msgid "Malformed gamma setting.\n"
 msgstr "Netočne gama postavke.\n"
 
 #: ../src/options.c:621
-#, fuzzy, c-format
+#, c-format
 msgid "Malformed dawn-time setting `%s'.\n"
-msgstr "Netočne gama postavke.\n"
+msgstr ""
 
 #: ../src/options.c:632
-#, fuzzy, c-format
+#, c-format
 msgid "Malformed dusk-time setting `%s'.\n"
-msgstr "Netočne gama postavke.\n"
+msgstr ""
 
 #: ../src/options.c:639
 #, c-format
@@ -496,9 +490,9 @@ msgid "Assignment outside section in config file.\n"
 msgstr "Dodjela vrijednosti izvan okvira u datoteci s postavkama.\n"
 
 #: ../src/gamma-drm.c:97
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open DRM device: %s\n"
-msgstr "Nemoguće je otvoriti sadržaj uređaja.\n"
+msgstr ""
 
 #: ../src/gamma-drm.c:105
 #, c-format
@@ -603,9 +597,9 @@ msgid ""
 msgstr ""
 
 #: ../src/gamma-randr.c:328
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read screen number: `%s'.\n"
-msgstr "Nije moguće pročitati vrijeme na sustavu.\n"
+msgstr ""
 
 #: ../src/gamma-randr.c:364 ../src/gamma-vidmode.c:156
 #: ../src/gamma-quartz.c:178 ../src/gamma-w32gdi.c:123
@@ -637,9 +631,8 @@ msgid "Unable to save current gamma ramp.\n"
 msgstr "Nije moguće spremiti trenutnu gama krivulju.\n"
 
 #: ../src/gamma-quartz.c:170
-#, fuzzy
 msgid "Adjust gamma ramps on macOS using Quartz.\n"
-msgstr "Prilagodi gama krivulju s Windows GDI.\n"
+msgstr ""
 
 #: ../src/gamma-w32gdi.c:68 ../src/gamma-w32gdi.c:141 ../src/gamma-w32gdi.c:168
 msgid "Unable to open device context.\n"
@@ -719,9 +712,8 @@ msgid "Unable to start GeoClue client: %s.\n"
 msgstr ""
 
 #: ../src/location-geoclue2.c:365
-#, fuzzy
 msgid "Failed to start GeoClue2 provider!\n"
-msgstr "Pogreška prilikom pokretanja pružatelja usluge %s.\n"
+msgstr ""
 
 #: ../src/location-geoclue2.c:399
 msgid "Use the location as discovered by a GeoClue2 provider.\n"
@@ -745,9 +737,8 @@ msgid "Request for location was not authorized!\n"
 msgstr ""
 
 #: ../src/location-corelocation.m:203
-#, fuzzy
 msgid "Failed to start CoreLocation provider!\n"
-msgstr "Pogreška prilikom pokretanja pružatelja usluge %s.\n"
+msgstr ""
 
 #: ../src/location-corelocation.m:235
 msgid "Use the location as discovered by the Corelocation provider.\n"

@@ -8,16 +8,15 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://github.com/jonls/redshift/issues\n"
 "POT-Creation-Date: 2017-10-18 11:46-0700\n"
-"PO-Revision-Date: 2016-03-27 19:13+0200\n"
-"Last-Translator: Марко М. Костић <marko.m.kostic@gmail.com>\n"
+"PO-Revision-Date: 2016-09-20 09:54+0000\n"
+"Last-Translator: Марко М. Костић <Unknown>\n"
 "Language-Team: \n"
-"Language: sr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.7.1\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Launchpad-Export-Date: 2018-05-21 01:04+0000\n"
+"X-Generator: Launchpad (build 18658)\n"
+"Language: sr\n"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
 msgid ""
@@ -196,9 +195,8 @@ msgid "Unable to get location from provider.\n"
 msgstr ""
 
 #: ../src/redshift.c:647 ../src/redshift.c:871
-#, fuzzy
 msgid "Invalid location returned from provider.\n"
-msgstr "Доступни достављачи локација:\n"
+msgstr ""
 
 #: ../src/redshift.c:656 ../src/redshift.c:788 ../src/redshift.c:1222
 #: ../src/redshift.c:1253
@@ -367,7 +365,6 @@ msgstr ""
 #. `list' must not be translated
 #. no-wrap
 #: ../src/options.c:179
-#, fuzzy
 msgid ""
 "  -b DAY:NIGHT\tScreen brightness to apply (between 0.1 and 1.0)\n"
 "  -c FILE\tLoad settings from specified configuration file\n"
@@ -385,24 +382,10 @@ msgid ""
 "  -r\t\tDisable fading between color temperatures\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
-"  -b ДАН:НОЋ\tКоје осветљење екрана применити (између 0.1 и 1.0)\n"
-"  -c ДАТОТЕКА\tУчитај подешавања из наведене конфигурационе датотеке\n"
-"  -g R:G:B\tДодатно исправљање гаме које треба применити\n"
-"  -l ГЕО.ШИРИНА:ДУЖИНА\tВаше тренутно место\n"
-"  -l ДОСТАВЉАЧ\tИзаберите достављача за аутоматско ажурирање локације\n"
-"  \t\t(Укуцајте `list' да видите доступне достављаче)\n"
-"  -m НАЧИН\tНачин који ће се користити за постављање температуре боје\n"
-"  \t\t(Укуцајте `list' да видите доступне начине)\n"
-"  -o\t\tЈедноструки режим (немој стално прилагођавати температуру боје)\n"
-"  -O ТЕМП\tЈедноструки ручни режим (подеси температуру боје)\n"
-"  -p\t\tРежим штампања (одштампај параметре и изађи)\n"
-"  -x\t\tРежим постављања (Уклони прилагођење са екрана)\n"
-"  -r\t\tИскључи прелазе температуре\n"
-"  -t ДАН:НОЋ\tТемпература боје коју треба подесити дању и ноћу\n"
 
 #. TRANSLATORS: help output 5
 #: ../src/options.c:201
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "The neutral temperature is %uK. Using this value will not change the color\n"
 "temperature of the display. Setting the color temperature to a value higher\n"
@@ -410,11 +393,6 @@ msgid ""
 "in\n"
 "more red light.\n"
 msgstr ""
-"Неутрална температура је %uK. Коришћење ове вредности\n"
-"неће променити температуру боје екрана. Постављање веће\n"
-"вредности од ове за температуру боје ће узроковати више\n"
-"плаве светлости а постављање мање вредности ће узроковати\n"
-"више црвене светлости на екрану.\n"
 
 #. TRANSLATORS: help output 6
 #: ../src/options.c:210
@@ -429,7 +407,6 @@ msgstr ""
 "\n"
 "  Дневна температура: %uK\n"
 "  Ноћна температура: %uK\n"
-"\t\n"
 
 #. TRANSLATORS: help output 7
 #: ../src/options.c:218
@@ -492,14 +469,14 @@ msgid "Malformed gamma setting.\n"
 msgstr ""
 
 #: ../src/options.c:621
-#, fuzzy, c-format
+#, c-format
 msgid "Malformed dawn-time setting `%s'.\n"
-msgstr "Нисам успео да обрадим опцију „%s“.\n"
+msgstr ""
 
 #: ../src/options.c:632
-#, fuzzy, c-format
+#, c-format
 msgid "Malformed dusk-time setting `%s'.\n"
-msgstr "Нисам успео да обрадим опцију „%s“.\n"
+msgstr ""
 
 #: ../src/options.c:639
 #, c-format
@@ -519,9 +496,9 @@ msgid "Assignment outside section in config file.\n"
 msgstr ""
 
 #: ../src/gamma-drm.c:97
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open DRM device: %s\n"
-msgstr "Нисам успео да обрадим опцију „%s“.\n"
+msgstr ""
 
 #: ../src/gamma-drm.c:105
 #, c-format
@@ -626,9 +603,9 @@ msgid ""
 msgstr ""
 
 #: ../src/gamma-randr.c:328
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read screen number: `%s'.\n"
-msgstr "Не могу да прочитам системско време.\n"
+msgstr ""
 
 #: ../src/gamma-randr.c:364 ../src/gamma-vidmode.c:156
 #: ../src/gamma-quartz.c:178 ../src/gamma-w32gdi.c:123
@@ -741,9 +718,8 @@ msgid "Unable to start GeoClue client: %s.\n"
 msgstr "Не могу да покренем GeoClue клијента: %s.\n"
 
 #: ../src/location-geoclue2.c:365
-#, fuzzy
 msgid "Failed to start GeoClue2 provider!\n"
-msgstr "Нисам успео да покренем достављача %s.\n"
+msgstr ""
 
 #: ../src/location-geoclue2.c:399
 msgid "Use the location as discovered by a GeoClue2 provider.\n"
@@ -767,9 +743,8 @@ msgid "Request for location was not authorized!\n"
 msgstr ""
 
 #: ../src/location-corelocation.m:203
-#, fuzzy
 msgid "Failed to start CoreLocation provider!\n"
-msgstr "Нисам успео да покренем достављача %s.\n"
+msgstr ""
 
 #: ../src/location-corelocation.m:235
 msgid "Use the location as discovered by the Corelocation provider.\n"
@@ -852,6 +827,3 @@ msgstr "Место"
 #: ../src/redshift-gtk/statusicon.py:349
 msgid "Please run `redshift -h` for help output."
 msgstr ""
-
-#~ msgid "Started Geoclue provider `%s'.\n"
-#~ msgstr "Покренуо сам Geoclue достављача „%s“.\n"

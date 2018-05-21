@@ -11,21 +11,19 @@ msgstr ""
 "PO-Revision-Date: 2015-12-11 09:28+0000\n"
 "Last-Translator: wsxy162 <wsxy162@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-01-02 22:24+0000\n"
-"X-Generator: Launchpad (build 17865)\n"
+"X-Launchpad-Export-Date: 2018-05-21 01:04+0000\n"
+"X-Generator: Launchpad (build 18658)\n"
+"Language: \n"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
 msgid ""
 "Redshift adjusts the color temperature of your screen according to your "
 "surroundings. This may help your eyes hurt less if you are working in front "
 "of the screen at night."
-msgstr ""
-"红移(Redshift) 根据你的周围环境调节你的屏幕色温。如果夜晚在屏幕前工作，这可以"
-"减少你眼睛受到的伤害。"
+msgstr "红移(Redshift) 根据你的周围环境调节你的屏幕色温。如果夜晚在屏幕前工作，这可以减少你眼睛受到的伤害。"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:2
 msgid ""
@@ -33,9 +31,7 @@ msgid ""
 "different color temperature is set during night and daytime. During twilight "
 "and early morning, the color temperature transitions smoothly from night to "
 "daytime temperature to allow your eyes to slowly adapt."
-msgstr ""
-"该软件可以根据日照位置、日夜变化来设置屏幕色温，随着时间推移，色温会逐渐转"
-"变，保证让您的眼睛能够舒舒服服地适应。"
+msgstr "该软件可以根据日照位置、日夜变化来设置屏幕色温，随着时间推移，色温会逐渐转变，保证让您的眼睛能够舒舒服服地适应。"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:3
 msgid ""
@@ -181,9 +177,8 @@ msgid "Unable to read system time.\n"
 msgstr "无法读取系统时间。\n"
 
 #: ../src/redshift.c:635
-#, fuzzy
 msgid "Waiting for initial location to become available...\n"
-msgstr "正在等待授权来获取位置…\n"
+msgstr ""
 
 #: ../src/redshift.c:641 ../src/redshift.c:832 ../src/redshift.c:847
 #: ../src/redshift.c:1172
@@ -191,9 +186,8 @@ msgid "Unable to get location from provider.\n"
 msgstr "无法从服务获取位置信息。\n"
 
 #: ../src/redshift.c:647 ../src/redshift.c:871
-#, fuzzy
 msgid "Invalid location returned from provider.\n"
-msgstr "无法从服务获取位置信息。\n"
+msgstr ""
 
 #: ../src/redshift.c:656 ../src/redshift.c:788 ../src/redshift.c:1222
 #: ../src/redshift.c:1253
@@ -316,9 +310,8 @@ msgid "No more methods to try.\n"
 msgstr "没有更多的模式可供尝试。\n"
 
 #: ../src/redshift.c:1165
-#, fuzzy
 msgid "Waiting for current location to become available...\n"
-msgstr "正在等待授权来获取位置…\n"
+msgstr ""
 
 #. TRANSLATORS: Append degree symbol if
 #. possible.
@@ -363,7 +356,6 @@ msgstr ""
 #. `list' must not be translated
 #. no-wrap
 #: ../src/options.c:179
-#, fuzzy
 msgid ""
 "  -b DAY:NIGHT\tScreen brightness to apply (between 0.1 and 1.0)\n"
 "  -c FILE\tLoad settings from specified configuration file\n"
@@ -381,24 +373,10 @@ msgid ""
 "  -r\t\tDisable fading between color temperatures\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
-"  -b DAY:NIGHT\t应用的屏幕亮度 (介于 0.1 和 1.0)\n"
-"  -c FILE\t从指定的配置文件加载设置\n"
-"  -g R:G:B\t应用的附加伽马校正设置\n"
-"  -l LAT:LON\t你当前的位置\n"
-"  -l PROVIDER\t选择自动位置更新的服务提供者\n"
-"  \t\t(输入“list”来查看可用的服务提供者)\n"
-"  -m METHOD\t用来设置色温的模式\n"
-"  \t\t(输入“list”来查看可用的模式)\n"
-"  -o\t\t单触发模式 (不要平滑地调节色温)\n"
-"  -O TEMP\t单触发手动模式 (设置色温)\n"
-"  -p\t\t打印模式 (只打印参数值并退出)\n"
-"  -x\t\t重置模式 (从屏幕上移除调节)\n"
-"  -r\t\t禁用色温过渡\n"
-"  -t DAY:NIGHT\t设置日间/夜间的色温\n"
 
 #. TRANSLATORS: help output 5
 #: ../src/options.c:201
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "The neutral temperature is %uK. Using this value will not change the color\n"
 "temperature of the display. Setting the color temperature to a value higher\n"
@@ -406,10 +384,6 @@ msgid ""
 "in\n"
 "more red light.\n"
 msgstr ""
-"中性色温为 %uK。使用该值不会改变\n"
-"显示器的色温。设置色温值高于它会\n"
-"导致更多的蓝光，而设置低于它的色\n"
-"温值会导致更多的红光。\n"
 
 #. TRANSLATORS: help output 6
 #: ../src/options.c:210
@@ -486,14 +460,14 @@ msgid "Malformed gamma setting.\n"
 msgstr "异常的伽马设置。\n"
 
 #: ../src/options.c:621
-#, fuzzy, c-format
+#, c-format
 msgid "Malformed dawn-time setting `%s'.\n"
-msgstr "异常的伽马设置。\n"
+msgstr ""
 
 #: ../src/options.c:632
-#, fuzzy, c-format
+#, c-format
 msgid "Malformed dusk-time setting `%s'.\n"
-msgstr "异常的伽马设置。\n"
+msgstr ""
 
 #: ../src/options.c:639
 #, c-format
@@ -513,9 +487,9 @@ msgid "Assignment outside section in config file.\n"
 msgstr "分配在段外存在于配置文件中。\n"
 
 #: ../src/gamma-drm.c:97
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open DRM device: %s\n"
-msgstr "无法获取 DRM 模式资源\n"
+msgstr ""
 
 #: ../src/gamma-drm.c:105
 #, c-format
@@ -616,18 +590,15 @@ msgstr "使用 X RANDR 扩展调整伽马斜面。\n"
 #. TRANSLATORS: RANDR help output
 #. left column must not be translated
 #: ../src/gamma-randr.c:306
-#, fuzzy
 msgid ""
 "  screen=N\t\tX screen to apply adjustments to\n"
 "  crtc=N\tList of comma separated CRTCs to apply adjustments to\n"
 msgstr ""
-"  card=N\t用来应用调节的显卡\n"
-"  crtc=N\t用来应用调节的CRTC\n"
 
 #: ../src/gamma-randr.c:328
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read screen number: `%s'.\n"
-msgstr "无法读取系统时间。\n"
+msgstr ""
 
 #: ../src/gamma-randr.c:364 ../src/gamma-vidmode.c:156
 #: ../src/gamma-quartz.c:178 ../src/gamma-w32gdi.c:123
@@ -651,20 +622,16 @@ msgstr "使用 X VidMode 扩展调整伽马斜面。\n"
 #. TRANSLATORS: VidMode help output
 #. left column must not be translated
 #: ../src/gamma-vidmode.c:145
-#, fuzzy
 msgid "  screen=N\t\tX screen to apply adjustments to\n"
 msgstr ""
-"  screen=N\t\t用来应用调节的 X 屏幕\n"
-"  preserve={0,1}\t\t是否显示已有的伽马值\n"
 
 #: ../src/gamma-quartz.c:140 ../src/gamma-w32gdi.c:91
 msgid "Unable to save current gamma ramp.\n"
 msgstr "无法保存当前的伽马斜面。\n"
 
 #: ../src/gamma-quartz.c:170
-#, fuzzy
 msgid "Adjust gamma ramps on macOS using Quartz.\n"
-msgstr "在 OSX 上使用 Quartz 调整伽马斜面。\n"
+msgstr ""
 
 #: ../src/gamma-w32gdi.c:68 ../src/gamma-w32gdi.c:141 ../src/gamma-w32gdi.c:168
 msgid "Unable to open device context.\n"
@@ -744,9 +711,8 @@ msgid "Unable to start GeoClue client: %s.\n"
 msgstr "无法启动 GeoClue 客户端：%s。\n"
 
 #: ../src/location-geoclue2.c:365
-#, fuzzy
 msgid "Failed to start GeoClue2 provider!\n"
-msgstr "启动服务 %s 失败。\n"
+msgstr ""
 
 #: ../src/location-geoclue2.c:399
 msgid "Use the location as discovered by a GeoClue2 provider.\n"
@@ -770,9 +736,8 @@ msgid "Request for location was not authorized!\n"
 msgstr "位置请求还未授权！\n"
 
 #: ../src/location-corelocation.m:203
-#, fuzzy
 msgid "Failed to start CoreLocation provider!\n"
-msgstr "启动服务 %s 失败。\n"
+msgstr ""
 
 #: ../src/location-corelocation.m:235
 msgid "Use the location as discovered by the Corelocation provider.\n"
@@ -859,65 +824,3 @@ msgstr "位置"
 #: ../src/redshift-gtk/statusicon.py:349
 msgid "Please run `redshift -h` for help output."
 msgstr ""
-
-#~ msgid ""
-#~ "  screen=N\t\tX screen to apply adjustments to\n"
-#~ "  crtc=N\t\tCRTC to apply adjustments to\n"
-#~ "  preserve={0,1}\tWhether existing gamma should be preserved\n"
-#~ msgstr ""
-#~ "  screen=N\t\t用来应用调节的 X 屏幕\n"
-#~ "  ctrc=N\t\t用来应用调节的 CRTC\n"
-#~ "  preserve={0,1}\t\t是否显示现有的伽马值\n"
-
-#~ msgid "  preserve={0,1}\tWhether existing gamma should be preserved\n"
-#~ msgstr "  preserve={0,1}\t是否显示已有的伽马值\n"
-
-#~ msgid "Unable to obtain master client: %s\n"
-#~ msgstr "无法获取主客户端：%s\n"
-
-#~ msgid "Unable to obtain master client\n"
-#~ msgstr "无法获取主客户端\n"
-
-#~ msgid "Can't set requirements for master: %s\n"
-#~ msgstr "无法设置需求来为主客户端：%s\n"
-
-#~ msgid "Can't set requirements for master\n"
-#~ msgstr "无法设置需求来为主客户端\n"
-
-#~ msgid "Started Geoclue provider `%s'.\n"
-#~ msgstr "已启动的 Geoclue 服务 ”%s“。\n"
-
-#~ msgid "Could not find a usable Geoclue provider.\n"
-#~ msgstr "无法找到可用的 Geoclue 服务提供者。\n"
-
-#~ msgid "Try setting name and path to specify which to use.\n"
-#~ msgstr "尝试设置名称和路径来指定使用哪个位置服务。\n"
-
-#~ msgid "Use the location as discovered by a Geoclue provider.\n"
-#~ msgstr "使用设定位置当做 Geoclue 服务检测到的。\n"
-
-#~ msgid ""
-#~ "  name=N\tName of Geoclue provider (or `default')\n"
-#~ "  path=N\tPath of Geoclue provider (or `default')\n"
-#~ msgstr ""
-#~ "  name=N\tGeoclue 服务提供者的名称(或者”默认“)\n"
-#~ "  path=N\tGeoclue 服务提供者的路径(或者”默认“)\n"
-
-#~ msgid ""
-#~ "NOTE: currently Redshift doesn't recheck %s once started,\n"
-#~ "which means it has to be restarted to take notice after travel.\n"
-#~ msgstr ""
-#~ "注意：当前 Redshift 一旦开启不会重新检查 %s，这表示在旅行后必须重新启动来"
-#~ "记录变化。\n"
-
-#~ msgid "Could not get location: %s.\n"
-#~ msgstr "无法获取位置：%s\n"
-
-#~ msgid "According to the geoclue provider we're at: %.2f, %.2f\n"
-#~ msgstr "根据 Geoclue 服务，我们位于：%.2f, %.2f\n"
-
-#~ msgid "Provider does not have a valid location available."
-#~ msgstr "服务提供者没有可用的有效位置。"
-
-#~ msgid "Unable to connect to GeoClue.\n"
-#~ msgstr "无法连接到 GeoClue。\n"

@@ -1,22 +1,22 @@
-# Dutch translation for redshift
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# Belarusian translation for redshift
+# Copyright (c) 2018 Rosetta Contributors and Canonical Ltd 2018
 # This file is distributed under the same license as the redshift package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: redshift\n"
-"Report-Msgid-Bugs-To: https://github.com/jonls/redshift/issues\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2017-10-18 11:46-0700\n"
-"PO-Revision-Date: 2017-11-28 11:25+0000\n"
-"Last-Translator: Pjotr12345 <Unknown>\n"
-"Language-Team: Dutch <nl@li.org>\n"
+"PO-Revision-Date: 2018-04-05 13:24+0000\n"
+"Last-Translator: Zmicer Turok <Unknown>\n"
+"Language-Team: Belarusian <be@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2018-05-21 01:04+0000\n"
 "X-Generator: Launchpad (build 18658)\n"
-"Language: nl\n"
+"Language: be\n"
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
 msgid ""
@@ -24,9 +24,8 @@ msgid ""
 "surroundings. This may help your eyes hurt less if you are working in front "
 "of the screen at night."
 msgstr ""
-"Redshift stelt de kleurtemperatuur bij van uw scherm aan de hand van uw "
-"omgeving. Dit kan u helpen om oogpijn te verminderen als u 's avonds of 's "
-"nachts achter een computerscherm werkt."
+"Redshift рэгулюе каляровую тэмпературу экрана ў адпаведнасці з асяроддзем. "
+"Гэта можа дапамагчы вашым вачам, калі вы працуеце ноччу."
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:2
 msgid ""
@@ -35,87 +34,86 @@ msgid ""
 "and early morning, the color temperature transitions smoothly from night to "
 "daytime temperature to allow your eyes to slowly adapt."
 msgstr ""
-"De kleurtemperatuur wordt ingesteld aan de hand van de positie van de zon. "
-"Bij nacht wordt er een andere kleurtemperatuur ingesteld dan bij dag. Als "
-"het schemert of vroeg in de ochtend is, wordt de kleurtemperatuur "
-"geleidelijk en soepel van nacht naar dag gebracht, zodat uw ogen er langzaam "
-"aan kunnen wennen."
+"Каляровая тэмпература прызначаецца ў адпаведнасці са становішчам сонца. "
+"Розная каляровая тэмпература прызначаецца ў начны час і днём. Падчас "
+"змяркання і на золку, каляровая тэмпература паступова пераходзіць ад "
+"тэмпературы ночы да тэмпературы ў дзённы час, каб вашыя вочы паступова "
+"прызвычаіліся."
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:3
 msgid ""
 "This program provides a status icon that allows the user to control Redshift."
 msgstr ""
-"Dit programma bevat een statuspictogram dat de gebruiker in staat stelt om "
-"Redshift te bedienen."
+"У праграмы ёсць значок на прасторы апавяшчэнняў, праз які можна кіраваць "
+"Redshift."
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:4
 msgid ""
 "The Redshift information window overlaid with an example of the redness "
 "effect"
-msgstr ""
-"Het Redshift-informatievenster getoond met een voorbeeld van het rode effect"
+msgstr "Інфармацыйнае акно Redshift пакажа прыклад эфекту пачырванення"
 
 #: ../data/applications/redshift.desktop.in.h:1
 #: ../data/applications/redshift-gtk.desktop.in.h:1
 msgid "Redshift"
-msgstr ""
+msgstr "Redshift"
 
 #: ../data/applications/redshift.desktop.in.h:2
 #: ../data/applications/redshift-gtk.desktop.in.h:2
 msgid "Color temperature adjustment"
-msgstr "Bijstelling van kleurtemperatuur"
+msgstr "Рэгуляванне каляровай тэмпературы"
 
 #: ../data/applications/redshift.desktop.in.h:3
 #: ../data/applications/redshift-gtk.desktop.in.h:3
 msgid "Color temperature adjustment tool"
-msgstr "Hulpmiddel voor het bijstellen van de kleurtemperatuur"
+msgstr "Інструмент рэгулявання каляровай тэмпературы"
 
 #. TRANSLATORS: Name printed when period of day is unknown
 #: ../src/redshift.c:135
 msgid "None"
-msgstr "Geen"
+msgstr "Няма"
 
 #: ../src/redshift.c:136 ../src/redshift.c:1107
 msgid "Daytime"
-msgstr "Overdag"
+msgstr "Дзённы час"
 
 #: ../src/redshift.c:137 ../src/redshift.c:1111
 msgid "Night"
-msgstr "'s Nachts"
+msgstr "Начны час"
 
 #: ../src/redshift.c:138
 msgid "Transition"
-msgstr "Overgang"
+msgstr "Пераход"
 
 #: ../src/redshift.c:225
 #, c-format
 msgid "Period: %s\n"
-msgstr "Periode: %s\n"
+msgstr "Перыяд : %s\n"
 
 #: ../src/redshift.c:228
 #, c-format
 msgid "Period: %s (%.2f%% day)\n"
-msgstr "Periode: %s (%.2f%% dag)\n"
+msgstr "Перыяд: %s (%.2f%% дзень)\n"
 
 #. TRANSLATORS: Abbreviation for `north'
 #: ../src/redshift.c:240
 msgid "N"
-msgstr "N"
+msgstr "Пнч"
 
 #. TRANSLATORS: Abbreviation for `south'
 #: ../src/redshift.c:242
 msgid "S"
-msgstr "Z"
+msgstr "Пдз"
 
 #. TRANSLATORS: Abbreviation for `east'
 #: ../src/redshift.c:244
 msgid "E"
-msgstr "O"
+msgstr "У"
 
 #. TRANSLATORS: Abbreviation for `west'
 #: ../src/redshift.c:246
 msgid "W"
-msgstr "W"
+msgstr "З"
 
 #. TRANSLATORS: Append degree symbols after %f if possible.
 #. The string following each number is an abreviation for
@@ -123,18 +121,18 @@ msgstr "W"
 #: ../src/redshift.c:251
 #, c-format
 msgid "Location: %.2f %s, %.2f %s\n"
-msgstr "Locatie: %.2f %s, %.2f %s\n"
+msgstr "Мясцовасць: %.2f %s, %.2f %s\n"
 
 #: ../src/redshift.c:325 ../src/redshift.c:416
 #, c-format
 msgid "Initialization of %s failed.\n"
-msgstr "Initialisatie van %s is mislukt.\n"
+msgstr "Памылка падчас ініцыялізацыі %s .\n"
 
 #: ../src/redshift.c:340 ../src/redshift.c:384 ../src/redshift.c:431
 #: ../src/redshift.c:463
 #, c-format
 msgid "Failed to set %s option.\n"
-msgstr "Kan optie %s niet instellen.\n"
+msgstr "Не атрымалася задаць параметр %s .\n"
 
 #. TRANSLATORS: `help' must not be
 #. translated.
@@ -142,202 +140,202 @@ msgstr "Kan optie %s niet instellen.\n"
 #: ../src/redshift.c:345 ../src/redshift.c:387
 #, c-format
 msgid "Try `-l %s:help' for more information.\n"
-msgstr "Probeer '-l%s:help' voor meer informatie.\n"
+msgstr ""
+"Паспрабуйце `-l %s:help' , каб атрымаць больш дакладную інфармацыю.\n"
 
 #: ../src/redshift.c:373 ../src/redshift.c:453
 #, c-format
 msgid "Failed to parse option `%s'.\n"
-msgstr "Kon optie '%s' niet lezen.\n"
+msgstr "Не атрымалася разабраць параметр `%s'.\n"
 
 #: ../src/redshift.c:400
 #, c-format
 msgid "Failed to start provider %s.\n"
-msgstr "Kon aanbieder %s niet starten.\n"
+msgstr "Не атрымалася запусціць пастаўшчыка %s.\n"
 
 #. TRANSLATORS: `help' must not be
 #. translated.
 #: ../src/redshift.c:436
 #, c-format
 msgid "Try `-m %s:help' for more information.\n"
-msgstr "Probeer '-m%s:help' voor meer informatie.\n"
+msgstr "Паспрабуйце `-m %s:help' каб атрымаць больш дакладную інфармацыю.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: ../src/redshift.c:466
 #, c-format
 msgid "Try -m %s:help' for more information.\n"
-msgstr "Probeer '-m%s:help' voor meer informatie.\n"
+msgstr ""
+"Паспрабуйце `-m %s:help' , каб атрымаць больш дакладную інфармацыю.\n"
 
 #: ../src/redshift.c:478
 #, c-format
 msgid "Failed to start adjustment method %s.\n"
-msgstr "Kon bijstellingsmethode %s niet starten.\n"
+msgstr "Не атрымалася запусціць метад рэгулявання %s.\n"
 
 #: ../src/redshift.c:509
 #, c-format
 msgid "Latitude must be between %.1f and %.1f.\n"
-msgstr "Breedtegraad moet tussen %.1f en %.1f zijn.\n"
+msgstr "Шырата мусіць быць паміж %.1f і %.1f.\n"
 
 #: ../src/redshift.c:518
 #, c-format
 msgid "Longitude must be between %.1f and %.1f.\n"
-msgstr "Lengtegraad moet tussen %.1f en %.1f zijn.\n"
+msgstr "Даўгата мусіць быць паміж %.1f і %.1f.\n"
 
 #: ../src/redshift.c:545 ../src/redshift.c:564 ../src/redshift.c:696
 #: ../src/redshift.c:1187
 msgid "Unable to read system time.\n"
-msgstr "Kan systeemtijd niet lezen.\n"
+msgstr "Не атрымалася прачытаць сістэмны час\n"
 
 #: ../src/redshift.c:635
 msgid "Waiting for initial location to become available...\n"
-msgstr "Aan het wachten op het beschikbaar komen van de aanvangslocatie...\n"
+msgstr "Чаканне даступнасці першапачатковага месцазнаходжання...\n"
 
 #: ../src/redshift.c:641 ../src/redshift.c:832 ../src/redshift.c:847
 #: ../src/redshift.c:1172
 msgid "Unable to get location from provider.\n"
-msgstr "Kon de locatie niet verkrijgen van de aanbieder.\n"
+msgstr "Не атрымалася вызначыць мясцовасць ў пастаўшчыка.\n"
 
 #: ../src/redshift.c:647 ../src/redshift.c:871
 msgid "Invalid location returned from provider.\n"
-msgstr "Aanbieder gaf ongeldige locatie op.\n"
+msgstr "Ад пастаўшчыка атрымана хібнае месцазнахожданне.\n"
 
 #: ../src/redshift.c:656 ../src/redshift.c:788 ../src/redshift.c:1222
 #: ../src/redshift.c:1253
 #, c-format
 msgid "Color temperature: %uK\n"
-msgstr "Kleurtemperatuur: %uK\n"
+msgstr "Каляровая тэмпература: %uK\n"
 
 #: ../src/redshift.c:657 ../src/redshift.c:793 ../src/redshift.c:1224
 #, c-format
 msgid "Brightness: %.2f\n"
-msgstr "Helderheid: %.2f\n"
+msgstr "Яркасць: %.2f\n"
 
 #: ../src/redshift.c:686
 #, c-format
 msgid "Status: %s\n"
-msgstr "Status: %s\n"
+msgstr "Стан: %s\n"
 
 #: ../src/redshift.c:687 ../src/redshift-gtk/statusicon.py:301
 msgid "Disabled"
-msgstr "Uitgeschakeld"
+msgstr "Адключана"
 
 #: ../src/redshift.c:687 ../src/redshift-gtk/statusicon.py:73
 #: ../src/redshift-gtk/statusicon.py:301
 msgid "Enabled"
-msgstr "Ingeschakeld"
+msgstr "Уключана"
 
 #: ../src/redshift.c:802 ../src/redshift.c:1233 ../src/redshift.c:1263
 #: ../src/redshift.c:1285
 msgid "Temperature adjustment failed.\n"
-msgstr "Bijstelling van kleurtemperatuur is mislukt.\n"
+msgstr "Не атрымалася наладзіць тэмпературу\n"
 
 #: ../src/redshift.c:854
 msgid ""
 "Location is temporarily unavailable; Using previous location until it "
 "becomes available...\n"
 msgstr ""
-"Locatie is tijdelijk niet beschikbaar; de vorige locatie wordt gebruikt "
-"totdat zij alsnog beschikbaar komt...\n"
+"Месцазнаходжанне часова недаступна; Выкарыстоўваецца папярэдняе, пакуль "
+"гэтае не стане даступна...\n"
 
 #: ../src/redshift.c:967
 msgid "Partitial time-configuration not supported!\n"
-msgstr "Gedeeltelijke tijdinstelling wordt niet ondersteund.\n"
+msgstr "Частковая наладка часу не падтрымліваецца!\n"
 
 #: ../src/redshift.c:975
 msgid "Invalid dawn/dusk time configuration!\n"
-msgstr "Ongeldige instelling voor dageraad/schemering.\n"
+msgstr "Хібная канфігурацыя часу світанку/змяркання!\n"
 
 #: ../src/redshift.c:1006
 #, c-format
 msgid "Trying location provider `%s'...\n"
-msgstr "Locatie-aanbieder '%s' aan het proberen...\n"
+msgstr "Паспрабаваць пастаўшчыка мясцовасці `%s'...\n"
 
 #: ../src/redshift.c:1011
 msgid "Trying next provider...\n"
-msgstr "Volgende aanbieder aan het proberen...\n"
+msgstr "Паспрабаваць наступнага пастаўшчыка...\n"
 
 #: ../src/redshift.c:1017
 #, c-format
 msgid "Using provider `%s'.\n"
-msgstr "Gebruikt aanbieder '%s'.\n"
+msgstr "Выкарыстоўваць пастаўшчыка `%s'.\n"
 
 #: ../src/redshift.c:1025
 msgid "No more location providers to try.\n"
-msgstr "Geen locatie-aanbieders meer over om te proberen.\n"
+msgstr "Больш няма пастаўшчыкоў.\n"
 
 #: ../src/redshift.c:1034
 #, c-format
 msgid ""
 "High transition elevation cannot be lower than the low transition "
 "elevation.\n"
-msgstr ""
-"Hoge overgangsstand kan niet lager zijn dan de lage overgangsstand.\n"
+msgstr "Высокі пераход не можа быць ніжэй, чым вышыня нізкага пераходу.\n"
 
 #. TRANSLATORS: Append degree symbols if possible.
 #: ../src/redshift.c:1041
 #, c-format
 msgid "Solar elevations: day above %.1f, night below %.1f\n"
-msgstr "Zonnestanden: dag boven %.1f, nacht onder %.1f\n"
+msgstr "Вышыня сонца :  днём вышэй %.1f, ноччу ніжэй за %.1f\n"
 
 #: ../src/redshift.c:1049
 #, c-format
 msgid "Temperatures: %dK at day, %dK at night\n"
-msgstr "Temperaturen: %dK overdag, %dK 's nachts\n"
+msgstr "Тэмпература : %dK днём, %dK уначы\n"
 
 #: ../src/redshift.c:1060 ../src/redshift.c:1071
 #, c-format
 msgid "Temperature must be between %uK and %uK.\n"
-msgstr "Temperatuur moet tussen %uK en %uK zijn.\n"
+msgstr "Тэмпература павінна быць паміж %uK і %uK.\n"
 
 #: ../src/redshift.c:1083
 #, c-format
 msgid "Brightness values must be between %.1f and %.1f.\n"
-msgstr "Helderheidwaarden moeten tussen %.1f en %.1f zijn.\n"
+msgstr "Яркасць мусіць быць паміж %.1f і %.1f.\n"
 
 #: ../src/redshift.c:1089
 #, c-format
 msgid "Brightness: %.2f:%.2f\n"
-msgstr "Helderheid: %.2f:%.2f\n"
+msgstr "Яркасць: %.2f:%.2f\n"
 
 #: ../src/redshift.c:1098
 #, c-format
 msgid "Gamma value must be between %.1f and %.1f.\n"
-msgstr "Gammawaarde moet tussen %.1f en %.1f liggen.\n"
+msgstr "Значэнне гамы мусіць быць паміж %.1f і %.1f.\n"
 
 #. TRANSLATORS: The string in parenthesis is either
 #. Daytime or Night (translated).
 #: ../src/redshift.c:1106 ../src/redshift.c:1110
 #, c-format
 msgid "Gamma (%s): %.3f, %.3f, %.3f\n"
-msgstr "Gamma (%s): %.3f, %.3f, %.3f\n"
+msgstr "Гама (%s): %.3f, %.3f, %.3f\n"
 
 #: ../src/redshift.c:1139
 msgid "Trying next method...\n"
-msgstr "Volgende methode aan het proberen...\n"
+msgstr "Паспрабаваць наступны рэжым...\n"
 
 #: ../src/redshift.c:1144
 #, c-format
 msgid "Using method `%s'.\n"
-msgstr "Gebruikt methode '%s'.\n"
+msgstr "Выкарыстоўваемы рэжым `%s'.\n"
 
 #: ../src/redshift.c:1151
 msgid "No more methods to try.\n"
-msgstr "Geen methoden meer over om te proberen.\n"
+msgstr "Больш няма рэжымаў.\n"
 
 #: ../src/redshift.c:1165
 msgid "Waiting for current location to become available...\n"
-msgstr ""
-"Aan het wachten op het ter beschikking komen van de huidige locatie...\n"
+msgstr "Чаканне даступнасці бягучага месцазнаходжання...\n"
 
 #. TRANSLATORS: Append degree symbol if
 #. possible.
 #: ../src/redshift.c:1206
 #, c-format
 msgid "Solar elevation: %f\n"
-msgstr "Zonnestand: %f\n"
+msgstr "Вышыня сонца : %f\n"
 
 #: ../src/redshift.c:1244 ../src/redshift.c:1272 ../src/redshift.c:1294
 msgid "Press ctrl-c to stop...\n"
-msgstr "Druk ctrl-c om af te breken...\n"
+msgstr "Націсніце ctrl-c, каб спыніцца...\n"
 
 #. TRANSLATORS: help output 1
 #. LAT is latitude, LON is longitude,
@@ -347,15 +345,14 @@ msgstr "Druk ctrl-c om af te breken...\n"
 #: ../src/options.c:159
 #, c-format
 msgid "Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
-msgstr "Gebruik: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
+msgstr "Выкарыстоўваецца: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"
 
 #. TRANSLATORS: help output 2
 #. no-wrap
 #: ../src/options.c:165
 msgid "Set color temperature of display according to time of day.\n"
 msgstr ""
-"Stel de kleurtemperatuur van het scherm in overeenkomstig de tijd van de "
-"dag.\n"
+"Прызначыць каляровую тэмпературу дысплея ў залежнасці ад часу сутак.\n"
 
 #. TRANSLATORS: help output 3
 #. no-wrap
@@ -365,9 +362,9 @@ msgid ""
 "  -v\t\tVerbose output\n"
 "  -V\t\tShow program version\n"
 msgstr ""
-"  -h\t\tToon dit hulpbericht\n"
-"  -v\t\tGedetailleerde uitvoer\n"
-"  -V\t\tProgrammaversie weergeven\n"
+"  -h\t\tПаказвае гэтае паведамленне даведкі\n"
+"  -v\t\tПоўны вывад\n"
+"  -V\t\tПаказвае версію праграмы\n"
 
 #. TRANSLATORS: help output 4
 #. `list' must not be translated
@@ -390,6 +387,21 @@ msgid ""
 "  -r\t\tDisable fading between color temperatures\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
+"  -b DAY:NIGHT\tЯркасць экрана (ад 0,1 да 1,0)\n"
+"  -c FILE\tАтрымаць налады з абранага файла канфігурацыі\n"
+"  -g R:G:B\tДадатковая карэкцыя гамы \n"
+"  -l LAT:LON\tВашая дзейная мясовасць\n"
+"  -l PROVIDER\tАбярыце пастаўшчыка для аўтаматычнага абнаўлення мясцовасці\n"
+"  \t\t(Увядзіце `спіс', каб убачыць даступных пастаўшчыкоў)\n"
+"  -m METHOD\tМетад ужывання каляровай тэмпературы\n"
+"  \t\t(Увядзіце `спіс', каб убачыць даступныя метады)\n"
+"  -o\t\tРэжым аднаго стрэлу (карэктаваць каляровую тэмпературу аднойчы)\n"
+"  -O TEMP\tСамастойнае выкарыстанне рэжыму аднаго стрэлу (прызначыць "
+"каляровую тэмпературу)\n"
+"  -p\t\tРэжым вываду (толькі параметры вываду і выхад)\n"
+"  -x\t\tРэжым \"скінуць\" (выдаліць карэкцыю з экрана)\n"
+"  -r\t\tАдключыць пераходы тэмпературы\n"
+"  -t DAY:NIGHT\tКаляровая тэмпературы для прызначэння днём/уначы\n"
 
 #. TRANSLATORS: help output 5
 #: ../src/options.c:201
@@ -401,10 +413,11 @@ msgid ""
 "in\n"
 "more red light.\n"
 msgstr ""
-"De neutrale temperatuur is %uK. Het gebruik van deze waarde zal de\n"
-"kleurtemperatuur van het scherm niet veranderen. Het instellen van de\n"
-"kleurtemperatuur op een hogere waarde zal meer blauw licht geven,\n"
-"en het instellen van een lagere waarde zal meer rood licht veroorzaken.\n"
+"Нейтральная тэмпература %uK. Ужыванне гэтага значэння не будзе\n"
+"ўплываць на каляровую тэмпературу дысплея.\n"
+"Каляровая тэмпература вышэй за гэтую дае\n"
+"больш сіняе святло, ніжэй за гэтую дае\n"
+"больш чырвонае святло.\n"
 
 #. TRANSLATORS: help output 6
 #: ../src/options.c:210
@@ -415,129 +428,128 @@ msgid ""
 "  Daytime temperature: %uK\n"
 "  Night temperature: %uK\n"
 msgstr ""
-"Standaardwaarden:\n"
+"Прадвызначаныя значэнні:\n"
 "\n"
-"  Temperatuur overdag: %uK\n"
-"  Temperatuur 's nachts: %uK\n"
+"Тэмпература днём: %uK\n"
+"Тэмпература ноччу: %uK\n"
 
 #. TRANSLATORS: help output 7
 #: ../src/options.c:218
 #, c-format
 msgid "Please report bugs to <%s>\n"
-msgstr "Meld fouten a.u.b. aan <%s>\n"
+msgstr "Калі ласка, распавядзіце пра памылку <%s>\n"
 
 #: ../src/options.c:225
 msgid "Available adjustment methods:\n"
-msgstr "Beschikbare bijstellingsmethoden:\n"
+msgstr "Даступныя метады рэгулявання:\n"
 
 #: ../src/options.c:231
 msgid "Specify colon-separated options with `-m METHOD:OPTIONS'.\n"
-msgstr ""
-"Specificeer met dubbele punten gescheiden opties met `-m METHODE:OPTIES'.\n"
+msgstr "Прызначыць налады для раздзяляемых двукроп'ем `-m METHOD:OPTIONS'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: ../src/options.c:234
 msgid "Try `-m METHOD:help' for help.\n"
-msgstr "Probeer `-m METHODE:help' voor hulp\n"
+msgstr "Паспрабуйце для дапамогі `-m METHOD:help'.\n"
 
 #: ../src/options.c:241
 msgid "Available location providers:\n"
-msgstr "Beschikbare locatie-aanbieders:\n"
+msgstr "Даступныя пастаўшчыкі мясцовасці:\n"
 
 #: ../src/options.c:247
 msgid "Specify colon-separated options with`-l PROVIDER:OPTIONS'.\n"
 msgstr ""
-"Specificeer met dubbele punten gescheiden opties met `-l AANBIEDER:OPTIES'.\n"
+"Прызначыць налады для раздзяляемых двукроп'ем `-l PROVIDER:OPTIONS'.\n"
 
 #. TRANSLATORS: `help' must not be translated.
 #: ../src/options.c:250
 msgid "Try `-l PROVIDER:help' for help.\n"
-msgstr "Probeer '-l AANBIEDER:help' voor hulp.\n"
+msgstr "Паспрабуйце для дапамогі `-l PROVIDER:help'.\n"
 
 #: ../src/options.c:356
 msgid "Malformed gamma argument.\n"
-msgstr "Misvormd gamma-argument.\n"
+msgstr "Недакладны аргумент гамы.\n"
 
 #: ../src/options.c:358 ../src/options.c:472 ../src/options.c:491
 msgid "Try `-h' for more information.\n"
-msgstr "Probeer '-h' voor meer informatie.\n"
+msgstr "Паспрабуйце ключ `-h' для вываду больш дакладнай інфармацыі\n"
 
 #: ../src/options.c:407 ../src/options.c:610
 #, c-format
 msgid "Unknown location provider `%s'.\n"
-msgstr "Onbekende locatie-aanbieder `%s'.\n"
+msgstr "Невядомы пастаўшчык мясцовасці `%s'.\n"
 
 #. TRANSLATORS: This refers to the method
 #. used to adjust colors e.g VidMode
 #: ../src/options.c:439 ../src/options.c:597
 #, c-format
 msgid "Unknown adjustment method `%s'.\n"
-msgstr "Onbekende bijstellingsmethode '%s'.\n"
+msgstr "Невядомы метад рэгулявання `%s'.\n"
 
 #: ../src/options.c:470
 msgid "Malformed temperature argument.\n"
-msgstr "Misvormd temperatuurargument.\n"
+msgstr "Недакладны аргумент тэмпературы.\n"
 
 #: ../src/options.c:561 ../src/options.c:575 ../src/options.c:586
 msgid "Malformed gamma setting.\n"
-msgstr "Misvormde gamma-instelling.\n"
+msgstr "Недакладныя налады гамы.\n"
 
 #: ../src/options.c:621
 #, c-format
 msgid "Malformed dawn-time setting `%s'.\n"
-msgstr "Misvormde dageraadinstelling '%s'.\n"
+msgstr "Недакладныя налады часу світанку `%s'.\n"
 
 #: ../src/options.c:632
 #, c-format
 msgid "Malformed dusk-time setting `%s'.\n"
-msgstr "Misvormde schemeringinstelling '%s'.\n"
+msgstr "Недакладныя налады часу змяркання `%s'.\n"
 
 #: ../src/options.c:639
 #, c-format
 msgid "Unknown configuration setting `%s'.\n"
-msgstr "Onbekende instelling '%s'.\n"
+msgstr "Невядомая канфігурацыя налад `%s'.\n"
 
 #: ../src/config-ini.c:167
 msgid "Malformed section header in config file.\n"
-msgstr "Misvormde sectiekop in instellingenbestand.\n"
+msgstr "Недакладны загаловак раздзела ў файле канфігурацыі\n"
 
 #: ../src/config-ini.c:203
 msgid "Malformed assignment in config file.\n"
-msgstr "Misvormde toewijzing in instellingenbestand.\n"
+msgstr "Недакладнае прызначэнне ў файле канфігурацыі.\n"
 
 #: ../src/config-ini.c:214
 msgid "Assignment outside section in config file.\n"
-msgstr "Toewijzing buiten sectie in instellingenbestand.\n"
+msgstr "Прызначэнне па-за раздзелам файла канфігурацыі.\n"
 
 #: ../src/gamma-drm.c:97
 #, c-format
 msgid "Failed to open DRM device: %s\n"
-msgstr "Kon DRM-apparaat niet openen: %s\n"
+msgstr "Не атрымалася адкрыць DRM  прылады: %s\n"
 
 #: ../src/gamma-drm.c:105
 #, c-format
 msgid "Failed to get DRM mode resources\n"
-msgstr "Kon hulpbronnen voor DRM-modus niet verkrijgen\n"
+msgstr "Не атрымалася вызначыць рэсурсы рэжыму DRM\n"
 
 #: ../src/gamma-drm.c:115 ../src/gamma-randr.c:384
 #, c-format
 msgid "CRTC %d does not exist. "
-msgstr "CRTC %d bestaat niet. "
+msgstr "CRTC %d не існуе. "
 
 #: ../src/gamma-drm.c:118 ../src/gamma-randr.c:387
 #, c-format
 msgid "Valid CRTCs are [0-%d].\n"
-msgstr "Juiste CRTC's zijn [0-%d].\n"
+msgstr "Дзейны CRTCs - гэта [0-%d].\n"
 
 #: ../src/gamma-drm.c:121 ../src/gamma-randr.c:390
 #, c-format
 msgid "Only CRTC 0 exists.\n"
-msgstr "Alleen CRTC 0 bestaat.\n"
+msgstr "Існуе толькі CRTC 0 .\n"
 
 #: ../src/gamma-drm.c:159
 #, c-format
 msgid "CRTC %i lost, skipping\n"
-msgstr "CRTC %i verloren gegaan, wordt overgeslagen\n"
+msgstr "CRTC %i не знойдзены , прамінута\n"
 
 #: ../src/gamma-drm.c:165
 #, c-format
@@ -545,6 +557,8 @@ msgid ""
 "Could not get gamma ramp size for CRTC %i\n"
 "on graphics card %i, ignoring device.\n"
 msgstr ""
+"Немагчыма атрымаць значэнне гамы CRTC %i\n"
+"відэакарты %i, не зважаючы на прыладу.\n"
 
 #: ../src/gamma-drm.c:178
 #, c-format
@@ -552,10 +566,12 @@ msgid ""
 "DRM could not read gamma ramps on CRTC %i on\n"
 "graphics card %i, ignoring device.\n"
 msgstr ""
+"У DRM не атрымалася прачытаць значэнне гамы CRTC %i\n"
+"відэакарты %i, не зважаючы на прыладу.\n"
 
 #: ../src/gamma-drm.c:242
 msgid "Adjust gamma ramps with Direct Rendering Manager.\n"
-msgstr ""
+msgstr "Наладзіць гаму з дапамогай Direct Rendering Manager\n"
 
 #. TRANSLATORS: DRM help output
 #. left column must not be translated
@@ -564,13 +580,13 @@ msgid ""
 "  card=N\tGraphics card to apply adjustments to\n"
 "  crtc=N\tCRTC to apply adjustments to\n"
 msgstr ""
-"  card=N\tGrafische kaart om bijstellingen op toe te passen\n"
-"  crtc=N\tCRTC om bijstellingen op toe te passen\n"
+"  card=N\tГрафічная карта для ўжытых змен\n"
+" crtc=N\tCRTC для ўжытых змен для\n"
 
 #: ../src/gamma-drm.c:260
 #, c-format
 msgid "CRTC must be a non-negative integer\n"
-msgstr "CRTC moet een niet-negatief geheel getal zijn\n"
+msgstr "CRTC мусіць быць станоўчым цэлым лікам\n"
 
 #: ../src/gamma-drm.c:264 ../src/gamma-randr.c:369 ../src/gamma-vidmode.c:161
 #: ../src/gamma-quartz.c:183 ../src/gamma-w32gdi.c:128 ../src/gamma-dummy.c:67
@@ -578,37 +594,37 @@ msgstr "CRTC moet een niet-negatief geheel getal zijn\n"
 #: ../src/location-manual.c:106
 #, c-format
 msgid "Unknown method parameter: `%s'.\n"
-msgstr "Onbekende methodeparameter: `%s'.\n"
+msgstr "Невядомы параметр метаду `%s'.\n"
 
 #: ../src/gamma-randr.c:94 ../src/gamma-randr.c:153 ../src/gamma-randr.c:192
 #: ../src/gamma-randr.c:218 ../src/gamma-randr.c:275 ../src/gamma-randr.c:435
 #, c-format
 msgid "`%s' returned error %d\n"
-msgstr "'%s' gaf foutcode %d\n"
+msgstr "`%s' вярнуўся з памылкай %d\n"
 
 #: ../src/gamma-randr.c:103
 #, c-format
 msgid "Unsupported RANDR version (%u.%u)\n"
-msgstr "RANDR-versie wordt niet ondersteund (%u.%u)\n"
+msgstr "Непадтрымліваемая версія RANDR (%u.%u)\n"
 
 #: ../src/gamma-randr.c:138
 #, c-format
 msgid "Screen %i could not be found.\n"
-msgstr "Scherm %i kon niet worden gevonden.\n"
+msgstr "Хібны экран %i .\n"
 
 #: ../src/gamma-randr.c:204 ../src/gamma-vidmode.c:96 ../src/gamma-quartz.c:114
 #, c-format
 msgid "Gamma ramp size too small: %i\n"
-msgstr "Gamma ramp grootte te klein: %i\n"
+msgstr "Значэнне гамы занадта малое : %i\n"
 
 #: ../src/gamma-randr.c:277
 #, c-format
 msgid "Unable to restore CRTC %i\n"
-msgstr "Kan CRTC %i niet herstellen\n"
+msgstr "Немагчыма аднавіць CRTC %i\n"
 
 #: ../src/gamma-randr.c:301
 msgid "Adjust gamma ramps with the X RANDR extension.\n"
-msgstr "Pas gamma ramps aan met de X RANDR extensie.\n"
+msgstr "Наладзіць гаму з пашырэннем X RANDR.\n"
 
 #. TRANSLATORS: RANDR help output
 #. left column must not be translated
@@ -617,13 +633,13 @@ msgid ""
 "  screen=N\t\tX screen to apply adjustments to\n"
 "  crtc=N\tList of comma separated CRTCs to apply adjustments to\n"
 msgstr ""
-"  screen=N\t\tX-scherm om bijstellingen op toe te passen\n"
-"  crtc=N\tLijst of kommagescheiden CRTC's om bijstellingen op toe te passen\n"
+"  screen=N\t\tX экран для ўжывання змен для\n"
+"  preserve={0,1}\tЦі мусіць быць захавана існуючая гама\n"
 
 #: ../src/gamma-randr.c:328
 #, c-format
 msgid "Unable to read screen number: `%s'.\n"
-msgstr "Kon schermnummer niet lezen: '%s'.\n"
+msgstr "Не атрымалася прачытаць нумар экрана: `%s'.\n"
 
 #: ../src/gamma-randr.c:364 ../src/gamma-vidmode.c:156
 #: ../src/gamma-quartz.c:178 ../src/gamma-w32gdi.c:123
@@ -632,72 +648,76 @@ msgid ""
 "Parameter `%s` is now always on;  Use the `%s` command-line option to "
 "disable.\n"
 msgstr ""
-"Parameter '%s' is nu altijd aan; gebruik de opdrachtregeloptie '%s' om hem "
-"uit te schakelen.\n"
+"Параметр `%s` зараз уключаны; Увядзіце у тэрмінале загад `%s` для "
+"выключэння.\n"
 
 #: ../src/gamma-vidmode.c:61 ../src/gamma-vidmode.c:81
 #: ../src/gamma-vidmode.c:90 ../src/gamma-vidmode.c:117
 #: ../src/gamma-vidmode.c:180 ../src/gamma-vidmode.c:225
 #, c-format
 msgid "X request failed: %s\n"
-msgstr "X-verzoek is mislukt: %s\n"
+msgstr "Памылка падчас запыту да X : %s\n"
 
 #: ../src/gamma-vidmode.c:140
 msgid "Adjust gamma ramps with the X VidMode extension.\n"
-msgstr "Pas gamma ramps aan met de X VidMode extensie.\n"
+msgstr "Наладзіць гаму з пашырэннем X VidMode.\n"
 
 #. TRANSLATORS: VidMode help output
 #. left column must not be translated
 #: ../src/gamma-vidmode.c:145
 msgid "  screen=N\t\tX screen to apply adjustments to\n"
-msgstr "  screen=N\t\tX-scherm om bijstellingen op toe te passen\n"
+msgstr ""
+"  screen=N\t\tX экран для ўжывання змен для\n"
+"  crtc=N\t\tCRTC для ўжывання змен\n"
+"  preserve={0,1}\tЦі мусіць быць захавана існуючая гама\n"
 
 #: ../src/gamma-quartz.c:140 ../src/gamma-w32gdi.c:91
 msgid "Unable to save current gamma ramp.\n"
-msgstr "Kan de huidige gamma ramps niet opslaan.\n"
+msgstr "Немагчыма захаваць дзейную гаму.\n"
 
 #: ../src/gamma-quartz.c:170
 msgid "Adjust gamma ramps on macOS using Quartz.\n"
-msgstr ""
+msgstr "Наладзіць гаму для OSX ужываючы Quartz.\n"
 
 #: ../src/gamma-w32gdi.c:68 ../src/gamma-w32gdi.c:141 ../src/gamma-w32gdi.c:168
 msgid "Unable to open device context.\n"
-msgstr "Kon apparaatcontext niet openen.\n"
+msgstr "Немагчыма праглядзець кантэкст прылады.\n"
 
 #: ../src/gamma-w32gdi.c:75
 msgid "Display device does not support gamma ramps.\n"
-msgstr "Weergave-apparaat ondersteund geen gamma ramps.\n"
+msgstr "Экран прылады не падтрымлівае гаму.\n"
 
 #: ../src/gamma-w32gdi.c:115
 msgid "Adjust gamma ramps with the Windows GDI.\n"
-msgstr "Stel gamma ramps in met de Windows GDI.\n"
+msgstr "Наладзіць гаму з Windows GDI.\n"
 
 #: ../src/gamma-w32gdi.c:153
 msgid "Unable to restore gamma ramps.\n"
-msgstr "Kan gamma ramps niet herstellen.\n"
+msgstr "Немагчыма аднавіць гаму.\n"
 
 #: ../src/gamma-w32gdi.c:211
 msgid "Unable to set gamma ramps.\n"
-msgstr "Kan gamma ramps niet instellen.\n"
+msgstr "Немагчыма прызначыць гаму.\n"
 
 #: ../src/gamma-dummy.c:43
 msgid ""
 "WARNING: Using dummy gamma method! Display will not be affected by this "
 "gamma method.\n"
 msgstr ""
+"УВАГА: Ужываецца фіктыўны метад гамы! Дысплей не будзе залежаць ад гэтага "
+"метаду.\n"
 
 #: ../src/gamma-dummy.c:60
 msgid ""
 "Does not affect the display but prints the color temperature to the "
 "terminal.\n"
 msgstr ""
-"Verandert niets aan de weergave maar toont kleurtemperatuur in het "
-"terminalvenster.\n"
+"Не ўплывае на дысплей, але ўжывае каляровую тэмпературу ў тэрмінале.\n"
 
 #: ../src/gamma-dummy.c:75
 #, c-format
 msgid "Temperature: %i\n"
-msgstr "Temperatuur: %i\n"
+msgstr "Тэмпература: %i\n"
 
 #: ../src/location-geoclue2.c:59
 #, c-format
@@ -708,77 +728,83 @@ msgid ""
 "more\n"
 "information.\n"
 msgstr ""
+"GeoClue адмоўлена ў доступ да бягучага месцазнаходжання!\n"
+"Пераканайцеся ў тым, што сэрвісы вызначэння месцазнаходжання ўключаны і што "
+"Redshift дазволена\n"
+"выкарыстоўваць іх. Наведайце https://github.com/jonls/redshift#faq для\n"
+"атрымання больш дакладнай інфармацыі.\n"
 
 #: ../src/location-geoclue2.c:107
 #, c-format
 msgid "Unable to obtain location: %s.\n"
-msgstr "Kon deze locatie niet krijgen: %s.\n"
+msgstr "Не атрымалася вызначыць мясцовасць: %s.\n"
 
 #: ../src/location-geoclue2.c:150
 #, c-format
 msgid "Unable to obtain GeoClue Manager: %s.\n"
-msgstr "Kon GeoClue-beheerder niet ophalen: %s.\n"
+msgstr "Немагчыма злучыцца з кіраўніком GeoClue: %s.\n"
 
 #: ../src/location-geoclue2.c:166
 #, c-format
 msgid "Unable to obtain GeoClue client path: %s.\n"
-msgstr ""
+msgstr "Немагчыма знайсці шлях да кліента GeoClue: %s.\n"
 
 #: ../src/location-geoclue2.c:188
 #, c-format
 msgid "Unable to obtain GeoClue Client: %s.\n"
-msgstr ""
+msgstr "Немагчыма злучыцца з кліентам GeoClue: %s.\n"
 
 #: ../src/location-geoclue2.c:229
 #, c-format
 msgid "Unable to set distance threshold: %s.\n"
-msgstr ""
+msgstr "Немагчыма прызначыць парог адлегласці: %s.\n"
 
 #: ../src/location-geoclue2.c:253
 #, c-format
 msgid "Unable to start GeoClue client: %s.\n"
-msgstr ""
+msgstr "Немагчыма запусціць кліент GeoClue: %s.\n"
 
 #: ../src/location-geoclue2.c:365
 msgid "Failed to start GeoClue2 provider!\n"
-msgstr ""
+msgstr "Не атрымалася запусціць пастаўшчыка GeoClue2!\n"
 
 #: ../src/location-geoclue2.c:399
 msgid "Use the location as discovered by a GeoClue2 provider.\n"
-msgstr "Gebruik de locatie die ontdekt is door de GeoClue2 aanbieder.\n"
+msgstr "Выкарыстоўвайце мясцовасць, выяўленую пастаўшчыком GeoClue2.\n"
 
 #: ../src/location-corelocation.m:73
 msgid "Not authorized to obtain location from CoreLocation.\n"
-msgstr "Niet geautoriseerd om de locatie te verkrijgen van CoreLocation.\n"
+msgstr ""
+"Патрэбна аўтарызавацца падчас вызначэння мясцовасці ў CoreLocation.\n"
 
 #: ../src/location-corelocation.m:111
 #, c-format
 msgid "Error obtaining location from CoreLocation: %s\n"
-msgstr "Fout bij het ophalen van de locatie van CoreLocation: %s\n"
+msgstr "Памылка падчас вызначэння мясцовасці ў CoreLocation: %s\n"
 
 #: ../src/location-corelocation.m:120
 msgid "Waiting for authorization to obtain location...\n"
-msgstr "Wachten voor autorisatie om locatie op te halen...\n"
+msgstr "Чакаецца аўтарызацыя для выяўлення мясцовасці...\n"
 
 #: ../src/location-corelocation.m:122
 msgid "Request for location was not authorized!\n"
-msgstr "Aanvraag voor locatie was niet geautoriseerd!\n"
+msgstr "Запыт на выяўленне мясцовасці не аўтарызаваны!\n"
 
 #: ../src/location-corelocation.m:203
 msgid "Failed to start CoreLocation provider!\n"
-msgstr ""
+msgstr "Не атрымалася запусціць пастаўшчыка CoreLocation!\n"
 
 #: ../src/location-corelocation.m:235
 msgid "Use the location as discovered by the Corelocation provider.\n"
-msgstr "Gebruik de locatie die is ontdekt door de Corelocation-aanbieder.\n"
+msgstr "Выкарыстоўвайце мясцовасць, выяўленую пастаўшчыком CoreLocation.\n"
 
 #: ../src/location-manual.c:59
 msgid "Latitude and longitude must be set.\n"
-msgstr "Hoogte- en breedtegraad moeten nog ingesteld worden.\n"
+msgstr "Мусяць быць вызначаны шырата і даўгата.\n"
 
 #: ../src/location-manual.c:75
 msgid "Specify location manually.\n"
-msgstr "Geef locatie handmatig op.\n"
+msgstr "Пазначце мясцовасць самастойна.\n"
 
 #. TRANSLATORS: Manual location help output
 #. left column must not be translated
@@ -787,67 +813,69 @@ msgid ""
 "  lat=N\t\tLatitude\n"
 "  lon=N\t\tLongitude\n"
 msgstr ""
-"  lat=N\t\tBreedtegraad\n"
-"  lon=N\t\tLengtegraad\n"
+"  lat=N\t\tШырата\n"
+"  lon=N\t\tДаўгата\n"
 
 #: ../src/location-manual.c:83
 msgid ""
 "Both values are expected to be floating point numbers,\n"
 "negative values representing west / south, respectively.\n"
 msgstr ""
+"Абодва значэння будуць лікам з коскай, якая плавае,\n"
+"адмоўныя значэнні адпавядаюць захаду / поўдню, адпаведна.\n"
 
 #: ../src/location-manual.c:97
 msgid "Malformed argument.\n"
-msgstr "Misvormd argument.\n"
+msgstr "Недакладны аргумент.\n"
 
 #: ../src/redshift-gtk/statusicon.py:78
 msgid "Suspend for"
-msgstr "Onderbreken voor"
+msgstr "Прыпыніць на"
 
 #: ../src/redshift-gtk/statusicon.py:80
 msgid "30 minutes"
-msgstr "30 minuten"
+msgstr "30 хвілін"
 
 #: ../src/redshift-gtk/statusicon.py:81
 msgid "1 hour"
-msgstr "1 uur"
+msgstr "1 гадзіну"
 
 #: ../src/redshift-gtk/statusicon.py:82
 msgid "2 hours"
-msgstr "2 uren"
+msgstr "2 гадзіны"
 
 #: ../src/redshift-gtk/statusicon.py:91
 msgid "Autostart"
-msgstr "Start automatisch"
+msgstr "Аўтазапуск"
 
 #: ../src/redshift-gtk/statusicon.py:103 ../src/redshift-gtk/statusicon.py:113
 msgid "Info"
-msgstr ""
+msgstr "Інфармацыя"
 
 #: ../src/redshift-gtk/statusicon.py:108
 msgid "Quit"
-msgstr "Afsluiten"
+msgstr "Выйсці"
 
 #: ../src/redshift-gtk/statusicon.py:146
 msgid "Close"
-msgstr "Sluiten"
+msgstr "Закрыць"
 
 #: ../src/redshift-gtk/statusicon.py:300
 msgid "<b>Status:</b> {}"
-msgstr ""
+msgstr "<b>Стан:</b> {}"
 
 #: ../src/redshift-gtk/statusicon.py:306 ../src/redshift-gtk/statusicon.py:324
 msgid "Color temperature"
-msgstr "Kleurtemperatuur"
+msgstr "Каляровая тэмпература"
 
 #: ../src/redshift-gtk/statusicon.py:312 ../src/redshift-gtk/statusicon.py:325
 msgid "Period"
-msgstr "Periode"
+msgstr "Перыяд"
 
 #: ../src/redshift-gtk/statusicon.py:318
 msgid "Location"
-msgstr "Locatie"
+msgstr "Мясцовасць"
 
 #: ../src/redshift-gtk/statusicon.py:349
 msgid "Please run `redshift -h` for help output."
-msgstr ""
+msgstr "Для вываду дапаможніка, калі ласка, увядзіце `redshift -h`."
