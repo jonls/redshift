@@ -1,6 +1,34 @@
 News
 ====
 
+v1.12 (2018-05-20)
+------------------
+- Change location providers to allow updates. GeoClue and CoreLocation now
+  provide continuous location updates.
+- Allow time-based configuration i.e. setting the redness effect based on time
+  of day instead of based on the elevation of the sun. See the man page for
+  more information.
+- Now looks for the configuration file in `~/.config/redshift/redshift.conf`
+  (or `${XDG_CONFIG_HOME}/redshift/redshift.conf`) if `$XDG_CONFIG_HOME` is
+  set. The old location at `~/.config/redshift.conf` is deprecated but
+  still searched as a fall back.
+- Run hooks when enabling/disabling Redshift.
+- Default temperatures changed to 6500K during daytime and 4500K during night.
+- With `randr`, allow multiple but not all CRTCs to be redshifted.
+- Removes deprecated original GeoClue location provider (use GeoClue 2
+  instead).
+- The option for enabling the short fade between color effects is now called
+  `fade` instead of `transition` in the configuration file. The term transition
+  caused a lot of confusion about what this option does (the old option still
+  works but is deprecated).
+- The `preserve` option is enabled by default for `vidmode`, `randr`, Windows
+  (`w32gdi`) and macOS (`quartz`). The option is now controlled by the `-P`
+  command line option.
+- Work around issue where Windows adjustments sometimes fail.
+- Install AppArmor profile.
+- quartz: Fix incorrect use of display identifier.
+- Various bug fixes and updated translations.
+
 v1.11 (2016-01-02)
 ------------------
 - Add option `preserve` for gamma adjustment methods (`randr`, `vidmode`,
