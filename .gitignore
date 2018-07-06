@@ -51,6 +51,10 @@ src/redshift-gtk/redshift-gtk
 contrib/redshift.spec
 src/redshift
 src/redshift-gtk/__pycache__/
+src/gamma-control-client-protocol.h
+src/gamma-control-protocol.c
+src/orbital-authorizer-client-protocol.h
+src/orbital-authorizer-protocol.c
 /data/systemd/redshift.service
 /data/systemd/redshift-gtk.service
 /data/appdata/redshift-gtk.appdata.xml
