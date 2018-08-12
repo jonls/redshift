@@ -1,18 +1,29 @@
-# Hidden files
-.*
-!.git*
-
-# Backup files
 *~
-\#*\#
+
+## From: https://github.com/github/gitignore/blob/master/C.gitignore
+# Prerequisites
+*.d
 
 # Object files
 *.o
 *.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
 
 # Libraries
 *.lib
 *.a
+*.la
+*.lo
 
 # Shared objects (inc. Windows DLLs)
 *.dll
@@ -24,42 +35,86 @@
 *.exe
 *.out
 *.app
-#src/redshift*
+*.i*86
+*.x86_64
+*.hex
 
-# autotools
-/autom4te.cache
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+## From: https://github.com/github/gitignore/blob/master/Autotools.gitignore
+# http://www.gnu.org/software/automake
+
 Makefile.in
-Makefile
-stamp-h1
-/config.*
-/ABOUT-NLS
+/ar-lib
+/mdate-sh
+/py-compile
+/test-driver
+/ylwrap
+
+# http://www.gnu.org/software/autoconf
+
+autom4te.cache
+/autoscan.log
+/autoscan-*.log
 /aclocal.m4
+/compile
+/config.guess
+/config.h.in
+/config.log
+/config.status
+/config.sub
 /configure
+/configure.scan
 /depcomp
 /install-sh
 /missing
-/py-compile
-/compile
-*.deps/
-/m4/
-libtool
-ltmain.sh
+/stamp-h1
 
+# https://www.gnu.org/software/libtool/
+
+/ltmain.sh
+
+# http://www.gnu.org/software/texinfo
+
+/texinfo.tex
+
+# http://www.gnu.org/software/m4/
+
+m4/libtool.m4
+m4/ltoptions.m4
+m4/ltsugar.m4
+m4/ltversion.m4
+m4/lt~obsolete.m4
+
+## Redshift specific:
 # generated files
-src/redshift-gtk/defs.py
-src/redshift-gtk/redshift-gtk
-contrib/redshift.spec
-src/redshift
-src/redshift-gtk/__pycache__/
-/data/systemd/redshift.service
-/data/systemd/redshift-gtk.service
+/ABOUT-NLS
+/config.rpath
+/contrib/redshift.spec
+/data/apparmor/usr.bin.redshift
 /data/appdata/redshift-gtk.appdata.xml
 /data/applications/redshift.desktop
 /data/applications/redshift-gtk.desktop
-/data/apparmor/usr.bin.redshift
-
-*.su
-*.gch
+/data/systemd/redshift.service
+/data/systemd/redshift-gtk.service
+/m4
+/src/redshift
+/src/redshift-gtk/defs.py
+/src/redshift-gtk/redshift-gtk
+/src/redshift-gtk/__pycache__/
 
 # gettext
 /po/POTFILES
