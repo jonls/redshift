@@ -1,0 +1,13 @@
+root = true
+
+[*]
+indent_style = tab
+indent_size = 8
+
+[*.m]
+indent_style = space
+indent_size = 2
+
+[*.py]
+indent_style = space
+indent_size = 4
