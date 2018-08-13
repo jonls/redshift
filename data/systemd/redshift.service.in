@@ -2,10 +2,13 @@
 Description=Redshift display colour temperature adjustment
 Documentation=http://jonls.dk/redshift/
 After=display-manager.service
+StartLimitIntervalSec=30s
+StartLimitBurst=30
 
 [Service]
 ExecStart=@bindir@/redshift
 Restart=always
+RestartSec=1s
 
 [Install]
 WantedBy=default.target
