@@ -97,9 +97,6 @@ AS_IF([test "x$have_objc_compiler" = xyes], [
 # Windows header
 AC_CHECK_HEADER([windows.h], [have_windows_h=yes], [have_windows_h=no])
 
-# Check for Python
-AM_PATH_PYTHON([3.2], [have_python=yes], [have_python=no])
-
 # Check DRM method
 AC_MSG_CHECKING([whether to enable DRM method])
 AC_ARG_ENABLE([drm], [AC_HELP_STRING([--enable-drm],
@@ -283,6 +280,10 @@ AC_MSG_CHECKING([whether to enable GUI status icon])
 AC_ARG_ENABLE([gui], [AC_HELP_STRING([--enable-gui],
 	[enable GUI status icon])],
 	[enable_gui=$enableval],[enable_gui=maybe])
+
+# Check for Python if gui enabled
+AS_IF([test "x$enable_gui" != xno], [AM_PATH_PYTHON([3.2], [have_python=yes], [have_python=no])])
+
 AS_IF([test "x$enable_gui" != xno], [
 	AS_IF([test $have_python = yes], [
 		AC_MSG_RESULT([yes])
