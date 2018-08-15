@@ -348,6 +348,32 @@ location_geoclue2_init(location_geoclue2_state_t **state)
 	return 0;
 }
 
+static gboolean
+geoclue_available(void)
+{
+	gboolean available = FALSE;
+
+	GDBusProxyFlags proxy_flags = G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES
+		| G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS;
+	GDBusProxy *proxy = g_dbus_proxy_new_for_bus_sync(G_BUS_TYPE_SYSTEM,
+		proxy_flags,
+		NULL, /* GDBusInterfaceInfo */
+		"org.freedesktop.GeoClue2",
+		"/org/freedesktop/GeoClue2/Manager",
+		"org.freedesktop.GeoClue2.Manager",
+		NULL, NULL);
+
+	if (proxy) {
+		/* If NULL, then the service is not available. */
+		gchar *name_owner = g_dbus_proxy_get_name_owner(proxy);
+		available = name_owner != NULL;
+		g_free(name_owner);
+		g_object_unref(proxy);
+	}
+
+	return available;
+}
+
 static int
 location_geoclue2_start(location_geoclue2_state_t *state)
 {
@@ -361,6 +387,11 @@ location_geoclue2_start(location_geoclue2_state_t *state)
 	state->error = 0;
 	state->latitude = 0;
 	state->longitude = 0;
+
+	if (!geoclue_available()) {
+		fputs(_("GeoClue2 provider is not installed!\n"), stderr);
+		return -1;
+	}
 
 	int pipefds[2];
 	int r = pipeutils_create_nonblocking(pipefds);
