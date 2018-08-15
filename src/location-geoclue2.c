@@ -351,6 +351,9 @@ location_geoclue2_init(location_geoclue2_state_t **state)
 static int
 location_geoclue2_start(location_geoclue2_state_t *state)
 {
+	state->thread = NULL;
+	g_mutex_init(&state->lock);
+
 	state->pipe_fd_read = -1;
 	state->pipe_fd_write = -1;
 
@@ -371,7 +374,6 @@ location_geoclue2_start(location_geoclue2_state_t *state)
 
 	pipeutils_signal(state->pipe_fd_write);
 
-	g_mutex_init(&state->lock);
 	state->thread = g_thread_new("geoclue2", run_geoclue2_loop, state);
 
 	return 0;
@@ -385,8 +387,10 @@ location_geoclue2_free(location_geoclue2_state_t *state)
 	}
 
 	/* Closing the pipe should cause the thread to exit. */
-	g_thread_join(state->thread);
-	state->thread = NULL;
+	if (state->thread != NULL) {
+		g_thread_join(state->thread);
+		state->thread = NULL;
+	}
 
 	g_mutex_clear(&state->lock);
 
