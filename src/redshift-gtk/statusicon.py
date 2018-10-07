@@ -74,10 +74,17 @@ class RedshiftStatusIcon(object):
         self.toggle_item.connect('activate', self.toggle_item_cb)
         self.status_menu.append(self.toggle_item)
 
+        # Add toggle manual mode action
+        self.toggle_manualmode_item = Gtk.CheckMenuItem.new_with_label(_('Manual Mode'))
+        self.toggle_manualmode_item.set_active(self._controller.manualmode)
+        self.toggle_manualmode_item.connect('activate', self.toggle_manualmode_item_cb)
+        self.status_menu.append(self.toggle_manualmode_item)
+
         # Add suspend menu
         suspend_menu_item = Gtk.MenuItem.new_with_label(_('Suspend for'))
         suspend_menu = Gtk.Menu()
-        for minutes, label in [(30, _('30 minutes')),
+        for minutes, label in [(15, _('15 minutes')),
+                               (30, _('30 minutes')),
                                (60, _('1 hour')),
                                (120, _('2 hours'))]:
             suspend_item = Gtk.MenuItem.new_with_label(label)
@@ -125,6 +132,12 @@ class RedshiftStatusIcon(object):
         content_area.pack_start(self.status_label, True, True, 0)
         self.status_label.show()
 
+        self.mode_label = Gtk.Label()
+        self.mode_label.set_alignment(0.0, 0.5)
+        self.mode_label.set_padding(6, 6)
+        content_area.pack_start(self.mode_label, True, True, 0)
+        self.mode_label.show()
+
         self.location_label = Gtk.Label()
         self.location_label.set_alignment(0.0, 0.5)
         self.location_label.set_padding(6, 6)
@@ -136,6 +149,18 @@ class RedshiftStatusIcon(object):
         self.temperature_label.set_padding(6, 6)
         content_area.pack_start(self.temperature_label, True, True, 0)
         self.temperature_label.show()
+
+        self.temperature_adjustment = Gtk.Adjustment(value=self._controller.temperature,
+            lower=2000, upper=8000, step_increment=100, page_increment=100, page_size=0)
+        self.temperature_slider = Gtk.HScale(adjustment=self.temperature_adjustment)
+        self.temperature_slider.set_inverted(True)
+        self.temperature_slider.set_digits(0) #only integer values
+        self.temperature_slider.set_has_origin(False) #Do not fill area
+        self.temperature_slider_sync()
+        # Natural temperature mark
+        self.temperature_slider.add_mark(6500, Gtk.PositionType.TOP)
+        content_area.pack_start(self.temperature_slider, True, True, 0)
+        self.temperature_slider.show()
 
         self.period_label = Gtk.Label()
         self.period_label.set_alignment(0.0, 0.5)
@@ -156,9 +181,13 @@ class RedshiftStatusIcon(object):
         self._controller.connect('location-changed', self.location_change_cb)
         self._controller.connect('error-occured', self.error_occured_cb)
         self._controller.connect('stopped', self.controller_stopped_cb)
+        self.temperature_adjustment.connect( "value_changed",
+            self.temperature_slider_changed_cb)
+        self.temperature_adjustment.emit("value_changed") # force update
 
         # Set info box text
         self.change_inhibited(self._controller.inhibited)
+        self.change_manualmode(self._controller.manualmode)
         self.change_period(self._controller.period)
         self.change_temperature(self._controller.temperature)
         self.change_location(self._controller.location)
@@ -215,6 +244,7 @@ class RedshiftStatusIcon(object):
         """Callback when a request to toggle redshift was made."""
         self.remove_suspend_timer()
         self._controller.set_inhibit(not self._controller.inhibited)
+        self.temperature_slider_sync()
 
     def toggle_item_cb(self, widget, data=None):
         """Callback when a request to toggle redshift was made.
@@ -226,6 +256,21 @@ class RedshiftStatusIcon(object):
         if active != widget.get_active():
             self.remove_suspend_timer()
             self._controller.set_inhibit(not self._controller.inhibited)
+        self.temperature_slider_sync()
+
+    def toggle_manualmode_item_cb(self, widget, data=None):
+        """Callback when a request to toggle manual mode was made."""
+        manualmode = widget.get_active()
+        self._controller.set_manualmode(manualmode)
+        self.change_manualmode(manualmode)
+        self.temperature_slider_sync()
+
+    def temperature_slider_sync(self):
+        """Sync temperature slider to active or inactive."""
+        if self._controller.inhibited or not self._controller.manualmode:
+            self.temperature_slider.set_sensitive(False)
+        else:
+            self.temperature_slider.set_sensitive(True)
 
     # Info dialog callbacks
     def show_info_cb(self, widget, data=None):
@@ -240,6 +285,11 @@ class RedshiftStatusIcon(object):
         """Callback when the info dialog is closed."""
         self.info_dialog.hide()
         return True
+
+    def temperature_slider_changed_cb(self, adj):
+        """Callback when temperature slider value changed."""
+        if self._controller._manualmode:
+            self._controller.do_change_temperature(int(adj.get_value()))
 
     def update_status_icon(self):
         """Update the status icon according to the internally recorded state.
@@ -300,10 +350,18 @@ class RedshiftStatusIcon(object):
             _('<b>Status:</b> {}').format(
                 _('Disabled') if inhibited else _('Enabled')))
 
+    def change_manualmode(self, manualmode):
+        """Change interface to new mode status."""
+        self.toggle_manualmode_item.set_active(manualmode)
+        self.mode_label.set_markup(
+            _('<b>Mode:</b> {}').format(
+                _('Manual') if manualmode else _('Auto')))
+
     def change_temperature(self, temperature):
         """Change interface to new temperature."""
         self.temperature_label.set_markup(
             '<b>{}:</b> {}K'.format(_('Color temperature'), temperature))
+        self.temperature_slider.set_value(temperature)
         self.update_tooltip_text()
 
     def change_period(self, period):

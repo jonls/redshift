@@ -50,68 +50,28 @@ class RedshiftController(GObject.GObject):
         GObject.GObject.__init__(self)
 
         # Initialize state variables
+        self._manualmode = False
         self._inhibited = False
         self._temperature = 0
         self._period = 'Unknown'
         self._location = (0.0, 0.0)
 
-        # Start redshift with arguments
-        args.insert(0, os.path.join(defs.BINDIR, 'redshift'))
-        if '-v' not in args:
-            args.insert(1, '-v')
+        self._args = args
 
-        # Start child process with C locale so we can parse the output
-        env = os.environ.copy()
-        for key in ('LANG', 'LANGUAGE', 'LC_ALL', 'LC_MESSAGES'):
-            env[key] = 'C'
-        self._process = GLib.spawn_async(
-            args, envp=['{}={}'.format(k, v) for k, v in env.items()],
-            flags=GLib.SPAWN_DO_NOT_REAP_CHILD,
-            standard_output=True, standard_error=True)
+        self._io_watch_input_id = 0
+        self._io_watch_error_id = 0
 
-        # Wrap remaining contructor in try..except to avoid that the child
-        # process is not closed properly.
-        try:
-            # Handle child input
-            # The buffer is encapsulated in a class so we
-            # can pass an instance to the child callback.
-            class InputBuffer(object):
-                buf = ''
-
-            self._input_buffer = InputBuffer()
-            self._error_buffer = InputBuffer()
-            self._errors = ''
-
-            # Set non blocking
-            fcntl.fcntl(
-                self._process[2], fcntl.F_SETFL,
-                fcntl.fcntl(self._process[2], fcntl.F_GETFL) | os.O_NONBLOCK)
-
-            # Add watch on child process
-            GLib.child_watch_add(
-                GLib.PRIORITY_DEFAULT, self._process[0], self._child_cb)
-            GLib.io_add_watch(
-                self._process[2], GLib.PRIORITY_DEFAULT, GLib.IO_IN,
-                self._child_data_cb, (True, self._input_buffer))
-            GLib.io_add_watch(
-                self._process[3], GLib.PRIORITY_DEFAULT, GLib.IO_IN,
-                self._child_data_cb, (False, self._error_buffer))
-
-            # Signal handler to relay USR1 signal to redshift process
-            def relay_signal_handler(signal):
-                os.kill(self._process[0], signal)
-                return True
-
-            GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGUSR1,
-                                 relay_signal_handler, signal.SIGUSR1)
-        except:
-            self.termwait()
-            raise
+        self._spawn_redshift_auto()
 
     @property
     def inhibited(self):
         """Current inhibition state."""
         return self._inhibited
+
+    @property
+    def manualmode(self):
+        """Current inhibition state."""
+        return self._manualmode
 
     @property
     def temperature(self):
@@ -133,16 +93,129 @@ class RedshiftController(GObject.GObject):
         if inhibit != self._inhibited:
             self._child_toggle_inhibit()
 
+    def set_manualmode(self, manualmode):
+        """Set mode state."""
+        if manualmode != self._manualmode:
+            self._manualmode = manualmode
+
+        if manualmode:
+            #self.terminate_child()
+            os.kill(self._process[0], signal.SIGINT)
+            self.do_change_temperature(self._temperature)
+        else:
+            self.change_temperature_to_natural()
+            self._spawn_redshift_auto()
+
+    def _spawn_redshift_auto(self):
+        # Start redshift with arguments
+        args = self._args
+        args.insert(0, os.path.join(defs.BINDIR, 'redshift'))
+        if '-v' not in args:
+            args.append('-v')
+        if '-r' not in args:
+            args.append('-r')
+        if '-P' not in args:
+            args.append('-P')
+
+        # Start child process with C locale so we can parse the output
+        env = os.environ.copy()
+        for key in ('LANG', 'LANGUAGE', 'LC_ALL', 'LC_MESSAGES'):
+            env[key] = 'C'
+        self._process = GLib.spawn_async(
+            args, envp=['{}={}'.format(k, v) for k, v in env.items()],
+            flags=GLib.SPAWN_DO_NOT_REAP_CHILD,
+            standard_output=True, standard_error=True)
+
+        self._watch_redshift()
+
+
+    def _spawn_redshift_oneshot(self, args):
+        # Start redshift with arguments
+        args.insert(0, os.path.join(defs.BINDIR, 'redshift'))
+        if '-r' not in args:
+            args.append('-r')
+        if '-P' not in args:
+            args.append('-P')
+
+        # Start child process with C locale so we can parse the output
+        env = os.environ.copy()
+        for key in ('LANG', 'LANGUAGE', 'LC_ALL', 'LC_MESSAGES'):
+            env[key] = 'C'
+
+        GLib.spawn_async(
+            args, envp=['{}={}'.format(k, v) for k, v in env.items()],
+            standard_output=True, standard_error=True)
+
+    def _watch_redshift(self):
+        # Wrap remaining contructor in try..except to avoid that the child
+        # process is not closed properly.
+        try:
+            # Handle child input
+            # The buffer is encapsulated in a class so we
+            # can pass an instance to the child callback.
+            class InputBuffer(object):
+                buf = ''
+
+            self._input_buffer = InputBuffer()
+            self._error_buffer = InputBuffer()
+            self._errors = ''
+
+            # Set non blocking
+            fcntl.fcntl(
+                self._process[2], fcntl.F_SETFL,
+                fcntl.fcntl(self._process[2], fcntl.F_GETFL) | os.O_NONBLOCK)
+
+            # Add watch on child process
+            GLib.child_watch_add(
+                GLib.PRIORITY_DEFAULT, self._process[0], self._child_cb)
+
+            self._io_watch_input_id = GLib.io_add_watch(
+                self._process[2], GLib.PRIORITY_DEFAULT, GLib.IO_IN,
+                self._child_data_cb, (True, self._input_buffer))
+
+            self._io_watch_error_id = GLib.io_add_watch(
+                self._process[3], GLib.PRIORITY_DEFAULT, GLib.IO_IN,
+                self._child_data_cb, (False, self._error_buffer))
+
+            # Signal handler to relay USR1 signal to redshift process
+            def relay_signal_handler(signal):
+                os.kill(self._process[0], signal)
+                return True
+
+            GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGUSR1,
+                                 relay_signal_handler, signal.SIGUSR1)
+        except:
+            self.termwait()
+            raise
+
+
     def _child_signal(self, sg):
         """Send signal to child process."""
-        os.kill(self._process[0], sg)
+        if not self._manualmode:
+            os.kill(self._process[0], sg)
+        elif sg != signal.SIGUSR1:
+            self.change_temperature_to_natural()
+            self.emit('stopped')
+
 
     def _child_toggle_inhibit(self):
-        """Sends a request to the child process to toggle state."""
-        self._child_signal(signal.SIGUSR1)
+        """Automode: Sends a request to the child process to toggle state.
+
+        Manual Mode: There is no process on manual mode so we just change
+        temperature to system default or last known temperature value"""
+        if not self._manualmode:
+            self._child_signal(signal.SIGUSR1)
+        else:
+            self._inhibited = not self._inhibited
+            self.emit('inhibit-changed', self._inhibited)
+            if self._inhibited:
+                self.change_temperature_to_natural()
+            else:
+                # Back to last temperature value
+                self.do_change_temperature(self._temperature)
 
     def _child_cb(self, pid, status, data=None):
-        """Called when the child process exists."""
+        """Called when the child process exits."""
 
         # Empty stdout and stderr
         for f in (self._process[2], self._process[3]):
@@ -157,13 +230,24 @@ class RedshiftController(GObject.GObject):
         try:
             GLib.spawn_check_exit_status(status)
         except GLib.GError:
+            print('error', self._errors)
             self.emit('error-occured', self._errors)
 
+
+        #Remove waching child then kill it
+        GLib.source_remove(self._io_watch_error_id)
+        GLib.source_remove(self._io_watch_input_id)
         GLib.spawn_close_pid(self._process[0])
-        self.emit('stopped')
+
+        #Do not exit the program if we are on manual mode
+        if not self._manualmode:
+            self.change_temperature_to_natural()
+            self.emit('stopped')
 
     def _child_key_change_cb(self, key, value):
         """Called when the child process reports a change of internal state."""
+        if self._manualmode:
+            return
 
         def parse_coord(s):
             """Parse coordinate like `42.0 N` or `91.5 W`."""
@@ -217,6 +301,22 @@ class RedshiftController(GObject.GObject):
                 self._errors += first + '\n'
 
         return True
+
+    def do_change_temperature(self, temperature):
+        """Change temperature to specified value"""
+        args = []
+        args.append('-P')
+        args.append('-O ' + str(temperature))
+
+        self._temperature = temperature
+        self.emit('temperature-changed', temperature)
+        self._spawn_redshift_oneshot(args)
+
+    def change_temperature_to_natural(self):
+        """Change temperature system default"""
+        args = []
+        args.append('-x')
+        self._spawn_redshift_oneshot(args)
 
     def terminate_child(self):
         """Send SIGINT to child process."""
