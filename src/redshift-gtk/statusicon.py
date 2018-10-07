@@ -31,6 +31,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk, GLib
+from gi.repository.Gdk import ScrollDirection
 
 try:
     gi.require_version('AppIndicator3', '0.1')
@@ -183,7 +184,7 @@ class RedshiftStatusIcon(object):
         self._controller.connect('stopped', self.controller_stopped_cb)
         self.temperature_adjustment.connect( "value_changed",
             self.temperature_slider_changed_cb)
-        self.temperature_adjustment.emit("value_changed") # force update
+        self.temperature_adjustment.emit("value_changed") # force update of label
 
         # Set info box text
         self.change_inhibited(self._controller.inhibited)
@@ -193,14 +194,18 @@ class RedshiftStatusIcon(object):
         self.change_location(self._controller.location)
 
         if appindicator:
-            self.status_menu.show_all()
-
             # Set the menu
             self.indicator.set_menu(self.status_menu)
+            # Middle mouse button to change inhibit
+            self.indicator.set_secondary_activate_target(self.toggle_item)
+            self.indicator.connect("scroll-event", self.indicator_scroll_cb)
+            self.status_menu.show_all()
         else:
             # Connect signals for status icon and show
             self.status_icon.connect('activate', self.toggle_cb)
             self.status_icon.connect('popup-menu', self.popup_menu_cb)
+            self.status_icon.connect('button-press-event', self.status_icon_click_cb)
+            self.status_icon.connect('scroll-event', self.status_icon_scroll_cb)
             self.status_icon.set_visible(True)
 
         # Initialize suspend timer
@@ -211,6 +216,36 @@ class RedshiftStatusIcon(object):
         if self.suspend_timer is not None:
             GLib.source_remove(self.suspend_timer)
             self.suspend_timer = None
+
+
+    def status_icon_click_cb(self, widget, event):
+        """Callback to middle mouse button on status icon."""
+        if event.button == 2: # middle click
+            self.toggle_cb(widget)
+
+    def status_icon_scroll_cb(self, widget, event):
+        """Callback to scroll event on status icon."""
+        is_scroll, direction = event.get_scroll_direction()
+        if is_scroll:
+            if direction == ScrollDirection.DOWN:
+                self.handle_scroll('Down')
+            elif direction == ScrollDirection.UP:
+                self.handle_scroll('Up')
+
+    def indicator_scroll_cb(self, indicator, steps, direction):
+        """Callback to scroll event on appIndicator."""
+        if direction == ScrollDirection.DOWN:
+            self.handle_scroll('Down')
+        elif direction == ScrollDirection.UP:
+            self.handle_scroll('Up')
+
+    def handle_scroll(self, direction):
+        """Change temperature based on scroll direction."""
+        factor = -1 if direction == 'Up' else 1
+        scroll = factor * 100
+        if self._controller._manualmode and not self._controller.inhibited:
+            self._controller.do_change_temperature(
+                self._controller.temperature + scroll)
 
     def suspend_cb(self, item, minutes):
         """Callback that handles activation of a suspend timer.
