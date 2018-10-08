@@ -42,6 +42,20 @@ APPDATA_IN_FILES = \
 APPARMOR_IN_FILES = \
 	data/apparmor/usr.bin.redshift.in
 
+MESON_FILES = \
+	meson_options.txt \
+	meson.build \
+	po/meson.build \
+	po/meson_gen_potfiles.py \
+	data/meson.build \
+	data/apparmor/meson.build \
+	data/appdata/meson.build \
+	data/appdata/meson_redshift-gtk.appdata.xml.in \
+	data/applications/meson.build \
+	data/applications/meson_redshift-gtk.desktop.in \
+	data/applications/meson_redshift.desktop.in \
+	data/systemd/meson.build
+
 
 # Icons
 if ENABLE_GUI
@@ -126,7 +140,8 @@ EXTRA_DIST = \
 	$(DESKTOP_IN_FILES) \
 	$(SYSTEMD_USER_UNIT_IN_FILES) \
 	$(APPDATA_IN_FILES) \
-	$(APPARMOR_IN_FILES)
+	$(APPARMOR_IN_FILES) \
+	$(MESON_FILES)
 
 CLEANFILES = \
 	$(desktop_DATA) \

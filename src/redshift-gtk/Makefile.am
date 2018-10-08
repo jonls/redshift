@@ -12,7 +12,7 @@ redshift_gtkdir = $(pythondir)/redshift_gtk
 bin_SCRIPTS = redshift-gtk
 endif
 
-EXTRA_DIST = defs.py.in redshift-gtk.in
+EXTRA_DIST = defs.py.in redshift-gtk.in meson_compile_py.py meson.build
 CLEANFILES = defs.py redshift-gtk
 
 

@@ -34,7 +34,7 @@ EXTRA_redshift_SOURCES = \
 
 AM_CFLAGS =
 redshift_LDADD = @LIBINTL@
-EXTRA_DIST = windows/redshift.ico
+EXTRA_DIST = windows/redshift.ico meson.build
 
 if ENABLE_DRM
 redshift_SOURCES += gamma-drm.c gamma-drm.h

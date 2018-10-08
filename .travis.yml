@@ -1,20 +1,26 @@
 
 language: c
 
+sudo: required
+
 matrix:
   include:
     - os: linux
       compiler: gcc
-      dist: trusty
-      sudo: false
+      env: USE_MESON=0
+    - os: linux
+      compiler: gcc
+      env: USE_MESON=1
     - os: osx
       compiler: clang
+      env: USE_MESON=0
+    - os: osx
+      compiler: clang
+      env: USE_MESON=1
 
 addons:
   apt:
     packages:
-      - autopoint
-      - intltool
       # DRM
       - libdrm-dev
       # RANDR
@@ -25,30 +31,127 @@ addons:
       - libxxf86vm-dev
       # GeoClue2
       - libglib2.0-dev
-      # GUI
-      - python3
-
-before_install: |
-  if [ "$TRAVIS_OS_NAME" == "osx" ]; then
-    brew update
-    brew install gettext
-    brew link --force gettext
-    brew install intltool
-  fi
 
 install:
-  - ./bootstrap
-  - mkdir "$TRAVIS_BUILD_DIR/root"
+  - |
+    if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+      # Note: "brew update" and "brew install gettext" are not necessary and
+      #       we can install needed packages with HOMEBREW_NO_AUTO_UPDATE=1.
+      #       This reduces job time significantly.
+      brew update
+      brew install gettext
+      brew link --force gettext
+      if [ "$USE_MESON" -eq "1" ]; then
+        # Building with Meson sometimes fails due to its regressions.
+        # Meson can be installed via brew, but
+        # we install it via pip to pin its version.
+        # Meson uses Ninja and we install it via brew.
+        brew install ninja
+      else
+        brew install intltool
+
+        # distuninstallcheck fails on macOS when automake 1.16 or 1.16.1 is used.
+        # http://gnu-automake.7480.n7.nabble.com/bug-31222-automake-1-16-1-am-pep3147-tweak-bug-td22937.html
+        # No upstream release yet, use upstream patch.
+        pushd /usr/local/Cellar/automake/*/share/automake-*
+        curl "https://git.savannah.gnu.org/cgit/automake.git/patch/?id=a348d830659fffd2cfc42994524783b07e69b4b5" | tail -n 14 | sudo patch -p2
+        popd
+      fi
+      # Note: No longer needed.
+      brew upgrade python
+    fi
+  - |
+    if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$USE_MESON" -eq "0" ]; then
+      sudo apt-get install autopoint intltool
+    fi
   - |
     if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-      ./configure --prefix="$TRAVIS_BUILD_DIR/root" --enable-drm --enable-vidmode --enable-randr --enable-geoclue2 --enable-gui --enable-apparmor
-    elif [ "$TRAVIS_OS_NAME" == "osx" ]; then
-      ./configure --prefix="$TRAVIS_BUILD_DIR/root" --enable-corelocation --enable-quartz --enable-gui
+      if [ "$USE_MESON" -eq "1" ]; then
+        # We need to use newer versions of Ninja and gettext to
+        # get Meson to work on Ubuntu 14.04 LTS (Trusty).
+
+        # Ninja: From official GitHub repo, smaller than other versions
+        ninja_url=https://github.com/ninja-build/ninja/releases/download/v1.5.3/ninja-linux.zip
+        wget -O - "$ninja_url" | funzip > ninja
+        sudo install -m 755 ninja /usr/bin
+
+        # gettext and its dependencies: From Ubuntu 18.04 LTS (Bionic) mirror
+        #   * Only msgfmt and xgettext need to be upgraded to 0.19.7+.
+        #   * appdata.{its,loc} are needed too.
+        gettext_url=http://us-central1.gce.archive.ubuntu.com/ubuntu/pool/main/g/gettext/gettext_0.19.8.1-6_amd64.deb
+        libtinfo_url=http://us-central1.gce.archive.ubuntu.com/ubuntu/pool/main/n/ncurses/libtinfo5_6.1-1ubuntu1_amd64.deb
+        libunistring_url=http://us-central1.gce.archive.ubuntu.com/ubuntu/pool/main/libu/libunistring/libunistring2_0.9.9-0ubuntu1_amd64.deb
+        for url in "$gettext_url" "$libtinfo_url" "$libunistring_url"; do
+          wget "$url"
+        done
+        ar p gettext*.deb data.tar.xz > gettext.tar.xz
+        ar p libtinfo*.deb data.tar.xz > libtinfo.tar.xz
+        ar p libunistring*.deb data.tar.xz > libunistring.tar.xz
+        cmd="tar -C / -Jxf gettext.tar.xz"
+        cmd="$cmd ./usr/bin/msgfmt"
+        cmd="$cmd ./usr/bin/xgettext"
+        cmd="$cmd ./usr/lib/x86_64-linux-gnu/libgettext{lib,src}{,-0.19.8.1}.so"
+        cmd="$cmd ./usr/share/gettext-0.19.8/its/appdata.{its,loc} &&"
+        cmd="$cmd tar -C / -Jxf libtinfo.tar.xz"
+        cmd="$cmd ./lib/x86_64-linux-gnu/libtinfo.so.5{.9,} &&"
+        cmd="$cmd tar -C / -Jxf libunistring.tar.xz"
+        cmd="$cmd ./usr/lib/x86_64-linux-gnu/libunistring.so.2{.1.0,}"
+        sudo bash -c "$cmd"
+
+        # Set PATH to use Python 3.6 and Meson
+        # Note: Python 3.6 is available without additional download.
+        export PATH=~/virtualenv/python3.6/bin:~/.local/bin:$PATH
+      fi
     fi
-  - make -j2 install
-  - make -j2 distcheck
+    # Note: Meson 0.48.0 prints target name related warnings.
+    #       (already fixed upstream but no release yet)
+  - if [ "$USE_MESON" -eq "1" ]; then pip3 install meson==0.47.2; fi
+
+before_script:
+  - |
+    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      CONF_FLAGS="--prefix=$TRAVIS_BUILD_DIR/root"
+      if [ "$USE_MESON" -eq "1" ]; then
+        CONF_FLAGS="$CONF_FLAGS -Ddrm=enabled -Drandr=enabled"
+        CONF_FLAGS="$CONF_FLAGS -Dvidmode=enabled -Dquartz=disabled"
+        CONF_FLAGS="$CONF_FLAGS -Dwingdi=disabled -Dgeoclue2=enabled"
+        CONF_FLAGS="$CONF_FLAGS -Dcorelocation=disabled -Dgui=enabled"
+        CONF_FLAGS="$CONF_FLAGS -Dubuntu=disabled -Dapparmor=enabled"
+      else
+        CONF_FLAGS="$CONF_FLAGS --enable-drm --enable-vidmode --enable-randr"
+        CONF_FLAGS="$CONF_FLAGS --enable-geoclue2 --enable-gui --enable-apparmor"
+      fi
+      export CONF_FLAGS
+    fi
+  - |
+    if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+      CONF_FLAGS="--prefix=$TRAVIS_BUILD_DIR/root"
+      if [ "$USE_MESON" -eq "1" ]; then
+        CONF_FLAGS="$CONF_FLAGS -Ddrm=disabled -Drandr=disabled"
+        CONF_FLAGS="$CONF_FLAGS -Dvidmode=disabled -Dquartz=enabled"
+        CONF_FLAGS="$CONF_FLAGS -Dwingdi=disabled -Dgeoclue2=disabled"
+        CONF_FLAGS="$CONF_FLAGS -Dcorelocation=enabled -Dgui=disabled"
+        CONF_FLAGS="$CONF_FLAGS -Dubuntu=disabled -Dapparmor=disabled"
+      else
+        CONF_FLAGS="$CONF_FLAGS --enable-corelocation --enable-quartz"
+      fi
+      export CONF_FLAGS
+    fi
 
 script:
+  # Build with Meson
+  - if [ "$USE_MESON" -eq "1" ]; then meson $CONF_FLAGS _build; fi
+  - if [ "$USE_MESON" -eq "1" ]; then ninja -v -C _build install; fi
+  # Note: "test" and "dist" fail with Meson 0.48.0.
+  #       (already fixed upstream, will be fixed in next release)
+  - if [ "$USE_MESON" -eq "1" ]; then ninja -v -C _build test; fi
+  - if [ "$USE_MESON" -eq "1" ]; then ninja -v -C _build dist; fi
+  # Build with autotools-based build system
+  - if [ "$USE_MESON" -eq "0" ]; then ./bootstrap; fi
+  - if [ "$USE_MESON" -eq "0" ]; then ./configure $CONF_FLAGS; fi
+  - if [ "$USE_MESON" -eq "0" ]; then make -j2 install; fi
+  - if [ "$USE_MESON" -eq "0" ]; then make -j2 distcheck; fi
+  # redshift tests
   - |
     "$TRAVIS_BUILD_DIR"/root/bin/redshift -l 12:-34 -pv
   - |
