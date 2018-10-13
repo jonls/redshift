@@ -17,6 +17,10 @@
    Copyright (c) 2013-2017  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 
