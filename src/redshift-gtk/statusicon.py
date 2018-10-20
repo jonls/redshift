@@ -53,17 +53,22 @@ class RedshiftStatusIcon(object):
 
         self._controller = controller
 
+        self.icon_theme = Gtk.IconTheme.get_default()
+        icon_name = 'redshift-status-on-symbolic'
+        if not self.icon_theme.has_icon(icon_name):
+            icon_name = 'redshift-status-on'
+
         if appindicator:
             # Create indicator
             self.indicator = appindicator.Indicator.new(
                 'redshift',
-                'redshift-status-on',
+                icon_name,
                 appindicator.IndicatorCategory.APPLICATION_STATUS)
             self.indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
         else:
             # Create status icon
             self.status_icon = Gtk.StatusIcon()
-            self.status_icon.set_from_icon_name('redshift-status-on')
+            self.status_icon.set_from_icon_name(icon_name)
             self.status_icon.set_tooltip_text('Redshift')
 
         # Create popup menu
@@ -156,6 +161,7 @@ class RedshiftStatusIcon(object):
         self._controller.connect('location-changed', self.location_change_cb)
         self._controller.connect('error-occured', self.error_occured_cb)
         self._controller.connect('stopped', self.controller_stopped_cb)
+        self.icon_theme.connect('changed', self.on_icon_theme_changed_cb)
 
         # Set info box text
         self.change_inhibited(self._controller.inhibited)
@@ -241,22 +247,27 @@ class RedshiftStatusIcon(object):
         self.info_dialog.hide()
         return True
 
+    def on_icon_theme_changed_cb(self, theme):
+        self.update_status_icon()
+
     def update_status_icon(self):
         """Update the status icon according to the internally recorded state.
 
         This should be called whenever the internally recorded state
         might have changed.
         """
-        if appindicator:
-            if not self._controller.inhibited:
-                self.indicator.set_icon('redshift-status-on')
-            else:
-                self.indicator.set_icon('redshift-status-off')
+        if self._controller.inhibited:
+            icon_name = 'redshift-status-off-symbolic'
         else:
-            if not self._controller.inhibited:
-                self.status_icon.set_from_icon_name('redshift-status-on')
-            else:
-                self.status_icon.set_from_icon_name('redshift-status-off')
+            icon_name = 'redshift-status-on-symbolic'
+
+        if not self.icon_theme.has_icon(icon_name):
+            icon_name = icon_name.replace('-symbolic', '')
+
+        if appindicator:
+            self.indicator.set_icon(icon_name)
+        else:
+            self.status_icon.set_from_icon_name(icon_name)
 
     # State update functions
     def inhibit_change_cb(self, controller, inhibit):
