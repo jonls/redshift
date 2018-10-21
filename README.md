@@ -126,7 +126,7 @@ Latest builds from master branch
 - [Windows x86_64](https://ci.appveyor.com/api/projects/jonls/redshift/artifacts/redshift-windows-x86_64.zip?branch=master&job=Environment%3A+arch%3Dx86_64&pr=false)
 - [Windows x86](https://ci.appveyor.com/api/projects/jonls/redshift/artifacts/redshift-windows-i686.zip?branch=master&job=Environment%3A+arch%3Di686&pr=false)
 
-Building from source
---------------------
+Contributing / Building from source
+-----------------------------------
 
-See the file [CONTRIBUTING](CONTRIBUTING.md) for more details on building from source.
+See the file [CONTRIBUTING](CONTRIBUTING.md) for more details.
