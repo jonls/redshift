@@ -1,6 +1,6 @@
 
-Build from repository
----------------------
+Building from git clone
+-----------------------
 
 ``` shell
 $ ./bootstrap
@@ -44,6 +44,7 @@ You can now run the python script. Example:
 $ $HOME/redshift/root/bin/redshift-gtk
 ```
 
+
 Dependencies
 ------------
 
@@ -57,18 +58,19 @@ Dependencies
 * python3, pygobject, pyxdg (Optional, for GUI support)
 * appindicator (Optional, for Ubuntu-style GUI status icon)
 
-Ubuntu users will find all these dependencies in the packages listed in ``.travis.yml``. 
+Ubuntu users will find all these dependencies in the packages listed in ``.travis.yml``.
 
-Coding style
-------------
+
+Coding style for C code
+-----------------------
 
 Redshift follows roughly the Linux coding style
 <http://www.kernel.org/doc/Documentation/CodingStyle>. Some specific rules to
 note are:
 
-* Lines should not be much longer than 80 chars but this is not strictly
-  enforced. If lines are much longer than this the code could likely be improved
-  by moving some parts to a smaller function.
+* Lines should not be longer than 80 characters in new code. If lines are
+  longer than this the code could likely be improved by moving some parts to a
+  smaller function.
 * All structures are typedef'ed.
 * Avoid Yoda conditions; they make the logic unnecessarily hard to comprehend.
 * Avoid multiline if-statements without braces; either use a single line or add
@@ -98,7 +100,7 @@ Creating a pull request
 5. Discussion will ensue. If you are not prepared to partake in the discussion
    or further improve your patch for inclusion, please say so and someone else
    may be able to take on responsibility for your patch. Otherwise we will
-   assume that you will be open to critisism and suggestions for improvements
+   assume that you will be open to criticism and suggestions for improvements
    and that you will take responsibility for further improving the patch. You
    can add further commits to your topic branch and they will automatically be
    added to the pull request when you push them to Github.
@@ -116,6 +118,15 @@ Creating a pull request
 If you want to learn more about the Git branching model that we use please see
 <http://nvie.com/posts/a-successful-git-branching-model/> but note that we use
 the `master` branch as `develop`.
+
+
+Contributing translations
+-------------------------
+
+You can contribute translations directly at
+[Launchpad Translations for Redshift](https://translations.launchpad.net/redshift).
+Updated translations will be pulled back into the `po` files on Github
+before a release is made.
 
 
 Creating a new release
