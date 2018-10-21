@@ -6,6 +6,7 @@ Group: Applications/System
 License: GPLv3+
 URL: http://jonls.dk/redshift/
 Source0: http://launchpad.net/redshift/trunk/%{version}/+download/%{name}-%{version}.tar.xz
+BuildRequires: meson
 BuildRequires: gettext-devel
 BuildRequires: libX11-devel
 BuildRequires: libXxf86vm-devel
@@ -44,12 +45,12 @@ temperature adjustment program.
 %setup -q
 
 %build
-%configure --enable-gui --disable-geoclue --enable-geoclue2 --enable-randr --enable-vidmode --with-systemduserunitdir=%{_userunitdir}
-make %{?_smp_mflags} V=1
+%meson -Dgui=enabled -Dgeoclue2=enabled -Drandr=enabled -Dvidmode=enabled -Dsystemduserunitdir=%{_userunitdir}
+%meson_build
 
 %install
 rm -rf %{buildroot}
-make DESTDIR=%{buildroot} install INSTALL="install -p"
+%meson_install
 %find_lang %{name}
 desktop-file-validate %{buildroot}%{_datadir}/applications/redshift.desktop
 desktop-file-validate %{buildroot}%{_datadir}/applications/redshift-gtk.desktop

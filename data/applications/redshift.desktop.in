@@ -1,9 +1,10 @@
 [Desktop Entry]
 Version=1.0
-_Name=Redshift
-_GenericName=Color temperature adjustment
-_Comment=Color temperature adjustment tool
+Name=Redshift
+GenericName=Color temperature adjustment
+Comment=Color temperature adjustment tool
 Exec=redshift
+# TRANSLATORS: Icon name, please set to "redshift"
 Icon=redshift
 Terminal=true
 Type=Application
