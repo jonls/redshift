@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2010  Jon Lund Steffensen <jonlst@gmail.com>
+   Copyright (c) 2010-2018  Jon Lund Steffensen <jonlst@gmail.com>
 */
 
 #ifdef HAVE_CONFIG_H
@@ -184,7 +184,7 @@ config_ini_init(config_ini_state_t *state, const char *filepath)
 		s[strcspn(s, "\r\n")] = '\0';
 
 		/* Skip comments and empty lines. */
-		if (s[0] == ';' || s[0] == '\0') continue;
+		if (s[0] == ';' || s[0] == '#' || s[0] == '\0') continue;
 
 		if (s[0] == '[') {
 			/* Read name of section. */
