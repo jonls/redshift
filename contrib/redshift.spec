@@ -30,6 +30,7 @@ This package provides the base program.
 %package -n %{name}-gtk
 Summary: GTK integration for Redshift
 Group: Applications/System
+BuildArch: noarch
 BuildRequires: python3-devel >= 3.2
 BuildRequires: desktop-file-utils
 Requires: python3-gobject
@@ -45,12 +46,16 @@ temperature adjustment program.
 %setup -q
 
 %build
-%meson -Dgui=enabled -Dgeoclue2=enabled -Drandr=enabled -Dvidmode=enabled -Dsystemduserunitdir=%{_userunitdir}
+# This macro adds "--auto-features=enabled" option and
+# tries to enable all features in "meson_options.txt".
+%meson -Dquartz=disabled -Dcorelocation=disabled -Dwingdi=disabled -Dsystemduserunitdir=%{_userunitdir}
 %meson_build
 
 %install
 rm -rf %{buildroot}
 %meson_install
+# Some files are incorrectly installed into "/usr/lib64/python3.X" on x86_64.
+find %{buildroot}/usr/lib64 -name "*.py*" -exec mv {} %{buildroot}/usr/lib/python*/*/*/ \;
 %find_lang %{name}
 desktop-file-validate %{buildroot}%{_datadir}/applications/redshift.desktop
 desktop-file-validate %{buildroot}%{_datadir}/applications/redshift-gtk.desktop
