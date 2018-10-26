@@ -249,8 +249,8 @@ print_location(const location_t *location)
 	   The string following each number is an abreviation for
 	   north, source, east or west (N, S, E, W). */
 	printf(_("Location: %.2f %s, %.2f %s\n"),
-	       fabs(location->lat), location->lat >= 0.f ? north : south,
-	       fabs(location->lon), location->lon >= 0.f ? east : west);
+	       location->lat, location->lat >= 0.f ? north : south,
+	       location->lon, location->lon >= 0.f ? east : west);
 }
 
 /* Interpolate color setting structs given alpha. */
