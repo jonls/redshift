@@ -43,6 +43,12 @@ the platform:
 - Windows: Put `redshift.conf` in `%USERPROFILE%\AppData\Local\`
     (aka `%localappdata%`).
 
+
+_Note:_
+The location of the configuration file was changed as version 1.12 as all 
+configuration files related to the program should be under the same directory. In 
+previous versions the configuration file is located under `~/.config/redshift.conf`.
+
 **Where can I find my coordinates to put in the configuration file?**
 
 There are multiple web sites that provide coordinates for map locations, for
