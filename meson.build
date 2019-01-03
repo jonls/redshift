@@ -3,7 +3,7 @@ project(
   'c',
   default_options : ['buildtype=debugoptimized', 'c_std=gnu99'],
   license : 'GPL3+',
-  meson_version : '>= 0.47',
+  meson_version : '>= 0.49',
   version : '1.12',
 )
 proj_name = meson.project_name()
@@ -152,18 +152,10 @@ if foundation_dep.found() and cocoa_dep.found()
 endif
 
 # Check for GUI status icon
-# TODO: Pass "get_option('gui')" to "required" kwarg
-#       and set meson_version in project() to ">= 0.48".
-#       Note that there are some regressions in 0.48.0 and
-#       we currently cannot switch to 0.48.0. See .travis.yml.
 pymod = import('python')
-opt_gui = get_option('gui')
-if not opt_gui.disabled()
-  py_installation = pymod.find_installation(
-    'python3', required : opt_gui.enabled())
-  if py_installation.found()
-    config_build.set('ENABLE_GUI', 1)
-  endif
+py_installation = pymod.find_installation('python3', required : get_option('gui'))
+if py_installation.found()
+  config_build.set('ENABLE_GUI', 1)
 endif
 
 # Check for Ubuntu icons

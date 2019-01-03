@@ -78,9 +78,8 @@ install:
       # Note: Python 3.6 is available without additional download.
       export PATH=~/virtualenv/python3.6/bin:~/.local/bin:$PATH
     fi
-    # Note: Meson 0.48.0 prints target name related warnings.
-    #       (already fixed upstream but no release yet)
-  - pip3 install meson==0.47.2
+    # This version of Meson is already tested.
+  - pip3 install meson==0.49.0
 
 before_script:
   - |
@@ -107,8 +106,6 @@ before_script:
 script:
   - meson $CONF_FLAGS _build
   - ninja -v -C _build install
-  # Note: "test" and "dist" fail with Meson 0.48.0.
-  #       (already fixed upstream, will be fixed in next release)
   - ninja -v -C _build test
   - ninja -v -C _build dist
   # redshift tests
