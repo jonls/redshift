@@ -25,6 +25,12 @@ temperature on an overcast day.
 In addition to the command-line tool \fBredshift\fR, the GUI
 \fBredshift-gtk\fR provides an alternative interface that shows up as a
 notification icon in the desktop environment.
+.PP
+To temporarily toggle between daytime and night, send \fBSIGUSR1\fR to
+the \fBredshift\fR process. Using pkill(1) this can be achieved with the
+following command:
+.IP
+pkill -u $(whoami) -x -SIGUSR1 redshift
 .SH OPTIONS
 .TP
 \fB\-h\fR
