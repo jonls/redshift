@@ -42,6 +42,9 @@ APPDATA_IN_FILES = \
 APPARMOR_IN_FILES = \
 	data/apparmor/usr.bin.redshift.in
 
+APPARMOR_LOCAL_FILES = \
+	data/apparmor/local/usr.bin.redshift
+
 
 # Icons
 if ENABLE_GUI
@@ -109,7 +112,9 @@ endif
 # AppArmor profile
 if ENABLE_APPARMOR
 apparmordir = @sysconfdir@/apparmor.d
+apparmorlocaldir = $(apparmordir)/local
 apparmor_DATA = $(APPARMOR_IN_FILES:.in=)
+apparmorlocal_DATA = $(APPARMOR_LOCAL_FILES)
 
 $(apparmor_DATA): $(APPARMOR_IN_FILES) Makefile
 	$(AM_V_GEN)$(MKDIR_P) $(@D) && \
