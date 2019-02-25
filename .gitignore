@@ -72,18 +72,3 @@ dkms.conf
 /src/redshift-gtk/defs.py
 /src/redshift-gtk/redshift-gtk
 /src/redshift-gtk/__pycache__/
-
-# gettext
-/po/POTFILES
-/po/stamp-po
-/po/stamp-it
-/po/*.gmo
-/po/Makefile.in.in
-/po/Rules-quot
-/po/boldquot.sed
-/po/Makevars.template
-/po/en@boldquot.header
-/po/en@quot.header
-/po/insert-header.sin
-/po/quot.sed
-/po/remove-potcdate.sin
