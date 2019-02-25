@@ -90,6 +90,7 @@ redshift_libs += libredshift_common
 
 executable('redshift',
   redshift_sources,
+  dependencies : redshift_deps,
   include_directories : include_dirs,
   link_with : redshift_libs,
   install : true,
