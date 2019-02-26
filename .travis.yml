@@ -6,6 +6,7 @@ sudo: required
 matrix:
   include:
     - os: linux
+      dist: xenial
       compiler: gcc
     - os: osx
       compiler: clang
@@ -23,6 +24,8 @@ addons:
       - libxxf86vm-dev
       # GeoClue2
       - libglib2.0-dev
+      # Meson
+      - ninja-build
 
 install:
   - |
@@ -43,40 +46,8 @@ install:
     fi
   - |
     if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-      # We need to use newer versions of Ninja and gettext to
-      # get Meson to work on Ubuntu 14.04 LTS (Trusty).
-
-      # Ninja: From official GitHub repo, smaller than other versions
-      ninja_url=https://github.com/ninja-build/ninja/releases/download/v1.5.3/ninja-linux.zip
-      wget -O - "$ninja_url" | funzip > ninja
-      sudo install -m 755 ninja /usr/bin
-
-      # gettext and its dependencies: From Ubuntu 18.04 LTS (Bionic) mirror
-      #   * Only msgfmt and xgettext need to be upgraded to 0.19.7+.
-      #   * appdata.{its,loc} are needed too.
-      gettext_url=http://us-central1.gce.archive.ubuntu.com/ubuntu/pool/main/g/gettext/gettext_0.19.8.1-6_amd64.deb
-      libtinfo_url=http://us-central1.gce.archive.ubuntu.com/ubuntu/pool/main/n/ncurses/libtinfo5_6.1-1ubuntu1_amd64.deb
-      libunistring_url=http://us-central1.gce.archive.ubuntu.com/ubuntu/pool/main/libu/libunistring/libunistring2_0.9.9-0ubuntu1_amd64.deb
-      for url in "$gettext_url" "$libtinfo_url" "$libunistring_url"; do
-        wget "$url"
-      done
-      ar p gettext*.deb data.tar.xz > gettext.tar.xz
-      ar p libtinfo*.deb data.tar.xz > libtinfo.tar.xz
-      ar p libunistring*.deb data.tar.xz > libunistring.tar.xz
-      cmd="tar -C / -Jxf gettext.tar.xz"
-      cmd="$cmd ./usr/bin/msgfmt"
-      cmd="$cmd ./usr/bin/xgettext"
-      cmd="$cmd ./usr/lib/x86_64-linux-gnu/libgettext{lib,src}{,-0.19.8.1}.so"
-      cmd="$cmd ./usr/share/gettext-0.19.8/its/appdata.{its,loc} &&"
-      cmd="$cmd tar -C / -Jxf libtinfo.tar.xz"
-      cmd="$cmd ./lib/x86_64-linux-gnu/libtinfo.so.5{.9,} &&"
-      cmd="$cmd tar -C / -Jxf libunistring.tar.xz"
-      cmd="$cmd ./usr/lib/x86_64-linux-gnu/libunistring.so.2{.1.0,}"
-      sudo bash -c "$cmd"
-
-      # Set PATH to use Python 3.6 and Meson
-      # Note: Python 3.6 is available without additional download.
-      export PATH=~/virtualenv/python3.6/bin:~/.local/bin:$PATH
+      # Set PATH to use Python 3.7 (already installed) and Meson
+      export PATH=~/virtualenv/python3.7/bin:~/.local/bin:$PATH
     fi
     # This version of Meson is already tested.
   - pip3 install meson==0.49.0
@@ -90,6 +61,7 @@ before_script:
       CONF_FLAGS="$CONF_FLAGS -Dwingdi=disabled -Dgeoclue2=enabled"
       CONF_FLAGS="$CONF_FLAGS -Dcorelocation=disabled -Dgui=enabled"
       CONF_FLAGS="$CONF_FLAGS -Dubuntu=disabled -Dapparmor=enabled"
+      CONF_FLAGS="$CONF_FLAGS -Dsystemduserunitdir=$TRAVIS_BUILD_DIR/root/lib/systemd/user"
       export CONF_FLAGS
     fi
   - |
