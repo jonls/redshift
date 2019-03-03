@@ -84,7 +84,9 @@ class RedshiftStatusIcon(object):
         suspend_menu = Gtk.Menu()
         for minutes, label in [(30, _('30 minutes')),
                                (60, _('1 hour')),
-                               (120, _('2 hours'))]:
+                               (120, _('2 hours')),
+                               (240, _('4 hours')),
+                               (480, _('8 hours'))]:
             suspend_item = Gtk.MenuItem.new_with_label(label)
             suspend_item.connect('activate', self.suspend_cb, minutes)
             suspend_menu.append(suspend_item)
