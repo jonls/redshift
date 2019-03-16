@@ -94,6 +94,10 @@ int poll(struct pollfd *fds, int nfds, int timeout) { abort(); return -1; }
 # include "gamma-w32gdi.h"
 #endif
 
+#ifdef ENABLE_WAYLAND
+# include "gamma-wl.h"
+#endif
+
 
 #include "location-manual.h"
 
@@ -902,6 +906,9 @@ main(int argc, char *argv[])
 
 	/* List of gamma methods. */
 	const gamma_method_t gamma_methods[] = {
+#ifdef ENABLE_WAYLAND
+		wl_gamma_method,
+#endif
 #ifdef ENABLE_DRM
 		drm_gamma_method,
 #endif

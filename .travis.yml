@@ -5,7 +5,7 @@ matrix:
   include:
     - os: linux
       compiler: gcc
-      dist: trusty
+      dist: xenial
       sudo: false
     - os: osx
       compiler: clang
@@ -23,6 +23,8 @@ addons:
       # VidMode
       - libx11-dev
       - libxxf86vm-dev
+      # Wayland
+      - libwayland-dev
       # GeoClue2
       - libglib2.0-dev
       # GUI
@@ -49,7 +51,7 @@ install:
   - mkdir "$TRAVIS_BUILD_DIR/root"
   - |
     if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-      ./configure --prefix="$TRAVIS_BUILD_DIR/root" --enable-drm --enable-vidmode --enable-randr --enable-geoclue2 --enable-gui --enable-apparmor
+      ./configure --prefix="$TRAVIS_BUILD_DIR/root" --enable-drm --enable-vidmode --enable-randr --enable-geoclue2 --enable-gui --enable-apparmor --with-systemduserunitdir=no
     elif [ "$TRAVIS_OS_NAME" == "osx" ]; then
       ./configure --prefix="$TRAVIS_BUILD_DIR/root" --enable-corelocation --enable-quartz --enable-gui
     fi

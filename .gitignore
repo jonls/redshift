@@ -111,6 +111,10 @@ m4/lt~obsolete.m4
 /data/systemd/redshift.service
 /data/systemd/redshift-gtk.service
 /m4
+/src/gamma-control-client-protocol.h
+/src/gamma-control-protocol.c
+/src/orbital-authorizer-client-protocol.h
+/src/orbital-authorizer-protocol.c
 /src/redshift
 /src/redshift-gtk/defs.py
 /src/redshift-gtk/redshift-gtk
