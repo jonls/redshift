@@ -55,7 +55,9 @@ def open_autostart_file():
         dfile = DesktopEntry.DesktopEntry(desktop_file_path)
         for key, values in AUTOSTART_KEYS:
             dfile.set(key, values[False])
-        dfile.write(filename=autostart_file)
+        # do not write the file in local autostart as it override the one
+        # potentially found in /etc/xdg/autostart
+        #dfile.write(filename=autostart_file)
     else:
         dfile = DesktopEntry.DesktopEntry(autostart_file)
 
