@@ -115,6 +115,10 @@ m4/lt~obsolete.m4
 /src/redshift-gtk/defs.py
 /src/redshift-gtk/redshift-gtk
 /src/redshift-gtk/__pycache__/
+/src/gamma-control-client-protocol.h
+/src/gamma-control-protocol.c
+/src/orbital-authorizer-client-protocol.h
+/src/orbital-authorizer-protocol.c
 
 # gettext
 /po/POTFILES

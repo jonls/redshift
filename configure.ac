@@ -68,6 +68,10 @@ PKG_CHECK_MODULES([XCB], [xcb], [have_xcb=yes], [have_xcb=no])
 PKG_CHECK_MODULES([XCB_RANDR], [xcb-randr],
 	[have_xcb_randr=yes], [have_xcb_randr=no])
 
+PKG_CHECK_MODULES([WAYLAND], [wayland-client wayland-scanner >= 1.15.0],
+	[have_wayland=yes], [have_wayland=no])
+PKG_CHECK_VAR(WAYLAND_SCANNER, wayland-scanner, wayland_scanner)
+
 PKG_CHECK_MODULES([GLIB], [glib-2.0 gobject-2.0], [have_glib=yes], [have_glib=no])
 PKG_CHECK_MODULES([GEOCLUE2], [glib-2.0 gio-2.0 >= 2.26], [have_geoclue2=yes], [have_geoclue2=no])
 
@@ -123,6 +127,30 @@ AS_IF([test "x$enable_drm" != xno], [
 	enable_drm=no
 ])
 AM_CONDITIONAL([ENABLE_DRM], [test "x$enable_drm" = xyes])
+
+# Check Wayland method
+AC_MSG_CHECKING([whether to enable Wayland method])
+AC_ARG_ENABLE([wayland], [AC_HELP_STRING([--enable-wayland],
+	[enable Wayland method])],
+	[enable_wayland=$enableval],[enable_wayland=maybe])
+AS_IF([test "x$enable_wayland" != xno], [
+	AS_IF([test $have_wayland = yes], [
+		AC_DEFINE([ENABLE_WAYLAND], 1,
+			[Define to 1 to enable Wayland method])
+		AC_MSG_RESULT([yes])
+		enable_wayland=yes
+	], [
+		AC_MSG_RESULT([missing dependencies])
+		AS_IF([test "x$enable_wayland" = xyes], [
+			AC_MSG_ERROR([missing dependencies for Wayland method])
+		])
+		enable_wayland=no
+	])
+], [
+	AC_MSG_RESULT([no])
+	enable_wayland=no
+])
+AM_CONDITIONAL([ENABLE_WAYLAND], [test "x$enable_wayland" = xyes])
 
 # Check RANDR method
 AC_MSG_CHECKING([whether to enable RANDR method])
@@ -376,6 +404,7 @@ echo "
 
     Adjustment methods:
     DRM:		${enable_drm}
+    Wayland:		${enable_wayland}
     RANDR:		${enable_randr}
     VidMode:		${enable_vidmode}
     Quartz (macOS):	${enable_quartz}
