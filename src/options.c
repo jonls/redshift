@@ -575,6 +575,10 @@ parse_config_file_option(
 				return -1;
 			}
 		}
+	} else if (strcasecmp(key, "preserve-gamma") == 0) {
+		if (options->preserve_gamma == 1) {
+			options->preserve_gamma = !!atoi(value);
+		}
 	} else if (strcasecmp(key, "adjustment-method") == 0) {
 		if (options->method == NULL) {
 			options->method = find_gamma_method(
