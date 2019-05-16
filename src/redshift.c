@@ -662,6 +662,7 @@ run_continual_mode(const location_provider_t *provider,
 	int prev_disabled = 1;
 	int disabled = 0;
 	int location_available = 1;
+	int should_reset = 0;
 	while (1) {
 		/* Check to see if disable signal was caught */
 		if (disable && !done) {
@@ -685,6 +686,7 @@ run_continual_mode(const location_provider_t *provider,
 		if (verbose && disabled != prev_disabled) {
 			printf(_("Status: %s\n"), disabled ?
 			       _("Disabled") : _("Enabled"));
+			should_reset = 1;
 		}
 
 		prev_disabled = disabled;
@@ -724,7 +726,9 @@ run_continual_mode(const location_provider_t *provider,
 
 		if (disabled) {
 			period = PERIOD_NONE;
-			color_setting_reset(&target_interp);
+			if (should_reset) {
+				color_setting_reset(&target_interp);
+			}
 		}
 
 		if (done) {
@@ -797,17 +801,22 @@ run_continual_mode(const location_provider_t *provider,
 		}
 
 		/* Adjust temperature */
-		r = method->set_temperature(
-			method_state, &interp, preserve_gamma);
-		if (r < 0) {
-			fputs(_("Temperature adjustment failed.\n"),
-			      stderr);
-			return -1;
+		if (!disabled || should_reset) {
+			r = method->set_temperature(
+				method_state, &interp, preserve_gamma);
+			if (r < 0) {
+				fputs(_("Temperature adjustment failed.\n"),
+				      stderr);
+				return -1;
+			}
 		}
 
 		/* Save period and target color setting as previous */
 		prev_period = period;
 		prev_target_interp = target_interp;
+
+		/* All resets have been done now */
+		should_reset = 0;
 
 		/* Sleep length depends on whether a fade is ongoing. */
 		int delay = SLEEP_DURATION;
