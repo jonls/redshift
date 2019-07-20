@@ -1,6 +1,7 @@
 ; Global settings for redshift
 [redshift]
 ; Set the day and night screen temperatures
+; Defaults: 6500 / 4500
 temp-day=5700
 temp-night=3500
 
