@@ -28,6 +28,7 @@
 #include <math.h>
 #include <locale.h>
 #include <errno.h>
+#include <time.h>
 
 /* poll.h is not available on Windows but there is no Windows location provider
    using polling. On Windows, we just define some stubs to make things compile.
@@ -210,7 +211,11 @@ get_seconds_since_midnight(double timestamp)
 {
 	time_t t = (time_t)timestamp;
 	struct tm tm;
+#ifdef _WIN32
+	localtime_s(&tm, &t);
+#else
 	localtime_r(&t, &tm);
+#endif
 	return tm.tm_sec + tm.tm_min * 60 + tm.tm_hour * 3600;
 }
 
