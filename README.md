@@ -81,6 +81,11 @@ too coarse-grained.
 The Wayland protocol does not support Redshift. There is currently no way for
 Redshift to adjust the color temperature in Wayland.
 
+Instead, you can use:
+
+- In GNOME Shell: Settings → Display Settings → Night Light
+- In Plasma: System Settings → Display and Monitor → Night Color
+
 **Why doesn't Redshift work on Ubuntu with Mir enabled?**
 
 Mir does not support Redshift.
