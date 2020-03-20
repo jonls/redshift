@@ -1,7 +1,7 @@
 [Unit]
 Description=Redshift display colour temperature adjustment
 Documentation=http://jonls.dk/redshift/
-After=display-manager.service
+After=graphical-session.target
 
 [Service]
 ExecStart=@bindir@/redshift
