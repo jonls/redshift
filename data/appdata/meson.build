@@ -5,7 +5,7 @@ if host_machine.system() != 'windows'
       output : 'redshift-gtk.appdata.xml',
       po_dir : po_dir,
       install : true,
-      install_dir : join_paths(get_option('datadir'), 'appdata'),
+      install_dir : get_option('datadir') / 'appdata',
     )
   endif
 endif

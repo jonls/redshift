@@ -19,9 +19,9 @@ endif
 cc = meson.get_compiler('c')
 
 # Directories
-full_bindir = join_paths(get_option('prefix'), get_option('bindir'))
-full_localedir = join_paths(get_option('prefix'), get_option('localedir'))
-po_dir = join_paths(meson.source_root(), 'po')
+full_bindir = get_option('prefix') / get_option('bindir')
+full_localedir = get_option('prefix') / get_option('localedir')
+po_dir = meson.source_root() / 'po'
 in_substs = configuration_data()
 in_substs.set('bindir', full_bindir)
 in_substs.set('localedir', full_localedir)

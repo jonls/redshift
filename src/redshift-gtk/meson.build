@@ -1,5 +1,5 @@
 if config_build.has('ENABLE_GUI')
-  py_installdir = join_paths(py_installation.get_install_dir(), 'redshift_gtk')
+  py_installdir = py_installation.get_install_dir() / 'redshift_gtk'
   in_substs.set('pythondir', py_installdir)
 
   defs_py = configure_file(
