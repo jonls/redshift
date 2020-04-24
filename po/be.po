@@ -239,7 +239,7 @@ msgstr ""
 "гэтае не стане даступна...\n"
 
 #: ../src/redshift.c:967
-msgid "Partitial time-configuration not supported!\n"
+msgid "Partial time-configuration not supported!\n"
 msgstr "Частковая наладка часу не падтрымліваецца!\n"
 
 #: ../src/redshift.c:975

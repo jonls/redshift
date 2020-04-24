@@ -238,7 +238,7 @@ msgstr ""
 "bliver tilgængelig...\n"
 
 #: ../src/redshift.c:967
-msgid "Partitial time-configuration not supported!\n"
+msgid "Partial time-configuration not supported!\n"
 msgstr "Delvis tidskonfiguration understøttet ikke!\n"
 
 #: ../src/redshift.c:975

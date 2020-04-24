@@ -238,7 +238,7 @@ msgstr ""
 "Standort verwendet.\n"
 
 #: ../src/redshift.c:967
-msgid "Partitial time-configuration not supported!\n"
+msgid "Partial time-configuration not supported!\n"
 msgstr "Teilzeitkonfiguration wird nicht unterstützt!\n"
 
 #: ../src/redshift.c:975

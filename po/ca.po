@@ -240,7 +240,7 @@ msgstr ""
 "anterior fins que estigui disponible...\n"
 
 #: ../src/redshift.c:967
-msgid "Partitial time-configuration not supported!\n"
+msgid "Partial time-configuration not supported!\n"
 msgstr "No s'admet la configuració parcial de l'hora!\n"
 
 #: ../src/redshift.c:975

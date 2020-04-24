@@ -237,8 +237,8 @@ msgstr ""
 "becomes available...\n"
 
 #: ../src/redshift.c:967
-msgid "Partitial time-configuration not supported!\n"
-msgstr "Partitial time-configuration not supported!\n"
+msgid "Partial time-configuration not supported!\n"
+msgstr "Partial time-configuration not supported!\n"
 
 #: ../src/redshift.c:975
 msgid "Invalid dawn/dusk time configuration!\n"

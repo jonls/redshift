@@ -970,7 +970,7 @@ main(int argc, char *argv[])
 		    options.scheme.dawn.end < 0 ||
 		    options.scheme.dusk.start < 0 ||
 		    options.scheme.dusk.end < 0) {
-			fputs(_("Partitial time-configuration not"
+			fputs(_("Partial time-configuration not"
 				" supported!\n"), stderr);
 			exit(EXIT_FAILURE);
 		}

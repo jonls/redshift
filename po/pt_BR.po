@@ -239,7 +239,7 @@ msgstr ""
 "anterior até ficar disponível ...\n"
 
 #: ../src/redshift.c:967
-msgid "Partitial time-configuration not supported!\n"
+msgid "Partial time-configuration not supported!\n"
 msgstr "Configuração parcial de tempo não suportada!\n"
 
 #: ../src/redshift.c:975
