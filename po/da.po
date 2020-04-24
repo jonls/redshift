@@ -17,7 +17,7 @@ msgstr ""
 "X-Generator: Launchpad (build 18658)\n"
 "Language: da\n"
 
-#: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
+#: ../data/appdata/redshift-gtk.metainfo.xml.in.h:1
 msgid ""
 "Redshift adjusts the color temperature of your screen according to your "
 "surroundings. This may help your eyes hurt less if you are working in front "
@@ -27,7 +27,7 @@ msgstr ""
 "omgivelser. Dette kan mindske anstrengelser i øjnene hvis du arbejder foran "
 "skærmen om natten."
 
-#: ../data/appdata/redshift-gtk.appdata.xml.in.h:2
+#: ../data/appdata/redshift-gtk.metainfo.xml.in.h:2
 msgid ""
 "The color temperature is set according to the position of the sun. A "
 "different color temperature is set during night and daytime. During twilight "
@@ -39,14 +39,14 @@ msgstr ""
 "glidende overgang mellem nattemperatur og dagtemperatur som langsomt lader "
 "dine øjne vænne sig til den ændrede farvetemperatur."
 
-#: ../data/appdata/redshift-gtk.appdata.xml.in.h:3
+#: ../data/appdata/redshift-gtk.metainfo.xml.in.h:3
 msgid ""
 "This program provides a status icon that allows the user to control Redshift."
 msgstr ""
 "Dette program indeholder et statuslinjeikon som lader brugeren styre "
 "Redshift."
 
-#: ../data/appdata/redshift-gtk.appdata.xml.in.h:4
+#: ../data/appdata/redshift-gtk.metainfo.xml.in.h:4
 msgid ""
 "The Redshift information window overlaid with an example of the redness "
 "effect"
