@@ -124,6 +124,18 @@ Please go to [the issue tracker](https://github.com/jonls/redshift/issues) and
 check if your issue has already been reported. If not, please open a new issue
 describing you problem.
 
+
+**When running as a systemd service, redshift fails to connect to
+Xorg/Wayland**
+
+You need to export your environment variables when you window manager or
+compositor start up. Typically, you want to run this as part of its startup:
+
+    systemctl --user import-environment; systemctl --user start graphical-session.target
+
+See your compositor's (or window manager's) documentation for further details
+of setting up the systemd user session.
+
 Latest builds from master branch
 --------------------------------
 
