@@ -131,8 +131,7 @@ Mouse cursors are usually handled separately by the graphics hardware and is
 not affected by gamma ramps. Some graphics drivers can be configured to use
 software cursors instead.
 
-### I have an issue with Redshift but it was not mentioned in this FAQ. What
-do I do?
+### I have an issue with Redshift but it was not mentioned in this FAQ. What do I do?
 
 Please go to [the issue tracker](https://github.com/jonls/redshift/issues) and
 check if your issue has already been reported. If not, please open a new issue
