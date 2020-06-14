@@ -13,7 +13,6 @@ README versions: [latest](https://github.com/jonls/redshift/blob/master/README.m
 Run `redshift -h` for help on command line options. You can run the program
 as `redshift-gtk` instead of `redshift` for a graphical status icon.
 
-* Website: http://jonls.dk/redshift/
 * Project page: https://github.com/jonls/redshift
 
 Build status
@@ -21,6 +20,30 @@ Build status
 
 [![Build Status](https://travis-ci.org/jonls/redshift.svg?branch=master)](https://travis-ci.org/jonls/redshift)
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/jonls/redshift?branch=master&svg=true)](https://ci.appveyor.com/project/jonls/redshift)
+
+Technical Details (Gamma Ramps)
+-------------------------------
+
+Redshift applies a redness effect to the graphical display. The intensity of the redness can be customized and
+scheduled to only be applied at night or to be applied with more intensity at night.
+
+Redshift uses the gamma correction ramps to apply this effect which has traditionally been the only
+way of applying a color effect to the display. Note that this is really a hack to work around the absense of a
+standardized way of applying color effects, and it is resulting in several issues some of which are explained in
+the _FAQ_ section below. As long as Redshift is using gamma ramps, many of these issues are impossible to solve properly
+in Redshift.
+
+Since Redshift was first created, many desktop environments have adopted similar functionality as an integrated
+component:
+
+- GNOME: [Night Light](https://www.gnome.org/news/2017/03/gnome-3-24-released/attachment/night-light/)
+- Plasma: Night Color
+- Windows: [Night Light](https://support.microsoft.com/en-us/help/4027563/windows-10-set-your-display-for-night-time)
+- macOS: Night Shift
+
+Using the features integrated into the desktop environments avoids many of the issues with gamma ramps which is why
+these implementations should generally be favored over Redshift. On the other hand, Redshift may offer some additional
+flexibility that is not available in the integrated features.
 
 FAQ
 ---
