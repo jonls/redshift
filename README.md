@@ -6,6 +6,8 @@ Redshift adjusts the color temperature of your screen according to
 your surroundings. This may help your eyes hurt less if you are
 working in front of the screen at night.
 
+README versions: [latest](https://github.com/jonls/redshift/blob/master/README.md) | [1.12](https://github.com/jonls/redshift/blob/v1.12/README.md) | [1.11](https://github.com/jonls/redshift/blob/v1.11/README.md)
+
 ![Redshift logo](http://jonls.dk/assets/redshift-icon-256.png)
 
 Run `redshift -h` for help on command line options. You can run the program
@@ -90,6 +92,18 @@ Instead, you can use:
 
 Mir does not support Redshift.
 
+### When running as a systemd service, redshift fails to connect to the graphical environment
+
+You need to export your environment variables when your window manager or
+compositor start up. Typically, you want to run this as part of its startup:
+
+    systemctl --user import-environment; systemctl --user start graphical-session.target
+
+See your compositor's (or window manager's) documentation for further details
+of setting up the systemd user session.
+
+Related issues: [#753](https://github.com/jonls/redshift/pull/753).
+
 ### The redness effect is applied during the day instead of at night. Why?
 
 This usually happens to users in America when the longitude has been set in the
@@ -117,24 +131,12 @@ Mouse cursors are usually handled separately by the graphics hardware and is
 not affected by gamma ramps. Some graphics drivers can be configured to use
 software cursors instead.
 
-**I have an issue with Redshift but it was not mentioned in this FAQ. What
-do I do?**
+### I have an issue with Redshift but it was not mentioned in this FAQ. What
+do I do?
 
 Please go to [the issue tracker](https://github.com/jonls/redshift/issues) and
 check if your issue has already been reported. If not, please open a new issue
 describing you problem.
-
-
-**When running as a systemd service, redshift fails to connect to
-Xorg/Wayland**
-
-You need to export your environment variables when you window manager or
-compositor start up. Typically, you want to run this as part of its startup:
-
-    systemctl --user import-environment; systemctl --user start graphical-session.target
-
-See your compositor's (or window manager's) documentation for further details
-of setting up the systemd user session.
 
 Latest builds from master branch
 --------------------------------
