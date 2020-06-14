@@ -34,7 +34,6 @@ before_install: |
     brew install gettext
     brew link --force gettext
     brew install intltool
-    brew upgrade python
   fi
 
 install:
