@@ -39,8 +39,6 @@ install:
       # we install it via pip to pin its version.
       # Meson uses Ninja and we install it via brew.
       brew install ninja
-      # Note: No longer needed. Errors can be ignored.
-      brew upgrade python || true
     fi
   - |
     if [ "$TRAVIS_OS_NAME" == "linux" ]; then
