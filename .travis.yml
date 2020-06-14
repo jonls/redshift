@@ -22,21 +22,10 @@ addons:
       - libxxf86vm-dev
       # GeoClue2
       - libglib2.0-dev
-      # Meson
-      - ninja-build
 
 install:
   - |
     if [ "$TRAVIS_OS_NAME" == "osx" ]; then
-      # Note: "brew update" and "brew install gettext" are not necessary and
-      #       we can install needed packages with HOMEBREW_NO_AUTO_UPDATE=1.
-      #       This reduces job time significantly.
-      brew update
-      # Building with Meson sometimes fails due to its regressions.
-      # Meson can be installed via brew, but
-      # we install it via pip to pin its version.
-      # Meson uses Ninja and we install it via brew.
-      brew install ninja
       # Enable gettext
       export PATH=/usr/local/opt/gettext/bin:$PATH
     fi
@@ -46,7 +35,7 @@ install:
       export PATH=~/virtualenv/python3.7/bin:$PATH
     fi
     # This version of Meson is already tested.
-  - pip3 install meson==0.54.2
+  - pip3 install ninja meson==0.54.2
 
 before_script:
   - |
