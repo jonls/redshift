@@ -46,7 +46,7 @@ install:
       export PATH=~/virtualenv/python3.7/bin:$PATH
     fi
     # This version of Meson is already tested.
-  - pip3 install meson==0.49.2
+  - pip3 install meson==0.54.2
 
 before_script:
   - |
