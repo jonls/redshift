@@ -44,6 +44,7 @@ from . import utils
 
 _ = gettext.gettext
 
+MAXSUSPENSION = 720    # Limit to custom suspensions -- 12 hours
 
 class RedshiftStatusIcon(object):
     """The status icon tracking the RedshiftController."""
@@ -86,7 +87,8 @@ class RedshiftStatusIcon(object):
                                (60, _('1 hour')),
                                (120, _('2 hours')),
                                (240, _('4 hours')),
-                               (480, _('8 hours'))]:
+                               (480, _('8 hours')),
+                               (0, _('Custom'))]:
             suspend_item = Gtk.MenuItem.new_with_label(label)
             suspend_item.connect('activate', self.suspend_cb, minutes)
             suspend_menu.append(suspend_item)
@@ -184,7 +186,7 @@ class RedshiftStatusIcon(object):
 
         # Initialize suspend timer
         self.suspend_timer = None
-
+    
     def remove_suspend_timer(self):
         """Disable any previously set suspend timer."""
         if self.suspend_timer is not None:
@@ -198,6 +200,11 @@ class RedshiftStatusIcon(object):
         redshift is not disabled when called, it will still set a suspend timer
         and reactive redshift when the timer is up.
         """
+        if not minutes:      # Custom interval, not specific duration
+            minutes = self.get_user_duration()
+            if not minutes:  # User did not give valid duration
+                return
+        # Now minutes is a valid duration
         # Inhibit
         self._controller.set_inhibit(True)
 
@@ -208,6 +215,30 @@ class RedshiftStatusIcon(object):
         # If redshift was already disabled we reenable it nonetheless.
         self.suspend_timer = GLib.timeout_add_seconds(
             minutes * 60, self.reenable_cb)
+            
+    
+    def get_user_duration(self, default='0'):
+        """Ask user to specify suspension time in minutes. Return integer."""
+        menulabels = ['15', '45', '90', '150']  # To be offered to user
+        title = "Suspension interval" # Heading for window
+        dialogue = DurationDialog(title, menulabels)
+        response = dialogue.run()
+        if response == Gtk.ResponseType.OK:
+            txt = dialogue.get_result()
+        else:
+            txt = ''
+        dialogue.destroy()
+        if txt:
+          try:
+              value = int(float(txt))
+              if value > MAXSUSPENSION:
+                  value = 0
+          except ValueError:
+              value = 0
+        else:
+            value = 0
+        return value
+        
 
     def reenable_cb(self):
         """Callback to reenable redshift when a suspend timer expires."""
@@ -349,6 +380,31 @@ class RedshiftStatusIcon(object):
         self._controller.terminate_child()
         return False
 
+class DurationDialog(Gtk.Dialog):
+    def __init__(self, title, menulabels):
+        Gtk.Dialog.__init__(self, title, None, 0,
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+             Gtk.STOCK_OK, Gtk.ResponseType.OK))
+        self.result = ""
+        self.connect("response", self.on_response)
+        prompt = Gtk.Label("Number of minutes:")
+        databox = Gtk.ComboBoxText.new_with_entry()
+        databox.set_wrap_width(1) # width of menu to 1 column
+        for lab in menulabels:
+           databox.append_text(lab)
+        self.entry = databox.get_child()
+        limit = Gtk.Label("(Maximum " + str(MAXSUSPENSION) + ")")
+        box = self.get_content_area()
+        box.add(prompt)
+        box.add(databox)
+        box.add(limit)
+        self.show_all()
+
+    def on_response(self, widget, response_id):
+        self.result = self.entry.get_text ()
+
+    def get_result(self):
+        return self.result
 
 def run():
     utils.setproctitle('redshift-gtk')
