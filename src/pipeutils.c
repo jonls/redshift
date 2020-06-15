@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <errno.h>
 
 
 #ifndef _WIN32
@@ -86,7 +87,11 @@ pipeutils_create_nonblocking(int pipefds[2])
 void
 pipeutils_signal(int write_fd)
 {
-	write(write_fd, "", 1);
+	errno = 0;
+	while (write(write_fd, "", 1) != 1) {
+		if (errno != 0 && errno != EINTR)
+			return;
+	}
 }
 
 /* Mark signal as handled on read-end of pipe. */
@@ -94,5 +99,9 @@ void
 pipeutils_handle_signal(int read_fd)
 {
 	char data;
-	read(read_fd, &data, 1);
+	errno = 0;
+	while (read(read_fd, &data, 1) != 1) {
+		if (errno != 0 && errno != EINTR)
+			return;
+	}
 }
