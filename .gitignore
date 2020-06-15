@@ -115,6 +115,8 @@ m4/lt~obsolete.m4
 /src/redshift-gtk/defs.py
 /src/redshift-gtk/redshift-gtk
 /src/redshift-gtk/__pycache__/
+/src/redshift-config-gtk/redshift-config-gtk-resource.c
+/src/redshift-config-gtk/redshift-config-gtk
 
 # gettext
 /po/POTFILES

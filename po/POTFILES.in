@@ -3,6 +3,7 @@
 data/appdata/redshift-gtk.appdata.xml.in
 data/applications/redshift.desktop.in
 data/applications/redshift-gtk.desktop.in
+[type: gettext/glade] src/redshift-config-gtk/gtk/menus.ui
 
 src/redshift.c
 src/options.c
@@ -18,5 +19,7 @@ src/gamma-dummy.c
 src/location-geoclue2.c
 src/location-corelocation.m
 src/location-manual.c
+
+src/redshift-config-gtk/redshift-config-gtk.c
 
 src/redshift-gtk/statusicon.py

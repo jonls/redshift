@@ -54,6 +54,7 @@ Dependencies
 * libxcb, libxcb-randr (Optional, for RandR support)
 * libX11, libXxf86vm (Optional, for VidMode support)
 * Glib 2 (Optional, for GeoClue2 support)
+* GTK+ 3 (Optional, for GUI config tool)
 
 * python3, pygobject, pyxdg (Optional, for GUI support)
 * appindicator (Optional, for Ubuntu-style GUI status icon)

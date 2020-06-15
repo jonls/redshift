@@ -25,6 +25,9 @@ addons:
       - libxxf86vm-dev
       # GeoClue2
       - libglib2.0-dev
+      # GUI config tool
+      - libgtk-3-dev
+      - libxml2-utils
       # GUI
       - python3
 
@@ -34,6 +37,7 @@ before_install: |
     brew install gettext
     brew link --force gettext
     brew install intltool
+    brew install gtk+3
   fi
 
 install:

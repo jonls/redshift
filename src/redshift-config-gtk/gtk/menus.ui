@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   GTK+ menus UI file for redshift-config-gtk.
+
+   This file is part of Redshift.
+
+   Redshift is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   Redshift is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
+
+   Copyright (c) 2018 Masanori Kakura <kakurasan@gmail.com>
+-->
+<interface>
+ <menu id="menubar">
+  <submenu>
+   <attribute name="label" translatable="yes">_File</attribute>
+   <section>
+    <item>
+     <attribute name="label" translatable="yes">_Save settings</attribute>
+     <attribute name="action">app.save</attribute>
+     <attribute name="accel">&lt;Primary&gt;s</attribute>
+     <attribute name="icon">gtk-save</attribute>
+    </item>
+    <item>
+     <attribute name="label" translatable="yes">_Revert color settings</attribute>
+     <attribute name="action">app.revert</attribute>
+     <attribute name="accel">&lt;Primary&gt;r</attribute>
+     <attribute name="icon">gtk-undo</attribute>
+    </item>
+   </section>
+   <section>
+    <item>
+     <attribute name="label" translatable="yes">_Quit</attribute>
+     <attribute name="action">app.quit</attribute>
+     <attribute name="accel">&lt;Primary&gt;q</attribute>
+     <attribute name="icon">gtk-quit</attribute>
+    </item>
+   </section>
+  </submenu>
+ </menu>
+</interface>
