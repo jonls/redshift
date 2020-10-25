@@ -1,0 +1,72 @@
+option(
+  'nls',
+  type : 'feature',
+  value : 'auto',
+  description : 'NLS support'
+)
+option(
+  'drm',
+  type : 'feature',
+  value : 'auto',
+  description : 'DRM method'
+)
+option(
+  'randr',
+  type : 'feature',
+  value : 'auto',
+  description : 'RANDR method'
+)
+option(
+  'vidmode',
+  type : 'feature',
+  value : 'auto',
+  description : 'VidMode method'
+)
+option(
+  'quartz',
+  type : 'feature',
+  value : 'auto',
+  description : 'Quartz (macOS) method'
+)
+option(
+  'wingdi',
+  type : 'feature',
+  value : 'auto',
+  description : 'WinGDI method'
+)
+option(
+  'corelocation',
+  type : 'feature',
+  value : 'auto',
+  description : 'CoreLocation (macOS) provider'
+)
+option(
+  'geoclue2',
+  type : 'feature',
+  value : 'auto',
+  description : 'Geoclue2 provider'
+)
+option(
+  'gui',
+  type : 'feature',
+  value : 'auto',
+  description : 'GUI status icon'
+)
+option(
+  'ubuntu',
+  type : 'feature',
+  value : 'disabled',
+  description : 'Ubuntu icons'
+)
+option(
+  'apparmor',
+  type : 'feature',
+  value : 'disabled',
+  description : 'AppArmor profile'
+)
+option(
+  'systemduserunitdir',
+  type : 'string',
+  value : 'auto',
+  description : 'Directory for systemd user unit files (or, "auto" / "disabled")'
+)

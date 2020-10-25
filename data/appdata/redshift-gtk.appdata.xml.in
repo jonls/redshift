@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2014 Jon Lund Steffensen <jonlst@gmail.com> -->
-<application>
- <id type="desktop">redshift-gtk.desktop</id>
+<component type="desktop">
+ <id>redshift-gtk.desktop</id>
  <metadata_license>CC0</metadata_license>
  <project_license>GPL-3.0+</project_license>
  <description>
-   <_p>Redshift adjusts the color temperature of your screen according to your surroundings. This may help your eyes hurt less if you are working in front of the screen at night.</_p>
-   <_p>The color temperature is set according to the position of the sun. A different color temperature is set during night and daytime. During twilight and early morning, the color temperature transitions smoothly from night to daytime temperature to allow your eyes to slowly adapt.</_p>
-   <_p>This program provides a status icon that allows the user to control Redshift.</_p>
+   <p>Redshift adjusts the color temperature of your screen according to your surroundings. This may help your eyes hurt less if you are working in front of the screen at night.</p>
+   <p>The color temperature is set according to the position of the sun. A different color temperature is set during night and daytime. During twilight and early morning, the color temperature transitions smoothly from night to daytime temperature to allow your eyes to slowly adapt.</p>
+   <p>This program provides a status icon that allows the user to control Redshift.</p>
  </description>
  <screenshots>
    <screenshot type="default">
      <image>http://jonls.dk/assets/screenshot1.png</image>
-     <_caption>The Redshift information window overlaid with an example of the redness effect</_caption>
+     <caption>The Redshift information window overlaid with an example of the redness effect</caption>
    </screenshot>
  </screenshots>
  <url type="homepage">http://jonls.dk/redshift/</url>
  <updatecontact>jonlst@gmail.com</updatecontact>
-</application>
+</component>

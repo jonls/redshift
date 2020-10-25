@@ -4,17 +4,14 @@ language: c
 matrix:
   include:
     - os: linux
+      dist: xenial
       compiler: gcc
-      dist: trusty
-      sudo: false
     - os: osx
       compiler: clang
 
 addons:
   apt:
     packages:
-      - autopoint
-      - intltool
       # DRM
       - libdrm-dev
       # RANDR
@@ -25,30 +22,50 @@ addons:
       - libxxf86vm-dev
       # GeoClue2
       - libglib2.0-dev
-      # GUI
-      - python3
-
-before_install: |
-  if [ "$TRAVIS_OS_NAME" == "osx" ]; then
-    brew update
-    brew install gettext
-    brew link --force gettext
-    brew install intltool
-  fi
 
 install:
-  - ./bootstrap
-  - mkdir "$TRAVIS_BUILD_DIR/root"
+  - |
+    if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+      # Enable gettext
+      export PATH=/usr/local/opt/gettext/bin:$PATH
+    fi
   - |
     if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-      ./configure --prefix="$TRAVIS_BUILD_DIR/root" --enable-drm --enable-vidmode --enable-randr --enable-geoclue2 --enable-gui --enable-apparmor
-    elif [ "$TRAVIS_OS_NAME" == "osx" ]; then
-      ./configure --prefix="$TRAVIS_BUILD_DIR/root" --enable-corelocation --enable-quartz --enable-gui
+      # Set PATH to use Python 3.7 (already installed) and Meson
+      export PATH=~/virtualenv/python3.7/bin:$PATH
     fi
-  - make -j2 install
-  - make -j2 distcheck
+    # This version of Meson is already tested.
+  - pip3 install ninja meson==0.54.2
+
+before_script:
+  - |
+    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      CONF_FLAGS="--prefix=$TRAVIS_BUILD_DIR/root"
+      CONF_FLAGS="$CONF_FLAGS -Ddrm=enabled -Drandr=enabled"
+      CONF_FLAGS="$CONF_FLAGS -Dvidmode=enabled -Dquartz=disabled"
+      CONF_FLAGS="$CONF_FLAGS -Dwingdi=disabled -Dgeoclue2=enabled"
+      CONF_FLAGS="$CONF_FLAGS -Dcorelocation=disabled -Dgui=enabled"
+      CONF_FLAGS="$CONF_FLAGS -Dubuntu=disabled -Dapparmor=enabled"
+      CONF_FLAGS="$CONF_FLAGS -Dsystemduserunitdir=$TRAVIS_BUILD_DIR/root/lib/systemd/user"
+      export CONF_FLAGS
+    fi
+  - |
+    if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+      CONF_FLAGS="--prefix=$TRAVIS_BUILD_DIR/root"
+      CONF_FLAGS="$CONF_FLAGS -Ddrm=disabled -Drandr=disabled"
+      CONF_FLAGS="$CONF_FLAGS -Dvidmode=disabled -Dquartz=enabled"
+      CONF_FLAGS="$CONF_FLAGS -Dwingdi=disabled -Dgeoclue2=disabled"
+      CONF_FLAGS="$CONF_FLAGS -Dcorelocation=enabled -Dgui=disabled"
+      CONF_FLAGS="$CONF_FLAGS -Dubuntu=disabled -Dapparmor=disabled"
+      export CONF_FLAGS
+    fi
 
 script:
+  - meson $CONF_FLAGS _build
+  - ninja -v -C _build install
+  - ninja -v -C _build test
+  - ninja -v -C _build dist
+  # redshift tests
   - |
     "$TRAVIS_BUILD_DIR"/root/bin/redshift -l 12:-34 -pv
   - |

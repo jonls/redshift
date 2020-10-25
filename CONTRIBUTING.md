@@ -3,39 +3,37 @@ Building from git clone
 -----------------------
 
 ``` shell
-$ ./bootstrap
-$ ./configure
+$ meson ([options...]) _build
 ```
 
-The bootstrap script will use autotools to set up the build environment
-and create the `configure` script.
+Meson sets up the build environment and create a build directory named `_build`.
 
-Use `./configure --help` for options. Use `--prefix` to make an install in
+See `meson_options.txt` for options. Use `--prefix` to make an install in
 your home directory. This is necessary to test python scripts. The systemd
 user unit directory should be set to avoid writing to the system location.
 
 Systemd will look for the unit files in `~/.config/systemd/user` so this
 directory can be used as a target if the unit files will be used. Otherwise
-the location can be set to `no` to disable the systemd files.
+the location can be set to `disabled` to disable the systemd files.
 
 Example:
 
 ``` shell
-$ ./configure --prefix=$HOME/redshift/root \
-   --with-systemduserunitdir=$HOME/.config/systemd/user
+$ meson --prefix=$HOME/redshift/root \
+   -Dsystemduserunitdir=$HOME/.config/systemd/user
 ```
 
 Now, build the files:
 
 ``` shell
-$ make
+$ ninja -C _build
 ```
 
 The main redshift program can be run at this point. To install to the
 prefix directory run:
 
 ``` shell
-$ make install
+$ ninja -C _build install
 ```
 
 You can now run the python script. Example:
@@ -48,8 +46,9 @@ $ $HOME/redshift/root/bin/redshift-gtk
 Dependencies
 ------------
 
-* autotools, gettext
-* intltool, libtool
+* Meson (>= 0.47.0)
+* gettext (>= 0.19.7)
+* Ninja (>= 1.5)
 * libdrm (Optional, for DRM support)
 * libxcb, libxcb-randr (Optional, for RandR support)
 * libX11, libXxf86vm (Optional, for VidMode support)
@@ -138,8 +137,8 @@ Creating a new release
 3. Apply any bugfixes for release
 4. Import updated translations from launchpad and commit. Remember to update
    `po/LINGUAS` if new languages were added
-5. Update version in `configure.ac` and create entry in NEWS
-6. Run `make distcheck`
+5. Update version in `meson.build` and create entry in NEWS
+6. Run `ninja -C _build dist`
 7. Commit and tag release (`vX.Y` or `vX.Y.Z`)
 8. Push tag to Github and also upload source dist file to Github
 
@@ -152,7 +151,7 @@ Also remember to check before release that
 Build Fedora RPMs
 -----------------
 
-Run `make dist-xz` and copy the `.tar.xz` file to `~/rpmbuild/SOURCES`. Then run
+Run `ninja -C _build dist` and copy the `.tar.xz` file to `~/rpmbuild/SOURCES`. Then run
 
 ``` shell
 $ rpmbuild -ba contrib/redshift.spec
@@ -164,13 +163,14 @@ If successful this will place RPMs in `~/rpmbuild/RPMS`.
 Cross-compile for Windows
 -------------------------
 
-Install MinGW and run `configure` using the following command line. Use
-`i686-w64-mingw32` as host for 32-bit builds.
+Install mingw-w64 and run `meson` using the following command line.
 
 ``` shell
-$ ./configure --disable-drm --disable-randr --disable-vidmode --enable-wingdi \
-  --disable-quartz --disable-geoclue2 --disable-corelocation --disable-gui \
-  --disable-ubuntu --host=x86_64-w64-mingw32
+(Win64)
+$ meson --cross-file build-win64.txt _build
+
+(Win32)
+$ meson --cross-file build-win32.txt _build
 ```
 
 

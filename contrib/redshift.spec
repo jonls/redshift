@@ -6,6 +6,7 @@ Group: Applications/System
 License: GPLv3+
 URL: http://jonls.dk/redshift/
 Source0: http://launchpad.net/redshift/trunk/%{version}/+download/%{name}-%{version}.tar.xz
+BuildRequires: meson
 BuildRequires: gettext-devel
 BuildRequires: libX11-devel
 BuildRequires: libXxf86vm-devel
@@ -29,6 +30,7 @@ This package provides the base program.
 %package -n %{name}-gtk
 Summary: GTK integration for Redshift
 Group: Applications/System
+BuildArch: noarch
 BuildRequires: python3-devel >= 3.2
 BuildRequires: desktop-file-utils
 Requires: python3-gobject
@@ -44,12 +46,16 @@ temperature adjustment program.
 %setup -q
 
 %build
-%configure --enable-gui --disable-geoclue --enable-geoclue2 --enable-randr --enable-vidmode --with-systemduserunitdir=%{_userunitdir}
-make %{?_smp_mflags} V=1
+# This macro adds "--auto-features=enabled" option and
+# tries to enable all features in "meson_options.txt".
+%meson -Dquartz=disabled -Dcorelocation=disabled -Dwingdi=disabled -Dsystemduserunitdir=%{_userunitdir}
+%meson_build
 
 %install
 rm -rf %{buildroot}
-make DESTDIR=%{buildroot} install INSTALL="install -p"
+%meson_install
+# Some files are incorrectly installed into "/usr/lib64/python3.X" on x86_64.
+find %{buildroot}/usr/lib64 -name "*.py*" -exec mv {} %{buildroot}/usr/lib/python*/*/*/ \;
 %find_lang %{name}
 desktop-file-validate %{buildroot}%{_datadir}/applications/redshift.desktop
 desktop-file-validate %{buildroot}%{_datadir}/applications/redshift-gtk.desktop

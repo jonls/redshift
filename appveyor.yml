@@ -4,26 +4,36 @@ image:
 environment:
   matrix:
     - arch: x86_64
+      PATH: C:\Python37;C:\Python37\scripts;C:\msys64\mingw64\bin;%PATH%;
     - arch: i686
+      PATH: C:\Python37;C:\Python37\scripts;C:\msys64\mingw32\bin;%PATH%;
 
 build:
   verbosity: detailed
 
-build_script:
+install:
 - ps: |
-    If ($env:arch -Match "x86_64") {
-      $env:MSYSTEM = "MINGW64"
-    } Else {
-      $env:MSYSTEM = "MINGW32"
-    }
+    Start-FileDownload "https://raw.githubusercontent.com/mesonbuild/cidata/e5ea5b021d8144515a1b8f576cda327e45a81235/ninja.exe"
+  # This version of Meson is already tested.
+- pip3 install meson==0.54.2
 
-    $env:CONFIGURE_FLAGS = "--disable-drm --disable-randr --disable-vidmode --enable-wingdi --disable-quartz --disable-geoclue2 --disable-corelocation --disable-gui --disable-ubuntu --disable-nls --host=$env:arch-w64-mingw32"
+before_build:
+- ps: |
+    $env:CONF_FLAGS = "--prefix=${env:APPVEYOR_BUILD_FOLDER}\root"
+    $env:CONF_FLAGS += " -Ddrm=disabled -Drandr=disabled -Dvidmode=disabled"
+    $env:CONF_FLAGS += " -Dwingdi=enabled -Dquartz=disabled"
+    $env:CONF_FLAGS += " -Dgeoclue2=disabled -Dcorelocation=disabled"
+    $env:CONF_FLAGS += " -Dgui=disabled -Dubuntu=disabled -Dnls=disabled"
 
+    # For Ninja
+    $env:PATH = "${env:APPVEYOR_BUILD_FOLDER};${env:PATH};"
+
+build_script:
 - ps: md (Join-Path $env:APPVEYOR_BUILD_FOLDER root)
-- C:\msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./bootstrap"
-- C:\msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./configure --prefix=\"$APPVEYOR_BUILD_FOLDER/root\" $CONFIGURE_FLAGS"
-- C:\msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER && make distcheck DISTCHECK_CONFIGURE_FLAGS=\"$CONFIGURE_FLAGS\""
-- C:\msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER && make install"
+- meson %CONF_FLAGS% _build &&
+    ninja -C _build install &&
+    ninja -C _build test &&
+    ninja -C _build dist
 
 test_script:
 - |
