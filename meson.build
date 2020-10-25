@@ -3,7 +3,7 @@ project(
   'c',
   default_options : ['buildtype=debugoptimized', 'c_std=gnu99'],
   license : 'GPL3+',
-  meson_version : '>= 0.49',
+  meson_version : '>= 0.53',
   version : '1.12',
 )
 proj_name = meson.project_name()
@@ -203,34 +203,37 @@ subdir('data')
 # Generate config.h
 configure_file(output : 'config.h', configuration : config_h)
 
-message('''@0@ @1@
-    prefix:		@2@
-
-    Adjustment methods:
-    DRM:		@3@
-    RANDR:		@4@
-    VidMode:		@5@
-    Quartz (macOS):	@6@
-    WinGDI (Windows):	@7@
-
-    Location providers:
-    Geoclue2:			@8@
-    CoreLocation (macOS):	@9@
-
-    GUI:		@10@
-    Ubuntu icons:	@11@
-    systemd units:	@12@ @13@
-    AppArmor profile:   @14@
-'''.format(proj_name, proj_version, get_option('prefix'),
-  config_h.has('ENABLE_DRM') ? 'yes' : 'no',
-  config_h.has('ENABLE_RANDR') ? 'yes' : 'no',
-  config_h.has('ENABLE_VIDMODE') ? 'yes' : 'no',
-  config_h.has('ENABLE_QUARTZ') ? 'yes' : 'no',
-  config_h.has('ENABLE_WINGDI') ? 'yes' : 'no',
-  config_h.has('ENABLE_GEOCLUE2') ? 'yes' : 'no',
-  config_h.has('ENABLE_CORELOCATION') ? 'yes' : 'no',
-  config_build.has('ENABLE_GUI') ? 'yes' : 'no',
-  config_build.has('ENABLE_UBUNTU') ? 'yes' : 'no',
-  config_build.has('ENABLE_SYSTEMD') ? 'yes' : 'no', systemd_userunitdir,
-  config_build.has('ENABLE_APPARMOR') ? 'yes' : 'no',
-))
+# Summary
+summary(
+  {
+    'prefix': get_option('prefix'),
+  },
+  section: 'Directories',
+)
+summary(
+  {
+    'DRM': config_h.has('ENABLE_DRM'),
+    'RANDR': config_h.has('ENABLE_RANDR'),
+    'VidMode': config_h.has('ENABLE_VIDMODE'),
+    'Quartz (macOS)': config_h.has('ENABLE_QUARTZ'),
+    'WinGDI (Windows)': config_h.has('ENABLE_WINGDI'),
+  },
+  section: 'Adjustment methods',
+)
+summary(
+  {
+    'Geoclue2': config_h.has('ENABLE_GEOCLUE2'),
+    'CoreLocation (macOS)': config_h.has('ENABLE_CORELOCATION'),
+  },
+  section: 'Location providers',
+)
+summary(
+  {
+    'GUI': config_build.has('ENABLE_GUI'),
+    'Ubuntu icons': config_build.has('ENABLE_UBUNTU'),
+    'systemd units': config_build.has('ENABLE_SYSTEMD')
+      ? systemd_userunitdir : 'None',
+    'AppArmor profile': config_build.has('ENABLE_APPARMOR'),
+  },
+  section: 'Miscellaneous',
+)
