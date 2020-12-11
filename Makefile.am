@@ -37,7 +37,7 @@ SYSTEMD_USER_UNIT_IN_FILES = \
 	data/systemd/redshift-gtk.service.in
 
 APPDATA_IN_FILES = \
-	data/appdata/redshift-gtk.appdata.xml.in
+	data/appdata/redshift-gtk.metainfo.xml.in
 
 APPARMOR_IN_FILES = \
 	data/apparmor/usr.bin.redshift.in
@@ -95,7 +95,7 @@ $(systemduserunit_DATA): $(SYSTEMD_USER_UNIT_IN_FILES) Makefile
 
 # Appdata file
 if ENABLE_GUI
-appdatadir = @datadir@/appdata
+appdatadir = @datadir@/metainfo
 appdata_DATA = $(APPDATA_IN_FILES:.xml.in=.xml)
 
 # We would preferable use @INTLTOOL_XML_RULE@ here but

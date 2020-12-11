@@ -1,6 +1,6 @@
 # List of source files containing translatable strings
 
-data/appdata/redshift-gtk.appdata.xml.in
+data/appdata/redshift-gtk.metainfo.xml.in
 data/applications/redshift.desktop.in
 data/applications/redshift-gtk.desktop.in
 

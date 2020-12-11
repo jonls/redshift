@@ -17,7 +17,7 @@ msgstr ""
 "X-Launchpad-Export-Date: 2018-05-21 01:04+0000\n"
 "X-Generator: Launchpad (build 18658)\n"
 
-#: ../data/appdata/redshift-gtk.appdata.xml.in.h:1
+#: ../data/appdata/redshift-gtk.metainfo.xml.in.h:1
 msgid ""
 "Redshift adjusts the color temperature of your screen according to your "
 "surroundings. This may help your eyes hurt less if you are working in front "
@@ -27,7 +27,7 @@ msgstr ""
 "навколишнього природного середовища. Це може зменшити втому ваших очей під "
 "час роботи перед екраном в ночі."
 
-#: ../data/appdata/redshift-gtk.appdata.xml.in.h:2
+#: ../data/appdata/redshift-gtk.metainfo.xml.in.h:2
 msgid ""
 "The color temperature is set according to the position of the sun. A "
 "different color temperature is set during night and daytime. During twilight "
@@ -40,14 +40,14 @@ msgstr ""
 "повільно переходить із нічної до денної температури, що дозволяє вашим очам "
 "повільно адаптуватися."
 
-#: ../data/appdata/redshift-gtk.appdata.xml.in.h:3
+#: ../data/appdata/redshift-gtk.metainfo.xml.in.h:3
 msgid ""
 "This program provides a status icon that allows the user to control Redshift."
 msgstr ""
 "Ця програма супроводжується статусною піктограмою, що дозволяє користувачеві "
 "контролювати Redshift."
 
-#: ../data/appdata/redshift-gtk.appdata.xml.in.h:4
+#: ../data/appdata/redshift-gtk.metainfo.xml.in.h:4
 msgid ""
 "The Redshift information window overlaid with an example of the redness "
 "effect"
