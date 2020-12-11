@@ -238,7 +238,7 @@ msgstr ""
 "předchozí…\n"
 
 #: ../src/redshift.c:967
-msgid "Partitial time-configuration not supported!\n"
+msgid "Partial time-configuration not supported!\n"
 msgstr "Částečné nastavení času není podporováno!\n"
 
 #: ../src/redshift.c:975

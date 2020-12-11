@@ -238,7 +238,7 @@ msgstr ""
 "знаходження поки воно не буде доступним...\n"
 
 #: ../src/redshift.c:967
-msgid "Partitial time-configuration not supported!\n"
+msgid "Partial time-configuration not supported!\n"
 msgstr "Часткова конфігурація часу не підтримується!\n"
 
 #: ../src/redshift.c:975

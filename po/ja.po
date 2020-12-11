@@ -230,7 +230,7 @@ msgid ""
 msgstr "位置情報は一時的に利用不能です; 利用可能になるまでは前回の位置を使用します...\n"
 
 #: ../src/redshift.c:967
-msgid "Partitial time-configuration not supported!\n"
+msgid "Partial time-configuration not supported!\n"
 msgstr "部分的な時刻設定はサポートされていません!\n"
 
 #: ../src/redshift.c:975

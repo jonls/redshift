@@ -228,7 +228,7 @@ msgid ""
 msgstr "位置資訊暫時無法使用；使用之前的位置資訊，直到可用提供…\n"
 
 #: ../src/redshift.c:967
-msgid "Partitial time-configuration not supported!\n"
+msgid "Partial time-configuration not supported!\n"
 msgstr "有部分的時間配置尚未支援！\n"
 
 #: ../src/redshift.c:975

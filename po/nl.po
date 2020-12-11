@@ -239,7 +239,7 @@ msgstr ""
 "totdat zij alsnog beschikbaar komt...\n"
 
 #: ../src/redshift.c:967
-msgid "Partitial time-configuration not supported!\n"
+msgid "Partial time-configuration not supported!\n"
 msgstr "Gedeeltelijke tijdinstelling wordt niet ondersteund.\n"
 
 #: ../src/redshift.c:975

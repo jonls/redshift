@@ -238,7 +238,7 @@ msgstr ""
 "nincs új adat...\n"
 
 #: ../src/redshift.c:967
-msgid "Partitial time-configuration not supported!\n"
+msgid "Partial time-configuration not supported!\n"
 msgstr "Részleges időbeállítás nem támogatott!\n"
 
 #: ../src/redshift.c:975
