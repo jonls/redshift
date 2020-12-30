@@ -8,4 +8,3 @@ Icon=redshift
 Terminal=false
 Type=Application
 Categories=Utility;
-StartupNotify=true
