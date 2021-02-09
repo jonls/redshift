@@ -172,14 +172,14 @@ lat=55.7
 lon=12.6
 .fi
 .SH HOOKS
-Executables (e.g. scripts) placed in folder \fI~/.config/redshift/hooks\fR
+Executables (e.g. scripts) placed in directory \fI~/.config/redshift/hooks\fR
 will be run when a certain event happens. The first parameter to the
 script indicates the event and further parameters may indicate
 more details about the event. The event \fBperiod-changed\fR is indicated
 when the period changes (\fBnight\fR, \fBdaytime\fR, \fBtransition\fR). The second
 parameter is the old period and the third is the new period. The event
 is also signaled when Redshift starts up with the old period set to
-\fBnone\fR. Any dotfiles in the folder are skipped.
+\fBnone\fR. Any dotfiles in the directory are skipped.
 .PP
 A simple script to handle these events can be written like this:
 .IP
