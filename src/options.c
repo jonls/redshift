@@ -178,6 +178,7 @@ print_help(const char *program_name)
 	   no-wrap */
 	fputs(_("  -b DAY:NIGHT\tScreen brightness to apply (between 0.1 and 1.0)\n"
 		"  -c FILE\tLoad settings from specified configuration file\n"
+		"  -f BOOL\tEnable or disable fullscreen windows bypass\n"
 		"  -g R:G:B\tAdditional gamma correction to apply\n"
 		"  -l LAT:LON\tYour current location\n"
 		"  -l PROVIDER\tSelect provider for automatic"
@@ -323,6 +324,7 @@ options_init(options_t *options)
 	options->preserve_gamma = 1;
 	options->mode = PROGRAM_MODE_CONTINUAL;
 	options->verbose = 0;
+	options->fullscreen_check = 1;
 }
 
 /* Parse a single option from the command-line. */
@@ -344,6 +346,9 @@ parse_command_line_option(
 	case 'c':
 		free(options->config_filepath);
 		options->config_filepath = strdup(value);
+		break;
+	case 'f':
+		options->fullscreen_check = atoi(value);
 		break;
 	case 'g':
 		r = parse_gamma_string(value, options->scheme.day.gamma);
@@ -495,7 +500,7 @@ options_parse_args(
 {
 	const char* program_name = argv[0];
 	int opt;
-	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:pPrt:vVx")) != -1) {
+	while ((opt = getopt(argc, argv, "b:c:f:g:hl:m:oO:pPrt:vVx")) != -1) {
 		char option = opt;
 		int r = parse_command_line_option(
 			option, optarg, options, program_name, gamma_methods,
