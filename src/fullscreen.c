@@ -40,8 +40,10 @@
 #include "fullscreen.h"
 #include "redshift.h"
 
+#ifndef _WIN32
 static Display *display;
 static int screen_width, screen_height;
+#endif
 
 static int
 fullscreen_init()
