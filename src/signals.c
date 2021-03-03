@@ -34,6 +34,7 @@
 
 volatile sig_atomic_t exiting = 0;
 volatile sig_atomic_t disable = 0;
+volatile sig_atomic_t fs_disable = 0;
 
 
 /* Signal handler for exit signals */
@@ -50,10 +51,18 @@ sigdisable(int signo)
 	disable = 1;
 }
 
+/* Signal handler for disabling the fullscreen detector signal */
+static void
+sigfsdisable(int signo)
+{
+	fs_disable = 1;
+}
+
 #else /* ! HAVE_SIGNAL_H || __WIN32__ */
 
 int disable = 0;
 int exiting = 0;
+int fs_disable = 0;
 
 #endif /* ! HAVE_SIGNAL_H || __WIN32__ */
 
@@ -90,6 +99,17 @@ signals_install_handlers(void)
 	sigact.sa_flags = 0;
 
 	r = sigaction(SIGUSR1, &sigact, NULL);
+	if (r < 0) {
+		perror("sigaction");
+		return -1;
+	}
+
+	/* Install signal handler for USR2 signal */
+	sigact.sa_handler = sigfsdisable;
+	sigact.sa_mask = sigset;
+	sigact.sa_flags = 0;
+
+	r = sigaction(SIGUSR2, &sigact, NULL);
 	if (r < 0) {
 		perror("sigaction");
 		return -1;
