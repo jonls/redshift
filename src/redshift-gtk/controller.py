@@ -34,6 +34,7 @@ class RedshiftController(GObject.GObject):
 
     __gsignals__ = {
         'inhibit-changed': (GObject.SIGNAL_RUN_FIRST, None, (bool,)),
+		'fs_bypass_inhibit-changed': (GObject.SIGNAL_RUN_FIRST, None, (bool,)),
         'temperature-changed': (GObject.SIGNAL_RUN_FIRST, None, (int,)),
         'period-changed': (GObject.SIGNAL_RUN_FIRST, None, (str,)),
         'location-changed': (GObject.SIGNAL_RUN_FIRST, None, (float, float)),
@@ -51,6 +52,7 @@ class RedshiftController(GObject.GObject):
 
         # Initialize state variables
         self._inhibited = False
+        self._fs_bypass_inhibited = False
         self._temperature = 0
         self._period = 'Unknown'
         self._location = (0.0, 0.0)
@@ -112,6 +114,11 @@ class RedshiftController(GObject.GObject):
     def inhibited(self):
         """Current inhibition state."""
         return self._inhibited
+    
+    @property
+    def fs_bypass_inhibited(self):
+        """Current fullscreen bypass inhibition state."""
+        return self._fs_bypass_inhibited
 
     @property
     def temperature(self):
@@ -133,6 +140,11 @@ class RedshiftController(GObject.GObject):
         if inhibit != self._inhibited:
             self._child_toggle_inhibit()
 
+    def set_fs_bypass_inhibit(self, fs_bypass_inhibit):
+        """Set inhibition state."""
+        if fs_bypass_inhibit != self._fs_bypass_inhibited:
+            self._child_toggle_fs_bypass_inhibit()
+
     def _child_signal(self, sg):
         """Send signal to child process."""
         os.kill(self._process[0], sg)
@@ -140,6 +152,10 @@ class RedshiftController(GObject.GObject):
     def _child_toggle_inhibit(self):
         """Sends a request to the child process to toggle state."""
         self._child_signal(signal.SIGUSR1)
+
+    def _child_toggle_fs_bypass_inhibit(self):
+        """Sends a request to the child process to toggle fullscreen bypass state."""
+        self._child_signal(signal.SIGUSR2)
 
     def _child_cb(self, pid, status, data=None):
         """Called when the child process exists."""
@@ -175,6 +191,11 @@ class RedshiftController(GObject.GObject):
             if new_inhibited != self._inhibited:
                 self._inhibited = new_inhibited
                 self.emit('inhibit-changed', new_inhibited)
+        elif key == 'Fullscreen bypass':
+            new_fs_bypass_inhibited = value != 'Enabled'
+            if new_fs_bypass_inhibited != self._fs_bypass_inhibited:
+                self._fs_bypass_inhibited = new_fs_bypass_inhibited
+                self.emit('fs_bypass_inhibit-changed', new_fs_bypass_inhibited)
         elif key == 'Color temperature':
             new_temperature = int(value.rstrip('K'), 10)
             if new_temperature != self._temperature:

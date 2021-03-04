@@ -672,9 +672,9 @@ run_continual_mode(const location_provider_t *provider,
 	int prev_disabled = 1;
 	int disabled = 0;
 	int location_available = 1;
-	int prev_fullscreen = 0;
+	int prev_fs_bypass_disabled = 1;
+	int fs_bypass_disabled = 0;
 	int is_fullscreen = 0;
-	int fs_disabled = 0;
 	while (1) {
 		/* Check to see if disable signal was caught */
 		if (disable && !done) {
@@ -683,9 +683,9 @@ run_continual_mode(const location_provider_t *provider,
 		}
 
 		/* Check to see if fs_disable signal was caught */
-		if (fs_disable && !done){
-			fs_disabled = !fs_disabled;
-			fs_disable = 0;
+		if (fs_bypass_disable && !done){
+			fs_bypass_disabled = !fs_bypass_disabled;
+			fs_bypass_disable = 0;
 		}
 
 		/* Check to see if exit signal was caught */
@@ -700,20 +700,26 @@ run_continual_mode(const location_provider_t *provider,
 			exiting = 0;
 		}
 
-		if (fullscreen_check && fullscreen.check() && !done && !fs_disabled) {
+		if (fullscreen.check() && !done && !fs_bypass_disabled) {
 			is_fullscreen = 1;
 		} else {
 			is_fullscreen = 0;
 		}
 
 		/* Print status change */
-		if (verbose && ((disabled || is_fullscreen) != (prev_disabled || prev_fullscreen))) {
-			printf(_("Status: %s\n"), (disabled || is_fullscreen) ?
+		if (verbose && disabled != prev_disabled) {
+			printf(_("Status: %s\n"), disabled ?
+			       _("Disabled") : _("Enabled"));
+		}
+
+		/* Print fullscreen bypass enable/disable change */
+		if (verbose && fs_bypass_disabled != prev_fs_bypass_disabled) {
+			printf(_("Fullscreen bypass: %s\n"), fs_bypass_disabled ?
 			       _("Disabled") : _("Enabled"));
 		}
 
 		prev_disabled = disabled;
-		prev_fullscreen = is_fullscreen;
+		prev_fs_bypass_disabled = fs_bypass_disabled;
 
 		/* Read timestamp */
 		double now;
