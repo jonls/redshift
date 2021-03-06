@@ -42,24 +42,17 @@
 
 #ifndef _WIN32
 static Display *display;
-static int screen_width, screen_height;
 #endif
 
 static int
 fullscreen_init()
 {
 #ifndef _WIN32
-	screen_height = -1;
-	screen_width = -1;
 	display = XOpenDisplay(NULL);
 	if (display == NULL) {
 		fprintf(stderr, _("X request failed: %s\n"), "XOpenDisplay");
 		return -1;
 	}
-
-	int screen = DefaultScreen(display);
-	screen_width = DisplayWidth(display, screen);
-	screen_height = DisplayHeight(display, screen);
 #endif
 
 	return 0;
@@ -71,15 +64,19 @@ fullscreen_check()
 #ifndef _WIN32
 	Window window;
 	int revert_to = RevertToParent;
-	int result = XGetInputFocus(display, &window, &revert_to);
+	int result = XGetInputFocus(display, &window, &revert_to);	
 
 	int win_x, win_y, win_w, win_h, win_b, win_d;
-	if(result) {
+	int scr_x, scr_y, scr_w, scr_h, scr_b, scr_d;
+	if (result) {
 		Window rootWindow;
 		result = XGetGeometry(display, window, &rootWindow, &win_x, &win_y, &win_w, &win_h, &win_b, &win_d);
+		if (rootWindow) {
+			result = XGetGeometry(display, rootWindow, &rootWindow, &scr_x, &scr_y, &scr_w, &scr_h, &scr_b, &scr_d);
+		}
 	}
 
-	if (result && win_w == screen_width && win_h == screen_height) {
+	if (result && win_w == scr_w && win_h == scr_h) {
 		return 1;
 	} else {
 #endif
