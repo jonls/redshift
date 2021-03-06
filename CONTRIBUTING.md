@@ -50,9 +50,10 @@ Dependencies
 
 * autotools, gettext
 * intltool, libtool
+* libX11
 * libdrm (Optional, for DRM support)
 * libxcb, libxcb-randr (Optional, for RandR support)
-* libX11, libXxf86vm (Optional, for VidMode support)
+* libXxf86vm (Optional, for VidMode support)
 * Glib 2 (Optional, for GeoClue2 support)
 
 * python3, pygobject, pyxdg (Optional, for GUI support)

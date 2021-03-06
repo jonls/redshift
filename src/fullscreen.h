@@ -1,4 +1,4 @@
-/* signals.h -- Signal processing header
+/* fullscreen.h -- Fullscreen detector header
    This file is part of Redshift.
 
    Redshift is free software: you can redistribute it and/or modify
@@ -14,27 +14,15 @@
    You should have received a copy of the GNU General Public License
    along with Redshift.  If not, see <http://www.gnu.org/licenses/>.
 
-   Copyright (c) 2009-2015  Jon Lund Steffensen <jonlst@gmail.com>
-   Copyright (c) 2015  Mattias Andrée <maandree@member.fsf.org>
+   Copyright (c) 2021  Angelo Elias Dalzotto <angelodalzotto97@gmail.com>
 */
-#ifndef REDSHIFT_SIGNALS_H
-#define REDSHIFT_SIGNALS_H
 
+#ifndef REDSHIFT_FULLSCREEN_H
+#define REDSHIFT_FULLSCREEN_H
 
-#if defined(HAVE_SIGNAL_H) && !defined(__WIN32__)
+#include "redshift.h"
 
-extern volatile sig_atomic_t exiting;
-extern volatile sig_atomic_t disable;
-extern volatile sig_atomic_t fs_bypass_disable;
+extern const fullscreen_t fullscreen;
 
-#else /* ! HAVE_SIGNAL_H || __WIN32__ */
-extern int exiting;
-extern int disable;
-extern int fs_bypass_disable;
-#endif /* ! HAVE_SIGNAL_H || __WIN32__ */
+#endif /* ! REDSHIFT_FULLSCREEN_H */
 
-
-int signals_install_handlers(void);
-
-
-#endif /* REDSHIFT_SIGNALS_H */

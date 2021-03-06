@@ -150,4 +150,18 @@ typedef struct {
 } location_provider_t;
 
 
+/* Fullscreen detector */
+typedef int fullscreen_init_func();
+typedef int fullscreen_check_func();
+
+typedef struct {
+	char *name;
+
+	/* Initialize display. */
+	fullscreen_init_func *init;
+
+	/* Check if active window is fullscreen. */
+	fullscreen_check_func *check;
+} fullscreen_t;
+
 #endif /* ! REDSHIFT_REDSHIFT_H */

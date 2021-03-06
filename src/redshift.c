@@ -66,6 +66,7 @@ int poll(struct pollfd *fds, int nfds, int timeout) { abort(); return -1; }
 #include "hooks.h"
 #include "signals.h"
 #include "options.h"
+#include "fullscreen.h"
 
 /* pause() is not defined on windows platform but is not needed either.
    Use a noop macro instead. */
@@ -608,7 +609,7 @@ run_continual_mode(const location_provider_t *provider,
 		   const transition_scheme_t *scheme,
 		   const gamma_method_t *method,
 		   gamma_state_t *method_state,
-		   int use_fade, int preserve_gamma, int verbose)
+		   int use_fade, int preserve_gamma, int fullscreen_check, int verbose)
 {
 	int r;
 
@@ -662,16 +663,29 @@ run_continual_mode(const location_provider_t *provider,
 		printf(_("Brightness: %.2f\n"), interp.brightness);
 	}
 
+	if (fullscreen_check) {
+		fullscreen.init();
+	}
+
 	/* Continuously adjust color temperature */
 	int done = 0;
 	int prev_disabled = 1;
 	int disabled = 0;
 	int location_available = 1;
+	int prev_fs_bypass_disabled = 1;
+	int fs_bypass_disabled = 0;
+	int is_fullscreen = 0;
 	while (1) {
 		/* Check to see if disable signal was caught */
 		if (disable && !done) {
 			disabled = !disabled;
 			disable = 0;
+		}
+
+		/* Check to see if fs_disable signal was caught */
+		if (fs_bypass_disable && !done){
+			fs_bypass_disabled = !fs_bypass_disabled;
+			fs_bypass_disable = 0;
 		}
 
 		/* Check to see if exit signal was caught */
@@ -686,13 +700,26 @@ run_continual_mode(const location_provider_t *provider,
 			exiting = 0;
 		}
 
+		if (fullscreen.check() && !done && !fs_bypass_disabled) {
+			is_fullscreen = 1;
+		} else {
+			is_fullscreen = 0;
+		}
+
 		/* Print status change */
 		if (verbose && disabled != prev_disabled) {
 			printf(_("Status: %s\n"), disabled ?
 			       _("Disabled") : _("Enabled"));
 		}
 
+		/* Print fullscreen bypass enable/disable change */
+		if (verbose && fs_bypass_disabled != prev_fs_bypass_disabled) {
+			printf(_("Fullscreen bypass: %s\n"), fs_bypass_disabled ?
+			       _("Disabled") : _("Enabled"));
+		}
+
 		prev_disabled = disabled;
+		prev_fs_bypass_disabled = fs_bypass_disabled;
 
 		/* Read timestamp */
 		double now;
@@ -727,7 +754,7 @@ run_continual_mode(const location_provider_t *provider,
 		interpolate_transition_scheme(
 			scheme, transition_prog, &target_interp);
 
-		if (disabled) {
+		if (disabled || is_fullscreen) {
 			period = PERIOD_NONE;
 			color_setting_reset(&target_interp);
 		}
@@ -1308,6 +1335,7 @@ main(int argc, char *argv[])
 			options.provider, location_state, scheme,
 			options.method, method_state,
 			options.use_fade, options.preserve_gamma,
+			options.fullscreen_check,
 			options.verbose);
 		if (r < 0) exit(EXIT_FAILURE);
 	}

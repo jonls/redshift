@@ -29,6 +29,7 @@ typedef struct {
 	transition_scheme_t scheme;
 	program_mode_t mode;
 	int verbose;
+	int fullscreen_check;
 
 	/* Temperature to set in manual mode. */
 	int temp_set;

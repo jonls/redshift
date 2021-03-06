@@ -93,6 +93,13 @@ class RedshiftStatusIcon(object):
         suspend_menu_item.set_submenu(suspend_menu)
         self.status_menu.append(suspend_menu_item)
 
+        # Add fullscreen bypass toggle
+        self.fs_bypass_toggle_item = Gtk.CheckMenuItem.new_with_label(
+            _('Fullscreen bypass'))
+        self.fs_bypass_toggle_item.connect(
+            'activate', self.fs_bypass_toggle_item_cb)
+        self.status_menu.append(self.fs_bypass_toggle_item)
+
         # Add autostart option
         if utils.supports_autostart():
             autostart_item = Gtk.CheckMenuItem.new_with_label(_('Autostart'))
@@ -157,6 +164,8 @@ class RedshiftStatusIcon(object):
 
         # Setup signals to property changes
         self._controller.connect('inhibit-changed', self.inhibit_change_cb)
+        self._controller.connect(
+            'fs_bypass_inhibit-changed', self.fs_bypass_inhibit_change_cb)
         self._controller.connect('period-changed', self.period_change_cb)
         self._controller.connect(
             'temperature-changed', self.temperature_change_cb)
@@ -167,6 +176,7 @@ class RedshiftStatusIcon(object):
 
         # Set info box text
         self.change_inhibited(self._controller.inhibited)
+        self.change_fs_bypass_inhibited(self._controller.fs_bypass_inhibited)
         self.change_period(self._controller.period)
         self.change_temperature(self._controller.temperature)
         self.change_location(self._controller.location)
@@ -235,6 +245,17 @@ class RedshiftStatusIcon(object):
             self.remove_suspend_timer()
             self._controller.set_inhibit(not self._controller.inhibited)
 
+    def fs_bypass_toggle_item_cb(self, widget, data=None):
+        """Callback when a request to toggle fullscreen bypass was made.
+
+        This ensures that the state of redshift is synchronised with
+        the toggle state of the widget (e.g. Gtk.CheckMenuItem).
+        """
+        active = not self._controller.fs_bypass_inhibited
+        if active != widget.get_active():
+            self._controller.set_fs_bypass_inhibit(
+                not self._controller.fs_bypass_inhibited)
+
     # Info dialog callbacks
     def show_info_cb(self, widget, data=None):
         """Callback when the info dialog should be presented."""
@@ -276,6 +297,10 @@ class RedshiftStatusIcon(object):
         """Callback when controller changes inhibition status."""
         self.change_inhibited(inhibit)
 
+    def fs_bypass_inhibit_change_cb(self, controller, fs_bypass_inhibit):
+        """Callback when controller changes inhibition status."""
+        self.change_fs_bypass_inhibited(fs_bypass_inhibit)
+
     def period_change_cb(self, controller, period):
         """Callback when controller changes period."""
         self.change_period(period)
@@ -312,6 +337,13 @@ class RedshiftStatusIcon(object):
         self.status_label.set_markup(
             _('<b>Status:</b> {}').format(
                 _('Disabled') if inhibited else _('Enabled')))
+
+    def change_fs_bypass_inhibited(self, fs_bypass_inhibited):
+        """Change interface to new fullscreen bypass inhibition status."""
+        self.fs_bypass_toggle_item.set_active(not fs_bypass_inhibited)
+        self.status_label.set_markup(
+            _('<b>Fullscreen Bypass:</b> {}').format(
+                _('Disabled') if fs_bypass_inhibited else _('Enabled')))
 
     def change_temperature(self, temperature):
         """Change interface to new temperature."""

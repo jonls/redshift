@@ -19,7 +19,8 @@ redshift_SOURCES = \
 	redshift.c redshift.h \
 	signals.c signals.h \
 	solar.c solar.h \
-	systemtime.c systemtime.h
+	systemtime.c systemtime.h \
+	fullscreen.c fullscreen.h
 
 EXTRA_redshift_SOURCES = \
 	gamma-drm.c gamma-drm.h \
