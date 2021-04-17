@@ -24,6 +24,8 @@ msgid ""
 "surroundings. This may help your eyes hurt less if you are working in front "
 "of the screen at night."
 msgstr ""
+"Redshift-ek zure pantailaren kolorearen tenperatura zure ingurunera egokitzen du"
+"Honek begien nekea aritzen laguntzen du pantailaren aurrean gauez aritzen bazara."
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:2
 msgid ""
@@ -32,49 +34,56 @@ msgid ""
 "and early morning, the color temperature transitions smoothly from night to "
 "daytime temperature to allow your eyes to slowly adapt."
 msgstr ""
+"Kolorearen tenperatura eguzkiaren kokapenaren arabera ezartzen da. Egunerako "
+"tenperatura bat eta gauerako beste bat. Bai iluntzean zein egunsentian kolorearen "
+"tenperatura poliki aldatzen da egunekitik gauekora eta alderantziz, zure begiek "
+"progresiboki adapta daitezen."
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:3
 msgid ""
 "This program provides a status icon that allows the user to control Redshift."
 msgstr ""
+"Programa honi lotuta egoera-ikono bat duzu panelean. Haren bidez kontrola dezakezu "
+"Redshift."
 
 #: ../data/appdata/redshift-gtk.appdata.xml.in.h:4
 msgid ""
 "The Redshift information window overlaid with an example of the redness "
 "effect"
 msgstr ""
+"Redshift-en informazio leihoak gorritze efektuaren adibideak eskaintzen dizkizu."
 
 #: ../data/applications/redshift.desktop.in.h:1
 #: ../data/applications/redshift-gtk.desktop.in.h:1
 msgid "Redshift"
-msgstr ""
+msgstr "Redshift"
 
 #: ../data/applications/redshift.desktop.in.h:2
 #: ../data/applications/redshift-gtk.desktop.in.h:2
 msgid "Color temperature adjustment"
-msgstr ""
+msgstr "Kolore-tenperaturaren doitzea"
 
 #: ../data/applications/redshift.desktop.in.h:3
 #: ../data/applications/redshift-gtk.desktop.in.h:3
 msgid "Color temperature adjustment tool"
-msgstr ""
+msgstr "Kolore-tenperatura doitzeko tresna"
 
 #. TRANSLATORS: Name printed when period of day is unknown
 #: ../src/redshift.c:135
 msgid "None"
-msgstr ""
+msgstr "Ezezaguna"
 
 #: ../src/redshift.c:136 ../src/redshift.c:1107
 msgid "Daytime"
-msgstr ""
+msgstr "Eguna"
 
 #: ../src/redshift.c:137 ../src/redshift.c:1111
 msgid "Night"
-msgstr ""
+msgstr "Gaua"
 
 #: ../src/redshift.c:138
 msgid "Transition"
-msgstr ""
+msgstr "Trantsizioa"
 
 #: ../src/redshift.c:225
 #, c-format
@@ -84,27 +93,27 @@ msgstr ""
 #: ../src/redshift.c:228
 #, c-format
 msgid "Period: %s (%.2f%% day)\n"
-msgstr ""
+msgstr "Tartea: %s (%.2f%% eguna)\n "
 
 #. TRANSLATORS: Abbreviation for `north'
 #: ../src/redshift.c:240
 msgid "N"
-msgstr ""
+msgstr "I"
 
 #. TRANSLATORS: Abbreviation for `south'
 #: ../src/redshift.c:242
 msgid "S"
-msgstr ""
+msgstr "H"
 
 #. TRANSLATORS: Abbreviation for `east'
 #: ../src/redshift.c:244
 msgid "E"
-msgstr ""
+msgstr "E"
 
 #. TRANSLATORS: Abbreviation for `west'
 #: ../src/redshift.c:246
 msgid "W"
-msgstr ""
+msgstr "M"
 
 #. TRANSLATORS: Append degree symbols after %f if possible.
 #. The string following each number is an abreviation for
@@ -112,7 +121,7 @@ msgstr ""
 #: ../src/redshift.c:251
 #, c-format
 msgid "Location: %.2f %s, %.2f %s\n"
-msgstr ""
+msgstr "Kokapena: %.2f %s, %.2f %s\n"
 
 #: ../src/redshift.c:325 ../src/redshift.c:416
 #, c-format
@@ -136,7 +145,7 @@ msgstr "Idatzi `-l %s:help' informazio gehiagorako.\n"
 #: ../src/redshift.c:373 ../src/redshift.c:453
 #, c-format
 msgid "Failed to parse option `%s'.\n"
-msgstr ""
+msgstr "Ezin izan da `%s' aukera aztertu.\n"
 
 #: ../src/redshift.c:400
 #, c-format
@@ -178,7 +187,7 @@ msgstr "Ezin izan da sistemaren ordua irakurri.\n"
 
 #: ../src/redshift.c:635
 msgid "Waiting for initial location to become available...\n"
-msgstr ""
+msgstr "Hasierako kokapenaren zain...\n"
 
 #: ../src/redshift.c:641 ../src/redshift.c:832 ../src/redshift.c:847
 #: ../src/redshift.c:1172
@@ -187,7 +196,7 @@ msgstr "Ezin izan da hornitzailearengandik kokapenik lortu.\n"
 
 #: ../src/redshift.c:647 ../src/redshift.c:871
 msgid "Invalid location returned from provider.\n"
-msgstr ""
+msgstr "Hornitzaileak emandako kokapena ez da baliozkoa.\n"
 
 #: ../src/redshift.c:656 ../src/redshift.c:788 ../src/redshift.c:1222
 #: ../src/redshift.c:1253
@@ -203,16 +212,16 @@ msgstr "Distira: %.2f\n"
 #: ../src/redshift.c:686
 #, c-format
 msgid "Status: %s\n"
-msgstr ""
+msgstr "Egoera: %s\n"
 
 #: ../src/redshift.c:687 ../src/redshift-gtk/statusicon.py:301
 msgid "Disabled"
-msgstr ""
+msgstr "Desgaituta"
 
 #: ../src/redshift.c:687 ../src/redshift-gtk/statusicon.py:73
 #: ../src/redshift-gtk/statusicon.py:301
 msgid "Enabled"
-msgstr ""
+msgstr "Gaituta"
 
 #: ../src/redshift.c:802 ../src/redshift.c:1233 ../src/redshift.c:1263
 #: ../src/redshift.c:1285
@@ -223,20 +232,21 @@ msgstr "Tenperatura doitzeak huts egin du.\n"
 msgid ""
 "Location is temporarily unavailable; Using previous location until it "
 "becomes available...\n"
-msgstr ""
+msgstr "Kokapena momentuz ez dago erabilgarri; erabili aurreko kokapena "
+"berria erabilgarri egon arte...\n"
 
 #: ../src/redshift.c:967
 msgid "Partitial time-configuration not supported!\n"
-msgstr ""
+msgstr "Orduaren konfigurazio partziala ez da onartzen!\n"
 
 #: ../src/redshift.c:975
 msgid "Invalid dawn/dusk time configuration!\n"
-msgstr ""
+msgstr "Egunsenti/ilunabarreko ordu-ezarpenak ez dira baliozkoak!\n"
 
 #: ../src/redshift.c:1006
 #, c-format
 msgid "Trying location provider `%s'...\n"
-msgstr ""
+msgstr "`%s' kokapen-hornitzailea probatzen...\n"
 
 #: ../src/redshift.c:1011
 msgid "Trying next provider...\n"
@@ -257,17 +267,19 @@ msgid ""
 "High transition elevation cannot be lower than the low transition "
 "elevation.\n"
 msgstr ""
+"Goiko trantsizioaren goratzea ezin da izan beheko trantsizioaren "
+"goratzea baino txikiagoa.\n"
 
 #. TRANSLATORS: Append degree symbols if possible.
 #: ../src/redshift.c:1041
 #, c-format
 msgid "Solar elevations: day above %.1f, night below %.1f\n"
-msgstr ""
+msgstr "Eguzkiaren goratzeak: egunez %.1f-ren gainea, gauez %.1f-ren azpian.\n" 
 
 #: ../src/redshift.c:1049
 #, c-format
 msgid "Temperatures: %dK at day, %dK at night\n"
-msgstr ""
+msgstr "Tenperaturak: %dK egunez, %dK gauez\n"
 
 #: ../src/redshift.c:1060 ../src/redshift.c:1071
 #, c-format
@@ -277,12 +289,12 @@ msgstr "Tenperatura muga hauen barruan egon behar da: %uK eta %uK.\n"
 #: ../src/redshift.c:1083
 #, c-format
 msgid "Brightness values must be between %.1f and %.1f.\n"
-msgstr ""
+msgstr "Distira-balioak hauek barruan egun behar dute: %.1f eta %.1f.\n "
 
 #: ../src/redshift.c:1089
 #, c-format
 msgid "Brightness: %.2f:%.2f\n"
-msgstr ""
+msgstr "Distira: %.2f:%.2f\n"
 
 #: ../src/redshift.c:1098
 #, c-format
@@ -294,7 +306,7 @@ msgstr "Gamma balioa muga hauen barruan egon behar da: %.1f eta %.1f.\n"
 #: ../src/redshift.c:1106 ../src/redshift.c:1110
 #, c-format
 msgid "Gamma (%s): %.3f, %.3f, %.3f\n"
-msgstr ""
+msgstr "Gamma (%s): %.3f, %.3f, %.3f\n"
 
 #: ../src/redshift.c:1139
 msgid "Trying next method...\n"
@@ -311,18 +323,18 @@ msgstr "Ez dago beste metodorik probatzeko.\n"
 
 #: ../src/redshift.c:1165
 msgid "Waiting for current location to become available...\n"
-msgstr ""
+msgstr "Uneko kokapenaren zain...\n"
 
 #. TRANSLATORS: Append degree symbol if
 #. possible.
 #: ../src/redshift.c:1206
 #, c-format
 msgid "Solar elevation: %f\n"
-msgstr "Eguzkiaren gorapen-angelua: %fº\n"
+msgstr "Eguzkiaren goratzea: %f\n"
 
 #: ../src/redshift.c:1244 ../src/redshift.c:1272 ../src/redshift.c:1294
 msgid "Press ctrl-c to stop...\n"
-msgstr ""
+msgstr "Sakatu ctrl-c gelditzeko...\n"
 
 #. TRANSLATORS: help output 1
 #. LAT is latitude, LON is longitude,
@@ -373,6 +385,21 @@ msgid ""
 "  -r\t\tDisable fading between color temperatures\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
+"  -b EGUNA:GAUA Aplikatuko den pantaila-distira (0.1 eta 1.0 bitartekoa)\n"
+"  -c FITXATEGIA\tKargatu zehaztutako ezarpen-fitxategiaren parametroak\n"
+"  -g R:G:B\tAplikatuko den gamma zuzenketa gehigarria\n"
+"  -l LAT:LON\tZure uneko kokapena\n"
+"  -l HORNITZAILEA\tHautatu kokapenen eguneraketa automatikoetarako hornitzailea\n"
+"  \t\t(Idatzi `list' ikusteko hornitzaile erabilgarriak)\n"
+"  -m METODOA\tKolore-tenperatura ezartzeko erabiliko den metodoa\n"
+"  \t\t(Idatzi `list' erabiltzeko dauden metodoak ikusteko)\n"
+"  -o\t\tDoitze metodo bakarra (ez du kolore-tenperatura etengabe doitzen)\n"
+"  -O TEMP\tEskuzko doitze metodo bakarra (kolore-tenperatura ezartzen du)\n"
+"  -p\t\tInprimitzeko modua (parametroak inprimatu eta ateratzen da)\n"
+"  -P\t\tLeheneratu gamma balioak kolore-efektu berria aplikatu aurretik\n"
+"  -x\t\tLeheneratze modua (pantailako ezarpenak kentzen ditu)\n"
+"  -r\t\tDesgaitu kolore-tenperaturen arteko trantsizioak\n"
+"  -t EGUNA:GAUA\tEgunez zein gauez ezarri behar den kolore-tenperatua\n"
 
 #. TRANSLATORS: help output 5
 #: ../src/options.c:201
@@ -384,6 +411,9 @@ msgid ""
 "in\n"
 "more red light.\n"
 msgstr ""
+"Tenperatura neutrala %uK da. Balio hori erabiliz gero pantailaren kolore-\n"
+"tenperatura ez da aldatuko. Kolore-tenperatura altuagoa ezarriz gero, tonoa "
+"urdinagoa izango da eta baxuagoa ezarriz gero gorriagoa.\n"
 
 #. TRANSLATORS: help output 6
 #: ../src/options.c:210
@@ -463,12 +493,12 @@ msgstr "Gaizki eratutako gamma ezarpena.\n"
 #: ../src/options.c:621
 #, c-format
 msgid "Malformed dawn-time setting `%s'.\n"
-msgstr ""
+msgstr "Egunsentiko `%s' paremetroa ez da baliozkoa.\n"
 
 #: ../src/options.c:632
 #, c-format
 msgid "Malformed dusk-time setting `%s'.\n"
-msgstr ""
+msgstr "Ilunabarreko `%s' paremetroa ez da baliozkoa.\n"
 
 #: ../src/options.c:639
 #, c-format
@@ -490,12 +520,12 @@ msgstr "Gaizki eratutako esleipena konfigurazio fitxategian.\n"
 #: ../src/gamma-drm.c:97
 #, c-format
 msgid "Failed to open DRM device: %s\n"
-msgstr ""
+msgstr "DRM zerbitzuak huts egin du: %s\n"
 
 #: ../src/gamma-drm.c:105
 #, c-format
 msgid "Failed to get DRM mode resources\n"
-msgstr ""
+msgstr "DRM moduko baliabideen eskuratzeak huts egin du\n"
 
 #: ../src/gamma-drm.c:115 ../src/gamma-randr.c:384
 #, c-format
@@ -515,7 +545,7 @@ msgstr "0 CRTCa baino ez da existitzen.\n"
 #: ../src/gamma-drm.c:159
 #, c-format
 msgid "CRTC %i lost, skipping\n"
-msgstr ""
+msgstr "CRTC %i galdu da, ezikusi\n"
 
 #: ../src/gamma-drm.c:165
 #, c-format
@@ -523,6 +553,8 @@ msgid ""
 "Could not get gamma ramp size for CRTC %i\n"
 "on graphics card %i, ignoring device.\n"
 msgstr ""
+"Ezin izan da CRTC %i bideo txartelarako gamma-balioa "
+"ezarri. Gailuari ez zaio jaramonik egingo.\n"
 
 #: ../src/gamma-drm.c:178
 #, c-format
@@ -530,10 +562,12 @@ msgid ""
 "DRM could not read gamma ramps on CRTC %i on\n"
 "graphics card %i, ignoring device.\n"
 msgstr ""
+"Ezin izan da CRTC %i bideo txartelaren gamma-balioa "
+"ezarri. Gailuari ez zaio jaramonik egingo.\n"
 
 #: ../src/gamma-drm.c:242
 msgid "Adjust gamma ramps with Direct Rendering Manager.\n"
-msgstr ""
+msgstr "Doitu gamma balioak Direct Rendering Managerraren bidez."
 
 #. TRANSLATORS: DRM help output
 #. left column must not be translated
@@ -542,11 +576,13 @@ msgid ""
 "  card=N\tGraphics card to apply adjustments to\n"
 "  crtc=N\tCRTC to apply adjustments to\n"
 msgstr ""
+"  card=N\tDoitzeak aplikatzeko txartel grafikoa\n"
+"  crtc=N\tDoitzeak aplikatzeko CRTCa\n"
 
 #: ../src/gamma-drm.c:260
 #, c-format
 msgid "CRTC must be a non-negative integer\n"
-msgstr ""
+msgstr "CRTC zenbaki oso ez negatiboa izan behar du"
 
 #: ../src/gamma-drm.c:264 ../src/gamma-randr.c:369 ../src/gamma-vidmode.c:161
 #: ../src/gamma-quartz.c:183 ../src/gamma-w32gdi.c:128 ../src/gamma-dummy.c:67
@@ -593,11 +629,13 @@ msgid ""
 "  screen=N\t\tX screen to apply adjustments to\n"
 "  crtc=N\tList of comma separated CRTCs to apply adjustments to\n"
 msgstr ""
+"  screen=N\t\tdoitzeak aplikatzeko X pantaila\n"
+"  crtc=N\tdoitzeak aplikatzeko koma bidez bereizitako CRTCen zerrenda\n"
 
 #: ../src/gamma-randr.c:328
 #, c-format
 msgid "Unable to read screen number: `%s'.\n"
-msgstr ""
+msgstr "Ezin izan da pantailaren zenbakia irakurri: `%s'.\n"
 
 #: ../src/gamma-randr.c:364 ../src/gamma-vidmode.c:156
 #: ../src/gamma-quartz.c:178 ../src/gamma-w32gdi.c:123
@@ -606,6 +644,8 @@ msgid ""
 "Parameter `%s` is now always on;  Use the `%s` command-line option to "
 "disable.\n"
 msgstr ""
+"`%s` parametroa orain beti dago aktibatuta;  Erabili `%s` lerroko komandoaren "
+"aukera desgaitzeko.\n"
 
 #: ../src/gamma-vidmode.c:61 ../src/gamma-vidmode.c:81
 #: ../src/gamma-vidmode.c:90 ../src/gamma-vidmode.c:117
@@ -622,7 +662,7 @@ msgstr "Doitu gammaren ramp-ak X VidMode hedapenarekin.\n"
 #. left column must not be translated
 #: ../src/gamma-vidmode.c:145
 msgid "  screen=N\t\tX screen to apply adjustments to\n"
-msgstr ""
+msgstr " screen=N\t\tdoikuntzak aplikatzeko X pantaila "
 
 #: ../src/gamma-quartz.c:140 ../src/gamma-w32gdi.c:91
 msgid "Unable to save current gamma ramp.\n"
@@ -630,7 +670,7 @@ msgstr "Ezin izan da uneko gammaren ramp-a gorde.\n"
 
 #: ../src/gamma-quartz.c:170
 msgid "Adjust gamma ramps on macOS using Quartz.\n"
-msgstr ""
+msgstr "Doitu gamma balioak macOSen Quartz-en bidez"
 
 #: ../src/gamma-w32gdi.c:68 ../src/gamma-w32gdi.c:141 ../src/gamma-w32gdi.c:168
 msgid "Unable to open device context.\n"
@@ -654,20 +694,24 @@ msgstr "Ezin izan dira gammaren ramp-ak ezarri.\n"
 
 #: ../src/gamma-dummy.c:43
 msgid ""
-"WARNING: Using dummy gamma method! Display will not be affected by this "
+"WARNING: Gamma mUsing dummy gamma method! Display will not be affected by this "
 "gamma method.\n"
 msgstr ""
+"ABISUA: Fikziozko gamma metodoa erabiltzen ari da! Pantailak ez du metodoaren "
+"ondorioak izango.\n"
 
 #: ../src/gamma-dummy.c:60
 msgid ""
 "Does not affect the display but prints the color temperature to the "
 "terminal.\n"
 msgstr ""
+"Ez du pantailan eragiten baina inprimatzen du kolore-tenperatura "
+"terminalean.\n"
 
 #: ../src/gamma-dummy.c:75
 #, c-format
 msgid "Temperature: %i\n"
-msgstr ""
+msgstr "Tenperatura: %i\n"
 
 #: ../src/location-geoclue2.c:59
 #, c-format
@@ -678,69 +722,73 @@ msgid ""
 "more\n"
 "information.\n"
 msgstr ""
+"Uneko kokapenerako sarbidea ukatu egin zuen GeoClue-k!\n"
+"Ziurtatu kokapen zerbitzuak gaituta daudela eta Redshift-ek kokapen-zerbitzuak\n"
+"erabiltzen ahal dituela. Informazio gehiago hemen: https://github.com/jonls/redshift#faq"
+
 
 #: ../src/location-geoclue2.c:107
 #, c-format
 msgid "Unable to obtain location: %s.\n"
-msgstr ""
+msgstr "Ezin izan da kokapena eskuratu: %s.\n"
 
 #: ../src/location-geoclue2.c:150
 #, c-format
 msgid "Unable to obtain GeoClue Manager: %s.\n"
-msgstr ""
+msgstr "Ezin izan da eskuratu GeoClue Manager: %s.\n"
 
 #: ../src/location-geoclue2.c:166
 #, c-format
 msgid "Unable to obtain GeoClue client path: %s.\n"
-msgstr ""
+msgstr "Ezin izan da eskuratu GeoClue bezeroaren bidea: %s.\n"
 
 #: ../src/location-geoclue2.c:188
 #, c-format
 msgid "Unable to obtain GeoClue Client: %s.\n"
-msgstr ""
+msgstr "Ezin izan da eskuratu GeoClue bezeroa: %s.\n"
 
 #: ../src/location-geoclue2.c:229
 #, c-format
 msgid "Unable to set distance threshold: %s.\n"
-msgstr ""
+msgstr "Ezin izan da ezarri distantzia atalasea: %s.\n"
 
 #: ../src/location-geoclue2.c:253
 #, c-format
 msgid "Unable to start GeoClue client: %s.\n"
-msgstr ""
+msgstr "Ezin izan da abiarazi GeoClue bezeroa: %s.\n"
 
 #: ../src/location-geoclue2.c:365
 msgid "Failed to start GeoClue2 provider!\n"
-msgstr ""
+msgstr "GeoClue2 hornitzaileak huts egin du!\n"
 
 #: ../src/location-geoclue2.c:399
 msgid "Use the location as discovered by a GeoClue2 provider.\n"
-msgstr ""
+msgstr "Erabili GeoClue2 hornitzaileak bilatutako kokapena.\n"
 
 #: ../src/location-corelocation.m:73
 msgid "Not authorized to obtain location from CoreLocation.\n"
-msgstr ""
+msgstr "CoreLocation-en bidezko kokapena eskuratzeko baimenik ez.\n"
 
 #: ../src/location-corelocation.m:111
 #, c-format
 msgid "Error obtaining location from CoreLocation: %s\n"
-msgstr ""
+msgstr "CoreLocation-en bidez kokapena eskuratzeak huts egin du: %s\n"
 
 #: ../src/location-corelocation.m:120
 msgid "Waiting for authorization to obtain location...\n"
-msgstr ""
+msgstr "Kokapena eskuratzeko baimenaren zain...\n"
 
 #: ../src/location-corelocation.m:122
 msgid "Request for location was not authorized!\n"
-msgstr ""
+msgstr "Kokapen eskaerak ez du baimenik lortu!\n"
 
 #: ../src/location-corelocation.m:203
 msgid "Failed to start CoreLocation provider!\n"
-msgstr ""
+msgstr "CoreLocation hornitzaileak huts egin du!\n"
 
 #: ../src/location-corelocation.m:235
 msgid "Use the location as discovered by the Corelocation provider.\n"
-msgstr ""
+msgstr "Erabili CoreLocation hornitzaileak bilatutako kokapena.\n"
 
 #: ../src/location-manual.c:59
 msgid "Latitude and longitude must be set.\n"
@@ -765,6 +813,8 @@ msgid ""
 "Both values are expected to be floating point numbers,\n"
 "negative values representing west / south, respectively.\n"
 msgstr ""
+"Espero diren zenbaki bien balioak koma flotagarriko zenbakiak dira,\n"
+"zenbaki negatiboek mendebala / hegoa adierazten dute, hurrenez hurren.\n"
 
 #: ../src/location-manual.c:97
 msgid "Malformed argument.\n"
@@ -772,19 +822,19 @@ msgstr "Gaizki eratutako argumentua.\n"
 
 #: ../src/redshift-gtk/statusicon.py:78
 msgid "Suspend for"
-msgstr ""
+msgstr "Pausatu"
 
 #: ../src/redshift-gtk/statusicon.py:80
 msgid "30 minutes"
-msgstr ""
+msgstr "30 minutuz"
 
 #: ../src/redshift-gtk/statusicon.py:81
 msgid "1 hour"
-msgstr ""
+msgstr "ordu 1"
 
 #: ../src/redshift-gtk/statusicon.py:82
 msgid "2 hours"
-msgstr ""
+msgstr "2 ordu"
 
 #: ../src/redshift-gtk/statusicon.py:91
 msgid "Autostart"
@@ -792,32 +842,32 @@ msgstr "Autoabiarazi"
 
 #: ../src/redshift-gtk/statusicon.py:103 ../src/redshift-gtk/statusicon.py:113
 msgid "Info"
-msgstr ""
+msgstr "Informazioa"
 
 #: ../src/redshift-gtk/statusicon.py:108
 msgid "Quit"
-msgstr ""
+msgstr "Irten"
 
 #: ../src/redshift-gtk/statusicon.py:146
 msgid "Close"
-msgstr ""
+msgstr "Itxi"
 
 #: ../src/redshift-gtk/statusicon.py:300
 msgid "<b>Status:</b> {}"
-msgstr ""
+msgstr "<b>Egoera:</b> {}"
 
 #: ../src/redshift-gtk/statusicon.py:306 ../src/redshift-gtk/statusicon.py:324
 msgid "Color temperature"
-msgstr ""
+msgstr "Kolore-tenperatura"
 
 #: ../src/redshift-gtk/statusicon.py:312 ../src/redshift-gtk/statusicon.py:325
 msgid "Period"
-msgstr ""
+msgstr "Tartea"
 
 #: ../src/redshift-gtk/statusicon.py:318
 msgid "Location"
-msgstr ""
+msgstr "Kokapena"
 
 #: ../src/redshift-gtk/statusicon.py:349
 msgid "Please run `redshift -h` for help output."
-msgstr ""
+msgstr "Erabili `redshift -h` laguntza ikusteko."
