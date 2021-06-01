@@ -1,7 +1,7 @@
 ; Global settings for redshift
 [redshift]
 ; Set the day and night screen temperatures
-temp-day=5700
+temp-day=6500
 temp-night=3500
 
 ; Disable the smooth fade between temperatures when Redshift starts and stops.
