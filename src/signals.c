@@ -84,6 +84,12 @@ signals_install_handlers(void)
 		return -1;
 	}
 
+	r = sigaction(SIGQUIT, &sigact, NULL);
+	if (r < 0) {
+		perror("sigaction");
+		return -1;
+	}
+
 	/* Install signal handler for USR1 signal */
 	sigact.sa_handler = sigdisable;
 	sigact.sa_mask = sigset;
