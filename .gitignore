@@ -139,3 +139,6 @@ m4/lt~obsolete.m4
 /po/.intltool-merge-cache
 /src/.deps/*.Po
 /src/.deps/*.Plo
+
+# IntelliJ IDE folder
+.idea/
