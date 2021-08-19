@@ -73,6 +73,7 @@ autom4te.cache
 /compile
 /config.guess
 /config.h.in
+/config.h
 /config.log
 /config.status
 /config.sub
@@ -86,6 +87,7 @@ autom4te.cache
 # https://www.gnu.org/software/libtool/
 
 /ltmain.sh
+/libtool
 
 # http://www.gnu.org/software/texinfo
 
@@ -110,9 +112,12 @@ m4/lt~obsolete.m4
 /data/applications/redshift-gtk.desktop
 /data/systemd/redshift.service
 /data/systemd/redshift-gtk.service
+/Makefile
 /m4
+/src/Makefile
 /src/redshift
 /src/redshift-gtk/defs.py
+/src/redshift-gtk/Makefile
 /src/redshift-gtk/redshift-gtk
 /src/redshift-gtk/__pycache__/
 
@@ -130,3 +135,10 @@ m4/lt~obsolete.m4
 /po/insert-header.sin
 /po/quot.sed
 /po/remove-potcdate.sin
+/po/Makefile
+/po/.intltool-merge-cache
+/src/.deps/*.Po
+/src/.deps/*.Plo
+
+# IntelliJ IDE folder
+.idea/
