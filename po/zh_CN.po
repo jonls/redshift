@@ -178,7 +178,7 @@ msgstr "无法读取系统时间。\n"
 
 #: ../src/redshift.c:635
 msgid "Waiting for initial location to become available...\n"
-msgstr "正在等待初始位置可用..."
+msgstr "正在等待初始位置可用...\n"
 
 #: ../src/redshift.c:641 ../src/redshift.c:832 ../src/redshift.c:847
 #: ../src/redshift.c:1172
@@ -223,7 +223,7 @@ msgstr "色温调节失败。\n"
 msgid ""
 "Location is temporarily unavailable; Using previous location until it "
 "becomes available...\n"
-msgstr "变得可用..."
+msgstr "变得可用...\n"
 
 #: ../src/redshift.c:967
 msgid "Partitial time-configuration not supported!\n"
@@ -642,7 +642,7 @@ msgstr "使用 X VidMode 扩展调整伽马斜面。\n"
 #. left column must not be translated
 #: ../src/gamma-vidmode.c:145
 msgid "  screen=N\t\tX screen to apply adjustments to\n"
-msgstr "  screen=N\t\tX 应用调整的屏幕"
+msgstr "  screen=N\t\tX 应用调整的屏幕\n"
 
 #: ../src/gamma-quartz.c:140 ../src/gamma-w32gdi.c:91
 msgid "Unable to save current gamma ramp.\n"
@@ -760,7 +760,7 @@ msgstr "位置请求还未授权！\n"
 
 #: ../src/location-corelocation.m:203
 msgid "Failed to start CoreLocation provider!\n"
-msgstr "无法启动 CoreLocation 提供程序！"
+msgstr "无法启动 CoreLocation 提供程序！\n"
 
 #: ../src/location-corelocation.m:235
 msgid "Use the location as discovered by the Corelocation provider.\n"
