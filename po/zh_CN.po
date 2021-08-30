@@ -700,7 +700,7 @@ msgid ""
 msgstr "GeoClue 拒绝访问当前位置！\n"
 "确保已启用位置服务并允许 Redshift\n"
 "使用定位服务。 有关更多信息，请参阅 https://github.com/jonls/redshift#faq\n"
-信息。\n
+"信息。\n"
 
 #: ../src/location-geoclue2.c:107
 #, c-format
