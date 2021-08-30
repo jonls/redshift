@@ -65,7 +65,7 @@ Coding style for C code
 -----------------------
 
 Redshift follows roughly the Linux coding style
-<http://www.kernel.org/doc/Documentation/CodingStyle>. Some specific rules to
+<https://www.kernel.org/doc/html/v4.10/process/coding-style.html>. Some specific rules to
 note are:
 
 * Lines should not be longer than 80 characters in new code. If lines are
