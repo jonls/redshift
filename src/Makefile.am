@@ -19,7 +19,8 @@ redshift_SOURCES = \
 	redshift.c redshift.h \
 	signals.c signals.h \
 	solar.c solar.h \
-	systemtime.c systemtime.h
+	systemtime.c systemtime.h \
+	elektra/redshift-conf.c elektra/redshift-conf.h
 
 EXTRA_redshift_SOURCES = \
 	gamma-drm.c gamma-drm.h \
@@ -79,6 +80,12 @@ AM_CFLAGS += \
 redshift_LDADD += \
 	$(GEOCLUE2_LIBS) $(GEOCLUE2_CFLAGS)
 endif
+
+AM_CFLAGS += \
+	$(ELEKTRA_CFLAGS)
+redshift_LDADD += \
+	$(ELEKTRA_LIBS) $(ELEKTRA_CFLAGS)
+
 
 # Build CoreLocation module as a separate convenience
 # library since it is using a separate compiler

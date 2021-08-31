@@ -22,6 +22,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <elektra.h>
 
 /* The color temperature when no adjustment is applied. */
 #define NEUTRAL_TEMP  6500
