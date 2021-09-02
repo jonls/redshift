@@ -66,10 +66,9 @@ gamma_dummy_print_help(FILE *f)
 }
 
 static int
-gamma_dummy_set_option(void *state, const char *key, const char *value)
+gamma_dummy_set_option(void *state, const char *key, const unsigned short value)
 {
-	fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
-	return -1;
+	return 0;
 }
 
 static int

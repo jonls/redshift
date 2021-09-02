@@ -60,6 +60,7 @@ int poll(struct pollfd *fds, int nfds, int timeout) { abort(); return -1; }
 #endif
 
 #include "redshift.h"
+#include "elektra/redshift-conf.h"
 #include "config-ini.h"
 #include "solar.h"
 #include "systemtime.h"
@@ -320,8 +321,7 @@ color_setting_reset(color_setting_t *color)
 
 static int
 provider_try_start(const location_provider_t *provider,
-		   location_state_t **state, config_ini_state_t *config,
-		   char *args)
+		   location_state_t **state, options_t *options_state)
 {
 	int r;
 
@@ -332,73 +332,20 @@ provider_try_start(const location_provider_t *provider,
 		return -1;
 	}
 
-	/* Set provider options from config file. */
-	config_ini_section_t *section =
-		config_ini_get_section(config, provider->name);
-	if (section != NULL) {
-		config_ini_setting_t *setting = section->settings;
-		while (setting != NULL) {
-			r = provider->set_option(*state, setting->name,
-						 setting->value);
-			if (r < 0) {
-				provider->free(*state);
-				fprintf(stderr, _("Failed to set %s"
-						  " option.\n"),
-					provider->name);
-				/* TRANSLATORS: `help' must not be
-				   translated. */
-				fprintf(stderr, _("Try `-l %s:help' for more"
-						  " information.\n"),
-					provider->name);
-				return -1;
-			}
-			setting = setting->next;
-		}
-	}
-
-	/* Set provider options from command line. */
-	const char *manual_keys[] = { "lat", "lon" };
-	int i = 0;
-	while (args != NULL) {
-		char *next_arg = strchr(args, ':');
-		if (next_arg != NULL) *(next_arg++) = '\0';
-
-		const char *key = args;
-		char *value = strchr(args, '=');
-		if (value == NULL) {
-			/* The options for the "manual" method can be set
-			   without keys on the command line for convencience
-			   and for backwards compatability. We add the proper
-			   keys here before calling set_option(). */
-			if (strcmp(provider->name, "manual") == 0 &&
-			    i < sizeof(manual_keys)/sizeof(manual_keys[0])) {
-				key = manual_keys[i];
-				value = args;
-			} else {
-				fprintf(stderr, _("Failed to parse option `%s'.\n"),
-					args);
-				return -1;
-			}
-		} else {
-			*(value++) = '\0';
-		}
-
-		r = provider->set_option(*state, key, value);
-		if (r < 0) {
-			provider->free(*state);
-			fprintf(stderr, _("Failed to set %s option.\n"),
-				provider->name);
-			/* TRANSLATORS: `help' must not be translated. */
-			fprintf(stderr, _("Try `-l %s:help' for more"
-					  " information.\n"), provider->name);
-			return -1;
-		}
-
-		args = next_arg;
-		i += 1;
-	}
-
-	/* Start provider. */
+    if (strcmp(provider->name, "manual") == 0) {
+        int r1 = provider->set_option(*state, "lat", &options_state->provider_manual_arg_lat);
+        int r2 = provider->set_option(*state, "lon", &options_state->provider_manual_arg_lon);
+        if (r1 < 0 || r2 < 0) {
+            provider->free(*state);
+            fprintf(stderr, _("Failed to set %s option.\n"),
+                    provider->name);
+            /* TRANSLATORS: `help' and `--help-providers' must not be translated. */
+            fprintf(stderr, _("Try `--help' and `--help-providers' for more"
+                              " information.\n"));
+            return -1;
+        }
+    }
+    /* Start provider. */
 	r = provider->start(*state);
 	if (r < 0) {
 		provider->free(*state);
@@ -412,7 +359,7 @@ provider_try_start(const location_provider_t *provider,
 
 static int
 method_try_start(const gamma_method_t *method,
-		 gamma_state_t **state, config_ini_state_t *config, char *args)
+		 gamma_state_t **state, options_t *options)
 {
 	int r;
 
@@ -423,58 +370,20 @@ method_try_start(const gamma_method_t *method,
 		return -1;
 	}
 
-	/* Set method options from config file. */
-	config_ini_section_t *section =
-		config_ini_get_section(config, method->name);
-	if (section != NULL) {
-		config_ini_setting_t *setting = section->settings;
-		while (setting != NULL) {
-			r = method->set_option(
-				*state, setting->name, setting->value);
-			if (r < 0) {
-				method->free(*state);
-				fprintf(stderr, _("Failed to set %s"
-						  " option.\n"),
-					method->name);
-				/* TRANSLATORS: `help' must not be
-				   translated. */
-				fprintf(stderr, _("Try `-m %s:help' for more"
-						  " information.\n"),
-					method->name);
-				return -1;
-			}
-			setting = setting->next;
-		}
-	}
-
-	/* Set method options from command line. */
-	while (args != NULL) {
-		char *next_arg = strchr(args, ':');
-		if (next_arg != NULL) *(next_arg++) = '\0';
-
-		const char *key = args;
-		char *value = strchr(args, '=');
-		if (value == NULL) {
-			fprintf(stderr, _("Failed to parse option `%s'.\n"),
-				args);
-			return -1;
-		} else {
-			*(value++) = '\0';
-		}
-
-		r = method->set_option(*state, key, value);
-		if (r < 0) {
-			method->free(*state);
-			fprintf(stderr, _("Failed to set %s option.\n"),
-				method->name);
-			/* TRANSLATORS: `help' must not be translated. */
-			fprintf(stderr, _("Try -m %s:help' for more"
-					  " information.\n"), method->name);
-			return -1;
-		}
-
-		args = next_arg;
-	}
+	int r1 = method->set_option(*state, "crtc", options->method_crtc);
+    int r2 = method->set_option(*state, "screen", options->method_screen);
+    int r3 = method->set_option(*state, "card", options->method_drm_card);
+    if (r1 < 0 || r2 < 0 || r3 < 0) {
+        method->free(*state);
+        fprintf(stderr, _("Failed to set %s"
+                          " option.\n"),
+                method->name);
+        /* TRANSLATORS: `help' and `--help-methods' must not be
+           translated. */
+        fprintf(stderr, _("Try `--help' or `--help-methods' for more"
+                          " information.\n"));
+        return -1;
+    }
 
 	/* Start method. */
 	r = method->start(*state);
@@ -890,10 +799,42 @@ run_continual_mode(const location_provider_t *provider,
 }
 
 
-int
-main(int argc, char *argv[])
+static void onFatalError (ElektraError * error)
+{
+    fprintf (stderr, "ERROR: %s\n", elektraErrorDescription (error));
+    elektraErrorReset (&error);
+    exit (EXIT_FAILURE);
+}
+
+
+int main(int argc, const char * const *argv, const char * const *envp)
 {
 	int r;
+
+    exitForSpecload (argc, argv);
+    ElektraError * error = NULL;
+    Elektra * elektra = NULL;
+    int rc = loadConfiguration (&elektra, argc, argv, envp, &error);
+
+    if (rc == -1)
+    {
+        fprintf (stderr, "An error occurred while opening Elektra: %s", elektraErrorDescription (error));
+        elektraErrorReset (&error);
+        exit (EXIT_FAILURE);
+    }
+
+    if (rc == 1)
+    {
+        // help mode - application was called with '-h' or '--help'
+        // for more information see "Command line options" below
+        printHelpMessage (elektra, NULL, NULL);
+        elektraClose (elektra);
+        exit (EXIT_SUCCESS);
+    }
+    // register error handler
+    elektraFatalErrorHandler (elektra, onFatalError);
+    // loadConfiguration succeeded, proceed with program
+
 
 #ifdef ENABLE_NLS
 	/* Init locale */
@@ -946,49 +887,18 @@ main(int argc, char *argv[])
 
 	options_t options;
 	options_init(&options);
-	options_parse_args(
-		&options, argc, argv, gamma_methods, location_providers);
-
-	/* Load settings from config file. */
-	config_ini_state_t config_state;
-	r = config_ini_init(&config_state, options.config_filepath);
-	if (r < 0) {
-		fputs("Unable to load config file.\n", stderr);
-		exit(EXIT_FAILURE);
-	}
-
-	free(options.config_filepath);
-
-	options_parse_config_file(
-		&options, &config_state, gamma_methods, location_providers);
-
-	options_set_defaults(&options);
-
-	if (options.scheme.dawn.start >= 0 || options.scheme.dawn.end >= 0 ||
-	    options.scheme.dusk.start >= 0 || options.scheme.dusk.end >= 0) {
-		if (options.scheme.dawn.start < 0 ||
-		    options.scheme.dawn.end < 0 ||
-		    options.scheme.dusk.start < 0 ||
-		    options.scheme.dusk.end < 0) {
-			fputs(_("Partitial time-configuration not"
-				" supported!\n"), stderr);
-			exit(EXIT_FAILURE);
-		}
-
-		if (options.scheme.dawn.start > options.scheme.dawn.end ||
-		    options.scheme.dawn.end > options.scheme.dusk.start ||
-		    options.scheme.dusk.start > options.scheme.dusk.end) {
-			fputs(_("Invalid dawn/dusk time configuration!\n"),
-			      stderr);
-			exit(EXIT_FAILURE);
-		}
-
-		options.scheme.use_time = 1;
-	}
+    location_state_t *location_state;
+	/* Load settings from elektra. */
+    r = options_load_from_elektra(&options, elektra, gamma_methods, location_providers);
+    // After loading everything from elektra, close it.
+    elektraClose (elektra);
+    if (r < 0) {
+        // Error message printed in options_load_from_elektra(...)
+        exit(EXIT_FAILURE);
+    }
 
 	/* Initialize location provider if needed. If provider is NULL
 	   try all providers until one that works is found. */
-	location_state_t *location_state;
 
 	/* Location is not needed for reset mode and manual mode. */
 	int need_location =
@@ -1000,7 +910,7 @@ main(int argc, char *argv[])
 			/* Use provider specified on command line. */
 			r = provider_try_start(
 				options.provider, &location_state,
-				&config_state, options.provider_args);
+				&options);
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
 			/* Try all providers, use the first that works. */
@@ -1012,7 +922,7 @@ main(int argc, char *argv[])
 					_("Trying location provider `%s'...\n"),
 					p->name);
 				r = provider_try_start(p, &location_state,
-						       &config_state, NULL);
+						       &options);
 				if (r < 0) {
 					fputs(_("Trying next provider...\n"),
 					      stderr);
@@ -1130,8 +1040,7 @@ main(int argc, char *argv[])
 		if (options.method != NULL) {
 			/* Use method specified on command line. */
 			r = method_try_start(
-				options.method, &method_state, &config_state,
-				options.method_args);
+				options.method, &method_state, &options);
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
 			/* Try all methods, use the first that works. */
@@ -1140,7 +1049,7 @@ main(int argc, char *argv[])
 				if (!m->autostart) continue;
 
 				r = method_try_start(
-					m, &method_state, &config_state, NULL);
+					m, &method_state, &options);
 				if (r < 0) {
 					fputs(_("Trying next method...\n"), stderr);
 					continue;
@@ -1159,8 +1068,6 @@ main(int argc, char *argv[])
 			}
 		}
 	}
-
-	config_ini_free(&config_state);
 
 	switch (options.mode) {
 	case PROGRAM_MODE_ONE_SHOT:

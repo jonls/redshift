@@ -87,7 +87,7 @@ typedef int gamma_method_start_func(gamma_state_t *state);
 typedef void gamma_method_free_func(gamma_state_t *state);
 typedef void gamma_method_print_help_func(FILE *f);
 typedef int gamma_method_set_option_func(gamma_state_t *state, const char *key,
-					 const char *value);
+					 const unsigned short value);
 typedef void gamma_method_restore_func(gamma_state_t *state);
 typedef int gamma_method_set_temperature_func(
 	gamma_state_t *state, const color_setting_t *setting, int preserve);
@@ -125,7 +125,7 @@ typedef int location_provider_start_func(location_state_t *state);
 typedef void location_provider_free_func(location_state_t *state);
 typedef void location_provider_print_help_func(FILE *f);
 typedef int location_provider_set_option_func(
-	location_state_t *state, const char *key, const char *value);
+	location_state_t *state, const char *key, const float *value);
 typedef int location_provider_get_fd_func(location_state_t *state);
 typedef int location_provider_handle_func(
 	location_state_t *state, location_t *location, int *available);

@@ -254,21 +254,13 @@ drm_print_help(FILE *f)
 }
 
 static int
-drm_set_option(drm_state_t *state, const char *key, const char *value)
+drm_set_option(drm_state_t *state, const char *key, const unsigned short value)
 {
 	if (strcasecmp(key, "card") == 0) {
-		state->card_num = atoi(value);
+		state->card_num = value;
 	} else if (strcasecmp(key, "crtc") == 0) {
-		state->crtc_num = atoi(value);
-		if (state->crtc_num < 0) {
-			fprintf(stderr, _("CRTC must be a non-negative integer\n"));
-			return -1;
-		}
-	} else {
-		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
-		return -1;
-	}
-
+        state->crtc_num = value;
+    }
 	return 0;
 }
 

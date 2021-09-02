@@ -253,10 +253,9 @@ location_corelocation_print_help(FILE *f)
 
 static int
 location_corelocation_set_option(
-    location_corelocation_state_t *state, const char *key, const char *value)
+    location_corelocation_state_t *state, const char *key, const float *value)
 {
-  fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
-  return -1;
+  return 0;
 }
 
 static int

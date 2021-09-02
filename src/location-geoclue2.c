@@ -407,10 +407,9 @@ location_geoclue2_print_help(FILE *f)
 
 static int
 location_geoclue2_set_option(location_geoclue2_state_t *state,
-			     const char *key, const char *value)
+			     const char *key, const float *value)
 {
-	fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
-	return -1;
+	return 0;
 }
 
 static int

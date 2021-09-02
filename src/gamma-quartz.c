@@ -172,18 +172,14 @@ quartz_print_help(FILE *f)
 }
 
 static int
-quartz_set_option(quartz_state_t *state, const char *key, const char *value)
+quartz_set_option(quartz_state_t *state, const char *key, const unsigned short value)
 {
 	if (strcasecmp(key, "preserve") == 0) {
-		fprintf(stderr, _("Parameter `%s` is now always on; "
-				  " Use the `%s` command-line option"
-				  " to disable.\n"),
-			key, "-P");
-	} else {
-		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
-		return -1;
-	}
-
+        fprintf(stderr, _("Parameter `%s` is now always on; "
+                          " Use the `%s` command-line option"
+                          " to disable.\n"),
+                key, "-P");
+    }
 	return 0;
 }
 
