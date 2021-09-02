@@ -61,7 +61,6 @@ int poll(struct pollfd *fds, int nfds, int timeout) { abort(); return -1; }
 
 #include "redshift.h"
 #include "elektra/redshift-conf.h"
-#include "config-ini.h"
 #include "solar.h"
 #include "systemtime.h"
 #include "hooks.h"

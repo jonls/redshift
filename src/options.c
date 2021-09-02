@@ -35,7 +35,6 @@
 #endif
 
 #include "redshift.h"
-#include "config-ini.h"
 #include "options.h"
 #include "solar.h"
 #include "elektra/redshift-conf.h"
