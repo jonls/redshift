@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://github.com/jonls/redshift/issues\n"
 "POT-Creation-Date: 2017-10-18 11:46-0700\n"
 "PO-Revision-Date: 2015-12-11 09:28+0000\n"
-"Last-Translator: wsxy162 <wsxy162@gmail.com>\n"
+"Last-Translator: Dmitry <dmitrydmitry761@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -178,7 +178,7 @@ msgstr "无法读取系统时间。\n"
 
 #: ../src/redshift.c:635
 msgid "Waiting for initial location to become available...\n"
-msgstr ""
+msgstr "正在等待初始位置可用...\n"
 
 #: ../src/redshift.c:641 ../src/redshift.c:832 ../src/redshift.c:847
 #: ../src/redshift.c:1172
@@ -187,7 +187,7 @@ msgstr "无法从服务获取位置信息。\n"
 
 #: ../src/redshift.c:647 ../src/redshift.c:871
 msgid "Invalid location returned from provider.\n"
-msgstr ""
+msgstr "从提供程序返回的位置无效。\n"
 
 #: ../src/redshift.c:656 ../src/redshift.c:788 ../src/redshift.c:1222
 #: ../src/redshift.c:1253
@@ -223,15 +223,15 @@ msgstr "色温调节失败。\n"
 msgid ""
 "Location is temporarily unavailable; Using previous location until it "
 "becomes available...\n"
-msgstr ""
+msgstr "变得可用...\n"
 
 #: ../src/redshift.c:967
 msgid "Partitial time-configuration not supported!\n"
-msgstr ""
+msgstr "不支持部分时间配置！\n"
 
 #: ../src/redshift.c:975
 msgid "Invalid dawn/dusk time configuration!\n"
-msgstr ""
+msgstr "黎明/黄昏时间配置无效！\n"
 
 #: ../src/redshift.c:1006
 #, c-format
@@ -311,7 +311,7 @@ msgstr "没有更多的模式可供尝试。\n"
 
 #: ../src/redshift.c:1165
 msgid "Waiting for current location to become available...\n"
-msgstr ""
+msgstr "正在等待当前位置可用...\n"
 
 #. TRANSLATORS: Append degree symbol if
 #. possible.
@@ -373,6 +373,21 @@ msgid ""
 "  -r\t\tDisable fading between color temperatures\n"
 "  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"
 msgstr ""
+"  -b DAY:NIGHT\t要应用的屏幕亮度 （在 0.1 和 1.0 之间）\n"
+"  -c FILE\t从指定的配置文件加载设置\n"
+"  -g R:G:B\t要应用的额外伽马校正\n"
+"  -l LAT:LON\t您当前的位置\n"
+"  -l PROVIDER\t选择自动位置更新的提供商\n"
+"  \t\t（输入 “list” 以查看可用的提供者）\n"
+"  -m METHOD\tMethod 用于设置色温\n"
+"  \t\t（键入 “list” 以查看可用方法）\n"
+"  -o\t\t\一拍模式（不连续调节色温）\n"
+"  -O TEMP\t一次性手动模式（色温设置）\n"
+"  -p\t\t打印模式（仅打印参数并退出）\n"
+"  -P\t\t在应用新的颜色效果之前重置现有的伽马斜坡\n"
+"  -x\t\t重置模式（从屏幕上移除调整）\n"
+"  -r\t\t禁用色温之间的淡入淡出\n"
+"  -t DAY:NIGHT\t日/夜色温调节\n"
 
 #. TRANSLATORS: help output 5
 #: ../src/options.c:201
@@ -383,7 +398,10 @@ msgid ""
 "than this results in more blue light, and setting a lower value will result "
 "in\n"
 "more red light.\n"
-msgstr ""
+msgstr "中性温度是  %uK. 使用这个值不会改变颜色\n"
+"显示器的温度。 将色温设置为更高的值\n"
+"比这会导致更多的蓝光，设置较低的值会导致\n"
+"更多的红灯。\n"
 
 #. TRANSLATORS: help output 6
 #: ../src/options.c:210
@@ -462,12 +480,12 @@ msgstr "异常的伽马设置。\n"
 #: ../src/options.c:621
 #, c-format
 msgid "Malformed dawn-time setting `%s'.\n"
-msgstr ""
+msgstr "日出时间设置错误 `%s'.\n"
 
 #: ../src/options.c:632
 #, c-format
 msgid "Malformed dusk-time setting `%s'.\n"
-msgstr ""
+msgstr "畸形的黄昏时间设置 `%s'.\n"
 
 #: ../src/options.c:639
 #, c-format
@@ -489,7 +507,7 @@ msgstr "分配在段外存在于配置文件中。\n"
 #: ../src/gamma-drm.c:97
 #, c-format
 msgid "Failed to open DRM device: %s\n"
-msgstr ""
+msgstr "无法打开 DRM 设备： %s\n"
 
 #: ../src/gamma-drm.c:105
 #, c-format
@@ -594,11 +612,12 @@ msgid ""
 "  screen=N\t\tX screen to apply adjustments to\n"
 "  crtc=N\tList of comma separated CRTCs to apply adjustments to\n"
 msgstr ""
-
+"  screen=N\t\tX 应用设置屏幕\n"
+"  crtc=N\t将调整应用于的逗号分隔 CRTC 列表\n"
 #: ../src/gamma-randr.c:328
 #, c-format
 msgid "Unable to read screen number: `%s'.\n"
-msgstr ""
+msgstr "无法读取屏幕编号： `%s'.\n"
 
 #: ../src/gamma-randr.c:364 ../src/gamma-vidmode.c:156
 #: ../src/gamma-quartz.c:178 ../src/gamma-w32gdi.c:123
@@ -606,7 +625,7 @@ msgstr ""
 msgid ""
 "Parameter `%s` is now always on;  Use the `%s` command-line option to "
 "disable.\n"
-msgstr ""
+msgstr "范围 `%s` 现在总是开启；  使用 `%s` 要禁用的命令行选项。\n"
 
 #: ../src/gamma-vidmode.c:61 ../src/gamma-vidmode.c:81
 #: ../src/gamma-vidmode.c:90 ../src/gamma-vidmode.c:117
@@ -623,7 +642,7 @@ msgstr "使用 X VidMode 扩展调整伽马斜面。\n"
 #. left column must not be translated
 #: ../src/gamma-vidmode.c:145
 msgid "  screen=N\t\tX screen to apply adjustments to\n"
-msgstr ""
+msgstr "  screen=N\t\tX 应用调整的屏幕\n"
 
 #: ../src/gamma-quartz.c:140 ../src/gamma-w32gdi.c:91
 msgid "Unable to save current gamma ramp.\n"
@@ -631,7 +650,7 @@ msgstr "无法保存当前的伽马斜面。\n"
 
 #: ../src/gamma-quartz.c:170
 msgid "Adjust gamma ramps on macOS using Quartz.\n"
-msgstr ""
+msgstr "使用 Quartz 在 macOS 上调整伽马斜坡。\n"
 
 #: ../src/gamma-w32gdi.c:68 ../src/gamma-w32gdi.c:141 ../src/gamma-w32gdi.c:168
 msgid "Unable to open device context.\n"
@@ -679,6 +698,10 @@ msgid ""
 "more\n"
 "information.\n"
 msgstr ""
+"GeoClue 拒绝访问当前位置！\n"
+"确保已启用位置服务并允许 Redshift\n"
+"使用定位服务。 有关更多信息，请参阅 https://github.com/jonls/redshift#faq\n"
+"信息。\n"
 
 #: ../src/location-geoclue2.c:107
 #, c-format
@@ -712,7 +735,7 @@ msgstr "无法启动 GeoClue 客户端：%s。\n"
 
 #: ../src/location-geoclue2.c:365
 msgid "Failed to start GeoClue2 provider!\n"
-msgstr ""
+msgstr "无法启动 GeoClue2 提供程序！\n"
 
 #: ../src/location-geoclue2.c:399
 msgid "Use the location as discovered by a GeoClue2 provider.\n"
@@ -737,7 +760,7 @@ msgstr "位置请求还未授权！\n"
 
 #: ../src/location-corelocation.m:203
 msgid "Failed to start CoreLocation provider!\n"
-msgstr ""
+msgstr "无法启动 CoreLocation 提供程序！\n"
 
 #: ../src/location-corelocation.m:235
 msgid "Use the location as discovered by the Corelocation provider.\n"
@@ -823,4 +846,4 @@ msgstr "位置"
 
 #: ../src/redshift-gtk/statusicon.py:349
 msgid "Please run `redshift -h` for help output."
-msgstr ""
+msgstr "请运行 `redshift -h` 以获得帮助输出。"
