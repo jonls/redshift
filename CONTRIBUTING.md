@@ -25,10 +25,11 @@ $ ./configure --prefix=$HOME/redshift/root \
    --with-systemduserunitdir=$HOME/.config/systemd/user
 ```
 
-Now, build the files:
+Now, build the files and mount the Elektra specification:
 
 ``` shell
 $ make
+$ APP_PATH=`pwd`/src/redshift sh src/elektra/redshift-conf.mount.sh
 ```
 
 The main redshift program can be run at this point. To install to the

@@ -32,6 +32,16 @@ EXTRA_redshift_SOURCES = \
 	windows/appicon.rc \
 	windows/versioninfo.rc
 
+# Note: CLEANFILES and KDB are based on https://github.com/kodebach/lcdproc/blob/3e2b9d3f5cade3bbe21fdb5a9ea1c9ffc1c994fa/server/Makefile.am
+CLEANFILES = elektra/redshift-conf.c elektra/redshift-conf.h elektra/redshift-conf.mount.sh
+
+scriptsdir = $(prefix)/libexec
+scripts_DATA = elektra/redshift-conf.mount.sh
+
+KDB ?= kdb
+elektra/redshift-conf.c elektra/redshift-conf.h elektra/redshift-conf.mount.sh: elektra/redshift.ini
+	$(KDB) gen -F ni=elektra/redshift.ini highlevel "/sw/redshift/#0/current" elektra/redshift-conf initFn=loadConfiguration helpFn=printHelpMessage specloadFn=exitForSpecload embeddedSpec=full;
+
 AM_CFLAGS =
 redshift_LDADD = @LIBINTL@
 EXTRA_DIST = windows/redshift.ico
