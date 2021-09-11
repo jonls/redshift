@@ -18,8 +18,7 @@ redshift_SOURCES = \
 	redshift.c redshift.h \
 	signals.c signals.h \
 	solar.c solar.h \
-	systemtime.c systemtime.h \
-	elektra/redshift-conf.c elektra/redshift-conf.h
+	systemtime.c systemtime.h
 
 EXTRA_redshift_SOURCES = \
 	gamma-drm.c gamma-drm.h \
@@ -32,15 +31,19 @@ EXTRA_redshift_SOURCES = \
 	windows/appicon.rc \
 	windows/versioninfo.rc
 
-# Note: CLEANFILES and KDB are based on https://github.com/kodebach/lcdproc/blob/3e2b9d3f5cade3bbe21fdb5a9ea1c9ffc1c994fa/server/Makefile.am
+# Note: rules for Elektra are based on https://github.com/kodebach/lcdproc/blob/3e2b9d3f5cade3bbe21fdb5a9ea1c9ffc1c994fa/server/Makefile.am
 CLEANFILES = elektra/redshift-conf.c elektra/redshift-conf.h elektra/redshift-conf.mount.sh
+nodist_redshift_SOURCES = elektra/redshift-conf.h elektra/redshift-conf.c
+redshift.$(OBJEXT) options.$(OBJEXT): elektra/redshift-conf.h elektra/redshift-conf.c
+
+KDB ?= kdb
+# Use pattern rule to ensure that kdb gen is only executed once, even if make -jN is used.
+# see https://stackoverflow.com/a/10609434
+%-conf.c %-conf.h %-conf.mount.sh: %.ini
+	$(KDB) gen -F ni=$*.ini highlevel "/sw/redshift/#0/current" $*-conf initFn=loadConfiguration helpFn=printHelpMessage specloadFn=exitForSpecload embeddedSpec=full;
 
 scriptsdir = $(prefix)/libexec
 scripts_DATA = elektra/redshift-conf.mount.sh
-
-KDB ?= kdb
-elektra/redshift-conf.c elektra/redshift-conf.h elektra/redshift-conf.mount.sh: elektra/redshift.ini
-	$(KDB) gen -F ni=elektra/redshift.ini highlevel "/sw/redshift/#0/current" elektra/redshift-conf initFn=loadConfiguration helpFn=printHelpMessage specloadFn=exitForSpecload embeddedSpec=full;
 
 AM_CFLAGS =
 redshift_LDADD = @LIBINTL@
