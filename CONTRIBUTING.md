@@ -25,7 +25,8 @@ $ ./configure --prefix=$HOME/redshift/root \
    --with-systemduserunitdir=$HOME/.config/systemd/user
 ```
 
-Now, build the files and mount the Elektra specification:
+Now, build the files and mount the Elektra specification:  
+(Mounting the specification requires root privileges. `redshift-conf.mount.sh` uses `sudo` to achieve that).
 
 ``` shell
 $ make
