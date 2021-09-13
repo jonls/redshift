@@ -39,8 +39,8 @@ redshift.$(OBJEXT) options.$(OBJEXT): elektra/redshift-conf.h elektra/redshift-c
 KDB ?= kdb
 # Use pattern rule to ensure that kdb gen is only executed once, even if make -jN is used.
 # see https://stackoverflow.com/a/10609434
-%-conf.c %-conf.h %-conf.mount.sh: %.ini
-	$(KDB) gen -F ni=$*.ini highlevel "/sw/redshift/#0/current" $*-conf initFn=loadConfiguration helpFn=printHelpMessage specloadFn=exitForSpecload embeddedSpec=full;
+%-conf.c %-conf.h %-conf.mount.sh: %.ni
+	$(KDB) gen -F ni=$*.ni highlevel "/sw/redshift/#0/current" $*-conf initFn=loadConfiguration helpFn=printHelpMessage specloadFn=exitForSpecload embeddedSpec=full;
 
 scriptsdir = $(prefix)/libexec
 scripts_DATA = elektra/redshift-conf.mount.sh
