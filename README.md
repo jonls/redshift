@@ -54,19 +54,31 @@ Use the packages provided by your distribution, e.g. for Ubuntu:
 `apt-get install redshift` or `apt-get install redshift-gtk`. For developers,
 please see _Building from source_ and _Latest builds from master branch_ below.
 
-### How do I setup a configuration file?
+### How do I configure Redshift?
 
-A configuration file is not required but is useful for saving custom
-configurations and manually defining the location in case of issues with the
-automatic location provider. An example configuration can be found in
-[redshift.conf.sample](redshift.conf.sample).
+* For temporary configuration execute Redshift with command-line (CLI) options.  
+  `redshift --help` prints a list of supported options.
+* For permanent changes use [Elektra's](https://www.libelektra.org/home) `kdb set` command.
+  
+#### Example: Change coordinates
+* To temporariliy set your location coordinates via CLI options execute:  
+`redshift --location-provider=manual --lat 52.0 --lon 14.0`
 
-The configuration file should be saved in the following location depending on
-the platform:
+* To set your location via `kdb` execute:
 
-- Linux/macOS: `~/.config/redshift/redshift.conf` (if the environment variable `XDG_CONFIG_HOME` is undefined) or `${XDG_CONFIG_HOME}/redshift/redshift.conf` (if `XDG_CONFIG_HOME` is defined).
-- Windows: Put `redshift.conf` in `%USERPROFILE%\AppData\Local\`
-    (aka `%localappdata%`).
+```
+kdb set user:/sw/redshift/#0/current/provider/location manual
+kdb set user:/sw/redshift/#0/current/provider/location/manual/lat 52.0
+kdb set user:/sw/redshift/#0/current/provider/location/manual/lon 14.0
+```
+
+#### Supported configuration options
+* For a list of supported CLI options execute `redshift --help`.
+* For a list of supported options configureable via `kdb` execute:
+  * `kdb ls spec:/sw/redshift/#0/current`
+* For details on a configuration option execute:
+  * `kdb meta-get spec:/sw/redshift/#0/current/INSERT_OPTION_NAME description`
+  * e.g.: `kdb meta-get spec:/sw/redshift/#0/current/fade description`
 
 ### Where can I find my coordinates to put in the configuration file?
 
