@@ -258,7 +258,7 @@ type = float
 description = The location latitude. Only applies to location provider "manual".
 check/type = float
 check/range = -90.0-90.0
-; Latitude of berlin:
+; Latitude of Berlin:
 default = 52.520008
 example = 52.520008
 opt/long = lat
