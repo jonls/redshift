@@ -250,12 +250,8 @@ print_location(const location_t *location)
 	/* TRANSLATORS: Abbreviation for `west' */
 	const char *west = _("W");
 
-	/* TRANSLATORS: Append degree symbols after %f if possible.
-	   The string following each number is an abreviation for
-	   north, source, east or west (N, S, E, W). */
-	printf(_("Location: %.2f %s, %.2f %s\n"),
-	       fabs(location->lat), location->lat >= 0.f ? north : south,
-	       fabs(location->lon), location->lon >= 0.f ? east : west);
+	/* TRANSLATORS: Append degree symbols after %f if possible.*/
+	printf(_("Location latitude: %.2f, longitude: %.2f\n"), location->lat, location->lon);
 }
 
 /* Interpolate color setting structs given alpha. */
