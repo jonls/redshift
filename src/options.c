@@ -285,7 +285,7 @@ options_load_from_elektra(
     options->preserve_gamma = elektraGetGammaPreserve(elektra);
 
     // Fade
-    options->use_fade = elektraGetFade(elektra);
+    options->use_fade = !elektraGetFastfade(elektra);
 
     // Temperature
     options->scheme.day.temperature = elektraGetTempDay(elektra);
