@@ -173,17 +173,28 @@ options_load_from_elektra(
 
     // Programm mode
     ElektraEnumMode mode = elektraGetMode(elektra);
-    if (mode == ELEKTRA_ENUM_MODE_CONTINUAL) {
-        options->mode = PROGRAM_MODE_CONTINUAL;
-    } else if (mode == ELEKTRA_ENUM_MODE_ONESHOT) {
-        options->mode = PROGRAM_MODE_ONE_SHOT;
-    } else if (mode == ELEKTRA_ENUM_MODE_PRINT) {
-        options->mode = PROGRAM_MODE_PRINT;
-    } else if (mode == ELEKTRA_ENUM_MODE_RESET) {
-        options->mode = PROGRAM_MODE_RESET;
-    } else if (mode == ELEKTRA_ENUM_MODE_ONESHOTMANUAL) {
-        options->temp_set = elektraGetTempOneshotmanual(elektra);
-        options->mode = PROGRAM_MODE_MANUAL;
+    switch (mode) {
+        case ELEKTRA_ENUM_MODE_CONTINUAL: {
+            options->mode = PROGRAM_MODE_CONTINUAL;
+            break;
+        }
+        case ELEKTRA_ENUM_MODE_ONESHOT: {
+            options->mode = PROGRAM_MODE_ONE_SHOT;
+            break;
+        }
+        case ELEKTRA_ENUM_MODE_PRINT: {
+            options->mode = PROGRAM_MODE_PRINT;
+            break;
+        }
+        case ELEKTRA_ENUM_MODE_RESET: {
+            options->mode = PROGRAM_MODE_RESET;
+            break;
+        }
+        case ELEKTRA_ENUM_MODE_ONESHOTMANUAL: {
+            options->temp_set = elektraGetTempOneshotmanual(elektra);
+            options->mode = PROGRAM_MODE_MANUAL;
+            break;
+        }
     }
 
     // Brightness
