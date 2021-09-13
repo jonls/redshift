@@ -255,7 +255,7 @@ opt/arg = required
 
 [provider/location/manual/lat]
 type = float
-description = The location latitude. Only applies to location provider "manual".
+description = The location latitude. Only applies to location provider "manual". Some locations (e.g. mainland USA) require negative values.
 check/type = float
 check/range = -90.0-90.0
 ; Latitude of Berlin:
@@ -266,7 +266,7 @@ opt/arg = required
 
 [provider/location/manual/lon]
 type = float
-description = The location longitude. Only applies to location provider "manual".
+description = The location longitude. Only applies to location provider "manual". Some locations (e.g. parts of Africa) require negative values.
 check/type = float
 check/range = -180.0-180.0
 ; Longitude of berlin:
