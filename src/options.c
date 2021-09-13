@@ -249,7 +249,7 @@ options_load_from_elektra(
         const location_provider_t *provider = find_location_provider(location_providers, locationProviderName);
         if(provider == NULL) {
             // User picked a locationProvider provider which is not supported in this build.
-            fprintf(stderr, _("The chosen locationProvider provider is not supported in this build of redshift.\n"));
+            fprintf(stderr, _("The chosen location provider \"%s\" is not supported in this build of redshift.\n"), locationProviderName);
             return -1;
         }
         else {
@@ -279,7 +279,7 @@ options_load_from_elektra(
         const gamma_method_t *method = find_gamma_method(gamma_methods, adjustmentMethodName);
         if (method == NULL) {
             // User picked a method which is not supported in this build.
-            fprintf(stderr, _("The chosen adjustment method is not supported in this build of redshift.\n"));
+            fprintf(stderr, _("The chosen adjustment method \"%s\" is not supported in this build of redshift.\n"), adjustmentMethodName);
             return -1;
         }
         else {
