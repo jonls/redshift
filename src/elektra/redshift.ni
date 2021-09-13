@@ -112,6 +112,7 @@ default = 1.0:1.0:1.0
 example = 0.9
 ; Regex ensures format "float" or "float:float:float". Adapted from https://www.regular-expressions.info/floatingpoint.html
 check/validation = ^([0-9]*[\.,]?[0-9]+)(:([0-9]*[\.,]?[0-9]+):([0-9]*[\.,]?[0-9]+))?$
+check/validation/message = The gamma value you provided is in an unsupported format. Supported formats are: 1. One value, that will be used for red, green and blue (e.g. 0.9). 2. Three colon-separated values for red, green and blue respectively (e.g. 0.9:0.9:0.9).
 opt/long = gamma-day
 opt/arg = required
 
@@ -122,6 +123,7 @@ default = 1.0:1.0:1.0
 example = 0.9
 ; Regex ensures format "float" or "float:float:float". Adapted from https://www.regular-expressions.info/floatingpoint.html
 check/validation = ^([0-9]*[\.,]?[0-9]+)(:([0-9]*[\.,]?[0-9]+):([0-9]*[\.,]?[0-9]+))?$
+check/validation/message = The gamma value you provided is in an unsupported format. Supported formats are: 1. One value, that will be used for red, green and blue (e.g. 0.9). 2. Three colon-separated values for red, green and blue respectively (e.g. 0.9:0.9:0.9).
 opt/long = gamma-night
 opt/arg = required
 
