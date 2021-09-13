@@ -277,8 +277,6 @@ opt/arg = required
 
 ; Note: other location providers have no config parameters/cli arguments
 
-; BEGIN Settings used by randr and drm
-;=======================================================
 [adjustment/crtc]
 type = unsigned_short
 description = CRTC to apply adjustments to.
@@ -286,11 +284,7 @@ default = 0
 example = 1
 opt/long = crtc
 opt/arg = required
-;=======================================================
-; END Settings used by randr and drm
 
-; BEGIN Settings used by randr and vidmode
-;=======================================================
 [adjustment/screen]
 type = unsigned_short
 description = X screen to apply adjustments to.
@@ -298,11 +292,7 @@ default = 0
 example = 1
 opt/long = screen
 opt/arg = required
-;=======================================================
-; END Settings used by randr and vidmode
 
-; BEGIN Settings used by drm
-;=======================================================
 [adjustment/drm/card]
 type = unsigned_short
 description = Graphics card to apply adjustments to.
@@ -310,7 +300,5 @@ default = 0
 example = 1
 opt/long = drm-card
 opt/arg = required
-;=======================================================
-; END Settings used by drm
 
 ; Note: adjustment methods dummy, quartz and w32gdi have no config parameters/cli arguments or none that have an effect.
