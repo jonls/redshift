@@ -67,18 +67,18 @@ please see _Building from source_ and _Latest builds from master branch_ below.
 * To set your location via `kdb` execute:
 
 ```
-kdb set user:/sw/redshift/#0/current/provider/location manual
-kdb set user:/sw/redshift/#0/current/provider/location/manual/lat 52.0
-kdb set user:/sw/redshift/#0/current/provider/location/manual/lon 14.0
+kdb set user:/sw/jonls/redshift/#0/current/provider/location manual
+kdb set user:/sw/jonls/redshift/#0/current/provider/location/manual/lat 52.0
+kdb set user:/sw/jonls/redshift/#0/current/provider/location/manual/lon 14.0
 ```
 
 #### Supported configuration options
 * For a list of supported CLI options execute `redshift --help`.
 * For a list of supported options configureable via `kdb` execute:
-  * `kdb ls spec:/sw/redshift/#0/current`
+  * `kdb ls spec:/sw/jonls/redshift/#0/current`
 * For details on a configuration option execute:
-  * `kdb meta-get spec:/sw/redshift/#0/current/INSERT_OPTION_NAME description`
-  * e.g.: `kdb meta-get spec:/sw/redshift/#0/current/fade description`
+  * `kdb meta-get spec:/sw/jonls/redshift/#0/current/INSERT_OPTION_NAME description`
+  * e.g.: `kdb meta-get spec:/sw/jonls/redshift/#0/current/fade description`
 
 ### Where can I find my coordinates to put in the configuration file?
 
