@@ -241,15 +241,6 @@ print_period(period_t period, double transition)
 static void
 print_location(const location_t *location)
 {
-	/* TRANSLATORS: Abbreviation for `north' */
-	const char *north = _("N");
-	/* TRANSLATORS: Abbreviation for `south' */
-	const char *south = _("S");
-	/* TRANSLATORS: Abbreviation for `east' */
-	const char *east = _("E");
-	/* TRANSLATORS: Abbreviation for `west' */
-	const char *west = _("W");
-
 	/* TRANSLATORS: Append degree symbols after %f if possible.*/
 	printf(_("Location latitude: %.2f, longitude: %.2f\n"), location->lat, location->lon);
 }
