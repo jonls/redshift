@@ -917,7 +917,7 @@ int main(int argc, const char * const *argv, const char * const *envp)
 				}
 
 				/* Found provider that works. */
-				printf(_("Automatically chose location provider `%s'.\n"), p->name);
+				printf(_("`%s' works and will be used.\n"), p->name);
 				options.provider = p;
 				break;
 			}
@@ -1035,6 +1035,9 @@ int main(int argc, const char * const *argv, const char * const *envp)
 				const gamma_method_t *m = &gamma_methods[i];
 				if (!m->autostart) continue;
 
+                fprintf(stdout,
+                        _("Trying adjustment method `%s'...\n"),
+                        m->name);
 				r = method_try_start(
 					m, &method_state, &options);
 				if (r < 0) {
@@ -1043,7 +1046,7 @@ int main(int argc, const char * const *argv, const char * const *envp)
 				}
 
 				/* Found method that works. */
-				printf(_("Automatically chose adjustment method `%s'.\n"), m->name);
+				printf(_("`%s' works and will be used.\n"), m->name);
 				options.method = m;
 				break;
 			}
