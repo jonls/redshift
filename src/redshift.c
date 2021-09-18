@@ -924,8 +924,7 @@ int main(int argc, const char * const *argv, const char * const *envp)
 			/* Failure if no providers were successful at this
 			   point. */
 			if (options.provider == NULL) {
-				fputs(_("No more location providers"
-					" to try.\n"), stderr);
+                fputs(_("Redshift was unable to determine your location. Reason: None of the location providers of this build work on your system. Execute \"redshift --location-provider list\" to see which providers are supported in this build. Exiting now.\n"), stderr);
 				exit(EXIT_FAILURE);
 			}
 		}
@@ -1049,7 +1048,7 @@ int main(int argc, const char * const *argv, const char * const *envp)
 
 			/* Failure if no methods were successful at this point. */
 			if (options.method == NULL) {
-				fputs(_("Redshift was unable to adjust your screen temperature. Reason: None of the temperature adjustment methods of this build work on your system. Exiting now.\n"), stderr);
+				fputs(_("Redshift was unable to adjust your screen temperature. Reason: None of the temperature adjustment methods of this build work on your system. Execute \"redshift --method list\" to see which methods are supported in this build. Exiting now.\n"), stderr);
 				exit(EXIT_FAILURE);
 			}
 		}
