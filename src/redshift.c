@@ -242,7 +242,7 @@ static void
 print_location(const location_t *location)
 {
 	/* TRANSLATORS: Append degree symbols after %f if possible.*/
-	printf(_("Location latitude: %.2f, longitude: %.2f\n"), location->lat, location->lon);
+	printf(_("Location is now available! Latitude: %.2f, longitude: %.2f\n"), location->lat, location->lon);
 }
 
 /* Interpolate color setting structs given alpha. */
