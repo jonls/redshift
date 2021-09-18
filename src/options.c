@@ -180,6 +180,15 @@ options_load_from_elektra(
      * From redshift's point of view there is only one source now, namely Elektra.
      */
     // BEGIN Block: Options from parse_command_line_option and parse_config_file_option
+    
+    // Version
+    if (elektraGetVersion(elektra)) {
+        printf("%s\n", PACKAGE_STRING);
+        return -1;
+    }
+    
+    // Verbose
+    options->verbose = elektraGetVerbose(elektra);
 
     // Programm mode
     ElektraEnumMode mode = elektraGetMode(elektra);
@@ -311,15 +320,6 @@ options_load_from_elektra(
     // Temperature
     options->scheme.day.temperature = elektraGetTempDay(elektra);
     options->scheme.night.temperature = elektraGetTempNight(elektra);
-
-    // Verbose
-    options->verbose = elektraGetVerbose(elektra);
-
-    // Version
-    if (elektraGetVersion(elektra)) {
-        printf("%s\n", PACKAGE_STRING);
-        return -1;
-    }
 
     // END Block
 
