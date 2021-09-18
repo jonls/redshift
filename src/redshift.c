@@ -804,7 +804,7 @@ int main(int argc, const char * const *argv, const char * const *envp)
 
     if (rc == -1)
     {
-        fprintf (stderr, "Opening redshift's configuration failed: %s", elektraErrorDescription (error));
+        fprintf (stderr, "Opening redshift's configuration failed: %s\n", elektraErrorDescription (error));
         elektraErrorReset (&error);
         exit (EXIT_FAILURE);
     }
@@ -1049,7 +1049,7 @@ int main(int argc, const char * const *argv, const char * const *envp)
 
 			/* Failure if no methods were successful at this point. */
 			if (options.method == NULL) {
-				fputs(_("No more methods to try.\n"), stderr);
+				fputs(_("Redshift was unable to adjust your screen temperature. Reason: None of the temperature adjustment methods of this build work on your system. Exiting now.\n"), stderr);
 				exit(EXIT_FAILURE);
 			}
 		}
