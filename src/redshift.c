@@ -313,7 +313,7 @@ provider_try_start(const location_provider_t *provider,
 
 	r = provider->init(state);
 	if (r < 0) {
-		fprintf(stderr, _("Initialization of %s failed.\n"),
+		fprintf(stderr, _("Initialization of location provider %s failed.\n"),
 			provider->name);
 		return -1;
 	}
@@ -335,7 +335,7 @@ provider_try_start(const location_provider_t *provider,
 	r = provider->start(*state);
 	if (r < 0) {
 		provider->free(*state);
-		fprintf(stderr, _("Failed to start provider %s.\n"),
+		fprintf(stderr, _("Failed to start location provider %s.\n"),
 			provider->name);
 		return -1;
 	}
@@ -351,7 +351,7 @@ method_try_start(const gamma_method_t *method,
 
 	r = method->init(state);
 	if (r < 0) {
-		fprintf(stderr, _("Initialization of %s failed.\n"),
+		fprintf(stderr, _("Initialization of adjustment method %s failed.\n"),
 			method->name);
 		return -1;
 	}
@@ -900,6 +900,7 @@ int main(int argc, const char * const *argv, const char * const *envp)
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
 			/* Try all providers, use the first that works. */
+            fputs(_("You have not configured a location provider. Redshift will try to automatically choose one.\n"), stdout);
 			for (int i = 0;
 			     location_providers[i].name != NULL; i++) {
 				const location_provider_t *p =
@@ -1029,6 +1030,7 @@ int main(int argc, const char * const *argv, const char * const *envp)
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
 			/* Try all methods, use the first that works. */
+            fputs(_("You have not configured an adjustment method. Redshift will try to automatically choose one.\n"), stdout);
 			for (int i = 0; gamma_methods[i].name != NULL; i++) {
 				const gamma_method_t *m = &gamma_methods[i];
 				if (!m->autostart) continue;
