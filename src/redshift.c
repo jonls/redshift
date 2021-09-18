@@ -787,7 +787,7 @@ run_continual_mode(const location_provider_t *provider,
 
 static void onFatalError (ElektraError * error)
 {
-    fprintf (stderr, "Accessing redshift's configuration failed: %s\n", elektraErrorDescription (error));
+    fprintf (stderr, "Accessing redshift's configuration failed: \n%s\n", elektraErrorDescription (error));
     elektraErrorReset (&error);
     exit (EXIT_FAILURE);
 }
@@ -804,7 +804,7 @@ int main(int argc, const char * const *argv, const char * const *envp)
 
     if (rc == -1)
     {
-        fprintf (stderr, "Opening redshift's configuration failed: %s\n", elektraErrorDescription (error));
+        fprintf (stderr, "Opening redshift's configuration failed: \n%s\n", elektraErrorDescription (error));
         elektraErrorReset (&error);
         exit (EXIT_FAILURE);
     }
