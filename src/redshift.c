@@ -533,7 +533,7 @@ run_continual_mode(const location_provider_t *provider,
 	int need_location = !scheme->use_time;
 	if (need_location) {
 		fputs(_("Waiting for initial location"
-			" to become available...\n"), stderr);
+			" to become available...\n"), stdout);
 
 		/* Get initial location from provider */
 		r = provider_get_location(provider, location_state, -1, &loc);
@@ -905,7 +905,7 @@ int main(int argc, const char * const *argv, const char * const *envp)
 			     location_providers[i].name != NULL; i++) {
 				const location_provider_t *p =
 					&location_providers[i];
-				fprintf(stderr,
+				fprintf(stdout,
 					_("Trying location provider `%s'...\n"),
 					p->name);
 				r = provider_try_start(p, &location_state,
@@ -1038,7 +1038,7 @@ int main(int argc, const char * const *argv, const char * const *envp)
 				r = method_try_start(
 					m, &method_state, &options);
 				if (r < 0) {
-					fputs(_("Trying next method...\n"), stderr);
+					fputs(_("Trying next method...\n"), stdout);
 					continue;
 				}
 
@@ -1063,7 +1063,7 @@ int main(int argc, const char * const *argv, const char * const *envp)
 		location_t loc = { NAN, NAN };
 		if (need_location) {
 			fputs(_("Waiting for current location"
-				" to become available...\n"), stderr);
+				" to become available...\n"), stdout);
 
 			/* Wait for location provider. */
 			int r = provider_get_location(
