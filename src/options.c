@@ -92,7 +92,12 @@ parse_transition_time(const char *str, const char **end)
 static void
 print_method_list(const gamma_method_t *gamma_methods)
 {
-	fputs(_("Available adjustment methods:\n"), stdout);
+    if (gamma_methods[0].name == NULL) {
+        printf("This build of redshift contains no adjustment methods that work on your system!");
+        return;
+    }
+    
+	fputs(_("Available adjustment methods in this build of redshift:\n"), stdout);
 	for (int i = 0; gamma_methods[i].name != NULL; i++) {
 		printf("  %s\n", gamma_methods[i].name);
 	}
@@ -106,7 +111,12 @@ print_method_list(const gamma_method_t *gamma_methods)
 static void
 print_provider_list(const location_provider_t location_providers[])
 {
-	fputs(_("Available location providers:\n"), stdout);
+    if (location_providers[0].name == NULL) {
+        printf("This build of redshift contains no adjustment methods that work on your system!");
+        return;
+    }
+    
+	fputs(_("Available location providers in this build of redshift:\n"), stdout);
 	for (int i = 0; location_providers[i].name != NULL; i++) {
 		printf("  %s\n", location_providers[i].name);
 	}
