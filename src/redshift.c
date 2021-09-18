@@ -834,9 +834,6 @@ int main(int argc, const char * const *argv, const char * const *envp)
 
 	/* List of gamma methods. */
 	const gamma_method_t gamma_methods[] = {
-#ifdef ENABLE_DRM
-		drm_gamma_method,
-#endif
 #ifdef ENABLE_RANDR
 		randr_gamma_method,
 #endif
@@ -848,6 +845,9 @@ int main(int argc, const char * const *argv, const char * const *envp)
 #endif
 #ifdef ENABLE_WINGDI
 		w32gdi_gamma_method,
+#endif
+#ifdef ENABLE_DRM
+            drm_gamma_method,
 #endif
 		dummy_gamma_method,
 		{ NULL }

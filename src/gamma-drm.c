@@ -316,7 +316,7 @@ drm_set_temperature(
 
 
 const gamma_method_t drm_gamma_method = {
-	"drm", 0,
+	"drm", 1,
 	(gamma_method_init_func *)drm_init,
 	(gamma_method_start_func *)drm_start,
 	(gamma_method_free_func *)drm_free,
