@@ -46,6 +46,15 @@ example = 1
 opt = V
 opt/arg = none
 
+; HL API by default only prints help, when long CLI option "--help" is given. For redshift we also want "-h" to work.
+[help]
+type = boolean
+description = Show program help.
+default = 0
+example = 1
+opt = h
+opt/arg = none
+
 [temp/day]
 type = unsigned_short
 description = The color temperature the screen should have during daytime.

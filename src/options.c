@@ -181,6 +181,12 @@ options_load_from_elektra(
      */
     // BEGIN Block: Options from parse_command_line_option and parse_config_file_option
     
+    // Help (with short option "-h")
+   if(elektraGetHelp(elektra)) {
+       printHelpMessage(NULL, NULL, NULL);
+       return -1;
+   }
+    
     // Version
     if (elektraGetVersion(elektra)) {
         printf("%s\n", PACKAGE_STRING);
