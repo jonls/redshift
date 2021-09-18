@@ -900,7 +900,7 @@ int main(int argc, const char * const *argv, const char * const *envp)
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
 			/* Try all providers, use the first that works. */
-            fputs(_("You have not configured a location provider. Redshift will try to automatically choose one.\n"), stdout);
+            fputs(_("You have not configured a location provider. Redshift will try to automatically choose a suitable one.\n"), stdout);
 			for (int i = 0;
 			     location_providers[i].name != NULL; i++) {
 				const location_provider_t *p =
@@ -911,13 +911,13 @@ int main(int argc, const char * const *argv, const char * const *envp)
 				r = provider_try_start(p, &location_state,
 						       &options);
 				if (r < 0) {
-					fputs(_("Trying next provider...\n"),
-					      stderr);
+					fputs(_("Trying next location provider...\n"),
+					      stdout);
 					continue;
 				}
 
 				/* Found provider that works. */
-				printf(_("Using provider `%s'.\n"), p->name);
+				printf(_("Automatically chose location provider `%s'.\n"), p->name);
 				options.provider = p;
 				break;
 			}
@@ -1030,7 +1030,7 @@ int main(int argc, const char * const *argv, const char * const *envp)
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
 			/* Try all methods, use the first that works. */
-            fputs(_("You have not configured an adjustment method. Redshift will try to automatically choose one.\n"), stdout);
+            fputs(_("You have not configured an adjustment method. Redshift will try to automatically choose a suitable one.\n"), stdout);
 			for (int i = 0; gamma_methods[i].name != NULL; i++) {
 				const gamma_method_t *m = &gamma_methods[i];
 				if (!m->autostart) continue;
@@ -1043,7 +1043,7 @@ int main(int argc, const char * const *argv, const char * const *envp)
 				}
 
 				/* Found method that works. */
-				printf(_("Using method `%s'.\n"), m->name);
+				printf(_("Automatically chose adjustment method `%s'.\n"), m->name);
 				options.method = m;
 				break;
 			}
