@@ -699,5 +699,5 @@ options_set_defaults(options_t *options)
 
 	if (options->use_fade < 0) options->use_fade = 1;
 	
-	if (options->fade_duration < 0) options->fade_duration = 4000; // Set default fade duration to 4 seconds.
+	if (options->fade_duration < 0) options->fade_duration = 4; // Set default fade duration to 4 seconds.
 }
