@@ -320,6 +320,7 @@ options_init(options_t *options)
 	options->provider_args = NULL;
 
 	options->use_fade = -1;
+    options->fade_duration = -1;
 	options->preserve_gamma = 1;
 	options->mode = PROGRAM_MODE_CONTINUAL;
 	options->verbose = 0;
@@ -676,4 +677,6 @@ options_set_defaults(options_t *options)
 	}
 
 	if (options->use_fade < 0) options->use_fade = 1;
+	
+	if (options->fade_duration < 0) options->fade_duration = 4000; // Set default fade duration to 4 seconds.
 }
