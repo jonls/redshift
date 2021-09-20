@@ -537,6 +537,16 @@ parse_config_file_option(
 		if (options->use_fade < 0) {
 			options->use_fade = !!atoi(value);
 		}
+	} else if (strcasecmp(key, "fade-duration") == 0) {
+	    if (options->fade_duration < 0) {
+            errno = 0;
+            long fade_duration = strtol(value, NULL, 10);
+            if (errno != 0 || fade_duration <= 0) {
+                fputs(_("Malformed fade duration setting.\n"), stderr);
+                return -1;
+            }
+            options->fade_duration = fade_duration;
+	    }
 	} else if (strcasecmp(key, "brightness") == 0) {
 		if (isnan(options->scheme.day.brightness)) {
 			options->scheme.day.brightness = atof(value);
