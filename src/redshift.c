@@ -608,7 +608,7 @@ run_continual_mode(const location_provider_t *provider,
 		   const transition_scheme_t *scheme,
 		   const gamma_method_t *method,
 		   gamma_state_t *method_state,
-		   int use_fade, long fade_duration,
+		   int use_fade, unsigned long fade_duration,
 		   int preserve_gamma, int verbose)
 {
 	int r;
