@@ -763,7 +763,7 @@ run_continual_mode(const location_provider_t *provider,
 				     &target_interp,
 				     &prev_target_interp))) {
 			    // Scale fade_length according to desired fade_duration.
-				fade_length = (FADE_LENGTH / ((FADE_LENGTH * SLEEP_DURATION_SHORT) / fade_duration));
+				fade_length = (FADE_LENGTH * fade_duration) / (FADE_LENGTH * SLEEP_DURATION_SHORT);
                 fade_time = 0;
 				fade_start_interp = interp;
 			}
