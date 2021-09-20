@@ -460,7 +460,7 @@ parse_command_line_option(
 		break;
     case 'f':
         errno = 0;
-        unsigned long fade_duration = strtoul(value, NULL, 10);
+        long fade_duration = strtol(value, NULL, 10);
         if (errno != 0 || fade_duration <= 0) {
             fputs(_("Malformed fade duration argument.\n"), stderr);
             fputs(_("Try `-h' for more information.\n"), stderr);
@@ -541,7 +541,7 @@ parse_config_file_option(
 	} else if (strcasecmp(key, "fade-duration") == 0) {
 	    if (options->fade_duration < 0) {
             errno = 0;
-            unsigned long fade_duration = strtoul(value, NULL, 10);
+            long fade_duration = strtol(value, NULL, 10);
             if (errno != 0 || fade_duration <= 0) {
                 fputs(_("Malformed fade duration setting.\n"), stderr);
                 return -1;
