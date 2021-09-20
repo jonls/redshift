@@ -457,6 +457,16 @@ parse_command_line_option(
 	case 'r':
 		options->use_fade = 0;
 		break;
+    case 'f':
+        errno = 0;
+        long fade_duration = strtol(value, NULL, 10);
+        if (errno != 0 || fade_duration <= 0) {
+            fputs(_("Malformed fade duration argument.\n"), stderr);
+            fputs(_("Try `-h' for more information.\n"), stderr);
+            return -1;
+        }
+        options->fade_duration = fade_duration;
+        break;
 	case 't':
 		s = strchr(value, ':');
 		if (s == NULL) {
@@ -496,7 +506,7 @@ options_parse_args(
 {
 	const char* program_name = argv[0];
 	int opt;
-	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:pPrt:vVx")) != -1) {
+	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:pPrf:t:vVx")) != -1) {
 		char option = opt;
 		int r = parse_command_line_option(
 			option, optarg, options, program_name, gamma_methods,
