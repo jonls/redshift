@@ -85,13 +85,13 @@ check/range = 1000-25000
 opt/long = temp-oneshotmanual
 opt/arg = required
 
-[fastfade]
+[fade/fast]
 type = boolean
 description = Enable fast fades between color temperatures (e.g. from daytime to nighttime). When disabled, fades will be slow and more pleasant.
 default = 0
 example = 1
 opt = f
-opt/long = fastfade
+opt/long = fade-fast
 opt/arg = none
 
 [brightness/day]
