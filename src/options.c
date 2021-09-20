@@ -193,6 +193,7 @@ print_help(const char *program_name)
 		" color effect\n"
 		"  -x\t\tReset mode (remove adjustment from screen)\n"
 		"  -r\t\tDisable fading between color temperatures\n"
+        "  -f\t\tSet fade duration (for fading between color temperatures) in full seconds\n"
 		"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"),
 	      stdout);
 	fputs("\n", stdout);
