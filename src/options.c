@@ -321,7 +321,7 @@ options_init(options_t *options)
 	options->provider_args = NULL;
 
 	options->use_fade = -1;
-    options->fade_duration = -1;
+	options->fade_duration = -1;
 	options->preserve_gamma = 1;
 	options->mode = PROGRAM_MODE_CONTINUAL;
 	options->verbose = 0;
