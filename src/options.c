@@ -105,7 +105,7 @@ parse_transition_time(const char *str, const char **end)
 	errno = 0;
 	long hours = strtol(str, (char **)&min, 10);
 	if (errno != 0 || min == str || min[0] != ':' ||
-	    hours < 0 || hours >= 24) {
+		hours < 0 || hours >= 24) {
 		return -1;
 	}
 
@@ -193,9 +193,9 @@ print_help(const char *program_name)
 		" color effect\n"
 		"  -x\t\tReset mode (remove adjustment from screen)\n"
 		"  -r\t\tDisable fading between color temperatures\n"
-        "  -f\t\tSet fade duration (for fading between color temperatures) in full seconds\n"
+		"  -f\t\tSet fade duration (for fading between color temperatures) in full seconds\n"
 		"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"),
-	      stdout);
+		  stdout);
 	fputs("\n", stdout);
 
 	/* TRANSLATORS: help output 5 */
@@ -211,7 +211,7 @@ print_help(const char *program_name)
 	printf(_("Default values:\n\n"
 		 "  Daytime temperature: %uK\n"
 		 "  Night temperature: %uK\n"),
-	       DEFAULT_DAY_TEMP, DEFAULT_NIGHT_TEMP);
+		   DEFAULT_DAY_TEMP, DEFAULT_NIGHT_TEMP);
 
 	fputs("\n", stdout);
 
@@ -359,8 +359,8 @@ parse_command_line_option(
 		   To set these to distinct values use the config
 		   file. */
 		memcpy(options->scheme.night.gamma,
-		       options->scheme.day.gamma,
-		       sizeof(options->scheme.night.gamma));
+			   options->scheme.day.gamma,
+			   sizeof(options->scheme.night.gamma));
 		break;
 	case 'h':
 		print_help(program_name);
@@ -406,7 +406,7 @@ parse_command_line_option(
 
 		/* Print provider help if arg is `help'. */
 		if (options->provider_args != NULL &&
-		    strcasecmp(options->provider_args, "help") == 0) {
+			strcasecmp(options->provider_args, "help") == 0) {
 			options->provider->print_help(stdout);
 			exit(EXIT_SUCCESS);
 		}
@@ -437,7 +437,7 @@ parse_command_line_option(
 
 		/* Print method help if arg is `help'. */
 		if (options->method_args != NULL &&
-		    strcasecmp(options->method_args, "help") == 0) {
+			strcasecmp(options->method_args, "help") == 0) {
 			options->method->print_help(stdout);
 			exit(EXIT_SUCCESS);
 		}
@@ -458,16 +458,16 @@ parse_command_line_option(
 	case 'r':
 		options->use_fade = 0;
 		break;
-    case 'f':
-        errno = 0;
-        long fade_duration = strtol(value, NULL, 10);
-        if (errno != 0 || fade_duration <= 0) {
-            fputs(_("Malformed fade duration argument.\n"), stderr);
-            fputs(_("Try `-h' for more information.\n"), stderr);
-            return -1;
-        }
-        options->fade_duration = fade_duration;
-        break;
+	case 'f':
+		errno = 0;
+		long fade_duration = strtol(value, NULL, 10);
+		if (errno != 0 || fade_duration <= 0) {
+			fputs(_("Malformed fade duration argument.\n"), stderr);
+			fputs(_("Try `-h' for more information.\n"), stderr);
+			return -1;
+		}
+		options->fade_duration = fade_duration;
+		break;
 	case 't':
 		s = strchr(value, ':');
 		if (s == NULL) {
@@ -539,15 +539,15 @@ parse_config_file_option(
 			options->use_fade = !!atoi(value);
 		}
 	} else if (strcasecmp(key, "fade-duration") == 0) {
-	    if (options->fade_duration < 0) {
-            errno = 0;
-            long fade_duration = strtol(value, NULL, 10);
-            if (errno != 0 || fade_duration <= 0) {
-                fputs(_("Malformed fade duration setting.\n"), stderr);
-                return -1;
-            }
-            options->fade_duration = fade_duration;
-	    }
+		if (options->fade_duration < 0) {
+			errno = 0;
+			long fade_duration = strtol(value, NULL, 10);
+			if (errno != 0 || fade_duration <= 0) {
+				fputs(_("Malformed fade duration setting.\n"), stderr);
+				return -1;
+			}
+			options->fade_duration = fade_duration;
+		}
 	} else if (strcasecmp(key, "brightness") == 0) {
 		if (isnan(options->scheme.day.brightness)) {
 			options->scheme.day.brightness = atof(value);
@@ -576,8 +576,8 @@ parse_config_file_option(
 				return -1;
 			}
 			memcpy(options->scheme.night.gamma,
-			       options->scheme.day.gamma,
-			       sizeof(options->scheme.night.gamma));
+				   options->scheme.day.gamma,
+				   sizeof(options->scheme.night.gamma));
 		}
 	} else if (strcasecmp(key, "gamma-day") == 0) {
 		if (isnan(options->scheme.day.gamma[0])) {
