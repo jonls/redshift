@@ -46,7 +46,6 @@ after_build:
     Copy-Item -Path README.md -Destination $ZIP_NAME/README.txt
     Copy-Item -Path NEWS.md -Destination $ZIP_NAME/NEWS.txt
     Copy-Item -Path COPYING -Destination $ZIP_NAME/COPYING.txt
-    Copy-Item -Path redshift.conf.sample -Destination $ZIP_NAME
     7z a $ZIP_FILE $ZIP_NAME/
 
 - ps: Push-AppveyorArtifact $ZIP_FILE
