@@ -1,0 +1,773 @@
+kdbOpen 2
+$key string 0 0
+
+
+$meta 10 12
+mountpoint
+redshift.ecf
+$key string 15 0
+adjustment/crtc
+
+$meta 7 1
+default
+0
+$meta 11 29
+description
+CRTC to apply adjustments to.
+$meta 7 1
+example
+1
+$meta 7 8
+opt/arg
+required
+$meta 8 4
+opt/long
+crtc
+$meta 4 14
+type
+unsigned_short
+$key string 19 0
+adjustment/drm/card
+
+$meta 7 1
+default
+0
+$meta 11 38
+description
+Graphics card to apply adjustments to.
+$meta 7 1
+example
+1
+$meta 7 8
+opt/arg
+required
+$meta 8 8
+opt/long
+drm-card
+$meta 4 14
+type
+unsigned_short
+$key string 17 0
+adjustment/method
+
+$meta 10 2
+check/enum
+#7
+$meta 13 3
+check/enum/#0
+drm
+$meta 13 5
+check/enum/#1
+dummy
+$meta 13 6
+check/enum/#2
+quartz
+$meta 13 5
+check/enum/#3
+randr
+$meta 13 7
+check/enum/#4
+vidmode
+$meta 13 6
+check/enum/#5
+w32gdi
+$meta 13 4
+check/enum/#6
+auto
+$meta 13 4
+check/enum/#7
+list
+$meta 7 4
+default
+auto
+$meta 11 221
+description
+The method used to adjust screen color temperature. By default, one of the supported methods on the current OS will be chosen automatically. For details see section "Alternative Features" in file DESIGN in root directory.
+$meta 7 5
+example
+randr
+$meta 3 1
+opt
+m
+$meta 7 8
+opt/arg
+required
+$meta 8 6
+opt/long
+method
+$meta 4 4
+type
+enum
+$key string 22 0
+adjustment/method/help
+
+$meta 7 1
+default
+0
+$meta 11 42
+description
+Prints the help of the adjustment methods.
+$meta 7 1
+example
+1
+$meta 7 4
+opt/arg
+none
+$meta 8 12
+opt/long
+help-methods
+$meta 4 7
+type
+boolean
+$key string 17 0
+adjustment/screen
+
+$meta 7 1
+default
+0
+$meta 11 33
+description
+X screen to apply adjustments to.
+$meta 7 1
+example
+1
+$meta 7 8
+opt/arg
+required
+$meta 8 6
+opt/long
+screen
+$meta 4 14
+type
+unsigned_short
+$key string 14 0
+brightness/day
+
+$meta 11 3
+check/range
+0-1
+$meta 10 5
+check/type
+float
+$meta 7 3
+default
+1.0
+$meta 11 124
+description
+The screen brightness during daytime. If both day and night brightness are set, these will overrule the value of brightness.
+$meta 7 3
+example
+0.8
+$meta 7 8
+opt/arg
+required
+$meta 8 14
+opt/long
+brightness-day
+$meta 4 5
+type
+float
+$key string 16 0
+brightness/night
+
+$meta 11 3
+check/range
+0-1
+$meta 10 5
+check/type
+float
+$meta 7 3
+default
+1.0
+$meta 11 126
+description
+The screen brightness during nighttime. If both day and night brightness are set, these will overrule the value of brightness.
+$meta 7 3
+example
+0.8
+$meta 7 8
+opt/arg
+required
+$meta 8 16
+opt/long
+brightness-night
+$meta 4 5
+type
+float
+$key string 9 0
+fade/fast
+
+$meta 7 1
+default
+0
+$meta 11 131
+description
+Enable fast fades between color temperatures (e.g. from daytime to nighttime). When disabled, fades will be slow and more pleasant.
+$meta 7 1
+example
+1
+$meta 3 1
+opt
+f
+$meta 7 4
+opt/arg
+none
+$meta 8 9
+opt/long
+fade-fast
+$meta 4 7
+type
+boolean
+$key string 9 0
+gamma/day
+
+$meta 16 67
+check/validation
+^([0-9]*[\.,]?[0-9]+)(:([0-9]*[\.,]?[0-9]+):([0-9]*[\.,]?[0-9]+))?$
+$meta 24 237
+check/validation/message
+The gamma value you provided is in an unsupported format. Supported formats are: 1. One value, that will be used for red, green and blue (e.g. 0.9). 2. Three colon-separated values for red, green and blue respectively (e.g. 0.9:0.9:0.9).
+$meta 7 11
+default
+1.0:1.0:1.0
+$meta 11 208
+description
+The screen gamma during daytime. Supported formats: 1. One value, that will be used for red, green and blue (e.g. 0.9). 2. Three colon-separated values for red, green and blue respectively (e.g. 0.9:0.9:0.9).
+$meta 7 3
+example
+0.9
+$meta 7 8
+opt/arg
+required
+$meta 8 9
+opt/long
+gamma-day
+$meta 4 6
+type
+string
+$key string 11 0
+gamma/night
+
+$meta 16 67
+check/validation
+^([0-9]*[\.,]?[0-9]+)(:([0-9]*[\.,]?[0-9]+):([0-9]*[\.,]?[0-9]+))?$
+$meta 24 237
+check/validation/message
+The gamma value you provided is in an unsupported format. Supported formats are: 1. One value, that will be used for red, green and blue (e.g. 0.9). 2. Three colon-separated values for red, green and blue respectively (e.g. 0.9:0.9:0.9).
+$meta 7 11
+default
+1.0:1.0:1.0
+$meta 11 210
+description
+The screen gamma during nighttime. Supported formats: 1. One value, that will be used for red, green and blue (e.g. 0.9). 2. Three colon-separated values for red, green and blue respectively (e.g. 0.9:0.9:0.9).
+$meta 7 3
+example
+0.9
+$meta 7 8
+opt/arg
+required
+$meta 8 11
+opt/long
+gamma-night
+$meta 4 6
+type
+string
+$key string 14 0
+gamma/preserve
+
+$meta 7 1
+default
+1
+$meta 11 65
+description
+Use to preserve existing gamma ramps before applying adjustments.
+$meta 7 1
+example
+0
+$meta 3 1
+opt
+P
+$meta 7 4
+opt/arg
+none
+$meta 4 7
+type
+boolean
+$key string 4 0
+help
+
+$meta 7 1
+default
+0
+$meta 11 18
+description
+Show program help.
+$meta 7 1
+example
+1
+$meta 3 1
+opt
+h
+$meta 7 4
+opt/arg
+none
+$meta 4 7
+type
+boolean
+$key string 4 0
+mode
+
+$meta 10 2
+check/enum
+#4
+$meta 13 9
+check/enum/#0
+continual
+$meta 13 5
+check/enum/#1
+print
+$meta 13 7
+check/enum/#2
+oneshot
+$meta 13 5
+check/enum/#3
+reset
+$meta 13 13
+check/enum/#4
+oneshotmanual
+$meta 7 9
+default
+continual
+$meta 11 447
+description
+The program mode. "continual" will constantly adjust the screen color temperature using the configured "provider". "print" will just print parameters and exit. "oneshot" will set temperature once using the configured "provider". "reset" will remove any color temperature adjustments then exit. "oneshotmanual" will not use any provider to determine if it's night or day and set the temperature specified by option "temp/oneshotmanual" immediately.
+$meta 7 7
+example
+oneshot
+$meta 7 8
+opt/arg
+required
+$meta 8 4
+opt/long
+mode
+$meta 4 4
+type
+enum
+$key string 8 0
+provider
+
+$meta 10 2
+check/enum
+#1
+$meta 13 4
+check/enum/#0
+time
+$meta 13 8
+check/enum/#1
+location
+$meta 7 8
+default
+location
+$meta 11 313
+description
+The provider used to decide at what times of day redshift should be enabled/disabled. Currently two options are supported: 1. location - determines the user's location and enable/disable redshift depending on the solar elevation. 2. time: Ignore user location and enable redshift if time is between dusk and dawn.
+$meta 7 4
+example
+time
+$meta 7 8
+opt/arg
+required
+$meta 8 8
+opt/long
+provider
+$meta 4 4
+type
+enum
+$key string 17 0
+provider/location
+
+$meta 10 2
+check/enum
+#4
+$meta 13 12
+check/enum/#0
+corelocation
+$meta 13 8
+check/enum/#1
+geoclue2
+$meta 13 6
+check/enum/#2
+manual
+$meta 13 4
+check/enum/#3
+auto
+$meta 13 4
+check/enum/#4
+list
+$meta 7 4
+default
+auto
+$meta 11 213
+description
+The location provider to be used. By default, one of the supported location providers on the current OS will be chosen automatically. The provider is used to establish whether it is currently daytime or nighttime.
+$meta 7 8
+example
+geoclue2
+$meta 7 8
+opt/arg
+required
+$meta 8 17
+opt/long
+location-provider
+$meta 4 4
+type
+enum
+$key string 32 0
+provider/location/elevation/high
+
+$meta 7 3
+default
+3.0
+$meta 11 414
+description
+By default, Redshift will use the current elevation of the sun to determine whether it is daytime, night or in transition (dawn/dusk). When the sun is above the degrees specified with the elevation-high key it is considered daytime and below the elevation-low key it is considered night (source: https://github.com/jonls/redshift/wiki/Configuration-file#solar-elevation-thresholds). Affects all location providers.
+$meta 7 3
+example
+3.5
+$meta 7 8
+opt/arg
+required
+$meta 8 14
+opt/long
+elevation-high
+$meta 4 5
+type
+float
+$key string 31 0
+provider/location/elevation/low
+
+$meta 7 4
+default
+-6.0
+$meta 11 414
+description
+By default, Redshift will use the current elevation of the sun to determine whether it is daytime, night or in transition (dawn/dusk). When the sun is above the degrees specified with the elevation-high key it is considered daytime and below the elevation-low key it is considered night (source: https://github.com/jonls/redshift/wiki/Configuration-file#solar-elevation-thresholds). Affects all location providers.
+$meta 7 4
+example
+-5.0
+$meta 7 8
+opt/arg
+required
+$meta 8 13
+opt/long
+elevation-low
+$meta 4 5
+type
+float
+$key string 22 0
+provider/location/help
+
+$meta 7 1
+default
+0
+$meta 11 42
+description
+Prints the help of the location providers.
+$meta 7 1
+example
+1
+$meta 7 4
+opt/arg
+none
+$meta 8 14
+opt/long
+help-providers
+$meta 4 7
+type
+boolean
+$key string 28 0
+provider/location/manual/lat
+
+$meta 11 10
+check/range
+-90.0-90.0
+$meta 10 5
+check/type
+float
+$meta 7 9
+default
+52.520008
+$meta 11 126
+description
+The location latitude. Only applies to location provider "manual". Some locations (e.g. mainland USA) require negative values.
+$meta 7 9
+example
+52.520008
+$meta 7 8
+opt/arg
+required
+$meta 8 3
+opt/long
+lat
+$meta 4 5
+type
+float
+$key string 28 0
+provider/location/manual/lon
+
+$meta 11 12
+check/range
+-180.0-180.0
+$meta 10 5
+check/type
+float
+$meta 7 9
+default
+13.404954
+$meta 11 130
+description
+The location longitude. Only applies to location provider "manual". Some locations (e.g. parts of Africa) require negative values.
+$meta 7 9
+example
+13.404954
+$meta 7 8
+opt/arg
+required
+$meta 8 3
+opt/long
+lon
+$meta 4 5
+type
+float
+$key string 22 0
+provider/time/dawn/end
+
+$meta 10 7
+check/date
+ISO8601
+$meta 17 9
+check/date/format
+timeofday
+$meta 7 5
+default
+06:30
+$meta 11 217
+description
+Instead of using the solar elevation at the user's location, the time intervals of dawn and dusk can be specified manually (source: https://github.com/jonls/redshift/wiki/Configuration-file#custom-dawndusk-intervals).
+$meta 7 5
+example
+07:30
+$meta 7 8
+opt/arg
+required
+$meta 8 13
+opt/long
+time-dawn-end
+$meta 4 6
+type
+string
+$key string 24 0
+provider/time/dawn/start
+
+$meta 10 7
+check/date
+ISO8601
+$meta 17 9
+check/date/format
+timeofday
+$meta 7 5
+default
+05:00
+$meta 11 217
+description
+Instead of using the solar elevation at the user's location, the time intervals of dawn and dusk can be specified manually (source: https://github.com/jonls/redshift/wiki/Configuration-file#custom-dawndusk-intervals).
+$meta 7 5
+example
+06:00
+$meta 7 8
+opt/arg
+required
+$meta 8 15
+opt/long
+time-dawn-start
+$meta 4 6
+type
+string
+$key string 22 0
+provider/time/dusk/end
+
+$meta 10 7
+check/date
+ISO8601
+$meta 17 9
+check/date/format
+timeofday
+$meta 7 5
+default
+20:30
+$meta 11 217
+description
+Instead of using the solar elevation at the user's location, the time intervals of dawn and dusk can be specified manually (source: https://github.com/jonls/redshift/wiki/Configuration-file#custom-dawndusk-intervals).
+$meta 7 5
+example
+21:30
+$meta 7 8
+opt/arg
+required
+$meta 8 13
+opt/long
+time-dusk-end
+$meta 4 6
+type
+string
+$key string 24 0
+provider/time/dusk/start
+
+$meta 10 7
+check/date
+ISO8601
+$meta 17 9
+check/date/format
+timeofday
+$meta 7 5
+default
+19:00
+$meta 11 217
+description
+Instead of using the solar elevation at the user's location, the time intervals of dawn and dusk can be specified manually (source: https://github.com/jonls/redshift/wiki/Configuration-file#custom-dawndusk-intervals).
+$meta 7 5
+example
+20:00
+$meta 7 8
+opt/arg
+required
+$meta 8 15
+opt/long
+time-dusk-start
+$meta 4 6
+type
+string
+$key string 8 0
+temp/day
+
+$meta 11 10
+check/range
+1000-25000
+$meta 10 14
+check/type
+unsigned_short
+$meta 7 4
+default
+6500
+$meta 11 60
+description
+The color temperature the screen should have during daytime.
+$meta 7 4
+example
+6500
+$meta 7 8
+opt/arg
+required
+$meta 8 8
+opt/long
+temp-day
+$meta 4 14
+type
+unsigned_short
+$key string 10 0
+temp/night
+
+$meta 11 10
+check/range
+1000-25000
+$meta 10 14
+check/type
+unsigned_short
+$meta 7 4
+default
+4500
+$meta 11 62
+description
+The color temperature the screen should have during nighttime.
+$meta 7 4
+example
+4500
+$meta 7 8
+opt/arg
+required
+$meta 8 10
+opt/long
+temp-night
+$meta 4 14
+type
+unsigned_short
+$key string 18 0
+temp/oneshotmanual
+
+$meta 11 10
+check/range
+1000-25000
+$meta 10 14
+check/type
+unsigned_short
+$meta 7 4
+default
+6500
+$meta 11 77
+description
+The color temperature the screen should have when oneshotmanual mode is used.
+$meta 7 4
+example
+6500
+$meta 7 8
+opt/arg
+required
+$meta 8 18
+opt/long
+temp-oneshotmanual
+$meta 4 14
+type
+unsigned_short
+$key string 7 0
+verbose
+
+$meta 7 1
+default
+0
+$meta 11 15
+description
+Verbose output.
+$meta 7 1
+example
+1
+$meta 3 1
+opt
+v
+$meta 7 4
+opt/arg
+none
+$meta 4 7
+type
+boolean
+$key string 7 0
+version
+
+$meta 7 1
+default
+0
+$meta 11 21
+description
+Show program version.
+$meta 7 1
+example
+1
+$meta 3 1
+opt
+V
+$meta 7 4
+opt/arg
+none
+$meta 4 7
+type
+boolean
+$end
