@@ -32,6 +32,7 @@ esac
 AC_CHECK_TOOL([WINDRES], [windres], [])
 AS_IF([test "x$build_windows" = "xyes" -a -n "x$WINDRES"], [
 	enable_windows_resource=yes
+	AC_DEFINE([WINDOWS_BUILD], [1])
 ], [
 	enable_windows_resource=no
 ])

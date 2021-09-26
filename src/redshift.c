@@ -60,12 +60,17 @@ int poll(struct pollfd *fds, int nfds, int timeout) { abort(); return -1; }
 #endif
 
 #include "redshift.h"
-#include "elektra/redshift-conf.h"
 #include "solar.h"
 #include "systemtime.h"
 #include "hooks.h"
 #include "signals.h"
 #include "options.h"
+
+#ifdef WINDOWS_BUILD
+#include "elektra/windows/redshift-conf.h"
+#else
+#include "elektra/redshift-conf.h"
+#endif
 
 /* pause() is not defined on windows platform but is not needed either.
    Use a noop macro instead. */
