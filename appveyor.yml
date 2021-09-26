@@ -26,7 +26,7 @@ build_script:
         cd elektra-download
         Start-FileDownload 'https://build.libelektra.org/job/libelektra/job/master/lastSuccessfulBuild/artifact/artifacts/debian-bullseye-mingw-w64/elektra.zip'
 
-- C:\msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER && cd elektra-download && unzip elektra.zip"
+- C:\msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER && cd elektra-download && 7z x elektra.zip"
 - C:\msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER && cd elektra-download && cp -r usr/local/include /usr/include"
 - C:\msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER && cd elektra-download && cp -r usr/local/lib /usr/lib"
 - C:\msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./bootstrap"
