@@ -20,8 +20,13 @@ build_script:
     $env:CONFIGURE_FLAGS = "--disable-drm --disable-randr --disable-vidmode --enable-wingdi --disable-quartz --disable-geoclue2 --disable-corelocation --disable-gui --disable-ubuntu --disable-nls --host=$env:arch-w64-mingw32"
 
 - ps: md (Join-Path $env:APPVEYOR_BUILD_FOLDER root)
-- ps: md (Join-Path $env:APPVEYOR_BUILD_FOLDER elektra-download)
-- C:\msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER && cd elektra-download && curl -fsS -o elektra.zip https://build.libelektra.org/job/libelektra/job/master/lastSuccessfulBuild/artifact/artifacts/debian-bullseye-mingw-w64/elektra.zip && unzip elektra.zip"
+- ps: |
+        md (Join-Path $env:APPVEYOR_BUILD_FOLDER elektra-download)
+        cd $env:APPVEYOR_BUILD_FOLDER
+        cd elektra-download
+        Start-FileDownload 'https://build.libelektra.org/job/libelektra/job/master/lastSuccessfulBuild/artifact/artifacts/debian-bullseye-mingw-w64/elektra.zip'
+
+- C:\msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER && cd elektra-download/elektra && unzip elektra.zip"
 - C:\msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER && cd elektra-download/elektra && cp -r usr/local/include /usr/include"
 - C:\msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER && cd elektra-download/elektra && cp -r usr/local/lib /usr/lib"
 - C:\msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./bootstrap"
