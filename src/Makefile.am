@@ -46,10 +46,10 @@ KDB ?= kdb
 # see https://stackoverflow.com/a/10609434
 %-conf.c %-conf.h %-conf.mount.sh: %.ni
 	$(KDB) gen -F ni=$*.ni highlevel "/sw/jonls/redshift/#0/current" $*-conf initFn=loadConfiguration helpFn=printHelpMessage specloadFn=exitForSpecload embeddedSpec=full;
-endif
-
 scriptsdir = $(prefix)/libexec
 scripts_DATA = elektra/redshift-conf.mount.sh
+endif
+
 
 AM_CFLAGS =
 redshift_LDADD = @LIBINTL@
