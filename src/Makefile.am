@@ -36,11 +36,14 @@ CLEANFILES = elektra/redshift-conf.c elektra/redshift-conf.h elektra/redshift-co
 nodist_redshift_SOURCES = elektra/redshift-conf.h elektra/redshift-conf.c
 redshift.$(OBJEXT) options.$(OBJEXT): elektra/redshift-conf.h elektra/redshift-conf.c
 
+if ENABLE_WINDOWS_RESOURCE
+else
 KDB ?= kdb
 # Use pattern rule to ensure that kdb gen is only executed once, even if make -jN is used.
 # see https://stackoverflow.com/a/10609434
 %-conf.c %-conf.h %-conf.mount.sh: %.ni
 	$(KDB) gen -F ni=$*.ni highlevel "/sw/jonls/redshift/#0/current" $*-conf initFn=loadConfiguration helpFn=printHelpMessage specloadFn=exitForSpecload embeddedSpec=full;
+endif
 
 scriptsdir = $(prefix)/libexec
 scripts_DATA = elektra/redshift-conf.mount.sh
@@ -118,6 +121,7 @@ endif
 # Windows resources
 if ENABLE_WINDOWS_RESOURCE
 redshift_SOURCES += windows/appicon.rc windows/versioninfo.rc
+
 endif
 
 .rc.o:
