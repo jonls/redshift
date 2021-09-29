@@ -21,13 +21,14 @@
 #define REDSHIFT_OPTIONS_H
 
 #include "redshift.h"
+#include "elektra/redshift-conf.h"
 
 typedef struct {
 	/* Path to config file */
 	char *config_filepath;
 
 	transition_scheme_t scheme;
-	program_mode_t mode;
+	ElektraEnumMode mode;
 	int verbose;
 
 	/* Temperature to set in manual mode. */

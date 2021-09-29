@@ -49,15 +49,6 @@ typedef struct {
 	float brightness;
 } color_setting_t;
 
-/* Program modes. */
-typedef enum {
-	PROGRAM_MODE_CONTINUAL,
-	PROGRAM_MODE_ONE_SHOT,
-	PROGRAM_MODE_PRINT,
-	PROGRAM_MODE_RESET,
-	PROGRAM_MODE_MANUAL
-} program_mode_t;
-
 /* Time range.
    Fields are offsets from midnight in seconds. */
 typedef struct {
