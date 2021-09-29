@@ -110,15 +110,15 @@ int poll(struct pollfd *fds, int nfds, int timeout) { abort(); return -1; }
 #define CLAMP(lo,mid,up)  (((lo) > (mid)) ? (lo) : (((mid) < (up)) ? (mid) : (up)))
 
 
-/* Bounds for parameters. */
+/* Bounds for parameters.
+ * 1. LAT, LON is required to check location returned by location providers.
+ * 2. GAMMA is required to check gamma string returned by Elektra.
+ * All other parameters are checked by Elektra.
+ * */
 #define MIN_LAT   -90.0
 #define MAX_LAT    90.0
 #define MIN_LON  -180.0
 #define MAX_LON   180.0
-#define MIN_TEMP   1000
-#define MAX_TEMP  25000
-#define MIN_BRIGHTNESS  0.1
-#define MAX_BRIGHTNESS  1.0
 #define MIN_GAMMA   0.1
 #define MAX_GAMMA  10.0
 
@@ -953,38 +953,6 @@ int main(int argc, const char * const *argv, const char * const *envp)
 			       options.scheme.night.temperature);
 		}
 
-		/* Color temperature */
-		if (options.scheme.day.temperature < MIN_TEMP ||
-		    options.scheme.day.temperature > MAX_TEMP ||
-		    options.scheme.night.temperature < MIN_TEMP ||
-		    options.scheme.night.temperature > MAX_TEMP) {
-			fprintf(stderr,
-				_("Temperature must be between %uK and %uK.\n"),
-				MIN_TEMP, MAX_TEMP);
-			exit(EXIT_FAILURE);
-		}
-	}
-
-	if (options.mode == PROGRAM_MODE_MANUAL) {
-		/* Check color temperature to be set */
-		if (options.temp_set < MIN_TEMP ||
-		    options.temp_set > MAX_TEMP) {
-			fprintf(stderr,
-				_("Temperature must be between %uK and %uK.\n"),
-				MIN_TEMP, MAX_TEMP);
-			exit(EXIT_FAILURE);
-		}
-	}
-
-	/* Brightness */
-	if (options.scheme.day.brightness < MIN_BRIGHTNESS ||
-	    options.scheme.day.brightness > MAX_BRIGHTNESS ||
-	    options.scheme.night.brightness < MIN_BRIGHTNESS ||
-	    options.scheme.night.brightness > MAX_BRIGHTNESS) {
-		fprintf(stderr,
-			_("Brightness values must be between %.1f and %.1f.\n"),
-			MIN_BRIGHTNESS, MAX_BRIGHTNESS);
-		exit(EXIT_FAILURE);
 	}
 
 	if (options.verbose) {
