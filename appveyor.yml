@@ -13,11 +13,13 @@ build_script:
 - ps: |
     If ($env:arch -Match "x86_64") {
       $env:MSYSTEM = "MINGW64"
-      $env:ELEKTRA_DOWNLOAD_URL = "https://build.libelektra.org/job/libelektra/job/PR-4070/lastSuccessfulBuild/artifact/artifacts/debian-bullseye-mingw-w64-x86_64/elektra.zip"
+      # TODO: switch to release channel after Elektra 0.9.8 is released
+      $env:ELEKTRA_DOWNLOAD_URL = "https://build.libelektra.org/job/libelektra/job/master/lastSuccessfulBuild/artifact/artifacts/debian-bullseye-mingw-w64-x86_64/elektra.zip"
       $env:PATH_FOR_ELEKTRA_FILES = "C:\msys64\mingw64"
     } Else {
       $env:MSYSTEM = "MINGW32"
-      $env:ELEKTRA_DOWNLOAD_URL = "https://build.libelektra.org/job/libelektra/job/PR-4070/lastSuccessfulBuild/artifact/artifacts/debian-bullseye-mingw-w64-i686/elektra.zip"
+      # TODO: switch to release channel after Elektra 0.9.8 is released
+      $env:ELEKTRA_DOWNLOAD_URL = "https://build.libelektra.org/job/libelektra/job/master/lastSuccessfulBuild/artifact/artifacts/debian-bullseye-mingw-w64-i686/elektra.zip"
       $env:PATH_FOR_ELEKTRA_FILES = "C:\msys64\mingw32"
     }
 
