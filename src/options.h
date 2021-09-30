@@ -21,7 +21,11 @@
 #define REDSHIFT_OPTIONS_H
 
 #include "redshift.h"
+#ifdef WINDOWS_BUILD
+#include "elektra/windows/redshift-conf.h"
+#else
 #include "elektra/redshift-conf.h"
+#endif
 
 typedef struct {
 	/* Path to config file */
