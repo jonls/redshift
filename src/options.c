@@ -37,7 +37,12 @@
 #include "redshift.h"
 #include "options.h"
 #include "solar.h"
+
+#ifdef WINDOWS_BUILD
+#include "elektra/windows/redshift-conf.h"
+#else
 #include "elektra/redshift-conf.h"
+#endif
 
 /* A gamma string contains either one floating point value,
    or three values separated by colon. */

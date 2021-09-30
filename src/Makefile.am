@@ -33,20 +33,23 @@ EXTRA_redshift_SOURCES = \
 
 # Note: rules for Elektra are based on https://github.com/kodebach/lcdproc/blob/3e2b9d3f5cade3bbe21fdb5a9ea1c9ffc1c994fa/server/Makefile.am
 CLEANFILES = elektra/redshift-conf.c elektra/redshift-conf.h elektra/redshift-conf.mount.sh
-nodist_redshift_SOURCES = elektra/redshift-conf.h elektra/redshift-conf.c
-redshift.$(OBJEXT) options.$(OBJEXT): elektra/redshift-conf.h elektra/redshift-conf.c
 
 if ENABLE_WINDOWS_RESOURCE
+redshift_SOURCES += elektra/windows/redshift-conf.h elektra/windows/redshift-conf.c
 else
+
+# Linux builds generate the files during make
+redshift.$(OBJEXT) options.$(OBJEXT): elektra/redshift-conf.h elektra/redshift-conf.c
+nodist_redshift_SOURCES = elektra/redshift-conf.h elektra/redshift-conf.c
 KDB ?= kdb
 # Use pattern rule to ensure that kdb gen is only executed once, even if make -jN is used.
 # see https://stackoverflow.com/a/10609434
 %-conf.c %-conf.h %-conf.mount.sh: %.ni
 	$(KDB) gen -F ni=$*.ni highlevel "/sw/jonls/redshift/#0/current" $*-conf initFn=loadConfiguration helpFn=printHelpMessage specloadFn=exitForSpecload embeddedSpec=full;
-endif
-
 scriptsdir = $(prefix)/libexec
 scripts_DATA = elektra/redshift-conf.mount.sh
+endif
+
 
 AM_CFLAGS =
 redshift_LDADD = @LIBINTL@
