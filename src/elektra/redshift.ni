@@ -1,4 +1,7 @@
 ; Elektra specification file for redshift@490ba2aae9cfee097a88b6e2be98aeb1ce990050 (= redshift v1.12 + some small commits)
+; 
+; IMPORTANT: Make sure to execute `kdb gen` after changes to this file!
+; See section "Updating the Elektra specification file" in CONTRIBUTING.md for details.
 ;
 ; A specification file describes:
 ; 1. which configuration settings an application supports,

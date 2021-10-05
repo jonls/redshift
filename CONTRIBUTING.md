@@ -72,6 +72,15 @@ You can now run the python script. Example:
 $ $HOME/redshift/root/bin/redshift-gtk
 ```
 
+### Updating the Elektra specification file
+When you update the Elektra specification file, make sure to regenerate the files `src/elektra/redshift-conf.*` and `src/elektra/windows/redshift-conf.*`:
+
+```sh
+cd src/elektra
+kdb gen -F ni=redshift.ni highlevel "/sw/jonls/redshift/#0/current" redshift-conf initFn=loadConfiguration helpFn=printHelpMessage specloadFn=exitForSpecload embeddedSpec=full;
+cd windows
+kdb gen -F dump=redshift-win.dump highlevel "/sw/jonls/redshift/#0/current" redshift-conf initFn=loadConfiguration helpFn=printHelpMessage specloadFn=exitForSpecload embeddedSpec=full;
+```
 
 Dependencies
 ------------
