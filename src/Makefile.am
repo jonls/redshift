@@ -10,7 +10,6 @@ bin_PROGRAMS = redshift
 
 redshift_SOURCES = \
 	colorramp.c colorramp.h \
-	config-ini.c config-ini.h \
 	gamma-dummy.c gamma-dummy.h \
 	hooks.c hooks.h \
 	location-manual.c location-manual.h \
@@ -31,6 +30,15 @@ EXTRA_redshift_SOURCES = \
 	location-corelocation.m location-corelocation.h \
 	windows/appicon.rc \
 	windows/versioninfo.rc
+
+if ENABLE_WINDOWS_RESOURCE
+redshift_SOURCES += elektra/windows/redshift-conf.h elektra/windows/redshift-conf.c
+else
+redshift_SOURCES += elektra/redshift-conf.h elektra/redshift-conf.c
+scriptsdir = $(prefix)/libexec
+scripts_DATA = elektra/redshift-conf.mount.sh
+endif
+
 
 AM_CFLAGS =
 redshift_LDADD = @LIBINTL@
@@ -80,6 +88,12 @@ redshift_LDADD += \
 	$(GEOCLUE2_LIBS) $(GEOCLUE2_CFLAGS)
 endif
 
+AM_CFLAGS += \
+	$(ELEKTRA_CFLAGS)
+redshift_LDADD += \
+	$(ELEKTRA_LIBS) $(ELEKTRA_CFLAGS)
+
+
 # Build CoreLocation module as a separate convenience
 # library since it is using a separate compiler
 # (Objective C).
@@ -99,6 +113,7 @@ endif
 # Windows resources
 if ENABLE_WINDOWS_RESOURCE
 redshift_SOURCES += windows/appicon.rc windows/versioninfo.rc
+
 endif
 
 .rc.o:

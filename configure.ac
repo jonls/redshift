@@ -32,6 +32,7 @@ esac
 AC_CHECK_TOOL([WINDRES], [windres], [])
 AS_IF([test "x$build_windows" = "xyes" -a -n "x$WINDRES"], [
 	enable_windows_resource=yes
+	AC_DEFINE([WINDOWS_BUILD], [1], [Add a DEFINE that this is a Windows build])
 ], [
 	enable_windows_resource=no
 ])
@@ -70,6 +71,10 @@ PKG_CHECK_MODULES([XCB_RANDR], [xcb-randr],
 
 PKG_CHECK_MODULES([GLIB], [glib-2.0 gobject-2.0], [have_glib=yes], [have_glib=no])
 PKG_CHECK_MODULES([GEOCLUE2], [glib-2.0 gio-2.0 >= 2.26], [have_geoclue2=yes], [have_geoclue2=no])
+
+# No action-if-not-found is given, because we the build to fail, if elektra is missing.
+# The build will fail, because that is the default behavior if action-if-not-found is not set ("end the execution with an error for not having found the dependency.", https://autotools.io/pkgconfig/pkg_check_modules.html)
+PKG_CHECK_MODULES([ELEKTRA], [ elektra elektra-codegen elektra-highlevel >= 0.9.7])
 
 # macOS headers
 AC_CHECK_HEADER([ApplicationServices/ApplicationServices.h], [have_appserv_h=yes], [have_appserv_h=no])

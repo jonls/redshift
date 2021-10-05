@@ -60,12 +60,17 @@ int poll(struct pollfd *fds, int nfds, int timeout) { abort(); return -1; }
 #endif
 
 #include "redshift.h"
-#include "config-ini.h"
 #include "solar.h"
 #include "systemtime.h"
 #include "hooks.h"
 #include "signals.h"
 #include "options.h"
+
+#ifdef WINDOWS_BUILD
+#include "elektra/windows/redshift-conf.h"
+#else
+#include "elektra/redshift-conf.h"
+#endif
 
 /* pause() is not defined on windows platform but is not needed either.
    Use a noop macro instead. */
@@ -110,15 +115,15 @@ int poll(struct pollfd *fds, int nfds, int timeout) { abort(); return -1; }
 #define CLAMP(lo,mid,up)  (((lo) > (mid)) ? (lo) : (((mid) < (up)) ? (mid) : (up)))
 
 
-/* Bounds for parameters. */
+/* Bounds for parameters.
+ * 1. LAT, LON is required to check location returned by location providers.
+ * 2. GAMMA is required to check gamma string returned by Elektra.
+ * All other parameters are checked by Elektra.
+ * */
 #define MIN_LAT   -90.0
 #define MAX_LAT    90.0
 #define MIN_LON  -180.0
 #define MAX_LON   180.0
-#define MIN_TEMP   1000
-#define MAX_TEMP  25000
-#define MIN_BRIGHTNESS  0.1
-#define MAX_BRIGHTNESS  1.0
 #define MIN_GAMMA   0.1
 #define MAX_GAMMA  10.0
 
@@ -241,21 +246,8 @@ print_period(period_t period, double transition)
 static void
 print_location(const location_t *location)
 {
-	/* TRANSLATORS: Abbreviation for `north' */
-	const char *north = _("N");
-	/* TRANSLATORS: Abbreviation for `south' */
-	const char *south = _("S");
-	/* TRANSLATORS: Abbreviation for `east' */
-	const char *east = _("E");
-	/* TRANSLATORS: Abbreviation for `west' */
-	const char *west = _("W");
-
-	/* TRANSLATORS: Append degree symbols after %f if possible.
-	   The string following each number is an abreviation for
-	   north, source, east or west (N, S, E, W). */
-	printf(_("Location: %.2f %s, %.2f %s\n"),
-	       fabs(location->lat), location->lat >= 0.f ? north : south,
-	       fabs(location->lon), location->lon >= 0.f ? east : west);
+	/* TRANSLATORS: Append degree symbols after %f if possible.*/
+	printf(_("Location is now available! Latitude: %.2f, longitude: %.2f\n"), location->lat, location->lon);
 }
 
 /* Interpolate color setting structs given alpha. */
@@ -320,89 +312,35 @@ color_setting_reset(color_setting_t *color)
 
 static int
 provider_try_start(const location_provider_t *provider,
-		   location_state_t **state, config_ini_state_t *config,
-		   char *args)
+		   location_state_t **state, options_t *options_state)
 {
 	int r;
 
 	r = provider->init(state);
 	if (r < 0) {
-		fprintf(stderr, _("Initialization of %s failed.\n"),
+		fprintf(stderr, _("Initialization of location provider %s failed.\n"),
 			provider->name);
 		return -1;
 	}
 
-	/* Set provider options from config file. */
-	config_ini_section_t *section =
-		config_ini_get_section(config, provider->name);
-	if (section != NULL) {
-		config_ini_setting_t *setting = section->settings;
-		while (setting != NULL) {
-			r = provider->set_option(*state, setting->name,
-						 setting->value);
-			if (r < 0) {
-				provider->free(*state);
-				fprintf(stderr, _("Failed to set %s"
-						  " option.\n"),
-					provider->name);
-				/* TRANSLATORS: `help' must not be
-				   translated. */
-				fprintf(stderr, _("Try `-l %s:help' for more"
-						  " information.\n"),
-					provider->name);
-				return -1;
-			}
-			setting = setting->next;
-		}
-	}
-
-	/* Set provider options from command line. */
-	const char *manual_keys[] = { "lat", "lon" };
-	int i = 0;
-	while (args != NULL) {
-		char *next_arg = strchr(args, ':');
-		if (next_arg != NULL) *(next_arg++) = '\0';
-
-		const char *key = args;
-		char *value = strchr(args, '=');
-		if (value == NULL) {
-			/* The options for the "manual" method can be set
-			   without keys on the command line for convencience
-			   and for backwards compatability. We add the proper
-			   keys here before calling set_option(). */
-			if (strcmp(provider->name, "manual") == 0 &&
-			    i < sizeof(manual_keys)/sizeof(manual_keys[0])) {
-				key = manual_keys[i];
-				value = args;
-			} else {
-				fprintf(stderr, _("Failed to parse option `%s'.\n"),
-					args);
-				return -1;
-			}
-		} else {
-			*(value++) = '\0';
-		}
-
-		r = provider->set_option(*state, key, value);
-		if (r < 0) {
-			provider->free(*state);
-			fprintf(stderr, _("Failed to set %s option.\n"),
-				provider->name);
-			/* TRANSLATORS: `help' must not be translated. */
-			fprintf(stderr, _("Try `-l %s:help' for more"
-					  " information.\n"), provider->name);
-			return -1;
-		}
-
-		args = next_arg;
-		i += 1;
-	}
-
-	/* Start provider. */
+    if (strcmp(provider->name, "manual") == 0) {
+        int r1 = provider->set_option(*state, "lat", &options_state->provider_manual_arg_lat);
+        int r2 = provider->set_option(*state, "lon", &options_state->provider_manual_arg_lon);
+        if (r1 < 0 || r2 < 0) {
+            provider->free(*state);
+            fprintf(stderr, _("Failed to set %s option.\n"),
+                    provider->name);
+            /* TRANSLATORS: `help' and `--help-providers' must not be translated. */
+            fprintf(stderr, _("Try `--help' and `--help-providers' for more"
+                              " information.\n"));
+            return -1;
+        }
+    }
+    /* Start provider. */
 	r = provider->start(*state);
 	if (r < 0) {
 		provider->free(*state);
-		fprintf(stderr, _("Failed to start provider %s.\n"),
+		fprintf(stderr, _("Failed to start location provider %s.\n"),
 			provider->name);
 		return -1;
 	}
@@ -412,69 +350,31 @@ provider_try_start(const location_provider_t *provider,
 
 static int
 method_try_start(const gamma_method_t *method,
-		 gamma_state_t **state, config_ini_state_t *config, char *args)
+		 gamma_state_t **state, options_t *options)
 {
 	int r;
 
 	r = method->init(state);
 	if (r < 0) {
-		fprintf(stderr, _("Initialization of %s failed.\n"),
+		fprintf(stderr, _("Initialization of adjustment method %s failed.\n"),
 			method->name);
 		return -1;
 	}
 
-	/* Set method options from config file. */
-	config_ini_section_t *section =
-		config_ini_get_section(config, method->name);
-	if (section != NULL) {
-		config_ini_setting_t *setting = section->settings;
-		while (setting != NULL) {
-			r = method->set_option(
-				*state, setting->name, setting->value);
-			if (r < 0) {
-				method->free(*state);
-				fprintf(stderr, _("Failed to set %s"
-						  " option.\n"),
-					method->name);
-				/* TRANSLATORS: `help' must not be
-				   translated. */
-				fprintf(stderr, _("Try `-m %s:help' for more"
-						  " information.\n"),
-					method->name);
-				return -1;
-			}
-			setting = setting->next;
-		}
-	}
-
-	/* Set method options from command line. */
-	while (args != NULL) {
-		char *next_arg = strchr(args, ':');
-		if (next_arg != NULL) *(next_arg++) = '\0';
-
-		const char *key = args;
-		char *value = strchr(args, '=');
-		if (value == NULL) {
-			fprintf(stderr, _("Failed to parse option `%s'.\n"),
-				args);
-			return -1;
-		} else {
-			*(value++) = '\0';
-		}
-
-		r = method->set_option(*state, key, value);
-		if (r < 0) {
-			method->free(*state);
-			fprintf(stderr, _("Failed to set %s option.\n"),
-				method->name);
-			/* TRANSLATORS: `help' must not be translated. */
-			fprintf(stderr, _("Try -m %s:help' for more"
-					  " information.\n"), method->name);
-			return -1;
-		}
-
-		args = next_arg;
-	}
+	int r1 = method->set_option(*state, "crtc", options->method_crtc);
+    int r2 = method->set_option(*state, "screen", options->method_screen);
+    int r3 = method->set_option(*state, "card", options->method_drm_card);
+    if (r1 < 0 || r2 < 0 || r3 < 0) {
+        method->free(*state);
+        fprintf(stderr, _("Failed to set %s"
+                          " option.\n"),
+                method->name);
+        /* TRANSLATORS: `help' and `--help-methods' must not be
+           translated. */
+        fprintf(stderr, _("Try `--help' or `--help-methods' for more"
+                          " information.\n"));
+        return -1;
+    }
 
 	/* Start method. */
 	r = method->start(*state);
@@ -638,7 +538,7 @@ run_continual_mode(const location_provider_t *provider,
 	int need_location = !scheme->use_time;
 	if (need_location) {
 		fputs(_("Waiting for initial location"
-			" to become available...\n"), stderr);
+			" to become available...\n"), stdout);
 
 		/* Get initial location from provider */
 		r = provider_get_location(provider, location_state, -1, &loc);
@@ -890,10 +790,42 @@ run_continual_mode(const location_provider_t *provider,
 }
 
 
-int
-main(int argc, char *argv[])
+static void onFatalError (ElektraError * error)
+{
+    fprintf (stderr, "Accessing redshift's configuration failed: \n%s\n", elektraErrorDescription (error));
+    elektraErrorReset (&error);
+    exit (EXIT_FAILURE);
+}
+
+
+int main(int argc, const char * const *argv, const char * const *envp)
 {
 	int r;
+
+    exitForSpecload (argc, argv);
+    ElektraError * error = NULL;
+    Elektra * elektra = NULL;
+    int rc = loadConfiguration (&elektra, argc, argv, envp, &error);
+
+    if (rc == -1)
+    {
+        fprintf (stderr, "Opening redshift's configuration failed: \n%s\n", elektraErrorDescription (error));
+        elektraErrorReset (&error);
+        exit (EXIT_FAILURE);
+    }
+
+    if (rc == 1)
+    {
+        // help mode - application was called with '-h' or '--help'
+        // for more information see "Command line options" below
+        printHelpMessage (elektra, NULL, NULL);
+        elektraClose (elektra);
+        exit (EXIT_SUCCESS);
+    }
+    // register error handler
+    elektraFatalErrorHandler (elektra, onFatalError);
+    // loadConfiguration succeeded, proceed with program
+
 
 #ifdef ENABLE_NLS
 	/* Init locale */
@@ -907,9 +839,6 @@ main(int argc, char *argv[])
 
 	/* List of gamma methods. */
 	const gamma_method_t gamma_methods[] = {
-#ifdef ENABLE_DRM
-		drm_gamma_method,
-#endif
 #ifdef ENABLE_RANDR
 		randr_gamma_method,
 #endif
@@ -921,6 +850,9 @@ main(int argc, char *argv[])
 #endif
 #ifdef ENABLE_WINGDI
 		w32gdi_gamma_method,
+#endif
+#ifdef ENABLE_DRM
+            drm_gamma_method,
 #endif
 		dummy_gamma_method,
 		{ NULL }
@@ -946,81 +878,51 @@ main(int argc, char *argv[])
 
 	options_t options;
 	options_init(&options);
-	options_parse_args(
-		&options, argc, argv, gamma_methods, location_providers);
-
-	/* Load settings from config file. */
-	config_ini_state_t config_state;
-	r = config_ini_init(&config_state, options.config_filepath);
-	if (r < 0) {
-		fputs("Unable to load config file.\n", stderr);
-		exit(EXIT_FAILURE);
-	}
-
-	free(options.config_filepath);
-
-	options_parse_config_file(
-		&options, &config_state, gamma_methods, location_providers);
-
-	options_set_defaults(&options);
-
-	if (options.scheme.dawn.start >= 0 || options.scheme.dawn.end >= 0 ||
-	    options.scheme.dusk.start >= 0 || options.scheme.dusk.end >= 0) {
-		if (options.scheme.dawn.start < 0 ||
-		    options.scheme.dawn.end < 0 ||
-		    options.scheme.dusk.start < 0 ||
-		    options.scheme.dusk.end < 0) {
-			fputs(_("Partitial time-configuration not"
-				" supported!\n"), stderr);
-			exit(EXIT_FAILURE);
-		}
-
-		if (options.scheme.dawn.start > options.scheme.dawn.end ||
-		    options.scheme.dawn.end > options.scheme.dusk.start ||
-		    options.scheme.dusk.start > options.scheme.dusk.end) {
-			fputs(_("Invalid dawn/dusk time configuration!\n"),
-			      stderr);
-			exit(EXIT_FAILURE);
-		}
-
-		options.scheme.use_time = 1;
-	}
+    location_state_t *location_state;
+	/* Load settings from elektra. */
+    r = options_load_from_elektra(&options, elektra, gamma_methods, location_providers);
+    // After loading everything from elektra, close it.
+    elektraClose (elektra);
+    if (r < 0) {
+        // Error message printed in options_load_from_elektra(...)
+        exit(EXIT_FAILURE);
+    }
 
 	/* Initialize location provider if needed. If provider is NULL
 	   try all providers until one that works is found. */
-	location_state_t *location_state;
 
 	/* Location is not needed for reset mode and manual mode. */
 	int need_location =
-		options.mode != PROGRAM_MODE_RESET &&
-		options.mode != PROGRAM_MODE_MANUAL &&
+		options.mode != ELEKTRA_ENUM_MODE_RESET &&
+		options.mode != ELEKTRA_ENUM_MODE_ONESHOTMANUAL &&
 		!options.scheme.use_time;
 	if (need_location) {
 		if (options.provider != NULL) {
 			/* Use provider specified on command line. */
 			r = provider_try_start(
 				options.provider, &location_state,
-				&config_state, options.provider_args);
+				&options);
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
 			/* Try all providers, use the first that works. */
+            fputs(_("You have not configured a location provider. Redshift will try to automatically choose a suitable one.\n"), stdout);
 			for (int i = 0;
 			     location_providers[i].name != NULL; i++) {
 				const location_provider_t *p =
 					&location_providers[i];
-				fprintf(stderr,
+				fprintf(stdout,
 					_("Trying location provider `%s'...\n"),
 					p->name);
 				r = provider_try_start(p, &location_state,
-						       &config_state, NULL);
+						       &options);
 				if (r < 0) {
-					fputs(_("Trying next provider...\n"),
-					      stderr);
+					fputs(_("Trying next location provider...\n"),
+					      stdout);
 					continue;
 				}
 
 				/* Found provider that works. */
-				printf(_("Using provider `%s'.\n"), p->name);
+				printf(_("`%s' works and will be used.\n"), p->name);
 				options.provider = p;
 				break;
 			}
@@ -1028,8 +930,7 @@ main(int argc, char *argv[])
 			/* Failure if no providers were successful at this
 			   point. */
 			if (options.provider == NULL) {
-				fputs(_("No more location providers"
-					" to try.\n"), stderr);
+                fputs(_("Redshift was unable to determine your location. Reason: None of the location providers of this build work on your system. Execute \"redshift --location-provider list\" to see which providers are supported in this build. Exiting now.\n"), stderr);
 				exit(EXIT_FAILURE);
 			}
 		}
@@ -1049,46 +950,14 @@ main(int argc, char *argv[])
 		}
 	}
 
-	if (options.mode != PROGRAM_MODE_RESET &&
-	    options.mode != PROGRAM_MODE_MANUAL) {
+	if (options.mode != ELEKTRA_ENUM_MODE_RESET &&
+	    options.mode != ELEKTRA_ENUM_MODE_ONESHOTMANUAL) {
 		if (options.verbose) {
 			printf(_("Temperatures: %dK at day, %dK at night\n"),
 			       options.scheme.day.temperature,
 			       options.scheme.night.temperature);
 		}
 
-		/* Color temperature */
-		if (options.scheme.day.temperature < MIN_TEMP ||
-		    options.scheme.day.temperature > MAX_TEMP ||
-		    options.scheme.night.temperature < MIN_TEMP ||
-		    options.scheme.night.temperature > MAX_TEMP) {
-			fprintf(stderr,
-				_("Temperature must be between %uK and %uK.\n"),
-				MIN_TEMP, MAX_TEMP);
-			exit(EXIT_FAILURE);
-		}
-	}
-
-	if (options.mode == PROGRAM_MODE_MANUAL) {
-		/* Check color temperature to be set */
-		if (options.temp_set < MIN_TEMP ||
-		    options.temp_set > MAX_TEMP) {
-			fprintf(stderr,
-				_("Temperature must be between %uK and %uK.\n"),
-				MIN_TEMP, MAX_TEMP);
-			exit(EXIT_FAILURE);
-		}
-	}
-
-	/* Brightness */
-	if (options.scheme.day.brightness < MIN_BRIGHTNESS ||
-	    options.scheme.day.brightness > MAX_BRIGHTNESS ||
-	    options.scheme.night.brightness < MIN_BRIGHTNESS ||
-	    options.scheme.night.brightness > MAX_BRIGHTNESS) {
-		fprintf(stderr,
-			_("Brightness values must be between %.1f and %.1f.\n"),
-			MIN_BRIGHTNESS, MAX_BRIGHTNESS);
-		exit(EXIT_FAILURE);
 	}
 
 	if (options.verbose) {
@@ -1126,50 +995,51 @@ main(int argc, char *argv[])
 	gamma_state_t *method_state;
 
 	/* Gamma adjustment not needed for print mode */
-	if (options.mode != PROGRAM_MODE_PRINT) {
+	if (options.mode != ELEKTRA_ENUM_MODE_PRINT) {
 		if (options.method != NULL) {
 			/* Use method specified on command line. */
 			r = method_try_start(
-				options.method, &method_state, &config_state,
-				options.method_args);
+				options.method, &method_state, &options);
 			if (r < 0) exit(EXIT_FAILURE);
 		} else {
 			/* Try all methods, use the first that works. */
+            fputs(_("You have not configured an adjustment method. Redshift will try to automatically choose a suitable one.\n"), stdout);
 			for (int i = 0; gamma_methods[i].name != NULL; i++) {
 				const gamma_method_t *m = &gamma_methods[i];
 				if (!m->autostart) continue;
 
+                fprintf(stdout,
+                        _("Trying adjustment method `%s'...\n"),
+                        m->name);
 				r = method_try_start(
-					m, &method_state, &config_state, NULL);
+					m, &method_state, &options);
 				if (r < 0) {
-					fputs(_("Trying next method...\n"), stderr);
+					fputs(_("Trying next method...\n"), stdout);
 					continue;
 				}
 
 				/* Found method that works. */
-				printf(_("Using method `%s'.\n"), m->name);
+				printf(_("`%s' works and will be used.\n"), m->name);
 				options.method = m;
 				break;
 			}
 
 			/* Failure if no methods were successful at this point. */
 			if (options.method == NULL) {
-				fputs(_("No more methods to try.\n"), stderr);
+				fputs(_("Redshift was unable to adjust your screen temperature. Reason: None of the temperature adjustment methods of this build work on your system. Execute \"redshift --method list\" to see which methods are supported in this build. Exiting now.\n"), stderr);
 				exit(EXIT_FAILURE);
 			}
 		}
 	}
 
-	config_ini_free(&config_state);
-
 	switch (options.mode) {
-	case PROGRAM_MODE_ONE_SHOT:
-	case PROGRAM_MODE_PRINT:
+	case ELEKTRA_ENUM_MODE_ONESHOT:
+	case ELEKTRA_ENUM_MODE_PRINT:
 	{
 		location_t loc = { NAN, NAN };
 		if (need_location) {
 			fputs(_("Waiting for current location"
-				" to become available...\n"), stderr);
+				" to become available...\n"), stdout);
 
 			/* Wait for location provider. */
 			int r = provider_get_location(
@@ -1223,7 +1093,7 @@ main(int argc, char *argv[])
 		interpolate_transition_scheme(
 			scheme, transition_prog, &interp);
 
-		if (options.verbose || options.mode == PROGRAM_MODE_PRINT) {
+		if (options.verbose || options.mode == ELEKTRA_ENUM_MODE_PRINT) {
 			print_period(period, transition_prog);
 			printf(_("Color temperature: %uK\n"),
 			       interp.temperature);
@@ -1231,7 +1101,7 @@ main(int argc, char *argv[])
 			       interp.brightness);
 		}
 
-		if (options.mode != PROGRAM_MODE_PRINT) {
+		if (options.mode != ELEKTRA_ENUM_MODE_PRINT) {
 			/* Adjust temperature */
 			r = options.method->set_temperature(
 				method_state, &interp, options.preserve_gamma);
@@ -1253,7 +1123,7 @@ main(int argc, char *argv[])
 		}
 	}
 	break;
-	case PROGRAM_MODE_MANUAL:
+	case ELEKTRA_ENUM_MODE_ONESHOTMANUAL:
 	{
 		if (options.verbose) {
 			printf(_("Color temperature: %uK\n"),
@@ -1280,7 +1150,7 @@ main(int argc, char *argv[])
 		}
 	}
 	break;
-	case PROGRAM_MODE_RESET:
+	case ELEKTRA_ENUM_MODE_RESET:
 	{
 		/* Reset screen */
 		color_setting_t reset;
@@ -1302,7 +1172,7 @@ main(int argc, char *argv[])
 		}
 	}
 	break;
-	case PROGRAM_MODE_CONTINUAL:
+	case ELEKTRA_ENUM_MODE_CONTINUAL:
 	{
 		r = run_continual_mode(
 			options.provider, location_state, scheme,
@@ -1315,7 +1185,7 @@ main(int argc, char *argv[])
 	}
 
 	/* Clean up gamma adjustment state */
-	if (options.mode != PROGRAM_MODE_PRINT) {
+	if (options.mode != ELEKTRA_ENUM_MODE_PRINT) {
 		options.method->free(method_state);
 	}
 

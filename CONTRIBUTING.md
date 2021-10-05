@@ -2,37 +2,65 @@
 Building from git clone
 -----------------------
 
+### 1. Execute bootstrap script
 ``` shell
 $ ./bootstrap
-$ ./configure
 ```
-
 The bootstrap script will use autotools to set up the build environment
 and create the `configure` script.
 
-Use `./configure --help` for options. Use `--prefix` to make an install in
-your home directory. This is necessary to test python scripts. The systemd
-user unit directory should be set to avoid writing to the system location.
+### 2. Execute configure script
 
-Systemd will look for the unit files in `~/.config/systemd/user` so this
+#### Enabling adjustment methods and location providers
+* Which methods and providers your redshift build will support, is determined during execution of `./configure`.
+* If you install none of the suggested dependencies (see below), **redshift will only work in a very limited manner**! Especially, **adjusting screen temperature will not be possible**.
+* Therefore, make sure you have installed the required dependencies listed below, before `./configure`
+* The `configure` script actually tells you which adjustment methods/providers will be included in the build:
+  ```shell
+    (...)
+    Adjustment methods:
+    DRM:                no
+    RANDR:              yes
+    VidMode:            no
+    Quartz (macOS):     no
+    WinGDI (Windows):   no
+
+    Location providers:
+    Geoclue2:                   yes
+    CoreLocation (macOS):       no
+    (...)
+  ```
+* At least one of the adjustment methods should have "yes".
+* Use `./configure --help` to see all available options. 
+* Use `--prefix` to make an install in your home directory. This is necessary to test python scripts. The systemd user unit directory should be set to avoid writing to the system location.
+* Systemd will look for the unit files in `~/.config/systemd/user` so this
 directory can be used as a target if the unit files will be used. Otherwise
 the location can be set to `no` to disable the systemd files.
 
-Example:
+#### Example:
 
 ``` shell
-$ ./configure --prefix=$HOME/redshift/root \
+$ ./configure --enable-randr --prefix=$HOME/redshift/root \
    --with-systemduserunitdir=$HOME/.config/systemd/user
 ```
 
-Now, build the files:
+### 3. Build and mount  
+Now, build the files and mount the Elektra specification:  
+(Mounting the specification requires root privileges. `redshift-conf.mount.sh` uses `sudo` to achieve that).
 
 ``` shell
 $ make
+$ APP_PATH=`pwd`/src/redshift sh src/elektra/redshift-conf.mount.sh
 ```
 
-The main redshift program can be run at this point. To install to the
-prefix directory run:
+### 4. Execute redshift
+The main redshift program can be run at this point:
+```shell
+$ src/redshift
+```
+
+### 5. Optional: Install
+To install to the prefix directory run:
 
 ``` shell
 $ make install
@@ -44,21 +72,34 @@ You can now run the python script. Example:
 $ $HOME/redshift/root/bin/redshift-gtk
 ```
 
+### Updating the Elektra specification file
+When you update the Elektra specification file, make sure to regenerate the files `src/elektra/redshift-conf.*` and `src/elektra/windows/redshift-conf.*`:
+
+```sh
+cd src/elektra
+kdb gen -F ni=redshift.ni highlevel "/sw/jonls/redshift/#0/current" redshift-conf initFn=loadConfiguration helpFn=printHelpMessage specloadFn=exitForSpecload embeddedSpec=full;
+cd windows
+kdb gen -F dump=redshift-win.dump highlevel "/sw/jonls/redshift/#0/current" redshift-conf initFn=loadConfiguration helpFn=printHelpMessage specloadFn=exitForSpecload embeddedSpec=full;
+```
 
 Dependencies
 ------------
 
 * autotools, gettext
 * intltool, libtool
-* libdrm (Optional, for DRM support)
-* libxcb, libxcb-randr (Optional, for RandR support)
-* libX11, libXxf86vm (Optional, for VidMode support)
+* libelektra5
+* libdrm (Suggested but optional, for DRM support)
+* libxcb, libxcb-randr (Suggested but optional, for RandR support)
+* libX11, libXxf86vm (Suggested but optional, for VidMode support)
 * Glib 2 (Optional, for GeoClue2 support)
 
 * python3, pygobject, pyxdg (Optional, for GUI support)
 * appindicator (Optional, for Ubuntu-style GUI status icon)
 
-Ubuntu users will find all these dependencies in the packages listed in ``.travis.yml``.
+#### Notes
+* Install at least one adjustment method and location provider. Otherwise, redshift will only work in a very limited manner (see "2. Execute configure script" above).
+* Ubuntu users will find all these dependencies in the packages listed in ``.travis.yml``.
+* **Note that you also have to install the "-dev" packages for these libraries, if redshift should be able to use them**!
 
 
 Coding style for C code

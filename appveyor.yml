@@ -13,29 +13,59 @@ build_script:
 - ps: |
     If ($env:arch -Match "x86_64") {
       $env:MSYSTEM = "MINGW64"
+      # TODO: switch to release channel after Elektra 0.9.8 is released
+      $env:ELEKTRA_DOWNLOAD_URL = "https://build.libelektra.org/job/libelektra/job/master/lastSuccessfulBuild/artifact/artifacts/debian-bullseye-mingw-w64-x86_64/elektra.zip"
+      $env:PATH_FOR_ELEKTRA_FILES = "C:\msys64\mingw64"
     } Else {
       $env:MSYSTEM = "MINGW32"
+      # TODO: switch to release channel after Elektra 0.9.8 is released
+      $env:ELEKTRA_DOWNLOAD_URL = "https://build.libelektra.org/job/libelektra/job/master/lastSuccessfulBuild/artifact/artifacts/debian-bullseye-mingw-w64-i686/elektra.zip"
+      $env:PATH_FOR_ELEKTRA_FILES = "C:\msys64\mingw32"
     }
 
     $env:CONFIGURE_FLAGS = "--disable-drm --disable-randr --disable-vidmode --enable-wingdi --disable-quartz --disable-geoclue2 --disable-corelocation --disable-gui --disable-ubuntu --disable-nls --host=$env:arch-w64-mingw32"
 
 - ps: md (Join-Path $env:APPVEYOR_BUILD_FOLDER root)
+
+# Download and extract Elektra.
+- ps: |
+    md (Join-Path $env:APPVEYOR_BUILD_FOLDER elektra-download)
+    cd $env:APPVEYOR_BUILD_FOLDER/elektra-download
+    Start-FileDownload $env:ELEKTRA_DOWNLOAD_URL
+    7z x elektra.zip
+
+    # Copied from https://stackoverflow.com/a/44931279
+    function CopyFilesToFolder ($fromFolder, $toFolder) {
+    $childItems = Get-ChildItem $fromFolder
+    $childItems | ForEach-Object {
+        Copy-Item -Path $_.FullName -Destination $toFolder -Recurse -Force
+    }
+        Write-Output "Copied all items of $fromFolder to $toFolder"
+    }
+    CopyFilesToFolder elektra\usr\local\lib $env:PATH_FOR_ELEKTRA_FILES\lib
+    CopyFilesToFolder elektra\usr\local\include $env:PATH_FOR_ELEKTRA_FILES\include
+    md $env:APPVEYOR_BUILD_FOLDER\root\bin
+    Copy-Item -Path elektra\usr\local\bin\kdb-static.exe $env:APPVEYOR_BUILD_FOLDER\root\bin
+    Copy-Item -Path elektra\usr\local\lib\libelektra-full.dll $env:APPVEYOR_BUILD_FOLDER\root\bin
+    cd $env:APPVEYOR_BUILD_FOLDER
+  
 - C:\msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./bootstrap"
 - C:\msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./configure --prefix=\"$APPVEYOR_BUILD_FOLDER/root\" $CONFIGURE_FLAGS"
 - C:\msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER && make distcheck DISTCHECK_CONFIGURE_FLAGS=\"$CONFIGURE_FLAGS\""
 - C:\msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER && make install"
 
 test_script:
+        
 - |
-  %APPVEYOR_BUILD_FOLDER%\root\bin\redshift.exe -l 12:-34 -pv
-- |
-  %APPVEYOR_BUILD_FOLDER%\root\bin\redshift.exe -l 12:-34 -m dummy -vo
-- ps: Set-Content -Value "[redshift]`ndawn-time=6:30`ndusk-time=18:00-19:30`n" -Path time.config
-- |
-  %APPVEYOR_BUILD_FOLDER%\root\bin\redshift.exe -c time.config -pv
-- |
-  %APPVEYOR_BUILD_FOLDER%\root\bin\redshift.exe -c time.config -m dummy -vo
+  mkdir C:\ProgramData\usr\local\kdb\
+  %APPVEYOR_BUILD_FOLDER%\root\bin\kdb-static.exe mount ../../../../projects/redshift/src/elektra/windows/redshift-win.dump spec:/sw/jonls/redshift/#0/current dump
+  %APPVEYOR_BUILD_FOLDER%\root\bin\kdb-static.exe spec-mount /sw/jonls/redshift/#0/current
 
+- |
+  %APPVEYOR_BUILD_FOLDER%\root\bin\redshift.exe --help
+- |
+  %APPVEYOR_BUILD_FOLDER%\root\bin\redshift.exe --mode=print --location-provider=manual --lat=12 --lon=-34 --method=dummy -v
+  
 after_build:
 - ps: |
     $ZIP_NAME = "redshift-windows-$env:arch"
@@ -43,10 +73,12 @@ after_build:
 
     md $ZIP_NAME
     Copy-Item -Path $env:APPVEYOR_BUILD_FOLDER\root\bin\redshift.exe -Destination $ZIP_NAME
+    Copy-Item -Path $env:APPVEYOR_BUILD_FOLDER\root\bin\kdb-static.exe -Destination $ZIP_NAME
+    Copy-Item -Path $env:APPVEYOR_BUILD_FOLDER\root\bin\libelektra-full.dll -Destination $ZIP_NAME
+    Copy-Item -Path $env:APPVEYOR_BUILD_FOLDER\src\elektra\windows\redshift-win.dump -Destination $ZIP_NAME
     Copy-Item -Path README.md -Destination $ZIP_NAME/README.txt
     Copy-Item -Path NEWS.md -Destination $ZIP_NAME/NEWS.txt
     Copy-Item -Path COPYING -Destination $ZIP_NAME/COPYING.txt
-    Copy-Item -Path redshift.conf.sample -Destination $ZIP_NAME
     7z a $ZIP_FILE $ZIP_NAME/
 
 - ps: Push-AppveyorArtifact $ZIP_FILE

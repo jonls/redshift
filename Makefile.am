@@ -12,8 +12,7 @@ EXTRA_ROOTDOC_FILES = \
 	CONTRIBUTING.md \
 	DESIGN \
 	README \
-	README-colorramp \
-	redshift.conf.sample
+	README-colorramp 
 
 _HICOLOR_FILES = \
 	data/icons/hicolor/scalable/apps/redshift.svg \

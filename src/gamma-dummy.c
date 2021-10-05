@@ -66,10 +66,9 @@ gamma_dummy_print_help(FILE *f)
 }
 
 static int
-gamma_dummy_set_option(void *state, const char *key, const char *value)
+gamma_dummy_set_option(void *state, const char *key, const unsigned short value)
 {
-	fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
-	return -1;
+	return 0;
 }
 
 static int
@@ -82,7 +81,7 @@ gamma_dummy_set_temperature(
 
 
 const gamma_method_t dummy_gamma_method = {
-	"dummy", 0,
+	"dummy", 1,
 	(gamma_method_init_func *)gamma_dummy_init,
 	(gamma_method_start_func *)gamma_dummy_start,
 	(gamma_method_free_func *)gamma_dummy_free,

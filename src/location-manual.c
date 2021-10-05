@@ -91,25 +91,13 @@ location_manual_print_help(FILE *f)
 
 static int
 location_manual_set_option(location_manual_state_t *state, const char *key,
-			   const char *value)
+			   const float *value)
 {
-	/* Parse float value */
-	char *end;
-	errno = 0;
-	float v = strtof(value, &end);
-	if (errno != 0 || *end != '\0') {
-		fputs(_("Malformed argument.\n"), stderr);
-		return -1;
-	}
-
 	if (strcasecmp(key, "lat") == 0) {
-		state->loc.lat = v;
+		state->loc.lat = *value;
 	} else if (strcasecmp(key, "lon") == 0) {
-		state->loc.lon = v;
-	} else {
-		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
-		return -1;
-	}
+        state->loc.lon = *value;
+    }
 
 	return 0;
 }

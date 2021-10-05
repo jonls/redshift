@@ -6,7 +6,6 @@ data/applications/redshift-gtk.desktop.in
 
 src/redshift.c
 src/options.c
-src/config-ini.c
 
 src/gamma-drm.c
 src/gamma-randr.c

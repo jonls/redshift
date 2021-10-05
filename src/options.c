@@ -35,40 +35,14 @@
 #endif
 
 #include "redshift.h"
-#include "config-ini.h"
 #include "options.h"
 #include "solar.h"
 
-/* Angular elevation of the sun at which the color temperature
-   transition period starts and ends (in degress).
-   Transition during twilight, and while the sun is lower than
-   3.0 degrees above the horizon. */
-#define TRANSITION_LOW     SOLAR_CIVIL_TWILIGHT_ELEV
-#define TRANSITION_HIGH    3.0
-
-/* Default values for parameters. */
-#define DEFAULT_DAY_TEMP    6500
-#define DEFAULT_NIGHT_TEMP  4500
-#define DEFAULT_BRIGHTNESS   1.0
-#define DEFAULT_GAMMA        1.0
-
-
-/* A brightness string contains either one floating point value,
-   or two values separated by a colon. */
-static void
-parse_brightness_string(
-	const char *str, float *bright_day, float *bright_night)
-{
-	char *s = strchr(str, ':');
-	if (s == NULL) {
-		/* Same value for day and night. */
-		*bright_day = *bright_night = atof(str);
-	} else {
-		*(s++) = '\0';
-		*bright_day = atof(str);
-		*bright_night = atof(s);
-	}
-}
+#ifdef WINDOWS_BUILD
+#include "elektra/windows/redshift-conf.h"
+#else
+#include "elektra/redshift-conf.h"
+#endif
 
 /* A gamma string contains either one floating point value,
    or three values separated by colon. */
@@ -119,135 +93,42 @@ parse_transition_time(const char *str, const char **end)
 	return minutes * 60 + hours * 3600;
 }
 
-/* Parse transition range string e.g. "04:50-6:20". Returns negative on
-   failure, otherwise zero. Parsed start and end times are returned as seconds
-   since midnight. */
-static int
-parse_transition_range(const char *str, time_range_t *range)
-{
-	const char *next = NULL;
-	int start_time = parse_transition_time(str, &next);
-	if (start_time < 0) return -1;
-
-	int end_time;
-	if (next[0] == '\0') {
-		end_time = start_time;
-	} else if (next[0] == '-') {
-		next += 1;
-		const char *end = NULL;
-		end_time = parse_transition_time(next, &end);
-		if (end_time < 0 || end[0] != '\0') return -1;
-	} else {
-		return -1;
-	}
-
-	range->start = start_time;
-	range->end = end_time;
-
-	return 0;
-}
-
-/* Print help text. */
-static void
-print_help(const char *program_name)
-{
-	/* TRANSLATORS: help output 1
-	   LAT is latitude, LON is longitude,
-	   DAY is temperature at daytime,
-	   NIGHT is temperature at night
-	   no-wrap */
-	printf(_("Usage: %s -l LAT:LON -t DAY:NIGHT [OPTIONS...]\n"),
-		program_name);
-	fputs("\n", stdout);
-
-	/* TRANSLATORS: help output 2
-	   no-wrap */
-	fputs(_("Set color temperature of display"
-		" according to time of day.\n"), stdout);
-	fputs("\n", stdout);
-
-	/* TRANSLATORS: help output 3
-	   no-wrap */
-	fputs(_("  -h\t\tDisplay this help message\n"
-		"  -v\t\tVerbose output\n"
-		"  -V\t\tShow program version\n"), stdout);
-	fputs("\n", stdout);
-
-	/* TRANSLATORS: help output 4
-	   `list' must not be translated
-	   no-wrap */
-	fputs(_("  -b DAY:NIGHT\tScreen brightness to apply (between 0.1 and 1.0)\n"
-		"  -c FILE\tLoad settings from specified configuration file\n"
-		"  -g R:G:B\tAdditional gamma correction to apply\n"
-		"  -l LAT:LON\tYour current location\n"
-		"  -l PROVIDER\tSelect provider for automatic"
-		" location updates\n"
-		"  \t\t(Type `list' to see available providers)\n"
-		"  -m METHOD\tMethod to use to set color temperature\n"
-		"  \t\t(Type `list' to see available methods)\n"
-		"  -o\t\tOne shot mode (do not continuously adjust"
-		" color temperature)\n"
-		"  -O TEMP\tOne shot manual mode (set color temperature)\n"
-		"  -p\t\tPrint mode (only print parameters and exit)\n"
-		"  -P\t\tReset existing gamma ramps before applying new"
-		" color effect\n"
-		"  -x\t\tReset mode (remove adjustment from screen)\n"
-		"  -r\t\tDisable fading between color temperatures\n"
-		"  -t DAY:NIGHT\tColor temperature to set at daytime/night\n"),
-	      stdout);
-	fputs("\n", stdout);
-
-	/* TRANSLATORS: help output 5 */
-	printf(_("The neutral temperature is %uK. Using this value will not change "
-		 "the color\ntemperature of the display. Setting the color temperature "
-		 "to a value higher\nthan this results in more blue light, and setting "
-		 "a lower value will result in\nmore red light.\n"),
-		 NEUTRAL_TEMP);
-
-	fputs("\n", stdout);
-
-	/* TRANSLATORS: help output 6 */
-	printf(_("Default values:\n\n"
-		 "  Daytime temperature: %uK\n"
-		 "  Night temperature: %uK\n"),
-	       DEFAULT_DAY_TEMP, DEFAULT_NIGHT_TEMP);
-
-	fputs("\n", stdout);
-
-	/* TRANSLATORS: help output 7 */
-	printf(_("Please report bugs to <%s>\n"), PACKAGE_BUGREPORT);
-}
-
 /* Print list of adjustment methods. */
 static void
 print_method_list(const gamma_method_t *gamma_methods)
 {
-	fputs(_("Available adjustment methods:\n"), stdout);
+    if (gamma_methods[0].name == NULL) {
+        printf("This build of redshift contains no adjustment methods that work on your system!");
+        return;
+    }
+    
+	fputs(_("Available adjustment methods in this build of redshift:\n"), stdout);
 	for (int i = 0; gamma_methods[i].name != NULL; i++) {
 		printf("  %s\n", gamma_methods[i].name);
 	}
 
 	fputs("\n", stdout);
-	fputs(_("Specify colon-separated options with"
-		" `-m METHOD:OPTIONS'.\n"), stdout);
-	/* TRANSLATORS: `help' must not be translated. */
-	fputs(_("Try `-m METHOD:help' for help.\n"), stdout);
+	/* TRANSLATORS: `help-adjustment-methods' must not be translated. */
+    fputs(_("Try `--help` and `--help-methods' for help about the methods.\n"), stdout);
 }
 
 /* Print list of location providers. */
 static void
 print_provider_list(const location_provider_t location_providers[])
 {
-	fputs(_("Available location providers:\n"), stdout);
+    if (location_providers[0].name == NULL) {
+        printf("This build of redshift contains no adjustment methods that work on your system!");
+        return;
+    }
+    
+	fputs(_("Available location providers in this build of redshift:\n"), stdout);
 	for (int i = 0; location_providers[i].name != NULL; i++) {
 		printf("  %s\n", location_providers[i].name);
 	}
 
 	fputs("\n", stdout);
-	fputs(_("Specify colon-separated options with"
-		"`-l PROVIDER:OPTIONS'.\n"), stdout);
-	/* TRANSLATORS: `help' must not be translated. */
-	fputs(_("Try `-l PROVIDER:help' for help.\n"), stdout);
+	/* TRANSLATORS: `help-location-providers' must not be translated. */
+	fputs(_("Try `--help` and `--help-providers' for help about the providers.\n"), stdout);
 }
 
 /* Return the gamma method with the given name. */
@@ -283,16 +164,197 @@ find_location_provider(
 	return provider;
 }
 
+/**
+ *
+ * Load options from Elektra, store them in the passed options struct and configure the gamma_methods and location_providers supported in this build..
+ *
+ * @param options A pointer to the options struct where values should be stored.
+ * @param elektra A pointer to the elektra instance.
+ * @param gamma_methods A pointer to the gamma_methods supported in this build of redshift..
+ * @param location_providers A pointer to the location_providers. supported in this build of redshift.
+ * @return 0 if loading was successful, -1 on error
+ */
+int
+options_load_from_elektra(
+        options_t *options,
+        Elektra *elektra,
+        const gamma_method_t *gamma_methods,
+        const location_provider_t *location_providers) {
+    /**
+     * Before using Elektra, there were two sources for configuration: CLI options and config file.
+     * From redshift's point of view there is only one source now, namely Elektra.
+     */
+    // BEGIN Block: Options from parse_command_line_option and parse_config_file_option
+    
+    // Help (with short option "-h")
+   if(elektraGetHelp(elektra)) {
+       printHelpMessage(NULL, NULL, NULL);
+       return -1;
+   }
+    
+    // Version
+    if (elektraGetVersion(elektra)) {
+        printf("%s\n", PACKAGE_STRING);
+        return -1;
+    }
+    
+    // Verbose
+    options->verbose = elektraGetVerbose(elektra);
+
+    // Programm mode
+    options->mode = elektraGetMode(elektra);
+    if(options->mode == ELEKTRA_ENUM_MODE_ONESHOTMANUAL) {
+            options->temp_set = elektraGetTempOneshotmanual(elektra);
+    }
+
+    // Brightness
+    *(&options->scheme.day.brightness) = elektraGetBrightnessDay(elektra);
+    *(&options->scheme.night.brightness) = elektraGetBrightnessNight(elektra);
+
+    // Gamma
+    const char *gammaDayString = elektraGetGammaDay(elektra);
+    parse_gamma_string(gammaDayString, *(&options->scheme.day.gamma));
+    const char *gammaNightString = elektraGetGammaNight(elektra);
+    parse_gamma_string(gammaNightString, *(&options->scheme.night.gamma));
+
+    // Location and adjustment help
+    if (elektraGetAdjustmentMethodHelp(elektra)) {
+        for (int i = 0; gamma_methods[i].name != NULL; i++) {
+            const gamma_method_t *m = &gamma_methods[i];
+            printf(_("Help section for method `%s':\n"), m->name);
+            printf(_("=============================\n"));
+            m->print_help(stdout);
+            printf(_("=============================\n\n"));
+        }
+        return -1;
+    }
+
+    if (elektraGetProviderLocationHelp(elektra)) {
+        for (int i = 0; location_providers[i].name != NULL; i++) {
+            const location_provider_t *p = &location_providers[i];
+            printf(_("Help section for provider `%s':\n"), p->name);
+            printf(_("=============================\n"));
+            p->print_help(stdout);
+            printf(_("=============================\n\n"));
+        }
+        return -1;
+    }
+
+    // Location provider
+    ElektraEnumProviderLocation locationProvider = elektraGetProviderLocation(elektra);
+    if (locationProvider == ELEKTRA_ENUM_PROVIDER_LOCATION_LIST) {
+        // In list mode, print list of supported location providers.
+        print_provider_list(location_providers);
+        return -1;
+    }
+    else if (locationProvider == ELEKTRA_ENUM_PROVIDER_LOCATION_AUTO) {
+        // In auto mode, a supported provider will be chosen in redshift.c:main(...)
+        options->provider = NULL;
+    }
+    else {
+        // Otherwise, try to find the provider by name.
+        const char *locationProviderName = elektraEnumProviderLocationToConstString(
+                elektraGetProviderLocation(elektra)
+        );
+        const location_provider_t *provider = find_location_provider(location_providers, locationProviderName);
+        if(provider == NULL) {
+            // User picked a locationProvider provider which is not supported in this build.
+            fprintf(stderr, _("The chosen location provider \"%s\" is not supported in this build of redshift.\n"), locationProviderName);
+            return -1;
+        }
+        else {
+            options->provider = provider;
+        }
+    }
+    // Set lat and lon. Will only be used if the manual provider is chosen
+    const float lat = elektraGetProviderLocationManualLat(elektra);
+    options->provider_manual_arg_lat = lat;
+    const float lon = elektraGetProviderLocationManualLon(elektra);
+    options->provider_manual_arg_lon = lon;
+
+    // Adjustment method
+    ElektraEnumAdjustmentMethod adjustmentMethod = elektraGetAdjustmentMethod(elektra);
+    if (adjustmentMethod == ELEKTRA_ENUM_ADJUSTMENT_METHOD_LIST) {
+        // In list mode, print list of supported adjustment methods.
+        print_method_list(gamma_methods);
+        return -1;
+    } else if (adjustmentMethod == ELEKTRA_ENUM_ADJUSTMENT_METHOD_AUTO) {
+        // In auto mode, a supported method will be chosen in redshift.c:main(...)
+        options->method = NULL;
+    } else {
+        // Otherwise, try to find the method by name.
+        const char * adjustmentMethodName = elektraEnumAdjustmentMethodToConstString(
+                elektraGetAdjustmentMethod(elektra)
+        );
+        const gamma_method_t *method = find_gamma_method(gamma_methods, adjustmentMethodName);
+        if (method == NULL) {
+            // User picked a method which is not supported in this build.
+            fprintf(stderr, _("The chosen adjustment method \"%s\" is not supported in this build of redshift.\n"), adjustmentMethodName);
+            return -1;
+        }
+        else {
+            options->method = method;
+        }
+    }
+
+    options->method_crtc = elektraGetAdjustmentCrtc(elektra);
+    options->method_screen = elektraGetAdjustmentScreen(elektra);
+    options->method_drm_card = elektraGetAdjustmentDrmCard(elektra);
+
+
+    // Preserve gamma
+    options->preserve_gamma = elektraGetGammaPreserve(elektra);
+
+    // Fade
+    options->use_fade = !elektraGetFadeFast(elektra);
+
+    // Temperature
+    options->scheme.day.temperature = elektraGetTempDay(elektra);
+    options->scheme.night.temperature = elektraGetTempNight(elektra);
+
+    // END Block
+
+    // BEGIN Block: From parse_config_file_option (if not already handled above)
+
+    // Elevation
+    options->scheme.high = elektraGetProviderLocationElevationHigh(elektra);
+    options->scheme.low = elektraGetProviderLocationElevationLow(elektra);
+
+    // Time
+    options->scheme.use_time = elektraGetProvider(elektra) == ELEKTRA_ENUM_PROVIDER_TIME;
+
+    if(options->scheme.use_time) {
+        const char* dawnStartString = elektraGetProviderTimeDawnStart(elektra);
+        const char* dawnEndString = elektraGetProviderTimeDawnEnd(elektra);
+        const char* duskStartString = elektraGetProviderTimeDuskStart(elektra);
+        const char* duskEndString = elektraGetProviderTimeDuskEnd(elektra);
+        options->scheme.dawn.start = parse_transition_time(dawnStartString, NULL);
+        options->scheme.dawn.end = parse_transition_time(dawnEndString, NULL);
+        options->scheme.dusk.start = parse_transition_time(duskStartString, NULL);
+        options->scheme.dusk.end = parse_transition_time(duskEndString, NULL);
+
+        // Validation from redshift.c:main(...)
+        if (options->scheme.dawn.start > options->scheme.dawn.end ||
+            options->scheme.dawn.end > options->scheme.dusk.start ||
+            options->scheme.dusk.start > options->scheme.dusk.end) {
+            fputs(_("Invalid dawn/dusk time configuration!\n"),
+                  stderr);
+            return -1;
+        }
+    }
+    // END Block
+
+
+
+    return 0;
+}
+
 
 /* Initialize options struct. */
 void
 options_init(options_t *options)
 {
 	options->config_filepath = NULL;
-
-	/* Default elevation values. */
-	options->scheme.high = TRANSITION_HIGH;
-	options->scheme.low = TRANSITION_LOW;
 
 	/* Settings for day, night and transition period.
 	   Initialized to indicate that the values are not set yet. */
@@ -314,366 +376,14 @@ options_init(options_t *options)
 	options->temp_set = -1;
 
 	options->method = NULL;
-	options->method_args = NULL;
+    options->method_crtc = -1;
+    options->method_screen = -1;
+    options->method_drm_card = -1;
 
 	options->provider = NULL;
-	options->provider_args = NULL;
 
 	options->use_fade = -1;
 	options->preserve_gamma = 1;
-	options->mode = PROGRAM_MODE_CONTINUAL;
+	options->mode = ELEKTRA_ENUM_MODE_CONTINUAL;
 	options->verbose = 0;
-}
-
-/* Parse a single option from the command-line. */
-static int
-parse_command_line_option(
-	const char option, char *value, options_t *options,
-	const char *program_name, const gamma_method_t *gamma_methods,
-	const location_provider_t *location_providers)
-{
-	int r;
-	char *s;
-
-	switch (option) {
-	case 'b':
-		parse_brightness_string(
-			value, &options->scheme.day.brightness,
-			&options->scheme.night.brightness);
-		break;
-	case 'c':
-		free(options->config_filepath);
-		options->config_filepath = strdup(value);
-		break;
-	case 'g':
-		r = parse_gamma_string(value, options->scheme.day.gamma);
-		if (r < 0) {
-			fputs(_("Malformed gamma argument.\n"), stderr);
-			fputs(_("Try `-h' for more information.\n"), stderr);
-			return -1;
-		}
-
-		/* Set night gamma to the same value as day gamma.
-		   To set these to distinct values use the config
-		   file. */
-		memcpy(options->scheme.night.gamma,
-		       options->scheme.day.gamma,
-		       sizeof(options->scheme.night.gamma));
-		break;
-	case 'h':
-		print_help(program_name);
-		exit(EXIT_SUCCESS);
-		break;
-	case 'l':
-		/* Print list of providers if argument is `list' */
-		if (strcasecmp(value, "list") == 0) {
-			print_provider_list(location_providers);
-			exit(EXIT_SUCCESS);
-		}
-
-		char *provider_name = NULL;
-
-		/* Don't save the result of strtof(); we simply want
-		   to know if value can be parsed as a float. */
-		errno = 0;
-		char *end;
-		strtof(value, &end);
-		if (errno == 0 && *end == ':') {
-			/* Use instead as arguments to `manual'. */
-			provider_name = "manual";
-			options->provider_args = value;
-		} else {
-			/* Split off provider arguments. */
-			s = strchr(value, ':');
-			if (s != NULL) {
-				*(s++) = '\0';
-				options->provider_args = s;
-			}
-
-			provider_name = value;
-		}
-
-		/* Lookup provider from name. */
-		options->provider = find_location_provider(
-			location_providers, provider_name);
-		if (options->provider == NULL) {
-			fprintf(stderr, _("Unknown location provider `%s'.\n"),
-				provider_name);
-			return -1;
-		}
-
-		/* Print provider help if arg is `help'. */
-		if (options->provider_args != NULL &&
-		    strcasecmp(options->provider_args, "help") == 0) {
-			options->provider->print_help(stdout);
-			exit(EXIT_SUCCESS);
-		}
-		break;
-	case 'm':
-		/* Print list of methods if argument is `list' */
-		if (strcasecmp(value, "list") == 0) {
-			print_method_list(gamma_methods);
-			exit(EXIT_SUCCESS);
-		}
-
-		/* Split off method arguments. */
-		s = strchr(value, ':');
-		if (s != NULL) {
-			*(s++) = '\0';
-			options->method_args = s;
-		}
-
-		/* Find adjustment method by name. */
-		options->method = find_gamma_method(gamma_methods, value);
-		if (options->method == NULL) {
-			/* TRANSLATORS: This refers to the method
-			   used to adjust colors e.g VidMode */
-			fprintf(stderr, _("Unknown adjustment method `%s'.\n"),
-				value);
-			return -1;
-		}
-
-		/* Print method help if arg is `help'. */
-		if (options->method_args != NULL &&
-		    strcasecmp(options->method_args, "help") == 0) {
-			options->method->print_help(stdout);
-			exit(EXIT_SUCCESS);
-		}
-		break;
-	case 'o':
-		options->mode = PROGRAM_MODE_ONE_SHOT;
-		break;
-	case 'O':
-		options->mode = PROGRAM_MODE_MANUAL;
-		options->temp_set = atoi(value);
-		break;
-	case 'p':
-		options->mode = PROGRAM_MODE_PRINT;
-		break;
-	case 'P':
-		options->preserve_gamma = 0;
-		break;
-	case 'r':
-		options->use_fade = 0;
-		break;
-	case 't':
-		s = strchr(value, ':');
-		if (s == NULL) {
-			fputs(_("Malformed temperature argument.\n"), stderr);
-			fputs(_("Try `-h' for more information.\n"), stderr);
-			return -1;
-		}
-		*(s++) = '\0';
-		options->scheme.day.temperature = atoi(value);
-		options->scheme.night.temperature = atoi(s);
-		break;
-	case 'v':
-		options->verbose = 1;
-		break;
-	case 'V':
-		printf("%s\n", PACKAGE_STRING);
-		exit(EXIT_SUCCESS);
-		break;
-	case 'x':
-		options->mode = PROGRAM_MODE_RESET;
-		break;
-	case '?':
-		fputs(_("Try `-h' for more information.\n"), stderr);
-		return -1;
-		break;
-	}
-
-	return 0;
-}
-
-/* Parse command line arguments. */
-void
-options_parse_args(
-	options_t *options, int argc, char *argv[],
-	const gamma_method_t *gamma_methods,
-	const location_provider_t *location_providers)
-{
-	const char* program_name = argv[0];
-	int opt;
-	while ((opt = getopt(argc, argv, "b:c:g:hl:m:oO:pPrt:vVx")) != -1) {
-		char option = opt;
-		int r = parse_command_line_option(
-			option, optarg, options, program_name, gamma_methods,
-			location_providers);
-		if (r < 0) exit(EXIT_FAILURE);
-	}
-}
-
-/* Parse a single key-value pair from the configuration file. */
-static int
-parse_config_file_option(
-	const char *key, const char *value, options_t *options,
-	const gamma_method_t *gamma_methods,
-	const location_provider_t *location_providers)
-{
-	if (strcasecmp(key, "temp-day") == 0) {
-		if (options->scheme.day.temperature < 0) {
-			options->scheme.day.temperature = atoi(value);
-		}
-	} else if (strcasecmp(key, "temp-night") == 0) {
-		if (options->scheme.night.temperature < 0) {
-			options->scheme.night.temperature = atoi(value);
-		}
-	} else if (strcasecmp(key, "transition") == 0 ||
-		   strcasecmp(key, "fade") == 0) {
-		/* "fade" is preferred, "transition" is
-		   deprecated as the setting key. */
-		if (options->use_fade < 0) {
-			options->use_fade = !!atoi(value);
-		}
-	} else if (strcasecmp(key, "brightness") == 0) {
-		if (isnan(options->scheme.day.brightness)) {
-			options->scheme.day.brightness = atof(value);
-		}
-		if (isnan(options->scheme.night.brightness)) {
-			options->scheme.night.brightness = atof(value);
-		}
-	} else if (strcasecmp(key, "brightness-day") == 0) {
-		if (isnan(options->scheme.day.brightness)) {
-			options->scheme.day.brightness = atof(value);
-		}
-	} else if (strcasecmp(key, "brightness-night") == 0) {
-		if (isnan(options->scheme.night.brightness)) {
-			options->scheme.night.brightness = atof(value);
-		}
-	} else if (strcasecmp(key, "elevation-high") == 0) {
-		options->scheme.high = atof(value);
-	} else if (strcasecmp(key, "elevation-low") == 0) {
-		options->scheme.low = atof(value);
-	} else if (strcasecmp(key, "gamma") == 0) {
-		if (isnan(options->scheme.day.gamma[0])) {
-			int r = parse_gamma_string(
-				value, options->scheme.day.gamma);
-			if (r < 0) {
-				fputs(_("Malformed gamma setting.\n"), stderr);
-				return -1;
-			}
-			memcpy(options->scheme.night.gamma,
-			       options->scheme.day.gamma,
-			       sizeof(options->scheme.night.gamma));
-		}
-	} else if (strcasecmp(key, "gamma-day") == 0) {
-		if (isnan(options->scheme.day.gamma[0])) {
-			int r = parse_gamma_string(
-				value, options->scheme.day.gamma);
-			if (r < 0) {
-				fputs(_("Malformed gamma setting.\n"), stderr);
-				return -1;
-			}
-		}
-	} else if (strcasecmp(key, "gamma-night") == 0) {
-		if (isnan(options->scheme.night.gamma[0])) {
-			int r = parse_gamma_string(
-				value, options->scheme.night.gamma);
-			if (r < 0) {
-				fputs(_("Malformed gamma setting.\n"), stderr);
-				return -1;
-			}
-		}
-	} else if (strcasecmp(key, "adjustment-method") == 0) {
-		if (options->method == NULL) {
-			options->method = find_gamma_method(
-				gamma_methods, value);
-			if (options->method == NULL) {
-				fprintf(stderr, _("Unknown adjustment"
-						  " method `%s'.\n"), value);
-				return -1;
-			}
-		}
-	} else if (strcasecmp(key, "location-provider") == 0) {
-		if (options->provider == NULL) {
-			options->provider = find_location_provider(
-				location_providers, value);
-			if (options->provider == NULL) {
-				fprintf(stderr, _("Unknown location"
-						  " provider `%s'.\n"), value);
-				return -1;
-			}
-		}
-	} else if (strcasecmp(key, "dawn-time") == 0) {
-		if (options->scheme.dawn.start < 0) {
-			int r = parse_transition_range(
-				value, &options->scheme.dawn);
-			if (r < 0) {
-				fprintf(stderr, _("Malformed dawn-time"
-						  " setting `%s'.\n"), value);
-				return -1;
-			}
-		}
-	} else if (strcasecmp(key, "dusk-time") == 0) {
-		if (options->scheme.dusk.start < 0) {
-			int r = parse_transition_range(
-				value, &options->scheme.dusk);
-			if (r < 0) {
-				fprintf(stderr, _("Malformed dusk-time"
-						  " setting `%s'.\n"), value);
-				return -1;
-			}
-		}
-	} else {
-		fprintf(stderr, _("Unknown configuration setting `%s'.\n"),
-			key);
-	}
-
-	return 0;
-}
-
-/* Parse options defined in the config file. */
-void
-options_parse_config_file(
-	options_t *options, config_ini_state_t *config_state,
-	const gamma_method_t *gamma_methods,
-	const location_provider_t *location_providers)
-{
-	/* Read global config settings. */
-	config_ini_section_t *section = config_ini_get_section(
-		config_state, "redshift");
-	if (section == NULL) return;
-
-	config_ini_setting_t *setting = section->settings;
-	while (setting != NULL) {
-		int r = parse_config_file_option(
-			setting->name, setting->value, options,
-			gamma_methods, location_providers);
-		if (r < 0) exit(EXIT_FAILURE);
-
-		setting = setting->next;
-	}
-}
-
-/* Replace unspecified options with default values. */
-void
-options_set_defaults(options_t *options)
-{
-	if (options->scheme.day.temperature < 0) {
-		options->scheme.day.temperature = DEFAULT_DAY_TEMP;
-	}
-	if (options->scheme.night.temperature < 0) {
-		options->scheme.night.temperature = DEFAULT_NIGHT_TEMP;
-	}
-
-	if (isnan(options->scheme.day.brightness)) {
-		options->scheme.day.brightness = DEFAULT_BRIGHTNESS;
-	}
-	if (isnan(options->scheme.night.brightness)) {
-		options->scheme.night.brightness = DEFAULT_BRIGHTNESS;
-	}
-
-	if (isnan(options->scheme.day.gamma[0])) {
-		options->scheme.day.gamma[0] = DEFAULT_GAMMA;
-		options->scheme.day.gamma[1] = DEFAULT_GAMMA;
-		options->scheme.day.gamma[2] = DEFAULT_GAMMA;
-	}
-	if (isnan(options->scheme.night.gamma[0])) {
-		options->scheme.night.gamma[0] = DEFAULT_GAMMA;
-		options->scheme.night.gamma[1] = DEFAULT_GAMMA;
-		options->scheme.night.gamma[2] = DEFAULT_GAMMA;
-	}
-
-	if (options->use_fade < 0) options->use_fade = 1;
 }

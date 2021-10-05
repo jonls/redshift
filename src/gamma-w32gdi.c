@@ -121,16 +121,13 @@ w32gdi_print_help(FILE *f)
 }
 
 static int
-w32gdi_set_option(w32gdi_state_t *state, const char *key, const char *value)
+w32gdi_set_option(w32gdi_state_t *state, const char *key, const char value)
 {
 	if (strcasecmp(key, "preserve") == 0) {
 		fprintf(stderr, _("Parameter `%s` is now always on; "
 				  " Use the `%s` command-line option"
 				  " to disable.\n"),
 			key, "-P");
-	} else {
-		fprintf(stderr, _("Unknown method parameter: `%s'.\n"), key);
-		return -1;
 	}
 
 	return 0;
