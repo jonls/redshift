@@ -6,6 +6,7 @@ After=graphical-session.target
 [Service]
 ExecStart=@bindir@/redshift
 Restart=always
+RestartSec=30
 
 [Install]
 WantedBy=graphical-session.target
