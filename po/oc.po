@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://github.com/jonls/redshift/issues\n"
 "POT-Creation-Date: 2017-10-18 11:46-0700\n"
-"PO-Revision-Date: 2020-10-04 00:31+0200\n"
+"PO-Revision-Date: 2021-12-06 12:31+0100\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2018-05-21 01:04+0000\n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 3.0\n"
 "Last-Translator: Quentin PAGÈS\n"
 "Language: oc\n"
 
@@ -47,7 +47,7 @@ msgstr "Redshift"
 #: ../data/applications/redshift.desktop.in.h:2
 #: ../data/applications/redshift-gtk.desktop.in.h:2
 msgid "Color temperature adjustment"
-msgstr ""
+msgstr "Ajustament de la temperatura de las colors"
 
 #: ../data/applications/redshift.desktop.in.h:3
 #: ../data/applications/redshift-gtk.desktop.in.h:3
@@ -74,12 +74,12 @@ msgstr "Transicion"
 #: ../src/redshift.c:225
 #, c-format
 msgid "Period: %s\n"
-msgstr ""
+msgstr "Periòde : %s\n"
 
 #: ../src/redshift.c:228
 #, c-format
 msgid "Period: %s (%.2f%% day)\n"
-msgstr ""
+msgstr "Periòde : %s (%.2f%% jorn)\n"
 
 #. TRANSLATORS: Abbreviation for `north'
 #: ../src/redshift.c:240
@@ -107,12 +107,12 @@ msgstr "O"
 #: ../src/redshift.c:251
 #, c-format
 msgid "Location: %.2f %s, %.2f %s\n"
-msgstr ""
+msgstr "Emplaçament : %.2f %s, %.2f %s\n"
 
 #: ../src/redshift.c:325 ../src/redshift.c:416
 #, c-format
 msgid "Initialization of %s failed.\n"
-msgstr ""
+msgstr "L'inicializacion de %s a fracassat.\n"
 
 #: ../src/redshift.c:340 ../src/redshift.c:384 ../src/redshift.c:431
 #: ../src/redshift.c:463
@@ -169,7 +169,7 @@ msgstr ""
 #: ../src/redshift.c:545 ../src/redshift.c:564 ../src/redshift.c:696
 #: ../src/redshift.c:1187
 msgid "Unable to read system time.\n"
-msgstr ""
+msgstr "Lectura impossibla de l'ora sistèma.\n"
 
 #: ../src/redshift.c:635
 msgid "Waiting for initial location to become available...\n"
@@ -178,7 +178,7 @@ msgstr ""
 #: ../src/redshift.c:641 ../src/redshift.c:832 ../src/redshift.c:847
 #: ../src/redshift.c:1172
 msgid "Unable to get location from provider.\n"
-msgstr ""
+msgstr "Impossible d'obténer l'emplaçament a partir del provesidor.\n"
 
 #: ../src/redshift.c:647 ../src/redshift.c:871
 msgid "Invalid location returned from provider.\n"
@@ -212,7 +212,7 @@ msgstr "Activat"
 #: ../src/redshift.c:802 ../src/redshift.c:1233 ../src/redshift.c:1263
 #: ../src/redshift.c:1285
 msgid "Temperature adjustment failed.\n"
-msgstr ""
+msgstr "Ajustament de la temperatura de las colors pas reüssit.\n"
 
 #: ../src/redshift.c:854
 msgid ""
@@ -235,12 +235,12 @@ msgstr ""
 
 #: ../src/redshift.c:1011
 msgid "Trying next provider...\n"
-msgstr ""
+msgstr "Ensag amb lo provesidor seguent...\n"
 
 #: ../src/redshift.c:1017
 #, c-format
 msgid "Using provider `%s'.\n"
-msgstr ""
+msgstr "Utilizacion del provesidor « %s ».\n"
 
 #: ../src/redshift.c:1025
 msgid "No more location providers to try.\n"
@@ -262,7 +262,7 @@ msgstr ""
 #: ../src/redshift.c:1049
 #, c-format
 msgid "Temperatures: %dK at day, %dK at night\n"
-msgstr ""
+msgstr "Temperaturas : %dK lo jorn, %dK la nuèch\n"
 
 #: ../src/redshift.c:1060 ../src/redshift.c:1071
 #, c-format
@@ -654,7 +654,7 @@ msgstr ""
 #: ../src/gamma-dummy.c:75
 #, c-format
 msgid "Temperature: %i\n"
-msgstr ""
+msgstr "Temperatura : %i\n"
 
 #: ../src/location-geoclue2.c:59
 #, c-format
@@ -753,11 +753,11 @@ msgstr ""
 
 #: ../src/location-manual.c:97
 msgid "Malformed argument.\n"
-msgstr ""
+msgstr "Paramètre mal format.\n"
 
 #: ../src/redshift-gtk/statusicon.py:78
 msgid "Suspend for"
-msgstr ""
+msgstr "Suspendre pendent"
 
 #: ../src/redshift-gtk/statusicon.py:80
 msgid "30 minutes"
@@ -805,4 +805,4 @@ msgstr "Localizacion"
 
 #: ../src/redshift-gtk/statusicon.py:349
 msgid "Please run `redshift -h` for help output."
-msgstr ""
+msgstr "Executatz « redshift -h » per d’ajuda."
