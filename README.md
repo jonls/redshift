@@ -110,6 +110,7 @@ Instead, you can use:
 
 - In GNOME Shell: Settings → Display Settings → Night Light
 - In Plasma: System Settings → Display and Monitor → Night Color
+- In Sway/ Wayfire or other wlroots based compositor → gammastep
 
 ### Why doesn't Redshift work on Ubuntu with Mir enabled?
 
