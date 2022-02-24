@@ -101,15 +101,17 @@ open_config_file(const char *filepath)
 
 		if (f == NULL) {
 			struct passwd *pwd = getpwuid(getuid());
-			char *home = pwd->pw_dir;
-			snprintf(cp, sizeof(cp),
-				 "%s/.config/redshift/redshift.conf", home);
-			f = fopen(cp, "r");
-			if (f == NULL) {
-				/* Fall back to formerly used path. */
+			if (pwd != NULL) {
+				char *home = pwd->pw_dir;
 				snprintf(cp, sizeof(cp),
-					 "%s/.config/redshift.conf", home);
+					 "%s/.config/redshift/redshift.conf", home);
 				f = fopen(cp, "r");
+				if (f == NULL) {
+					/* Fall back to formerly used path. */
+					snprintf(cp, sizeof(cp),
+						 "%s/.config/redshift.conf", home);
+					f = fopen(cp, "r");
+				}
 			}
 		}
 
