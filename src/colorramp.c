@@ -309,16 +309,16 @@ interpolate_color(float temperature, float *c)
     if (temperature < TEMPERATURE_NORM)
     {
         c[0] = 1.0f;
-        if (temperature < TEMPERATURE_ZERO)
-        {
-            c[1] = 0.0f;
-            c[2] = 0.0f;
-        }
-        else
+        if (temperature > TEMPERATURE_ZERO)
         {
             g = log(temperature - TEMPERATURE_ZERO);
             c[1] = floattrim(GAMMA_K0GR + GAMMA_K1GR * g, 0.0f, 1.0f);
             c[2] = floattrim(GAMMA_K0BR + GAMMA_K1BR * g, 0.0f, 1.0f);
+        }
+        else
+        {
+            c[1] = 0.0f;
+            c[2] = 0.0f;
         }
     }
     else
